@@ -1,0 +1,43 @@
+%define{
+    %persistent object '${prefix_}WANManager' {
+
+        /**
+         * Set WAN mode for  PPP user
+         * @param WANMode - value to which to change WANMode
+         * @param Username - PPP user name
+         * @param Password - PPP password
+         * @return - true on success
+         * @version 1.0
+         */
+         bool setWANMode(%in %mandatory string WANMode,
+                         %in string UserName,
+                         %in string Password);
+
+        /**
+         *
+         * Get WAN mode
+         * @return - complete map with the whole configuration
+         * @version 1.0
+         */
+         string getWANMode();
+
+        /**
+         * Mode to which WAN interface is configured to
+         * @version 1.0
+         */
+         %persistent string WANMode {
+            on action validate call check_maximum_length 64;
+            default "";
+         }
+    }
+}
+
+%populate {
+    on event "dm:object-changed" call set_wan_mode
+        filter 'path == "${prefix_}WANManager." && contains("parameters.WANMode")';
+
+    on event "dm:object-added" call wan_mode_added
+        filter 'path matches "${prefix_}WANManager\.WAN\.[0-9]+\.Intf"';
+
+    on event "*" call print_event;
+}

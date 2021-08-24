@@ -1,0 +1,19 @@
+%populate {
+object '${prefix_}WANManager.WAN' {
+        instance add ("DHCP_Ethernet"){
+           parameter Name = "DHCP_Ethernet";
+           parameter PhysicalType = "Ethernet";
+
+        }
+        instance add ("GPON"){
+           parameter Name = "GPON";
+           parameter PhysicalType = "GPON";
+        }
+     }
+
+object '${prefix_}WANManager.WAN.DHCP_Ethernet.Intf'{
+        instance add(0,""){
+            parameter  Type = "untagged";
+        }
+    }
+}

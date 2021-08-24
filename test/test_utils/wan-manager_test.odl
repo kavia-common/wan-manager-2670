@@ -1,0 +1,24 @@
+%config{
+    prefix_ = "X_PRPL_";
+}
+
+include "../../odl/wan-manager_definition.odl";
+include "../../odl/wan-manager_WAN_definition.odl";
+include "../../odl/wan-manager_WAN_Intf_definition.odl";
+
+%populate {
+    object '${prefix_}WANManager.WAN' {
+        instance add (0,""){
+           parameter Name = "Test1";
+           parameter PhysicalType = "SFP";
+        }
+        instance add (0,""){
+           parameter Name = "Test2";
+           parameter PhysicalType = "Ethernet";
+        }
+        instance add (0,""){
+           parameter Name = "Test3";
+           parameter PhysicalType = "Ethernet";
+        }
+    }
+}
