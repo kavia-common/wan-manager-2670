@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.1.1 - 2021-11-15(09:03:06 +0000)
+
+### Fixes
+
+- Missing dependency to libsahtrace
+- Missing mod-sahtrace dependecy
+
+### Other
+
+- Extend plugin description
+
 ## Release v0.1.0 - 2021-08-24(13:56:55 +0000)
 
 ### New
