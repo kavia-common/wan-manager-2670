@@ -85,7 +85,7 @@
 
 import "${name}.so" as "${name}";
 import "mod-dmext.so";
-include "mod_sahtrace.odl";
+#include "mod_sahtrace.odl";
 
 include "${wan_manager_definition_file}";
 include "${wan_mode_definition_file}";
