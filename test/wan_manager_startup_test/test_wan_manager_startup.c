@@ -79,8 +79,10 @@
 #include <amxc/amxc_macros.h>
 
 #include "test_wan_manager_startup.h"
+#include "dm_wan-manager.h"
 #include "test_utils.h"
 
+static void test_wan_manager_set_operation_mode(const char* mode);
 
 void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
     const char* prefix = test_get_prefix();
@@ -104,6 +106,87 @@ void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
     intf = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
     assert_string_equal(intf, "Ethernet");
     free(intf);
+
+    amxd_trans_clean(&transaction);
+}
+
+void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** state) {
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    char* operation_mode = NULL;
+    bool enable = false;
+
+    assert_non_null(wan_manager);
+
+    operation_mode = amxd_object_get_cstring_t(wan_manager, "OperationMode", NULL);
+    assert_string_equal("Manual", operation_mode);
+    free(operation_mode);
+
+    test_clear_amxb_calls();
+    test_wan_manager_set_operation_mode("Automatic");
+    assert_true(test_set_autosensing_called(&enable));
+    assert_true(enable);
+    operation_mode = amxd_object_get_cstring_t(wan_manager, "OperationMode", NULL);
+    assert_string_equal("Automatic", operation_mode);
+    free(operation_mode);
+
+    test_clear_amxb_calls();
+    test_wan_manager_set_operation_mode("Manual");
+    assert_true(test_set_autosensing_called(&enable));
+    assert_false(enable);
+    operation_mode = amxd_object_get_cstring_t(wan_manager, "OperationMode", NULL);
+    assert_string_equal("Manual", operation_mode);
+    free(operation_mode);
+
+}
+
+void test_wan_manager_get_current_wan_mode_on_boot_should_be_false(UNUSED void** state) {
+    amxc_var_t ret;
+    amxc_var_init(&ret);
+    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
+    assert_false(GETP_BOOL(&ret, "status"));
+    amxc_var_clean(&ret);
+}
+
+void test_wan_manager_get_current_wan_mode_for_correct_mode(UNUSED void** state) {
+    amxc_var_t ret;
+    amxc_var_t args;
+    amxc_var_t set_ret;
+
+    amxc_var_init(&ret);
+    amxc_var_init(&args);
+    amxc_var_init(&set_ret);
+
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "WANMode", "DHCP_Ethernet");
+
+    assert_int_equal(0, _setWANMode(NULL, NULL, &args, &set_ret));
+    assert_true(GETP_BOOL(&set_ret, "status"));
+
+    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
+    assert_true(GETP_BOOL(&ret, "status"));
+
+    amxc_var_clean(&ret);
+    amxc_var_clean(&args);
+    amxc_var_clean(&set_ret);
+
+}
+
+
+static void test_wan_manager_set_operation_mode(const char* mode) {
+    amxd_dm_t* dm = test_get_dm();
+    amxd_trans_t transaction;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+
+    assert_non_null(wan_manager);
+
+    amxd_trans_init(&transaction);
+    amxd_trans_select_object(&transaction, wan_manager);
+    amxd_trans_set_value(cstring_t, &transaction, "OperationMode", mode);
+    amxd_trans_apply(&transaction, dm);
+
+    test_handle_events();
 
     amxd_trans_clean(&transaction);
 }

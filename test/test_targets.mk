@@ -3,19 +3,45 @@ all: $(TARGET)
 run: $(TARGET)
 	set -o pipefail; valgrind --error-exitcode=1 ./$< 2>&1 | tee -a $(OBJDIR)/unit_test_results.txt;
 
+executables: $(TARGET)
+
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS)  $(LDFLAGS) -fprofile-arcs -ftest-coverage
 
 -include $(OBJECTS:.o=.d)
 
-
 $(OBJDIR)/%.o: ./%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(CTRL_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(INTEGRATION_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(DHCPC_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(AUTOSENSING_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(ETHERNET_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(NETDEV_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
 
 $(OBJDIR)/%.o: $(MOCK_SRC_DIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS)  -c -o $@ $<

@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,92 +60,67 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include <string.h>
+#include <debug/sahtrace.h>
+#include <stdio.h>
 
 #include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
 #include <amxd/amxd_object_event.h>
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
+#include <amxc/amxc_macros.h>
+#include <stdlib.h>
 
-#include <amxb/amxb.h>
-
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-
-
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
-
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
-
-amxd_dm_t* PRIVATE wan_get_dm(void);
-
-amxo_parser_t* PRIVATE wan_get_parser(void);
-
-amxb_bus_ctx_t* PRIVATE wan_get_context(void);
-
-const char* PRIVATE wan_get_prefix(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
+#include "utils.h"
+#include "dm_wan_mode.h"
+#include "ctrl/mode_ctrl.h"
+#include "integration/uci/uci_ctrl.h"
+#include "integration/uci/uci.h"
 
 
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-
-
-void _wan_mode_added(const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-bool wan_mode_is_valid(void);
-
-#ifdef __cplusplus
-}
+#ifdef ME
+#undef ME
+#define ME "uci-ctrl"
 #endif
 
-#endif // __DM_WAN_MANAGER_H__
+
+
+static mode_ctrl_actions_t uci_actions;
+
+static amxd_status_t uci_enable(wan_mode_type_t mode, const amxc_var_t* const parameters);
+static amxd_status_t uci_disable(wan_mode_type_t mode, const amxc_var_t* const parameters);
+
+AMXB_CONSTRUCTOR static void uci_controller_init(void) {
+    uci_actions.enable = uci_enable;
+    uci_actions.disable = uci_disable;
+    (void) register_mode_controller(Untagged_PPP, &uci_actions);
+    (void) register_mode_controller(Tagged_PPP, &uci_actions);
+}
+
+static amxd_status_t uci_enable(wan_mode_type_t mode, const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_var_t* params = NULL;
+    when_null(parameters, exit);
+    when_failed_l(uci_remove_section_if_present("wan"), exit, "WAN section removal error");
+
+    params = uci_wan_mode_parameters(parameters, Tagged_PPP != mode);
+    uci_write_section("wan", params);
+
+exit:
+    amxc_var_delete(&params);
+    return rc;
+}
+
+static amxd_status_t uci_disable(UNUSED wan_mode_type_t mode, UNUSED const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+
+    rc = uci_remove_section_if_present("wan");
+
+    return rc;
+}
+
+
+#undef ME

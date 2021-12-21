@@ -67,6 +67,6 @@
 
 
 int get_reset_counter(void);
-
+amxd_status_t __wrap_restart(void);
 
 #endif //__TR181_RESETMOCK_H__

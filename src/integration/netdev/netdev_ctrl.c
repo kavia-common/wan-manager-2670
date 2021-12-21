@@ -1,11 +1,7 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** Copyright (c) 2021 SoftAtHome
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
-**
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -79,72 +75,55 @@
 
 #include "utils.h"
 #include "dm_wan-manager.h"
-#include "dm_wan_mode_intf.h"
-#include "ctrl/netdev_ctrl.h"
-#include "ctrl/ipmanager_ctrl.h"
+#include "integration/netdev/netdev_ctrl.h"
 
-amxd_status_t wan_mode_intf_disable(amxd_object_t* const intf);
-amxd_status_t wan_mode_intf_enable(amxd_object_t* const intf);
+typedef struct  {
+    const char* object_path;
+    const char* expression;
+} netdev_subscription_t;
 
-amxd_status_t wan_mode_intf_disable_all(amxd_object_t* const root) {
+typedef struct {
+    amxc_string_t interface;
+    amxp_slot_fn_t cb_fn;
+    amxb_subscription_t* subscription;
+} netdev_ctr_t;
+
+static netdev_ctr_t netdev_ctrl;
+static const netdev_subscription_t subscription_data = {
+    .object_path = "NetDev.Link",
+    .expression = "notification == 'dm:object-changed'"
+};
+
+amxd_status_t netdev_ctrl_subscribe(const char* interface, amxp_slot_fn_t callback) {
     amxd_status_t rc = amxd_status_unknown_error;
-    amxd_object_t* child = NULL;
-    when_null(root, exit);
+    amxc_string_init(&netdev_ctrl.interface, 0);
 
-    child = amxd_object_get_child(root, "Intf");
-    when_null(child, exit);
+    when_null(interface, exit);
+    when_null(callback, exit);
 
-    rc = amxd_status_ok;
-    amxd_object_for_each(instance, it, child) {
-        amxd_object_t* obj = amxc_llist_it_get_data(it, amxd_object_t, it);
-        if(NULL != obj) {
-            when_failed_l((rc = wan_mode_intf_disable(obj)), exit, "Disable Intf %s error", obj->name);
-        }
-    }
+    netdev_ctrl.cb_fn = callback;
+    amxc_string_set(&netdev_ctrl.interface, interface);
+    rc = (AMXB_STATUS_OK == amxb_subscription_new(&netdev_ctrl.subscription,
+                                                  wan_get_context(),
+                                                  subscription_data.object_path,
+                                                  subscription_data.expression,
+                                                  callback, NULL)) ? amxd_status_ok : amxd_status_unknown_error;
+    when_failed_l(rc,
+                  exit,
+                  "Cannot subscribe  for NetDev event: [path=%s,expression=%s]",
+                  subscription_data.object_path,
+                  subscription_data.expression);
 
 exit:
     return rc;
 }
 
-amxd_status_t wan_mode_intf_enable_all(amxd_object_t* const root) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    amxd_object_t* child = NULL;
-    when_null(root, exit);
+amxd_status_t netdev_ctrl_unsubscribe(void) {
+    amxd_status_t rc = (AMXB_STATUS_OK == amxb_subscription_delete(&netdev_ctrl.subscription)) ?
+        amxd_status_ok : amxd_status_unknown_error;
 
-    child = amxd_object_get_child(root, "Intf");
-    when_null(child, exit);
-
-    rc = amxd_status_ok;
-    amxd_object_for_each(instance, it, child) {
-        amxd_object_t* obj = amxc_llist_it_get_data(it, amxd_object_t, it);
-        if(NULL != obj) {
-            when_failed_l((rc = wan_mode_intf_enable(obj)), exit, "Enable Intf %s error", obj->name);
-        }
-    }
-exit:
-    return rc;
-}
-
-
-amxd_status_t wan_mode_intf_disable(amxd_object_t* const intf) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    when_null(intf, exit);
-
-    when_failed_l((rc = ipmanager_ctrl_disable_intf(intf)), exit, "IPManager disable intf error %s", intf->name);
-    when_failed_l((rc = netdev_ctrl_disable_intf(intf)), exit, "NetDev disable intf error %s", intf->name);
-
-exit:
-    return rc;
-}
-amxd_status_t wan_mode_intf_enable(amxd_object_t* const intf) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    when_null(intf, exit);
-
-    when_failed_l((rc = netdev_ctrl_disable_intf(intf)), exit, "NetDev configure intf error %s", intf->name);
-    when_failed_l((rc = ipmanager_ctrl_disable_intf(intf)), exit, "IPManager configure intf error %s", intf->name);
-    when_failed_l((rc = ipmanager_ctrl_configure_ipv4(intf)), exit, "IPManager IPv4 configure intf error %s", intf->name);
-    when_failed_l((rc = ipmanager_ctrl_configure_ipv6(intf)), exit, "IPManager IPv6 configure intf error %s", intf->name);
-
-exit:
+    netdev_ctrl.cb_fn = NULL;
+    netdev_ctrl.subscription = NULL;
+    amxc_string_clean(&netdev_ctrl.interface);
     return rc;
 }

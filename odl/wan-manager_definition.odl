@@ -2,16 +2,21 @@
     %persistent object '${prefix_}WANManager' {
 
         /**
-         * Set WAN mode for  PPP user
+         * Set WAN mode
          * @param WANMode - value to which to change WANMode
-         * @param Username - PPP user name
-         * @param Password - PPP password
+         * @param Autosensing - Change requested by WANAutosensing
          * @return - true on success
          * @version 1.0
          */
          bool setWANMode(%in %mandatory string WANMode,
-                         %in string UserName,
-                         %in string Password);
+                         %in string Autosensing);
+
+        /**
+         * Get status of current WAN mode. Use by WANAutosensing
+         * @return -  true when WANMode status is Enabled and configured interface obtain IP address
+         * @version 1.0
+         */
+         bool getCurrentWANModeStatus();
 
         /**
          *
@@ -29,12 +34,21 @@
             on action validate call check_maximum_length 64;
             default "";
          }
+
+         %persistent string OperationMode {
+           constraint enum ["Manual", "Automatic"];
+           default "Manual";
+         }
     }
 }
 
 %populate {
     on event "dm:object-changed" call set_wan_mode
         filter 'path == "${prefix_}WANManager." && contains("parameters.WANMode")';
+
+    on event "dm:object-changed" call update_autosensing
+        filter 'path == "${prefix_}WANManager." && contains("parameters.OperationMode")';
+
 
     on event "dm:object-added" call wan_mode_added
         filter 'path matches "${prefix_}WANManager\.WAN\.[0-9]+\.Intf"';

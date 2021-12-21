@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,26 +60,50 @@
 **
 ****************************************************************************/
 
-#if !defined(__NETDEV_CTRL_H__)
-#define __NETDEV_CTRL_H__
+#include <string.h>
+#include <debug/sahtrace.h>
+#include <stdio.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <stdbool.h>
+#include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
+#include <amxc/amxc_macros.h>
+#include <amxb/amxb.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
+#include <stdlib.h>
 
-amxd_status_t netdev_ctrl_subscribe(amxd_object_t* link);
-amxd_status_t netdev_ctrl_unsubscribe(amxd_object_t* link);
-amxd_status_t netdev_ctrl_disable_intf(amxd_object_t* interface);
-amxd_status_t netdev_ctrl_configure_intf(amxd_object_t* interface);
+#include "utils.h"
+#include "dm_wan_mode.h"
+#include "dm_wan-manager.h"
+#include "ctrl/mode_ctrl.h"
+#include "integration/autosensing/autosensing.h"
+#include "component.h"
 
-#ifdef __cplusplus
-}
+#ifdef ME
+#undef ME
+#define ME "as-ctrl"
 #endif
 
-#endif // __NETDEV_CTRL_H__
+static amxb_bus_ctx_t* context = NULL;
+static amxb_bus_ctx_t* autosensing_get_context(void);
+
+static const char* autosensing = "X_PRPL_WANAutoSensing.";
+
+amxd_status_t autosensing_set_enable(bool enable) {
+    return component_set_enable(autosensing, autosensing_get_context(), enable);
+}
+
+static amxb_bus_ctx_t* autosensing_get_context(void) {
+    if(NULL == context) {
+        context = amxb_be_who_has(autosensing);
+    }
+    return context;
+}
+
+#undef ME

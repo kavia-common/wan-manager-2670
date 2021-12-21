@@ -8,6 +8,10 @@ run: $(OBJDIR)/
 	@for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
 	@rm -rf $(OBJDIR)/test_*
 
+executables: $(OBJDIR)/
+	@for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
+	@rm -rf $(OBJDIR)/test_*
+
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(OBJDIR)/$(COVERREPORT)
@@ -28,5 +32,5 @@ $(OBJDIR)/:
 $(OBJDIR)/$(COVERREPORT)/:
 	mkdir -p $@
 
-.PHONY: run clean coverage
+.PHONY: run clean coverage executables
 

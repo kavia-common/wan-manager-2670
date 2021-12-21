@@ -9,6 +9,12 @@
       %persistent object Intf[4] {
 
         /**
+         * Defines the Alias of the DHCPv4 Configuration to change when DHCP mode is selected
+         * @version 1.0
+         */
+        %private persistent string DHCPv4ClientConfiguration="";
+
+        /**
           * A non-volatile unique key used to reference this instance (as defined in TR181)
           * @version 1.0
           */
@@ -54,7 +60,7 @@
          * @version 1.0
          */
         %persistent string IPv4Mode{
-            constraint enum ["dhcp4", "ppp4","none", "static"];
+            constraint enum ["dhcp4", "ppp4", "none", "static"];
             default "none";
         }
 
@@ -63,7 +69,7 @@
          * @version 1.0
          */
         %persistent string IPv6Mode{
-            constraint enum ["dhcp6", "ppp6","none","static"];
+            constraint enum ["dhcp6", "ppp6", "none", "static"];
             default "none";
         }
 

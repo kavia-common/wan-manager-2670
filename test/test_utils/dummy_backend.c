@@ -1,11 +1,7 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** Copyright (c) 2021 SoftAtHome
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
-**
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,92 +58,114 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <amxc/amxc.h>
+#include <assert.h>
+#include <stdlib.h>
 #include <amxc/amxc_macros.h>
-#include <amxp/amxp.h>
+#include <amxc/amxc_variant.h>
+#include <amxc/amxc_lqueue.h>
+#include <amxp/amxp_signal.h>
 #include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include <amxp/amxp_slot.h>
+#include <amxb/amxb_be.h>
 
-#include <amxb/amxb.h>
+#include "dummy_backend.h"
 
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
+typedef struct _dummy_ctx {
+    int fd;
+} dummy_ctx_t;
 
-
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
-
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
-
-amxd_dm_t* PRIVATE wan_get_dm(void);
-
-amxo_parser_t* PRIVATE wan_get_parser(void);
-
-amxb_bus_ctx_t* PRIVATE wan_get_context(void);
-
-const char* PRIVATE wan_get_prefix(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-
-
-void _wan_mode_added(const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-bool wan_mode_is_valid(void);
-
-#ifdef __cplusplus
+static void* amxb_dummy_connect(UNUSED const char* host,
+                                UNUSED const char* port,
+                                UNUSED const char* path,
+                                UNUSED amxp_signal_mngr_t* sigmngr) {
+    static int cur_fd = 100;
+    dummy_ctx_t* d = calloc(1, sizeof(dummy_ctx_t));
+    d->fd = cur_fd++;
+    return d;
 }
-#endif
 
-#endif // __DM_WAN_MANAGER_H__
+static int amxb_dummy_disconnect(UNUSED void* ctx) {
+    return 0;
+}
+
+static int amxb_dummy_get_fd(UNUSED void* const ctx) {
+    dummy_ctx_t* d = (dummy_ctx_t*) ctx;
+    return d->fd;
+}
+
+static void amxb_dummy_free(void* ctx) {
+    free(ctx);
+}
+
+static int amxb_dummy_register(UNUSED void* const ctx,
+                               UNUSED amxd_dm_t* const dm) {
+    return 0;
+}
+
+UNUSED static int amxb_dummy_subscribe(UNUSED void* const ctx,
+                                       UNUSED const char* object) {
+    //assert(false && "Subscribe called");
+    return 0;
+}
+
+UNUSED static int amxb_dummy_unsubscribe(UNUSED void* const ctx,
+                                         UNUSED const char* object) {
+    assert(false && "Actually called unsubscribe");
+    return 0;
+}
+
+static amxb_be_funcs_t amxb_dummy_impl = {
+    .connect = amxb_dummy_connect,
+    .disconnect = amxb_dummy_disconnect,
+    .get_fd = amxb_dummy_get_fd,
+    .read = NULL,
+    .invoke = NULL,
+    .async_invoke = NULL,
+    .wait_request = NULL,
+    .close_request = NULL,
+    .subscribe = NULL,       //amxb_dummy_subscribe,
+    .unsubscribe = NULL,     //amxb_dummy_unsubscribe,
+    .free = amxb_dummy_free,
+    .register_dm = amxb_dummy_register,
+    .name = "dummy",
+    .size = sizeof(amxb_be_funcs_t),
+};
+
+static amxb_version_t sup_min_lib_version = {
+    .major = 2,
+    .minor = 0,
+    .build = 0
+};
+
+static amxb_version_t sup_max_lib_version = {
+    .major = 2,
+    .minor = -1,
+    .build = -1
+};
+
+static amxb_version_t dummy_be_version = {
+    .major = 0,
+    .minor = 0,
+    .build = 0,
+};
+
+amxb_be_info_t amxb_dummy_be_info = {
+    .min_supported = &sup_min_lib_version,
+    .max_supported = &sup_max_lib_version,
+    .be_version = &dummy_be_version,
+    .name = "dummy",
+    .description = "AMXB Dummy Backend for testing",
+    .funcs = &amxb_dummy_impl,
+};
+
+int test_register_dummy_be(void) {
+    return amxb_be_register(&amxb_dummy_impl);
+}
+
+int test_unregister_dummy_be(void) {
+    return amxb_be_unregister(&amxb_dummy_impl);
+}
+
+void connection_read(UNUSED int fd, UNUSED void* priv) {
+    // Do nothing
+}

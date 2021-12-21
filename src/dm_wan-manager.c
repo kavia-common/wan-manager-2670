@@ -75,23 +75,48 @@
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
+#include "utils.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 
+#include "integration/netdev/netdev_ctrl.h"
+#include "integration/autosensing/autosensing.h"
+
+#include "ctrl/mode_ctrl.h"
+
+#define INTERFACE "eth0"
+#define DHCP_INTERFACE INTERFACE
+#define PPP_INTERFACE "pppoe-wan"
+
 static wan_manager_app_t app;
+static amxc_string_t* netdev_path = NULL;
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode);
 static amxd_status_t add_default_intf_interface(amxd_object_t* root);
+static amxb_bus_ctx_t* resolve_context(amxo_parser_t* parser);
+static void callback_netdev_link_changed(UNUSED const char* const sig_name,
+                                         const amxc_var_t* const data,
+                                         void* const priv);
+static amxc_var_t* get_netdev_link_params(const char* name, const amxc_htable_t* objects);
+static bool netdev_interface_got_ip(const char* interface);
+static const char* get_netdev_link_path(const char* name, const amxc_htable_t* objects);
+static amxc_string_t* netdev_path_for_interface(const char* interface);
+static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode);
 
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
+
+static bool netdev_interface_up(const char* interface);
+
+void _print_event(UNUSED const char* const sig_name,
+                  UNUSED const amxc_var_t* const data,
                   UNUSED void* const priv) {
+#ifdef TRACE_ON
     printf("event received - %s\n", sig_name);
     if(data != NULL) {
         printf("Event data = \n");
         fflush(stdout);
         amxc_var_dump(data, STDOUT_FILENO);
     }
+#endif
 }
 
 amxd_dm_t* PRIVATE wan_get_dm(void) {
@@ -102,6 +127,10 @@ amxo_parser_t* PRIVATE wan_get_parser(void) {
     return app.parser;
 }
 
+amxb_bus_ctx_t* PRIVATE wan_get_context(void) {
+    return app.context;
+}
+
 const char* PRIVATE wan_get_prefix(void) {
     amxc_var_t* setting = amxo_parser_get_config(wan_get_parser(), "prefix_");
     return amxc_var_constcast(cstring_t, setting);
@@ -110,46 +139,73 @@ const char* PRIVATE wan_get_prefix(void) {
 int _wan_manager_main(int reason,
                       amxd_dm_t* dm,
                       amxo_parser_t* parser) {
+
     switch(reason) {
     case 0:
         app.dm = dm;
         app.parser = parser;
+        app.context = resolve_context(parser);
+        netdev_ctrl_subscribe(INTERFACE, callback_netdev_link_changed);
+        netdev_interface_up(INTERFACE);
         wan_mode_init();
         break;
-    case 1:                                 // STOP
-
+    case 1:
+        mode_ctrl_cleanup();
+        netdev_ctrl_unsubscribe();
         wan_mode_cleanup();
         app.dm = NULL;
         app.parser = NULL;
+        app.context = NULL;
+        amxc_string_delete(&netdev_path);
         break;
     }
 
     return 0;
 }
 
-amxd_status_t _setWANMode(UNUSED amxd_object_t* object,
+amxd_status_t _setWANMode(amxd_object_t* object,
                           UNUSED amxd_function_t* func,
                           amxc_var_t* args,
                           amxc_var_t* ret) {
     amxd_status_t status = amxd_status_unknown_error;
-    bool rc = false;
+
     amxc_var_t* wan_mode = GET_ARG(args, "WANMode");
-    amxc_var_t* ppp_user = GET_ARG(args, "UserName");
-    amxc_var_t* ppp_password = GET_ARG(args, "UserName");
+    amxc_var_t* autosensing = GET_ARG(args, "Autosensing");
+
     char* wan_mode_value = amxc_var_dyncast(cstring_t, wan_mode);
-    char* ppp_user_value = amxc_var_dyncast(cstring_t, ppp_user);
-    char* ppp_password_value = amxc_var_dyncast(cstring_t, ppp_password);
+    bool autosensing_req = amxc_var_dyncast(bool, autosensing);
+    SAH_TRACEZ_INFO(ME, "Configure mode %s Autosensing %d", wan_mode_value, autosensing_req);
 
-    when_null(wan_mode_value, exit);
+    if(!autosensing_req) {
+        char* current_mode = amxd_object_get_value(cstring_t, object, "OperationMode", NULL);
+        if((NULL != current_mode) && (0 == strcmp("Automatic", current_mode))) {
+            SAH_TRACEZ_INFO(ME, "Manual mode change requested. Switch to Manual opetation mode");
+            wan_mode_set_mode(object, "Manual");
+            autosensing_set_enable(false);
+        }
+        free(current_mode);
+    }
+
     when_str_empty(wan_mode_value, exit);
+    amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(bool, ret, "status", amxd_status_ok == wan_mode_set(wan_mode_value, NULL, NULL));
 
-    rc = wan_mode_set(wan_mode_value, ppp_user_value, ppp_password_value);
-    status = (0 == amxc_var_set(bool, ret, rc)) ? amxd_status_ok : amxd_status_unknown_error;
+    status = amxd_status_ok;
 
 exit:
     free(wan_mode_value);
-    free(ppp_user_value);
-    free(ppp_password_value);
+    return status;
+}
+
+amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
+                                       UNUSED amxd_function_t* func,
+                                       UNUSED amxc_var_t* args,
+                                       amxc_var_t* ret) {
+    amxd_status_t status = amxd_status_ok;
+    bool is_valid = wan_mode_is_valid();
+    amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(bool, ret, "status", is_valid);
+
     return status;
 }
 
@@ -178,6 +234,30 @@ void _set_wan_mode(UNUSED const char* const event_name,
     } else {
         (void) wan_mode_dm_set(old_wan_mode);
     }
+
+exit:
+    return;
+}
+
+void _update_autosensing(UNUSED const char* const event_name,
+                         const amxc_var_t* const event_data,
+                         UNUSED void* const priv) {
+
+    const char* new_wan_mode = GETP_CHAR(event_data, "parameters.OperationMode.to");
+    const char* old_wan_mode = GETP_CHAR(event_data, "parameters.OperationMode.from");
+
+    when_null(new_wan_mode, exit);
+    when_null(old_wan_mode, exit);
+    when_true((0 == strcmp(new_wan_mode, old_wan_mode)), exit);
+
+    if(0 == strcmp(new_wan_mode, "Automatic")) {
+        SAH_TRACEZ_INFO(ME, "WANManager set to automatic mode enable WANAutosensing");
+        autosensing_set_enable(true);
+    } else {
+        SAH_TRACEZ_INFO(ME, "WANManager set to manual mode disable WANAutosensing");
+        autosensing_set_enable(false);
+    }
+
 
 exit:
     return;
@@ -212,6 +292,7 @@ amxd_status_t _interface_already_configured(amxd_object_t* object,
         amxd_object_t* obj = amxc_llist_it_get_data(it, amxd_object_t, it);
         amxc_var_t name;
         const char* child_name = NULL;
+        amxc_var_init(&name);
         if(obj == object) {
             continue;
         }
@@ -237,6 +318,28 @@ exit:
     return rc;
 }
 
+bool wan_mode_is_valid(void) {
+    ipv4_mode_t mode = wan_mode_get_ipv4_mode();
+    bool rc = false;
+    SAH_TRACEZ_INFO(ME, "IPv4 mode of current WANMode %d", mode);
+
+    switch(mode) {
+    case IPv4_DHCP:
+    {
+        amxc_string_t* interface = wan_mode_get_interface(DHCP_INTERFACE);
+        rc = netdev_interface_got_ip(amxc_string_get(interface, 0));
+        amxc_string_delete(&interface);
+    }
+    break;
+    case IPv4_PPP:
+        rc = netdev_interface_got_ip(PPP_INTERFACE);
+        break;
+    default:
+        rc = false;
+    }
+    return rc;
+}
+
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode) {
     return (NULL != new_wan_mode) && (NULL != get_wan_mode(new_wan_mode)) ? amxd_status_ok :  amxd_status_invalid_value;
@@ -257,5 +360,213 @@ static amxd_status_t add_default_intf_interface(amxd_object_t* root) {
 
 exit:
     amxc_var_clean(&parameters);
+    return rc;
+}
+
+static amxb_bus_ctx_t* resolve_context(amxo_parser_t* parser) {
+    amxo_connection_t* context = NULL;
+
+    amxc_llist_iterate(it, parser->connections) {
+        context = amxc_llist_it_get_data(it, amxo_connection_t, it);
+        when_not_null(context, exit);
+    }
+
+exit:
+    return NULL != context ? (amxb_bus_ctx_t*) context->priv : NULL;
+}
+
+static void callback_netdev_link_changed(UNUSED const char* const sig_name,
+                                         UNUSED const amxc_var_t* const data,
+                                         UNUSED void* const priv) {
+    const char* path = GETP_CHAR(data, "path");
+    const char* new_value = GETP_CHAR(data, "parameters.State.to");
+
+    when_str_empty(path, exit);
+    when_str_empty(new_value, exit);
+    when_null(netdev_path, exit);
+    if((0 == strcmp(amxc_string_get(netdev_path, 0), path)) && (0 == strcmp("up", new_value))) {
+    }
+
+exit:
+    return;
+}
+
+static bool netdev_interface_up(const char* interface) {
+    bool rc = false;
+    amxc_var_t query;
+    const amxc_llist_t* query_items = NULL;
+
+    amxc_var_init(&query);
+
+    when_null(interface, exit);
+    when_false((AMXB_STATUS_OK == amxb_get(wan_get_context(), "NetDev.Link.*", 0, &query, 10)), exit);
+    query_items = amxc_var_constcast(amxc_llist_t, &query);
+    when_null(query_items, exit);
+
+    amxc_llist_for_each(query_item, query_items) {
+        amxc_var_t* link_var = amxc_llist_it_get_data(query_item, amxc_var_t, lit);
+        amxc_var_t* params = NULL;
+        const char* interface_status = NULL;
+        if(NULL == netdev_path) {
+            params = get_netdev_link_params(interface, amxc_var_constcast(amxc_htable_t, link_var));
+        } else {
+            params = amxc_container_of(
+                amxc_htable_get(amxc_var_constcast(amxc_htable_t, link_var), amxc_string_get(netdev_path, 0)),
+                amxc_var_t,
+                hit);
+        }
+        if(NULL == params) {
+            continue;
+        }
+        interface_status = GETP_CHAR(params, "State");
+        if((NULL != interface_status) && (0 == strcmp("up", interface_status))) {
+            rc = true;
+            goto exit;
+        }
+    }
+
+exit:
+    amxc_var_clean(&query);
+    SAH_TRACEZ_INFO(ME, "NetDev interface %s is %s", interface, (rc ? "UP" : "DOWN"));
+    return rc;
+}
+
+static bool netdev_interface_got_ip(const char* interface) {
+    bool rc = false;
+    amxc_string_t* path = NULL;
+    amxc_string_t query_filter;
+    amxc_var_t query;
+    const amxc_llist_t* query_items = NULL;
+    amxc_var_t* ipv4addresses = NULL;
+    amxc_llist_it_t* first_set = NULL;
+    int count = 0;
+    amxc_var_init(&query);
+    amxc_string_init(&query_filter, 0);
+
+    when_str_empty(interface, exit);
+
+    path = netdev_path_for_interface(interface);
+    when_null(path, exit);
+
+    amxc_string_setf(&query_filter, "%sIPv4Addr.*", amxc_string_get(path, 0));
+    SAH_TRACEZ_INFO(ME, "Check if NetDev path %s contain IPv4Addr objects", amxc_string_get(&query_filter, 0));
+    when_false((AMXB_STATUS_OK == amxb_get(wan_get_context(), amxc_string_get(&query_filter, 0), 0, &query, 10)), exit);
+
+    query_items = amxc_var_constcast(amxc_llist_t, &query);
+
+    when_null(query_items, exit);
+    if(1 < (count = amxc_llist_size(query_items))) {
+        SAH_TRACEZ_INFO(ME, "NetDev query %s returned empty set %d", amxc_string_get(&query_filter, 0), count);
+        goto exit;
+    }
+    first_set = amxc_llist_get_first(query_items);
+    when_null_l(first_set, exit, "Unable to get first item from query list");
+    ipv4addresses = amxc_container_of(first_set, amxc_var_t, lit);
+    count = amxc_htable_size(amxc_var_constcast(amxc_htable_t, ipv4addresses));
+    SAH_TRACEZ_INFO(ME, "IPv4Address set for %s contain %d elements", amxc_string_get(&query_filter, 0), count);
+    rc = (0 != count);
+
+exit:
+    amxc_string_delete(&path);
+    amxc_string_clean(&query_filter);
+    amxc_var_clean(&query);
+
+    return rc;
+}
+
+
+static amxc_string_t* netdev_path_for_interface(const char* interface) {
+    const char* path = NULL;
+    amxc_var_t query;
+    const amxc_llist_t* query_items = NULL;
+    amxc_string_t* path_str = NULL;
+    amxc_var_init(&query);
+
+    when_null_l(interface, exit, "Interface cannot be NULL");
+    when_false((AMXB_STATUS_OK == amxb_get(wan_get_context(), "NetDev.Link.*", 0, &query, 10)), exit);
+    query_items = amxc_var_constcast(amxc_llist_t, &query);
+    when_null(query_items, exit);
+
+    amxc_llist_for_each(query_item, query_items) {
+        amxc_var_t* link_var = amxc_llist_it_get_data(query_item, amxc_var_t, lit);
+
+        path = get_netdev_link_path(interface, amxc_var_constcast(amxc_htable_t, link_var));
+        if(NULL != path) {
+            amxc_string_new(&path_str, 0);
+            amxc_string_set(path_str, path);
+            goto exit;
+        }
+    }
+
+    SAH_TRACEZ_ERROR(ME, "Cannot find NetDev path for interface %s", interface);
+
+exit:
+    amxc_var_clean(&query);
+    return path_str;
+}
+
+static amxc_var_t* get_netdev_link_params(const char* name, const amxc_htable_t* objects) {
+    amxc_var_t* parameters = NULL;
+
+    when_null(name, exit);
+    when_null(objects, exit);
+
+    amxc_htable_for_each(iter, objects) {
+        amxc_var_t* params = amxc_container_of(iter, amxc_var_t, hit);
+        const char* interface = NULL;
+        if(NULL == params) {
+            continue;
+        }
+        interface = GETP_CHAR(params, "Name");
+        if((NULL != interface) && (0 == strcmp(name, interface))) {
+            amxc_string_new(&netdev_path, 0);
+            amxc_string_set(netdev_path, amxc_htable_it_get_key(iter));
+            parameters = params;
+            goto exit;
+        }
+    }
+
+exit:
+    return parameters;
+}
+
+
+static const char* get_netdev_link_path(const char* name, const amxc_htable_t* objects) {
+    const char* path = NULL;
+
+    when_null(name, exit);
+    when_null(objects, exit);
+
+    amxc_htable_for_each(iter, objects) {
+        amxc_var_t* params = amxc_container_of(iter, amxc_var_t, hit);
+        const char* interface = NULL;
+        if(NULL == params) {
+            continue;
+        }
+        interface = GETP_CHAR(params, "Name");
+        if((NULL != interface) && (0 == strcmp(name, interface))) {
+            path = amxc_htable_it_get_key(iter);
+            SAH_TRACEZ_INFO(ME, "NetDev path for interface %s is %s", name, path);
+            goto exit;
+        }
+    }
+
+exit:
+    return path;
+}
+
+static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_var_t status_parameter;
+
+    when_null(object, exit);
+    when_failed(amxc_var_init(&status_parameter), exit);
+    when_failed(amxc_var_set_type(&status_parameter, AMXC_VAR_ID_CSTRING), exit);
+    when_failed(amxc_var_set(cstring_t, &status_parameter, mode), exit);
+
+    rc = amxd_object_set_param(object, "OperationMode", &status_parameter);
+
+exit:
+    amxc_var_clean(&status_parameter);
     return rc;
 }

@@ -1,10 +1,25 @@
 MACHINE = $(shell $(CC) -dumpmachine)
 SRCDIR = $(realpath ../../src)
+
+CTRL_SRCDIR = $(realpath ../../src/ctrl)
+INTEGRATION_SRCDIR = $(realpath ../../src/integration)
+DHCPC_SRCDIR = $(realpath ../../src/integration/dhcpc)
+AUTOSENSING_SRCDIR = $(realpath ../../src/integration/autosensing)
+ETHERNET_SRCDIR = $(realpath ../../src/integration/ethernet)
+NETDEV_SRCDIR = $(realpath ../../src/integration/netdev)
+
+
 OBJDIR = $(realpath ../../output/$(MACHINE)/coverage)
 INCDIR = $(realpath ../../include ../../include_priv ../include ../mocks ../test_utils)
 
 HEADERS = $(wildcard $(INCDIR)/*.h)
 SOURCES = $(wildcard $(SRCDIR)/*.c)
+SOURCES += $(wildcard $(CTRL_SRCDIR)/*.c)
+SOURCES += $(wildcard $(INTEGRATION_SRCDIR)/*.c)
+SOURCES += $(wildcard $(DHCPC_SRCDIR)/*.c)
+SOURCES += $(wildcard $(AUTOSENSING_SRCDIR)/*.c)
+SOURCES += $(wildcard $(ETHERNET_SRCDIR)/*.c)
+SOURCES += $(wildcard $(NETDEV_SRCDIR)/*.c)
 
 
 CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
@@ -16,4 +31,4 @@ CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
 		   -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL=500
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -ldl -lsahtrace
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -ldl -lsahtrace

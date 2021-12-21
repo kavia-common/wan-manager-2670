@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,24 +60,51 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MODE_INTF_H__)
-#define __DM_WAN_MODE_INTF_H__
+#include <string.h>
+#include <debug/sahtrace.h>
 
-#ifdef __cplusplus
-extern "C"
-{
+#include "integration/uci/uci_ctrl.h"
+
+#ifdef ME
+#undef ME
+#define ME "uci-ctrl"
 #endif
 
-#include <stdbool.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
+amxd_status_t uci_call(const char* method,
+                       const char* config,
+                       const char* section,
+                       const char* type,
+                       const amxc_var_t* const values,
+                       amxc_var_t* result) {
+    amxd_status_t status = amxd_status_unknown_error;
+    amxc_var_t args;
+    amxc_var_init(&args);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxb_bus_ctx_t* ctx = amxb_be_who_has("uci.");
 
-amxd_status_t wan_mode_intf_disable_all(amxd_object_t* const root);
-amxd_status_t wan_mode_intf_enable_all(amxd_object_t* const root);
+    if(config) {
+        amxc_var_add_key(cstring_t, &args, "config", config);
+    }
 
-#ifdef __cplusplus
+    if(section) {
+        bool add = (strncmp(method, "add", 3) == 0);
+        amxc_var_add_key(cstring_t, &args, add ? "name" : "section", section);
+    }
+
+    if(type) {
+        amxc_var_add_key(cstring_t, &args, "type", type);
+    }
+
+    if(values) {
+        amxc_var_add_key(amxc_htable_t,
+                         &args,
+                         "values",
+                         amxc_var_constcast(amxc_htable_t, values));
+    }
+    status = (AMXB_STATUS_OK == amxb_call(ctx, "uci.", method, &args, result, 3)) ?
+        amxd_status_ok : amxd_status_unknown_error;
+    amxc_var_clean(&args);
+    return status;
 }
-#endif
 
-#endif // __DM_WAN_MODE_INTF_H__
+#undef ME

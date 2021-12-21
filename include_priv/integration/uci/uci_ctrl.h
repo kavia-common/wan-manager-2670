@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,26 +59,31 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__UCI_CTRL_H__)
+#define __UCI_CTRL_H__
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#include <amxc/amxc_macros.h>
 #include <amxc/amxc.h>
+#include <amxp/amxp_signal.h>
+#include <amxp/amxp_slot.h>
+#include <amxd/amxd_types.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
 
-#include <debug/sahtrace.h>
+amxd_status_t uci_call(const char* method,
+                       const char* config,
+                       const char* section,
+                       const char* type,
+                       const amxc_var_t* const values,
+                       amxc_var_t* result);
 
-#include "ctrl/netdev_ctrl.h"
+#ifdef __cplusplus
+}
+#endif
 
-amxd_status_t netdev_ctrl_subscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_unsubscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_disable_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_configure_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
+#endif // __UCI_CTRL_H__

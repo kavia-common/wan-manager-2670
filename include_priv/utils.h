@@ -72,7 +72,7 @@ extern "C"
 #include <stdbool.h>
 #include <debug/sahtrace.h>
 
-#define ME "WANManager-main"
+#define ME "wan-man"
 
 #ifndef when_false_l
 #define when_false_l(cond, label, ...) if(false == (cond)) { SAH_TRACEZ_ERROR(ME, __VA_ARGS__); goto label; }

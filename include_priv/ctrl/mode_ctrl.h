@@ -62,92 +62,47 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
+#if !defined(__MODE_CTRL_H__)
+#define __MODE_CTRL_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
+#include <stdbool.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
 
-#include <amxb/amxb.h>
+typedef enum {
+    Untagged_DHCP,
+    Untagged_PPP,
+    Tagged_DHCP,
+    Tagged_PPP,
+    Mode_Nr_
+} wan_mode_type_t;
 
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
+typedef amxd_status_t (* ctrl_fn)(wan_mode_type_t mode, const amxc_var_t* const);
 
+typedef struct {
+    ctrl_fn enable;
+    ctrl_fn disable;
+} mode_ctrl_actions_t;
 
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
+const char* wan_mode_type_to_str(wan_mode_type_t mode);
 
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
+void mode_ctrl_init(void);
+void mode_ctrl_cleanup(void);
 
-amxd_dm_t* PRIVATE wan_get_dm(void);
+amxd_status_t register_mode_controller(int mode, const mode_ctrl_actions_t* const actions);
+amxd_status_t unregister_mode_controller(int mode);
 
-amxo_parser_t* PRIVATE wan_get_parser(void);
-
-amxb_bus_ctx_t* PRIVATE wan_get_context(void);
-
-const char* PRIVATE wan_get_prefix(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-
-
-void _wan_mode_added(const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-bool wan_mode_is_valid(void);
+amxd_status_t set_mode(int mode, const amxc_var_t* const parameters);
+amxd_status_t disable_mode(int mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __DM_WAN_MANAGER_H__
+#endif // __MODE_CTRL_H__

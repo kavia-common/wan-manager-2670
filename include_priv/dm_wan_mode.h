@@ -75,15 +75,25 @@ extern "C"
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
 
+typedef enum {
+    IPv4_DHCP,
+    IPv4_PPP,
+    IPv4_None,
+    IPv4_Nr_,
+} ipv4_mode_t;
+
 void wan_mode_init(void);
 void wan_mode_cleanup(void);
 amxd_status_t wan_mode_dm_set(const char* value);
 
-bool wan_mode_set(const char* wan_mode, const char* ppp_user, const char* ppp_password);
-bool wan_mode_disable(amxd_object_t* wan_mode);
-bool wan_mode_enable(amxd_object_t* wan_mode);
+amxd_status_t wan_mode_set(const char* wan_mode, const char* ppp_user, const char* ppp_password);
+amxd_status_t wan_mode_disable(amxd_object_t* wan_mode);
+amxd_status_t wan_mode_enable(amxd_object_t* wan_mode);
 amxd_object_t* get_wan_mode(const char* alias);
+ipv4_mode_t wan_mode_get_ipv4_mode(void);
+amxc_string_t* wan_mode_get_interface(const char* base);
 
+ipv4_mode_t wan_mode_ipv4_mode_from_str(const char* mode);
 #ifdef __cplusplus
 }
 #endif

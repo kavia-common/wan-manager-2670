@@ -11,14 +11,10 @@ SOURCES += $(wildcard ./*.c) $(MOCK_SOURCES) $(TEST_UTILS_SOURCES)
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 
 WRAP_FUNC=-Wl,--wrap=
-MOCK_WRAP = amxp_proc_ctrl_new 		\
-            amxp_proc_ctrl_start 	\
-            amxp_proc_ctrl_stop 	\
-            amxp_proc_ctrl_delete	\
-            amxb_add				\
-            amxb_get 				\
-            amxb_call				\
-            restart
+MOCK_WRAP = amxp_proc_ctrl_new \
+            amxp_proc_ctrl_start \
+            amxp_proc_ctrl_stop \
+            amxp_proc_ctrl_delete
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

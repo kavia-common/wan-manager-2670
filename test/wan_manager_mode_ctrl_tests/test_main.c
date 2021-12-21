@@ -62,34 +62,33 @@
 **
 ****************************************************************************/
 
-#include <amxc/amxc.h>
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include <utils.h>
-#include <ctrl/ipmanager_ctrl.h>
+#include "test_wan_manager_mode_ctrl_tests.h"
 
+int main(void) {
+    int failed_tests = 0;
+    const struct CMUnitTest init_test[] = {
+        cmocka_unit_test(test_mode_ctrl_register_invalid_mode),
+        cmocka_unit_test(test_mode_ctrl_register_invalid_controller),
+        cmocka_unit_test(test_mode_ctrl_register_valid_mode),
+        cmocka_unit_test(test_mode_ctrl_unregister_invalid_mode),
+        cmocka_unit_test(test_mode_ctrl_unregister_valid_mode),
 
-amxd_status_t ipmanager_ctrl_subscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
+    };
+    const struct CMUnitTest runtime_test[] = {
+        cmocka_unit_test(test_mode_ctrl_call_valid_mode_enable),
+        cmocka_unit_test(test_mode_ctrl_call_valid_mode_disable),
+        cmocka_unit_test(test_mode_ctrl_call_invalid_mode_enable),
+        cmocka_unit_test(test_mode_ctrl_call_invalid_mode_disable),
+        cmocka_unit_test(test_mode_ctrl_call_unregister_mode_enable),
+        cmocka_unit_test(test_mode_ctrl_call_unregister_mode_disable),
+
+    };
+    failed_tests += cmocka_run_group_tests(init_test, test_mode_ctrl_setup, test_mode_ctrl_teardown);
+    failed_tests += cmocka_run_group_tests(runtime_test, test_mode_ctrl_setup, test_mode_ctrl_teardown);
+    return failed_tests;
 }
-
-amxd_status_t ipmanager_ctrl_unsubscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
-}
-
-amxd_status_t ipmanager_ctrl_disable_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-
-amxd_status_t ipmanager_ctrl_configure_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-
-amxd_status_t ipmanager_ctrl_configure_ipv4(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-
-amxd_status_t ipmanager_ctrl_configure_ipv6(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-
-

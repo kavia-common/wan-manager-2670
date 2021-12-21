@@ -62,16 +62,10 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#ifndef __TEST_WAN_MANAGER_MODE_CTRL_TEST_H__
+#define __TEST_WAN_MANAGER_MODE_CTRL_TEST_H__
 
 #include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
@@ -85,69 +79,21 @@ extern "C"
 #include <amxo/amxo_save.h>
 
 
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
+int test_mode_ctrl_setup(void** state);
+int test_mode_ctrl_teardown(void** state);
 
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
+void test_mode_ctrl_register_invalid_mode(void** state);
+void test_mode_ctrl_register_invalid_controller(void** state);
+void test_mode_ctrl_register_valid_mode(void** state);
 
-amxd_dm_t* PRIVATE wan_get_dm(void);
+void test_mode_ctrl_unregister_valid_mode(void** state);
+void test_mode_ctrl_unregister_invalid_mode(void** state);
 
-amxo_parser_t* PRIVATE wan_get_parser(void);
+void test_mode_ctrl_call_valid_mode_enable(void** state);
+void test_mode_ctrl_call_valid_mode_disable(void** state);
+void test_mode_ctrl_call_invalid_mode_enable(void** state);
+void test_mode_ctrl_call_invalid_mode_disable(void** state);
+void test_mode_ctrl_call_unregister_mode_enable(void** state);
+void test_mode_ctrl_call_unregister_mode_disable(void** state);
 
-amxb_bus_ctx_t* PRIVATE wan_get_context(void);
-
-const char* PRIVATE wan_get_prefix(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-
-
-void _wan_mode_added(const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-bool wan_mode_is_valid(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // __DM_WAN_MANAGER_H__
+#endif //__TEST_WAN_MANAGER_MODE_CTRL_TEST_H__

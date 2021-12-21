@@ -82,5 +82,29 @@ amxd_dm_t* test_get_dm(void);
 amxo_parser_t* test_get_parser(void);
 const char* test_get_prefix(void);
 void test_handle_events(void);
+void test_clear_amxb_calls(void);
+bool test_set_autosensing_called(bool* enable);
+
+int __wrap_amxb_add(amxb_bus_ctx_t* const bus_ctx,
+                    const char* object,
+                    uint32_t index,
+                    const char* name,
+                    amxc_var_t* values,
+                    amxc_var_t* ret,
+                    int timeout);
+
+int __wrap_amxb_get(amxb_bus_ctx_t* const bus_ctx,
+                    const char* object,
+                    int32_t depth,
+                    amxc_var_t* ret,
+                    int timeout);
+
+int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
+                     const char* object,
+                     const char* method,
+                     amxc_var_t* args,
+                     amxc_var_t* ret,
+                     int timeout);
+
 
 #endif //__WAN_MANAGER_TEST_UTILS_H__

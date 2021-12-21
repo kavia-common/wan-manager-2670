@@ -64,7 +64,7 @@
 
 %config {
     name = "wan-manager";
-    import-dbg = true;
+    import-dbg = false;
     prefix_ = "X_PRPL_";
 
     // SAHTRACE
@@ -73,7 +73,14 @@
         level = 200
     };
 
-    trace-zones = { "wan-manager" = 200 };
+    trace-zones = {
+        "wan-man" = 200,
+        "uci-ctrl" = 200,
+        "dhcpc-ctrl" = 200,
+        "as-ctrl" = 200,
+        "com-ctrl" = 200,
+        "eth-ctrl" = 200
+         };
 
     // main files
     wan_manager_definition_file = "${name}_definition.odl";

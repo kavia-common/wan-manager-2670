@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,34 +59,27 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__AUTOSENSING_H__)
+#define __AUTOSENSING_H__
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp_signal.h>
+#include <amxp/amxp_slot.h>
+#include <amxd/amxd_types.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
 
-#include <debug/sahtrace.h>
 
-#include "utils.h"
-#include "dm_wan-manager.h"
-#include "ctrl/restart.h"
-#include "reset_mock.h"
+amxd_status_t autosensing_set_enable(bool enable);
 
-static int reset_counter = 0;
-
-int get_reset_counter(void) {
-    return reset_counter;
+#ifdef __cplusplus
 }
+#endif
 
-amxd_status_t restart(void) {
-    reset_counter++;
-    return amxd_status_ok;
-}
+#endif // __AUTOSENSING_H__

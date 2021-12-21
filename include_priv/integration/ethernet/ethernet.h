@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,29 +59,27 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
-#if !defined(__IPMANAGER_CTRL_H__)
-#define __IPMANAGER_CTRL_H__
+#if !defined(__ETHERNET_H__)
+#define __ETHERNET_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp_signal.h>
+#include <amxp/amxp_slot.h>
+#include <amxd/amxd_types.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
 
-amxd_status_t ipmanager_ctrl_subscribe(amxd_object_t* link);
-amxd_status_t ipmanager_ctrl_unsubscribe(amxd_object_t* link);
-amxd_status_t ipmanager_ctrl_disable_intf(amxd_object_t* interface);
-amxd_status_t ipmanager_ctrl_configure_intf(amxd_object_t* interface);
-amxd_status_t ipmanager_ctrl_configure_ipv4(amxd_object_t* interface);
-amxd_status_t ipmanager_ctrl_configure_ipv6(amxd_object_t* interface);
+
+amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __IPMANAGER_CTRL_H__
+#endif // __ETHERNET_H__

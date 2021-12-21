@@ -1,6 +1,8 @@
 /****************************************************************************
 **
-** Copyright (c) 2021 SoftAtHome
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -57,35 +59,25 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__DHCPC_H__)
+#define __DHCPC_H__
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp_signal.h>
+#include <amxp/amxp_slot.h>
+#include <amxd/amxd_types.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
 
-#include <debug/sahtrace.h>
 
-#include "utils.h"
-#include "dm_wan-manager.h"
-#include "ctrl/netdev_ctrl.h"
+#ifdef __cplusplus
+}
+#endif
 
-amxd_status_t netdev_ctrl_subscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_unsubscribe(amxd_object_t* link) {
-    return NULL != link ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_disable_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
-amxd_status_t netdev_ctrl_configure_intf(amxd_object_t* interface) {
-    return NULL != interface ? amxd_status_ok : amxd_status_unknown_error;
-}
+#endif // __DHCPC_H__

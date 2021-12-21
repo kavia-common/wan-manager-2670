@@ -2,18 +2,37 @@
 object '${prefix_}WANManager.WAN' {
         instance add ("DHCP_Ethernet"){
            parameter Name = "DHCP_Ethernet";
+           parameter Alias = "DHCP_Ethernet";
            parameter PhysicalType = "Ethernet";
-
         }
-        instance add ("GPON"){
-           parameter Name = "GPON";
-           parameter PhysicalType = "GPON";
+
+        instance add ("DHCP_Vlan201"){
+           parameter Name = "DHCP_Vlan201";
+           parameter Alias = "DHCP_Vlan201";
+           parameter PhysicalType = "Ethernet";
         }
      }
 
 object '${prefix_}WANManager.WAN.DHCP_Ethernet.Intf'{
         instance add(0,""){
-            parameter  Type = "untagged";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dhcp4";
+            parameter Alias = "cpe-Intf-1";
+            parameter PhysicalInterface = "eth0";
+            parameter DHCPv4ClientConfiguration="DHCP_Ethernet";
+        }
+    }
+
+
+object '${prefix_}WANManager.WAN.DHCP_Vlan201.Intf'{
+        instance add(0,""){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dhcp4";
+            parameter Alias = "cpe-Intf-1";
+            parameter VlanID = 201;
+            parameter VlanPriority = 0;
+            parameter PhysicalInterface = "eth0";
+            parameter DHCPv4ClientConfiguration="DHCP_Vlan201";
         }
     }
 }

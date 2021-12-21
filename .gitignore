@@ -1,0 +1,6 @@
+output/*
+compile_commands.json
+*.tar.gz
+*.deb
+.clangd/
+run_test
