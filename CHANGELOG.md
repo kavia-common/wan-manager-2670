@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.0 - 2021-12-21(08:35:15 +0000)
+
+### New
+
+- Integrate with NetDev
+- Integrate with tr181-dhcpv4client and tr181-ethernet-manager
+
 ## Release v0.1.1 - 2021-11-15(09:03:06 +0000)
 
 ### Fixes
