@@ -1,4 +1,5 @@
 #!/bin/sh
+ulimit -c unlimited
 
 case $1 in
     start|boot)
