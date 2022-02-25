@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.1 - 2022-02-25(11:11:55 +0000)
+
+### Other
+
+- Enable core dumps by default
+
 ## Release v0.2.0 - 2021-12-21(08:35:15 +0000)
 
 ### New
