@@ -140,11 +140,11 @@ void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** sta
 
 }
 
-void test_wan_manager_get_current_wan_mode_on_boot_should_be_false(UNUSED void** state) {
+void test_wan_manager_check_if_default_mode_is_set_on_boot(UNUSED void** state) {
     amxc_var_t ret;
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_false(GETP_BOOL(&ret, "status"));
+    assert_true(GETP_BOOL(&ret, "status"));
     amxc_var_clean(&ret);
 }
 
@@ -158,7 +158,7 @@ void test_wan_manager_get_current_wan_mode_for_correct_mode(UNUSED void** state)
     amxc_var_init(&set_ret);
 
     amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &args, "WANMode", "DHCP_Ethernet");
+    amxc_var_add_key(cstring_t, &args, "WANMode", "demo_wanmode");
 
     assert_int_equal(0, _setWANMode(NULL, NULL, &args, &set_ret));
     assert_true(GETP_BOOL(&set_ret, "status"));

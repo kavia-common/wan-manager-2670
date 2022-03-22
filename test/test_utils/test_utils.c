@@ -109,8 +109,7 @@ static const char* odl_defs = "../test_utils/wan-manager_test.odl";
 static void test_get_dhcp_clients(amxc_var_t* ret);
 static void test_get_ethernet_links(amxc_var_t* ret);
 static void test_vlan_add_instance(amxc_var_t* ret, uint32_t id);
-static void test_get_netdev_links(amxc_var_t* ret);
-static void test_get_netdev_ipv4(amxc_var_t* ret);
+static void test_get_ip_interface_ipv4(amxc_var_t* ret);
 
 
 int test_wan_manager_setup(UNUSED void** state) {
@@ -236,12 +235,9 @@ int __wrap_amxb_get(amxb_bus_ctx_t* const bus_ctx,
     } else if(0 == strcmp(object, "DHCPv4.Client.*")) {
         printf("Fetch DHCPv4 Client objects\n");
         test_get_dhcp_clients(objects);
-    } else if(0 == strcmp(object, "NetDev.Link.*")) {
-        printf("Fetch NetDev Link objects\n");
-        test_get_netdev_links(objects);
-    } else if(0 == strcmp(object, "NetDev.Link.1.IPv4Addr.*")) {
-        printf("Fetch NetDev IPv4Addr objects\n");
-        test_get_netdev_ipv4(objects);
+    } else if(0 == strcmp(object, "IP.Interface.2.IPv4Address.*")) {
+        printf("Fetch IP.Interface IPv4Addr objects\n");
+        test_get_ip_interface_ipv4(objects);
     } else {
         printf("Error: Unexpected query [%s]\n", object);
         rc = 1;
@@ -380,21 +376,13 @@ static void test_get_ethernet_links(amxc_var_t* ret) {
     }
 }
 
-static void test_get_netdev_links(amxc_var_t* ret) {
+
+static void test_get_ip_interface_ipv4(amxc_var_t* ret) {
     amxc_var_t* link = NULL;
 
     if(NULL != ret) {
-        link = amxc_var_add_key(amxc_htable_t, ret, "NetDev.Link.1.", NULL);
-        amxc_var_add_key(cstring_t, link, "Name", "eth0");
-    }
-}
-
-static void test_get_netdev_ipv4(amxc_var_t* ret) {
-    amxc_var_t* link = NULL;
-
-    if(NULL != ret) {
-        link = amxc_var_add_key(amxc_htable_t, ret, "NetDev.Link.IPv4Addr.1.", NULL);
-        amxc_var_add_key(cstring_t, link, "Name", "eth0");
+        link = amxc_var_add_key(amxc_htable_t, ret, "IP.Interface.2.IPv4Address.", NULL);
+        amxc_var_add_key(cstring_t, link, "IPAddress", "192.168.1.117");
     }
 }
 

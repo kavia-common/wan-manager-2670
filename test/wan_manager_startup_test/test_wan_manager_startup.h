@@ -80,7 +80,7 @@
 
 void test_wan_manager_change_wan_mode_intf_type(void** state);
 void test_wan_manager_automatic_mode_enable_autosensing_module(void** state);
-void test_wan_manager_get_current_wan_mode_on_boot_should_be_false(void** state);
+void test_wan_manager_check_if_default_mode_is_set_on_boot(void** state);
 void test_wan_manager_get_current_wan_mode_for_correct_mode(void** state);
 
 #endif //__TEST_WAN_MANAGER_STARTUP_H__

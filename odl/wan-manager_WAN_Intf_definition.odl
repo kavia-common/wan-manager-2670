@@ -7,13 +7,6 @@
       * @version 1.0
       */
       %persistent object Intf[4] {
-
-        /**
-         * Defines the Alias of the DHCPv4 Configuration to change when DHCP mode is selected
-         * @version 1.0
-         */
-        %private persistent string DHCPv4ClientConfiguration="";
-
         /**
           * A non-volatile unique key used to reference this instance (as defined in TR181)
           * @version 1.0
@@ -31,15 +24,6 @@
             on action validate call interface_already_configured;
             default "";
          }
-
-        /**
-          * Physical Interface hierarchy (eth0, vlan, ..)
-          * @version 1.0
-          */
-        %persistent string PhysicalInterface {
-            on action validate call check_maximum_length 64;
-            default "";
-        }
 
         /**
           * PPP User name
@@ -71,6 +55,14 @@
         %persistent string IPv6Mode{
             constraint enum ["dhcp6", "ppp6", "none", "static"];
             default "none";
+        }
+
+        /**
+         * Mapped Lower layer interface
+         * @version 1.0
+         */
+        %persistent string IPReference{
+            default "";
         }
 
         /**

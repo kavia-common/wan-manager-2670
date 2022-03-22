@@ -83,7 +83,6 @@
 #include "dm_wan_mode.h"
 #include "ctrl/restart.h"
 #include "ctrl/mode_ctrl.h"
-#include "integration/netdev/netdev_ctrl.h"
 
 
 typedef enum {
@@ -134,19 +133,17 @@ exit:
     return rc;
 }
 
-amxd_status_t wan_mode_set(const char* wan_mode, UNUSED const char* ppp_user, UNUSED const char* ppp_password) {
+amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* current_wan_mode_str) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxd_object_t* current_wan_mode = NULL;
-    char* current_wan_mode_str = NULL;
     amxd_object_t* new_wan_mode = NULL;
     size_t len = 0;
 
     when_null(wan_manager, exit);
 
-    current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
     if(NULL != current_wan_mode_str) {
-        if(0 == strcmp(wan_mode, current_wan_mode_str)) {
-            SAH_TRACEZ_INFO(ME, "%s WAN mode is already configured", wan_mode);
+        if(0 == strcmp(wan_mode_to_set, current_wan_mode_str)) {
+            SAH_TRACEZ_INFO(ME, "%s WAN mode is already configured", wan_mode_to_set);
             rc = amxd_status_ok;
             goto exit;
         }
@@ -157,8 +154,8 @@ amxd_status_t wan_mode_set(const char* wan_mode, UNUSED const char* ppp_user, UN
 
     when_true(((NULL == current_wan_mode) && (0 != len)), exit);
 
-    new_wan_mode = get_wan_mode(wan_mode);
-    when_null_l(new_wan_mode, exit, "%s is not a valid WAN mode", wan_mode);
+    new_wan_mode = get_wan_mode(wan_mode_to_set);
+    when_null_l(new_wan_mode, exit, "%s is not a valid WAN mode", wan_mode_to_set);
 
     if(NULL != current_wan_mode) {
         when_failed_l((rc = wan_mode_disable(current_wan_mode)),
@@ -167,14 +164,13 @@ amxd_status_t wan_mode_set(const char* wan_mode, UNUSED const char* ppp_user, UN
                       current_wan_mode_str);
     }
 
-    wan_mode_dm_set(wan_mode);
-    when_failed_l((rc = wan_mode_enable(new_wan_mode)), exit, "WAN mode enable error [WANMode=%s]", wan_mode);
+    wan_mode_dm_set(wan_mode_to_set);
+    when_failed_l((rc = wan_mode_enable(new_wan_mode)), exit, "WAN mode enable error [WANMode=%s]", wan_mode_to_set);
 
     if(wan_mode_different_physical_type(current_wan_mode, new_wan_mode)) {
         rc = restart();
     }
 exit:
-    free(current_wan_mode_str);
     return rc;
 }
 
@@ -260,9 +256,9 @@ exit:
 }
 
 
-amxc_string_t* wan_mode_get_interface(const char* base) {
+amxc_string_t* wan_mode_get_interface(void) {
     char* current_wan_mode_str = NULL;
-    char* type = NULL;
+    char* ip_ref = NULL;
     amxd_object_t* wan_mode = NULL;
     amxd_object_t* interface_tmpl = NULL;
     amxd_object_t* interface = NULL;
@@ -280,20 +276,13 @@ amxc_string_t* wan_mode_get_interface(const char* base) {
     interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
     when_null_l(interface, exit, "Cannot get Interface object for WANMode");
 
-    type = amxd_object_get_value(cstring_t, interface, "Type", NULL);
+    ip_ref = amxd_object_get_value(cstring_t, interface, "IPReference", NULL);
     amxc_string_new(&interface_name, 0);
-
-    if(0 == strcmp("untagged", type)) {
-        amxc_string_set(interface_name, base);
-    } else {
-        int vlan_id = amxd_object_get_value(uint32_t, interface, "VlanID", NULL);
-        SAH_TRACEZ_INFO(ME, "VLANID %d of mode %s", vlan_id, current_wan_mode_str);
-        amxc_string_setf(interface_name, "vlan%d", vlan_id);
-    }
+    amxc_string_setf(interface_name, "%sIPv4Address.", ip_ref);
 
 exit:
     free(current_wan_mode_str);
-    free(type);
+    free(ip_ref);
     return interface_name;
 }
 

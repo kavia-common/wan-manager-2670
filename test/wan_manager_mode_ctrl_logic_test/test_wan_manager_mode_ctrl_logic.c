@@ -118,7 +118,7 @@ void test_wan_manager_set_invalid_mode(UNUSED void** state) {
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
     assert_non_null(wan_mode_str);
-    assert_string_equal("", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
     amxc_var_clean(&status);
 }
@@ -131,12 +131,12 @@ void test_wan_manager_set_valid_mode(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("DHCP_Ethernet"));
+    assert_true(set_wan_mode("demo_wanmode"));
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
     assert_non_null(wan_mode_str);
-    assert_string_equal("DHCP_Ethernet", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
     amxc_var_clean(&status);
 }
@@ -149,19 +149,19 @@ void test_wan_manager_switch_to_invalid(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("DHCP_Ethernet"));
+    assert_true(set_wan_mode("demo_wanmode"));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
     assert_non_null(wan_mode_str);
-    assert_string_equal("DHCP_Ethernet", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
     assert_false(set_wan_mode("test"));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("DHCP_Ethernet", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
     amxc_var_clean(&status);
 }
@@ -174,13 +174,13 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     int reset_counter = get_reset_counter();
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("DHCP_Ethernet"));
+    assert_true(set_wan_mode("demo_wanmode"));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
     assert_non_null(wan_mode_str);
-    assert_string_equal("DHCP_Ethernet", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
     assert_true(set_wan_mode("cpe-WAN-1"));
 
@@ -201,20 +201,20 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     int reset_counter = 0;
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("DHCP_Ethernet"));
+    assert_true(set_wan_mode("demo_wanmode"));
     reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
     assert_non_null(wan_mode_str);
-    assert_string_equal("DHCP_Ethernet", wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
 
-    assert_true(set_wan_mode("DHCP_Vlan201"));
+    assert_true(set_wan_mode("demo_vlanmode"));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("DHCP_Vlan201", wan_mode_str);
+    assert_string_equal("demo_vlanmode", wan_mode_str);
 
     assert_int_equal(reset_counter, get_reset_counter());
 

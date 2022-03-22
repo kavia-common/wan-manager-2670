@@ -72,7 +72,7 @@
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wan_manager_get_current_wan_mode_on_boot_should_be_false),
+        cmocka_unit_test(test_wan_manager_check_if_default_mode_is_set_on_boot),
         cmocka_unit_test(test_wan_manager_get_current_wan_mode_for_correct_mode),
         cmocka_unit_test(test_wan_manager_change_wan_mode_intf_type),
         cmocka_unit_test(test_wan_manager_automatic_mode_enable_autosensing_module),

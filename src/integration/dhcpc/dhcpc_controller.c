@@ -96,6 +96,7 @@ static amxb_bus_ctx_t* context = NULL;
 static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const parameters);
 static amxd_status_t dhcpc_disable(wan_mode_type_t mode, const amxc_var_t* const parameters);
 static amxb_bus_ctx_t* dhcpc_get_context(void);
+static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* lower_layer);
 
 AMXB_CONSTRUCTOR static void dhcp_controller_init(void) {
     dhcpc_actions.enable = dhcpc_enable;
@@ -107,7 +108,9 @@ AMXB_CONSTRUCTOR static void dhcp_controller_init(void) {
 
 static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
+    const char* intf_alias = NULL;
     const char* object = NULL;
+    const char* ip_reference = NULL;
     amxc_string_t* dhcpc_path = NULL;
 
     when_null(parameters, exit);
@@ -117,12 +120,25 @@ static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const 
         ethernet_vlan_set_enable(parameters, true);
     }
 
-    object = GETP_CHAR(parameters, "DHCPv4ClientConfiguration");
-    when_str_empty(object, exit);
+    intf_alias = GETP_CHAR(parameters, "Alias");
+    ip_reference = GETP_CHAR(parameters, "IPReference");
 
-    SAH_TRACEZ_INFO(ME, "Enable %s DHCPv4 client configuration", object);
-    dhcpc_path = component_match_first_with_parameter_str("Alias", "object", dhcp_query, dhcpc_get_context());
-    when_null_l(dhcpc_path, exit, "DHCPv4  %s Client configuration not exist", object);
+    when_str_empty(intf_alias, exit);
+    when_str_empty(ip_reference, exit);
+
+    SAH_TRACEZ_INFO(ME, "Enable DHCPv4  client configuration with Alias %s", intf_alias);
+    dhcpc_path = component_match_first_with_parameter_str("Alias", intf_alias, dhcp_query, dhcpc_get_context());
+
+    if(NULL == dhcpc_path) {
+        SAH_TRACEZ_INFO(ME, "DHCPv4  %s Client configuration not exist. Create it", intf_alias);
+        if(Tagged_DHCP == mode) {
+            SAH_TRACEZ_ERROR(ME, "Dynamic configuration creation for VLAN not supported");
+            rc = amxd_status_function_not_implemented;
+            goto exit;
+        }
+        dhcpc_path = dhcp_add_v4_client_instance(intf_alias, ip_reference);
+        when_null_l(dhcpc_path, exit, "Add DHCPv4 Client instance error");
+    }
 
     object = amxc_string_get(dhcpc_path, 0);
     rc = component_set_enable(object, dhcpc_get_context(), true);
@@ -140,7 +156,7 @@ static amxd_status_t dhcpc_disable(wan_mode_type_t mode, const amxc_var_t* const
 
     when_null(parameters, exit);
 
-    object = GETP_CHAR(parameters, "DHCPv4ClientConfiguration");
+    object = GETP_CHAR(parameters, "Alias");
     when_str_empty(object, exit);
 
     SAH_TRACEZ_INFO(ME, "Disable %s DHCPv4 client configuration", object);
@@ -166,5 +182,25 @@ static amxb_bus_ctx_t* dhcpc_get_context(void) {
     return context;
 }
 
+static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* lower_layer) {
+    amxc_string_t* path = NULL;
+    amxc_var_t parameters;
+
+    amxc_var_init(&parameters);
+    when_str_empty(name, exit);
+    when_str_empty(lower_layer, exit);
+
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "Name", name);
+    amxc_var_add_key(cstring_t, &parameters, "Alias", name);
+    amxc_var_add_key(cstring_t, &parameters, "Interface", lower_layer);
+    amxc_var_add_key(bool, &parameters, "Enable", false);
+
+    path = component_add_instance("DHCPv4.Client.", &parameters, context);
+
+exit:
+    amxc_var_clean(&parameters);
+    return path;
+}
 
 #undef ME

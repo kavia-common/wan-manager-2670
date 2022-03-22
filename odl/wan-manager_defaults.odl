@@ -1,38 +1,36 @@
 %populate {
+
 object '${prefix_}WANManager.WAN' {
-        instance add ("DHCP_Ethernet"){
-           parameter Name = "DHCP_Ethernet";
-           parameter Alias = "DHCP_Ethernet";
+        instance add ("demo_wanmode"){
+           parameter Alias = "demo_wanmode";
            parameter PhysicalType = "Ethernet";
         }
 
-        instance add ("DHCP_Vlan201"){
-           parameter Name = "DHCP_Vlan201";
-           parameter Alias = "DHCP_Vlan201";
+        instance add ("demo_vlanmode"){
+           parameter Alias = "demo_vlanmode";
            parameter PhysicalType = "Ethernet";
         }
      }
 
-object '${prefix_}WANManager.WAN.DHCP_Ethernet.Intf'{
-        instance add(0,""){
+object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
+        instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "dhcp4";
-            parameter Alias = "cpe-Intf-1";
-            parameter PhysicalInterface = "eth0";
-            parameter DHCPv4ClientConfiguration="DHCP_Ethernet";
+            parameter IPReference = "IP.Interface.2.";
+
         }
     }
 
-
-object '${prefix_}WANManager.WAN.DHCP_Vlan201.Intf'{
-        instance add(0,""){
+object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
+        instance add(0,"vlan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";
-            parameter Alias = "cpe-Intf-1";
             parameter VlanID = 201;
             parameter VlanPriority = 0;
-            parameter PhysicalInterface = "eth0";
-            parameter DHCPv4ClientConfiguration="DHCP_Vlan201";
+            parameter IPReference = "IP.Interface.2.";
         }
+    }
+object '${prefix_}WANManager' {
+        parameter WANMode = "demo_wanmode";
     }
 }

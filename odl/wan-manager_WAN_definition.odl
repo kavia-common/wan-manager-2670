@@ -17,15 +17,6 @@
         }
 
         /**
-         * The textual name of the WANMode, used as a reference
-         * @version 1.0
-         */
-        %persistent string Name {
-            on action validate call check_maximum_length 64;
-            default "";
-        }
-
-        /**
           * Physical interface type of the WAN mode.
           * @version 1.0
           */
