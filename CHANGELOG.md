@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.2 - 2022-03-22(16:18:42 +0000)
+
+### Changes
+
+- [amx][WANAutosensing] [WANManager] Use proper vendor extension prefix
+
 ## Release v0.2.1 - 2022-02-25(11:11:55 +0000)
 
 ### Other
