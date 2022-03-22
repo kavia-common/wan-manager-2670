@@ -65,7 +65,7 @@
 %config {
     name = "wan-manager";
     import-dbg = false;
-    prefix_ = "X_PRPL_";
+    prefix_ = "X_PRPL-COM_";
 
     // SAHTRACE
     sahtrace = {

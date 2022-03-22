@@ -93,7 +93,7 @@
 static amxb_bus_ctx_t* context = NULL;
 static amxb_bus_ctx_t* autosensing_get_context(void);
 
-static const char* autosensing = "X_PRPL_WANAutoSensing.";
+static const char* autosensing = "X_PRPL-COM_WANAutoSensing.";
 
 amxd_status_t autosensing_set_enable(bool enable) {
     return component_set_enable(autosensing, autosensing_get_context(), enable);

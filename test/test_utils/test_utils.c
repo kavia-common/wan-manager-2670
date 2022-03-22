@@ -266,7 +266,7 @@ int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
 
     if(0 == strcmp(method, "_set")) {
         rc = 0;
-        if(0 == strcmp("X_PRPL_WANAutoSensing.", object)) {
+        if(0 == strcmp("X_PRPL-COM_WANAutoSensing.", object)) {
             printf("%s set function called\n", object);
             calls.autosensing.was_called = true;
             calls.autosensing.enable = GETP_BOOL(args, "parameters.Enable");

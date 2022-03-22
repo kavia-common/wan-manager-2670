@@ -1,5 +1,5 @@
 %config{
-    prefix_ = "X_PRPL_";
+    prefix_ = "X_PRPL-COM_";
 }
 include "../../odl/wan-manager_definition.odl";
 include "../../odl/wan-manager_WAN_definition.odl";
