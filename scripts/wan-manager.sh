@@ -11,7 +11,7 @@ case $1 in
         fi
         ;;
     debuginfo)
-	echo "TODO debuginfo"
+	ubus-cli "X_PRPL-COM_WANManager.?"
         ;;
     restart)
         $0 stop

@@ -1,4 +1,5 @@
 output/*
+openwrt/
 compile_commands.json
 *.tar.gz
 *.deb
