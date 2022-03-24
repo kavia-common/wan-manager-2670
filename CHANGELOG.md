@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.4 - 2022-03-24(10:03:07 +0000)
+
+### Changes
+
+- [GetDebugInformation] Add data model debuginfo in component services
+
 ## Release v0.2.3 - 2022-03-22(16:42:49 +0000)
 
 ### Changes
