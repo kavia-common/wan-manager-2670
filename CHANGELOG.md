@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.5 - 2022-04-05(13:11:07 +0000)
+
+### Fixes
+
+- Switch between modes failing
+
 ## Release v0.2.4 - 2022-03-24(10:03:07 +0000)
 
 ### Changes
