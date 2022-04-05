@@ -79,7 +79,8 @@
         "dhcpc-ctrl" = 200,
         "as-ctrl" = 200,
         "com-ctrl" = 200,
-        "eth-ctrl" = 200
+        "eth-ctrl" = 200,
+        "netmod-ctrl" = 200
          };
 
     // main files

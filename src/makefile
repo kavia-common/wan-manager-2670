@@ -11,11 +11,10 @@ TARGET_SO = $(OBJDIR)/$(COMPONENT).so
 SRCDIR = .
 CTRL_SRCDIR = ./ctrl
 INTEGRATION_SRCDIR = ./integration
-UCI_INT_SRC = $(INTEGRATION_SRCDIR)/uci
-NETDEV_INT_SRC = $(INTEGRATION_SRCDIR)/netdev
 DHCPC_INT_SRC = $(INTEGRATION_SRCDIR)/dhcpc
 AUTOSENSING_INT_SRC = $(INTEGRATION_SRCDIR)/autosensing
 ETHERNET_INT_SRC = $(INTEGRATION_SRCDIR)/ethernet
+NETMODEL_INT_SRC = $(INTEGRATION_SRCDIR)/netmodel
 
 INCDIR_PRIV = ../include_priv
 INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
@@ -25,11 +24,13 @@ STAGING_LIBDIR = $(if $(STAGINGDIR), -L$(STAGINGDIR)/lib) $(if $(STAGINGDIR), -L
 SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(CTRL_SRCDIR)/*.c 		\
  				 $(INTEGRATION_SRCDIR)/*.c  \
- 				 $(NETDEV_INT_SRC)/*.c 		\
- 				 $(UCI_INT_SRC)/*.c 		\
- 				 $(DHCPC_INT_SRC)/*.c 		\
+ 				 $(NETDEV_INT_SRC)/*.c      \
  				 $(AUTOSENSING_INT_SRC)/*.c \
+ 				 $(NETMODEL_INT_SRC)/*.c    \
+ 				 $(DHCPC_INT_SRC)/*.c       \
  				 $(ETHERNET_INT_SRC)/*.c)
+
+
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
 
 # compilation and linking flags
@@ -46,7 +47,7 @@ else
 	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=gnu11
 endif
 
-LDFLAGS += $(STAGING_LIBDIR) -shared -fPIC -lamxc -lamxd -lamxb -lamxo -lsahtrace
+LDFLAGS += $(STAGING_LIBDIR) -shared -fPIC -lamxc -lamxd -lamxb -lamxo -lsahtrace -lnetmodel
 
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL=500
 
@@ -70,14 +71,6 @@ $(OBJDIR)/%.o: $(INTEGRATION_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
-$(OBJDIR)/%.o: $(NETDEV_INT_SRC)/%.c | $(OBJDIR)/
-	$(CC) $(CFLAGS) -c -o $@ $<
-	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
-
-$(OBJDIR)/%.o: $(UCI_INT_SRC)/%.c | $(OBJDIR)/
-	$(CC) $(CFLAGS) -c -o $@ $<
-	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
-
 $(OBJDIR)/%.o: $(DHCPC_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
@@ -87,6 +80,10 @@ $(OBJDIR)/%.o: $(AUTOSENSING_INT_SRC)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(ETHERNET_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(NETMODEL_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

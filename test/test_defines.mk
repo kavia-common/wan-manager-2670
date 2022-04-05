@@ -6,7 +6,7 @@ INTEGRATION_SRCDIR = $(realpath ../../src/integration)
 DHCPC_SRCDIR = $(realpath ../../src/integration/dhcpc)
 AUTOSENSING_SRCDIR = $(realpath ../../src/integration/autosensing)
 ETHERNET_SRCDIR = $(realpath ../../src/integration/ethernet)
-NETDEV_SRCDIR = $(realpath ../../src/integration/netdev)
+NETMODEL_SRCDIR = $(realpath ../../src/integration/netmodel)
 
 
 OBJDIR = $(realpath ../../output/$(MACHINE)/coverage)
@@ -19,7 +19,7 @@ SOURCES += $(wildcard $(INTEGRATION_SRCDIR)/*.c)
 SOURCES += $(wildcard $(DHCPC_SRCDIR)/*.c)
 SOURCES += $(wildcard $(AUTOSENSING_SRCDIR)/*.c)
 SOURCES += $(wildcard $(ETHERNET_SRCDIR)/*.c)
-SOURCES += $(wildcard $(NETDEV_SRCDIR)/*.c)
+SOURCES += $(wildcard $(NETMODEL_SRCDIR)/*.c)
 
 
 CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
@@ -31,4 +31,4 @@ CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
 		   -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL=500
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -ldl -lsahtrace
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -ldl -lsahtrace -lnetmodel

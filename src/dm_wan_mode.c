@@ -76,7 +76,6 @@
 #include <amxd/amxd_action.h>
 
 #include <debug/sahtrace.h>
-#include <integration/uci/uci_ctrl.h>
 
 #include "utils.h"
 #include "dm_wan-manager.h"

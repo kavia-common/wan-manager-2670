@@ -34,7 +34,7 @@ $(OBJDIR)/%.o: $(ETHERNET_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
-$(OBJDIR)/%.o: $(NETDEV_SRCDIR)/%.c | $(OBJDIR)/
+$(OBJDIR)/%.o: $(NETMODEL_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

@@ -59,8 +59,8 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#if !defined(__UCI_CTRL_H__)
-#define __UCI_CTRL_H__
+#if !defined(__NETMODEL_H__)
+#define __NETMODEL_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,15 +75,11 @@ extern "C" {
 #include <amxb/amxb_operators.h>
 #include <amxb/amxb_be.h>
 
-amxd_status_t uci_call(const char* method,
-                       const char* config,
-                       const char* section,
-                       const char* type,
-                       const amxc_var_t* const values,
-                       amxc_var_t* result);
+
+amxc_string_t* netmodel_get_lower_layer_for_query(const char* flags);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __UCI_CTRL_H__
+#endif // __NETMODEL_H__

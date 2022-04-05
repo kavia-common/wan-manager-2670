@@ -75,6 +75,8 @@
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
+#include <netmodel/client.h>
+
 #include "utils.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
@@ -130,9 +132,11 @@ int _wan_manager_main(int reason,
         app.dm = dm;
         app.parser = parser;
         app.context = resolve_context(parser);
+        netmodel_initialize();
         wan_mode_init();
         break;
     case 1:
+        netmodel_cleanup();
         mode_ctrl_cleanup();
         wan_mode_cleanup();
         app.dm = NULL;

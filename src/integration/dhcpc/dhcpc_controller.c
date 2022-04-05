@@ -80,6 +80,7 @@
 #include "ctrl/mode_ctrl.h"
 #include "integration/dhcpc/dhcpc.h"
 #include "integration/ethernet/ethernet.h"
+#include "integration/netmodel/netmodel.h"
 
 #include "component.h"
 
@@ -97,6 +98,7 @@ static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const 
 static amxd_status_t dhcpc_disable(wan_mode_type_t mode, const amxc_var_t* const parameters);
 static amxb_bus_ctx_t* dhcpc_get_context(void);
 static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* lower_layer);
+static amxd_status_t dhcp_set_ip_interface(const char* interface);
 
 AMXB_CONSTRUCTOR static void dhcp_controller_init(void) {
     dhcpc_actions.enable = dhcpc_enable;
@@ -131,13 +133,12 @@ static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const 
 
     if(NULL == dhcpc_path) {
         SAH_TRACEZ_INFO(ME, "DHCPv4  %s Client configuration not exist. Create it", intf_alias);
-        if(Tagged_DHCP == mode) {
-            SAH_TRACEZ_ERROR(ME, "Dynamic configuration creation for VLAN not supported");
-            rc = amxd_status_function_not_implemented;
-            goto exit;
-        }
         dhcpc_path = dhcp_add_v4_client_instance(intf_alias, ip_reference);
         when_null_l(dhcpc_path, exit, "Add DHCPv4 Client instance error");
+    }
+
+    if(Untagged_DHCP == mode) {
+        when_failed(dhcp_set_ip_interface(ip_reference), exit);
     }
 
     object = amxc_string_get(dhcpc_path, 0);
@@ -191,7 +192,6 @@ static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* 
     when_str_empty(lower_layer, exit);
 
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "Name", name);
     amxc_var_add_key(cstring_t, &parameters, "Alias", name);
     amxc_var_add_key(cstring_t, &parameters, "Interface", lower_layer);
     amxc_var_add_key(bool, &parameters, "Enable", false);
@@ -201,6 +201,20 @@ static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* 
 exit:
     amxc_var_clean(&parameters);
     return path;
+}
+
+static amxd_status_t dhcp_set_ip_interface(const char* interface) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_string_t* lower_layer = NULL;
+
+    when_null(interface, exit);
+
+    lower_layer = netmodel_get_lower_layer_for_query("eth_link");
+    when_null(lower_layer, exit);
+    rc = component_set_str_param(interface, dhcpc_get_context(), "LowerLayers", amxc_string_get(lower_layer, 0));
+exit:
+    amxc_string_delete(&lower_layer);
+    return rc;
 }
 
 #undef ME

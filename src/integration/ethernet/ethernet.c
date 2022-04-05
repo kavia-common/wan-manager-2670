@@ -80,6 +80,7 @@
 
 #include "utils.h"
 #include "integration/ethernet/ethernet.h"
+#include "integration/netmodel/netmodel.h"
 #include "component.h"
 
 #ifdef ME
@@ -90,9 +91,9 @@
 static amxb_bus_ctx_t* context = NULL;
 static amxb_bus_ctx_t* ethernet_get_context(void);
 static amxc_string_t* ethernet_add_vlan_instance(const char* name, const char* lower_layer, uint32_t id);
+static amxd_status_t ethernet_set_ip_interface(const char* interface);
 
 static const char* vlan_query = "Ethernet.VLANTermination.*.";
-static const char* ip_interface_query = "IP.Interface.*.";
 static const char* ethernet = "Ethernet.";
 
 amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable) {
@@ -111,16 +112,17 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
                                                            amxc_string_get(&interface, 0),
                                                            vlan_query,
                                                            ethernet_get_context());
+    ip_ref = GETP_CHAR(parameters, "IPReference");
+    when_str_empty(ip_ref, exit);
+
     if((NULL == vlan_object) && enable) {
         SAH_TRACEZ_INFO(ME, "VLAN Configuration not present add one for VLAN = %s", amxc_string_get(&interface, 0));
-        ip_ref = GETP_CHAR(parameters, "IPReference");
-        when_str_empty(ip_ref, exit);
-
-        lower_layer = component_match_first_with_parameter_str("LowerLayers",
-                                                               ip_ref,
-                                                               ip_interface_query,
-                                                               ethernet_get_context());
+        lower_layer = component_get_parameter_value("LowerLayers",
+                                                    ip_ref,
+                                                    ethernet_get_context());
         when_null(lower_layer, exit);
+
+        SAH_TRACEZ_INFO(ME, "Create VLANTagging object for path %s", amxc_string_get(lower_layer, 0));
         vlan_object = ethernet_add_vlan_instance(amxc_string_get(&interface, 0), amxc_string_get(lower_layer, 0), vlan_id);
         when_null_l(vlan_object,
                     exit,
@@ -131,6 +133,9 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
     }
 
     rc = component_set_enable(amxc_string_get(vlan_object, 0), ethernet_get_context(), enable);
+    when_failed(rc, exit);
+
+    rc = ethernet_set_ip_interface(ip_ref);
 
 exit:
     amxc_string_clean(&interface);
@@ -168,4 +173,17 @@ exit:
     return path;
 }
 
+static amxd_status_t ethernet_set_ip_interface(const char* interface) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_string_t* lower_layer = NULL;
+
+    when_null(interface, exit);
+
+    lower_layer = netmodel_get_lower_layer_for_query("vlan");
+    when_null(lower_layer, exit);
+    rc = component_set_str_param(interface, ethernet_get_context(), "LowerLayers", amxc_string_get(lower_layer, 0));
+exit:
+    amxc_string_delete(&lower_layer);
+    return rc;
+}
 #undef ME
