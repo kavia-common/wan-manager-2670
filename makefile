@@ -5,18 +5,6 @@ NOW = $(shell date +"%Y-%m-%d(%H:%M:%S %z)")
 # Extra destination directories
 PKGDIR = ./output/$(MACHINE)/pkg/
 
-# helper functions - used in multiple targets
-define install_to
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(1)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(1)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(1)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(1)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_defaults.odl $(1)/etc/amx/$(COMPONENT)/$(COMPONENT)_defaults.odl
-	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(1)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
-	$(INSTALL) -d -m 0755 $(1)$(BINDIR)
-	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(1)$(INITDIR)/$(COMPONENT)
-endef
-
 define create_changelog
 	@$(ECHO) "Update changelog"
 	mv CHANGELOG.md CHANGELOG.md.bak
@@ -38,11 +26,25 @@ clean:
 	$(MAKE) -C src clean
 
 install: all
-	$(call install_to,$(DEST))
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_defaults.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_defaults.odl
+	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
+	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
+	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(DEST)$(INITDIR)/$(COMPONENT)
 	ln -sfr $(DEST)$(BINDIR)/amxrt $(DEST)$(BINDIR)/$(COMPONENT)
 
 package: all
-	$(call install_to,$(PKGDIR))
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_defaults.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_defaults.odl
+	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
+	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
+	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(PKGDIR)$(INITDIR)/$(COMPONENT)
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
 	cp $(PKGDIR)../$(COMPONENT)-$(VERSION).tar.gz .
 	make -C packages

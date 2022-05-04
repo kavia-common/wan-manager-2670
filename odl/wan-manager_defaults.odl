@@ -22,7 +22,7 @@ object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
     }
 
 object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
-        instance add(0,"vlan"){
+        instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";
             parameter VlanID = 201;
