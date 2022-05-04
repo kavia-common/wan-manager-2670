@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.6 - 2022-05-04(15:07:04 +0000)
+
+### Fixes
+
+- Change default Alias of WAN.demo_vlanmode.Intf to wan
+
 ## Release v0.2.5 - 2022-04-05(13:11:07 +0000)
 
 ### Fixes
