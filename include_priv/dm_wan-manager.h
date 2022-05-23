@@ -99,8 +99,6 @@ amxd_dm_t* PRIVATE wan_get_dm(void);
 
 amxo_parser_t* PRIVATE wan_get_parser(void);
 
-amxb_bus_ctx_t* PRIVATE wan_get_context(void);
-
 const char* PRIVATE wan_get_prefix(void);
 
 void _print_event(const char* const sig_name,

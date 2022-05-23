@@ -105,6 +105,7 @@ static amxd_dm_t dm;
 static amxb_set_calls_t calls;
 static amxo_parser_t parser;
 static const char* odl_defs = "../test_utils/wan-manager_test.odl";
+static const char* odl_ip_mock = "../mocks/mock_ip.odl";
 
 static void test_get_dhcp_clients(amxc_var_t* ret);
 static void test_get_ethernet_links(amxc_var_t* ret);
@@ -115,7 +116,6 @@ static void test_get_ip_interface_ipv4(amxc_var_t* ret);
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
     amxp_signal_t* signal = NULL;
-    amxd_status_t rc = amxd_status_unknown_error;
     amxb_bus_ctx_t* bus_ctx = NULL;
 
 
@@ -136,13 +136,9 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "wan_mode_added", AMXO_FUNC(_wan_mode_added)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "set_wan_mode", AMXO_FUNC(_set_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_already_configured", AMXO_FUNC(_interface_already_configured)), 0);
-    rc = amxo_parser_parse_file(&parser, odl_defs, root_obj);
 
-    if(amxd_status_ok != rc) {
-        printf("Parsing Error: %s\n", amxo_parser_get_message(&parser));
-    }
-
-    assert_int_equal(rc, 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser,
@@ -210,7 +206,6 @@ int __wrap_amxb_add(amxb_bus_ctx_t* const bus_ctx,
 exit:
     return rc;
 }
-
 
 int __wrap_amxb_get(amxb_bus_ctx_t* const bus_ctx,
                     const char* object,

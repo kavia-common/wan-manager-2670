@@ -89,7 +89,6 @@ static wan_manager_app_t app;
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode);
 static amxd_status_t add_default_intf_interface(amxd_object_t* root);
-static amxb_bus_ctx_t* resolve_context(amxo_parser_t* parser);
 static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode);
 static bool interface_got_ip(const char* interface);
 
@@ -114,10 +113,6 @@ amxo_parser_t* PRIVATE wan_get_parser(void) {
     return app.parser;
 }
 
-amxb_bus_ctx_t* PRIVATE wan_get_context(void) {
-    return app.context;
-}
-
 const char* PRIVATE wan_get_prefix(void) {
     amxc_var_t* setting = amxo_parser_get_config(wan_get_parser(), "prefix_");
     return amxc_var_constcast(cstring_t, setting);
@@ -131,7 +126,6 @@ int _wan_manager_main(int reason,
     case 0:
         app.dm = dm;
         app.parser = parser;
-        app.context = resolve_context(parser);
         netmodel_initialize();
         wan_mode_init();
         break;
@@ -141,7 +135,6 @@ int _wan_manager_main(int reason,
         wan_mode_cleanup();
         app.dm = NULL;
         app.parser = NULL;
-        app.context = NULL;
         break;
     }
 
@@ -153,18 +146,16 @@ amxd_status_t _setWANMode(amxd_object_t* object,
                           amxc_var_t* args,
                           amxc_var_t* ret) {
     amxd_status_t status = amxd_status_unknown_error;
+    const char* wan_mode_value = GETP_CHAR(args, "WANMode");
+    bool autosensing_req = GETP_BOOL(args, "Autosensing");
     char* current_wan_mode_str = NULL;
-    amxc_var_t* wan_mode = GET_ARG(args, "WANMode");
-    amxc_var_t* autosensing = GET_ARG(args, "Autosensing");
 
-    char* wan_mode_value = amxc_var_dyncast(cstring_t, wan_mode);
-    bool autosensing_req = amxc_var_dyncast(bool, autosensing);
     SAH_TRACEZ_INFO(ME, "Configure mode %s Autosensing %d", wan_mode_value, autosensing_req);
 
     if(!autosensing_req) {
         char* current_mode = amxd_object_get_value(cstring_t, object, "OperationMode", NULL);
         if((NULL != current_mode) && (0 == strcmp("Automatic", current_mode))) {
-            SAH_TRACEZ_INFO(ME, "Manual mode change requested. Switch to Manual opetation mode");
+            SAH_TRACEZ_INFO(ME, "Manual mode change requested. Switch to Manual operation mode");
             wan_mode_set_mode(object, "Manual");
             autosensing_set_enable(false);
         }
@@ -180,7 +171,6 @@ amxd_status_t _setWANMode(amxd_object_t* object,
     status = amxd_status_ok;
 
 exit:
-    free(wan_mode_value);
     free(current_wan_mode_str);
     return status;
 }
@@ -349,18 +339,6 @@ exit:
     return rc;
 }
 
-static amxb_bus_ctx_t* resolve_context(amxo_parser_t* parser) {
-    amxo_connection_t* context = NULL;
-
-    amxc_llist_iterate(it, parser->connections) {
-        context = amxc_llist_it_get_data(it, amxo_connection_t, it);
-        when_not_null(context, exit);
-    }
-
-exit:
-    return NULL != context ? (amxb_bus_ctx_t*) context->priv : NULL;
-}
-
 static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t status_parameter;
@@ -379,39 +357,31 @@ exit:
 
 static bool interface_got_ip(const char* interface) {
     bool rc = false;
+    int rv = -1;
     amxc_string_t query_filter;
     amxc_var_t query;
-    const amxc_llist_t* query_items = NULL;
-    amxc_var_t* ipv4addresses = NULL;
-    amxc_llist_it_t* first_set = NULL;
-    int count = 0;
+
     amxc_var_init(&query);
     amxc_string_init(&query_filter, 0);
 
     when_str_empty(interface, exit);
 
-
     amxc_string_setf(&query_filter, "%s*", interface);
     SAH_TRACEZ_INFO(ME, "Check if IP.Interface path %s contain IPv4Addr objects", amxc_string_get(&query_filter, 0));
-    when_false((AMXB_STATUS_OK == amxb_get(wan_get_context(), amxc_string_get(&query_filter, 0), 0, &query, 10)), exit);
 
-    query_items = amxc_var_constcast(amxc_llist_t, &query);
+    rv = amxb_get(amxb_be_who_has("IP"), amxc_string_get(&query_filter, 0), 0, &query, 3);
+    when_failed_l(rv, exit, "Failed to get IPv4Address objects, return '%d'", rv);
 
-    when_null(query_items, exit);
-    if(1 < (count = amxc_llist_size(query_items))) {
-        SAH_TRACEZ_INFO(ME, "NetDev query %s returned empty set %d", amxc_string_get(&query_filter, 0), count);
-        goto exit;
+    amxc_var_for_each(addresses, GETP_ARG(&query, "0")) {
+        const char* status = GETP_CHAR(addresses, "Status");
+        if((status != NULL) && (*status != '\0') && (strcmp(status, "Enabled") == 0)) {
+            rc = true;
+            break;
+        }
     }
-    first_set = amxc_llist_get_first(query_items);
-    when_null_l(first_set, exit, "Unable to get first item from query list");
-    ipv4addresses = amxc_container_of(first_set, amxc_var_t, lit);
-    count = amxc_htable_size(amxc_var_constcast(amxc_htable_t, ipv4addresses));
-    SAH_TRACEZ_INFO(ME, "IPv4Address set for %s contain %d elements", amxc_string_get(&query_filter, 0), count);
-    rc = (0 != count);
 
 exit:
     amxc_string_clean(&query_filter);
     amxc_var_clean(&query);
-
     return rc;
 }

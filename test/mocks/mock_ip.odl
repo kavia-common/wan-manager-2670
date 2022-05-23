@@ -1,0 +1,17 @@
+%define {
+    object IP {
+        object Interface[] {
+            object IPv4Address[] {
+                string Status = "Disabled";
+                string IPAddress;
+                string SubnetMask;
+            }
+        }
+    }
+}
+
+%populate {
+    object IP.Interface {
+        instance add(2, "wan");
+    }
+}

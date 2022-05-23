@@ -16,9 +16,9 @@ MOCK_WRAP = amxp_proc_ctrl_new 		\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
             amxb_add				\
-            amxb_get 				\
             amxb_call				\
             restart
+            # uses the real implementation for amxb_get
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

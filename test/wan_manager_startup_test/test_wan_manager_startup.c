@@ -137,41 +137,43 @@ void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** sta
     operation_mode = amxd_object_get_cstring_t(wan_manager, "OperationMode", NULL);
     assert_string_equal("Manual", operation_mode);
     free(operation_mode);
-
 }
 
-void test_wan_manager_check_if_default_mode_is_set_on_boot(UNUSED void** state) {
+void test_getCurrentWANModeStatus(UNUSED void** state) {
     amxc_var_t ret;
+    amxd_trans_t trans;
+
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_true(GETP_BOOL(&ret, "status"));
+    assert_false(GETP_BOOL(&ret, "status"));
     amxc_var_clean(&ret);
-}
 
-void test_wan_manager_get_current_wan_mode_for_correct_mode(UNUSED void** state) {
-    amxc_var_t ret;
-    amxc_var_t args;
-    amxc_var_t set_ret;
+    amxd_trans_init(&trans);
+    amxd_trans_select_pathf(&trans, "IP.Interface.2.IPv4Address");
+    amxd_trans_add_inst(&trans, 1, NULL);
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), amxd_status_ok);
+    amxd_trans_clean(&trans);
 
     amxc_var_init(&ret);
-    amxc_var_init(&args);
-    amxc_var_init(&set_ret);
-
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &args, "WANMode", "demo_wanmode");
-
-    assert_int_equal(0, _setWANMode(NULL, NULL, &args, &set_ret));
-    assert_true(GETP_BOOL(&set_ret, "status"));
-
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_true(GETP_BOOL(&ret, "status"));
-
+    assert_false(GETP_BOOL(&ret, "status"));
     amxc_var_clean(&ret);
-    amxc_var_clean(&args);
-    amxc_var_clean(&set_ret);
+
+    amxd_trans_init(&trans);
+    amxd_trans_select_pathf(&trans, "IP.Interface.2.IPv4Address.1.");
+    amxd_trans_set_value(cstring_t, &trans, "IPAddress", "192.168.1.1");
+    amxd_trans_set_value(cstring_t, &trans, "SubnetMask", "255.255.255.0");
+    amxd_trans_set_value(cstring_t, &trans, "Status", "Enabled");
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), amxd_status_ok);
+    amxd_trans_clean(&trans);
+
+    amxc_var_init(&ret);
+    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
+    amxc_var_dump(&ret, STDOUT_FILENO);
+    assert_true(GETP_BOOL(&ret, "status"));
+    amxc_var_clean(&ret);
 
 }
-
 
 static void test_wan_manager_set_operation_mode(const char* mode) {
     amxd_dm_t* dm = test_get_dm();
