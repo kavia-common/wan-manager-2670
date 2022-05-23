@@ -39,3 +39,6 @@ INITDIR ?= /etc/init.d
 ACLDIR ?= /etc/acl
 DOCDIR ?= $(PREFIX)share/doc/wan-manager
 PROCMONDIR ?= $(PREFIX)lib/processmonitor/scripts
+
+# default config options
+CONFIG_SAH_AMX_WAN_MANAGER_ORDER ?= 80
