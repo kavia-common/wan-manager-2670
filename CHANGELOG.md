@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.8 - 2022-05-23(11:54:24 +0000)
+
+### Fixes
+
+- getCurrentWANModeStatus function always returns false
+
 ## Release v0.2.7 - 2022-05-23(07:42:51 +0000)
 
 ### Fixes
