@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.9 - 2022-05-24(14:49:03 +0000)
+
+### Fixes
+
+- [WANManager] use interface path as reference to find dhcpv4/6 client instead of alias
+
 ## Release v0.2.8 - 2022-05-23(11:54:24 +0000)
 
 ### Fixes
