@@ -1,8 +1,6 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: BSD-2-Clause-Patent
-**
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** Copyright (c) 2021 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,27 +57,33 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#if !defined(__NETMODEL_H__)
-#define __NETMODEL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#if !defined(__MOCK_NETMODEL_H__)
+#define __MOCK_NETMODEL_H__
 
-#include <amxc/amxc_macros.h>
 #include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxp/amxp_slot.h>
-#include <amxd/amxd_types.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
+#include <amxc/amxc_macros.h>
+#include "netmodel/client.h"
+
+bool __wrap_netmodel_initialize(void);
+
+void __wrap_netmodel_cleanup(void);
+
+netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
+                                                              const char* subscriber,
+                                                              const char* name,
+                                                              const char* flag,
+                                                              const char* traverse,
+                                                              amxp_slot_fn_t handler,
+                                                              void* userdata);
+netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
+                                                     const char* subscriber,
+                                                     const char* flag,
+                                                     const char* traverse,
+                                                     netmodel_callback_t handler,
+                                                     void* userdata);
 
 
-amxc_string_t* netmodel_get_lower_layer_for_query(const char* flags);
+void __wrap_netmodel_closeQuery(netmodel_query_t* query);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // __NETMODEL_H__
+#endif // __MOCK_NETMODEL_H__

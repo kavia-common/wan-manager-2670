@@ -1,17 +1,19 @@
 %define {
-    object IP {
-        object Interface[] {
-            object IPv4Address[] {
-                string Status = "Disabled";
-                string IPAddress;
-                string SubnetMask;
+    select Device {
+        object IP {
+            object Interface[] {
+                object IPv4Address[] {
+                    string Status = "Disabled";
+                    string IPAddress;
+                    string SubnetMask;
+                }
             }
         }
     }
 }
 
 %populate {
-    object IP.Interface {
+    object Device.IP.Interface {
         instance add(2, "wan");
     }
 }

@@ -182,11 +182,11 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
 
-    assert_true(set_wan_mode("cpe-WAN-1"));
+    assert_true(set_wan_mode("demo_test"));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("cpe-WAN-1", wan_mode_str);
+    assert_string_equal("demo_test", wan_mode_str);
 
     assert_int_not_equal(reset_counter, get_reset_counter);
 

@@ -61,8 +61,10 @@
 ****************************************************************************/
 
 #include <string.h>
-#include <debug/sahtrace.h>
 #include <stdio.h>
+
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -78,17 +80,14 @@
 #include <amxb/amxb_be.h>
 #include <stdlib.h>
 
-#include "utils.h"
+
 #include "dm_wan_mode.h"
 #include "dm_wan-manager.h"
 #include "ctrl/mode_ctrl.h"
 #include "integration/autosensing/autosensing.h"
 #include "component.h"
 
-#ifdef ME
-#undef ME
 #define ME "as-ctrl"
-#endif
 
 static amxb_bus_ctx_t* context = NULL;
 static amxb_bus_ctx_t* autosensing_get_context(void);
@@ -105,5 +104,3 @@ static amxb_bus_ctx_t* autosensing_get_context(void) {
     }
     return context;
 }
-
-#undef ME

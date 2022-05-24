@@ -20,27 +20,46 @@ include "../../odl/wan-manager_WAN_Intf_definition.odl";
         object Client {}
     }
 
+        object IP{
+            object Interface {}
+        }
+
     object NetDev{
         object Link {}
     }
 
     object '${prefix_}WANAutoSensing'{}
 }
+%populate {
+    object '${prefix_}WANManager.WAN' {
+        instance add ("demo_SFP"){
+           parameter Alias = "demo_SFP";
+           parameter PhysicalType = "SFP";
+           object Intf { 
+                instance add (0,"testwan"){
+                    parameter Type = "untagged";
+                    parameter IPv4Mode = "dhcp4";
+                    parameter IPReference = "Device.IP.Interface.2.";
+                }
+            }
+        }
+    }
+}
+
+include "../../odl/wan-manager_defaults.odl";
 
 %populate {
     object '${prefix_}WANManager.WAN' {
-        instance add (0,""){
-           parameter PhysicalType = "SFP";
+        instance add ("demo_test"){
+           parameter Alias = "demo_test";
+           parameter PhysicalType = "Ethernet";
+           object Intf { 
+                instance add (0,"testwan"){
+                    parameter Type = "untagged";
+                    parameter IPv4Mode = "dhcp4";
+                    parameter IPReference = "Device.IP.Interface.2.";
+                }
+            }
         }
     }
-
-    object '${prefix_}WANManager.WAN.1.Intf'{
-        instance add (0,"wan"){
-            parameter Type = "untagged";
-            parameter IPv4Mode = "dhcp4";
-            parameter IPReference = "IP.Interface.2.";
-        }
-    }
-
 }
-include "../../odl/wan-manager_defaults.odl";

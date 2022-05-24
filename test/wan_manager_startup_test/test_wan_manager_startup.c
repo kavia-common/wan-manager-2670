@@ -86,7 +86,7 @@ static void test_wan_manager_set_operation_mode(const char* mode);
 
 void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
     const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.WAN.1", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.WAN.demo_SFP", prefix);
     amxd_trans_t transaction;
 
     assert_non_null(wan_mode);
@@ -149,7 +149,7 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
     amxc_var_clean(&ret);
 
     amxd_trans_init(&trans);
-    amxd_trans_select_pathf(&trans, "IP.Interface.2.IPv4Address");
+    amxd_trans_select_pathf(&trans, "Device.IP.Interface.2.IPv4Address");
     amxd_trans_add_inst(&trans, 1, NULL);
     assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), amxd_status_ok);
     amxd_trans_clean(&trans);
@@ -160,7 +160,7 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
     amxc_var_clean(&ret);
 
     amxd_trans_init(&trans);
-    amxd_trans_select_pathf(&trans, "IP.Interface.2.IPv4Address.1.");
+    amxd_trans_select_pathf(&trans, "Device.IP.Interface.2.IPv4Address.1.");
     amxd_trans_set_value(cstring_t, &trans, "IPAddress", "192.168.1.1");
     amxd_trans_set_value(cstring_t, &trans, "SubnetMask", "255.255.255.0");
     amxd_trans_set_value(cstring_t, &trans, "Status", "Enabled");
@@ -169,7 +169,6 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
 
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    amxc_var_dump(&ret, STDOUT_FILENO);
     assert_true(GETP_BOOL(&ret, "status"));
     amxc_var_clean(&ret);
 

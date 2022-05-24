@@ -107,11 +107,10 @@ static amxo_parser_t parser;
 static const char* odl_defs = "../test_utils/wan-manager_test.odl";
 static const char* odl_ip_mock = "../mocks/mock_ip.odl";
 
-static void test_get_dhcp_clients(amxc_var_t* ret);
-static void test_get_ethernet_links(amxc_var_t* ret);
+static void test_get_vlan(amxc_var_t* ret);
+static void test_get_dhcp_client_wan(amxc_var_t* ret);
 static void test_vlan_add_instance(amxc_var_t* ret, uint32_t id);
 static void test_get_ip_interface_ipv4(amxc_var_t* ret);
-
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
@@ -197,10 +196,12 @@ int __wrap_amxb_add(amxb_bus_ctx_t* const bus_ctx,
     rc = 0;
     amxc_var_set_type(ret, AMXC_VAR_ID_LIST);
 
-    if(0 == strcmp(object, "Ethernet.VLANTermination.")) {
+    if(0 == strcmp(object, "Device.Ethernet.VLANTermination.")) {
         amxc_var_t* instance = amxc_var_add(amxc_htable_t, ret, NULL);
         uint32_t id = GETP_UINT32(values, "VLANID");
         test_vlan_add_instance(instance, id);
+    } else {
+        assert_true(false);
     }
 
 exit:
@@ -215,30 +216,27 @@ int __wrap_amxb_get(amxb_bus_ctx_t* const bus_ctx,
     int rc = 1;
     amxc_var_t* objects = NULL;
 
-    when_str_empty(object, exit);
-    when_null(ret, exit);
-    when_null(bus_ctx, exit);
+    assert_non_null(object);
+    assert_non_null(ret);
+    assert_non_null(bus_ctx);
 
     amxc_var_set_type(ret, AMXC_VAR_ID_LIST);
     objects = amxc_var_add(amxc_htable_t, ret, NULL);
     rc = 0;
-    if(0 == strcmp(object, "Ethernet.VLANTermination.*.")) {
-        printf("Fetch VLANTermination objects\n");
-    } else if(0 == strcmp(object, "Device.Ethernet.Link.*.")) {
-        printf("Fetch Device.Ethernet.Link objects\n");
-        test_get_ethernet_links(objects);
-    } else if(0 == strcmp(object, "DHCPv4.Client.*")) {
-        printf("Fetch DHCPv4 Client objects\n");
-        test_get_dhcp_clients(objects);
-    } else if(0 == strcmp(object, "IP.Interface.2.IPv4Address.*")) {
-        printf("Fetch IP.Interface IPv4Addr objects\n");
+    if(0 == strcmp(object, "DHCPv4.Client.[Interface=='Device.IP.Interface.2.'].")) {
+        test_get_dhcp_client_wan(objects);
+    } else if(0 == strcmp(object, "Device.Ethernet.VLANTermination.[VLANID==201" \
+                          " && LowerLayers=='Device.Ethernet.Link.2.'].")) {
+        test_get_vlan(objects);
+    } else if(0 == strcmp(object, "Device.IP.Interface.2.IPv4Address.*")) {
         test_get_ip_interface_ipv4(objects);
     } else {
         printf("Error: Unexpected query [%s]\n", object);
+        assert_non_null(NULL);
         rc = 1;
     }
+    fflush(stdout);
 
-exit:
     return rc;
 
 }
@@ -249,6 +247,7 @@ int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
                      amxc_var_t* args,
                      amxc_var_t* ret,
                      UNUSED int timeout) {
+    static int test_ip_interface_ll = 0;
     int rc = 1;
 
     when_str_empty(object, exit);
@@ -256,14 +255,56 @@ int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
     when_null(bus_ctx, exit);
 
     if(0 == strcmp(method, "_set")) {
-        rc = 0;
-        if(0 == strcmp("X_PRPL-COM_WANAutoSensing.", object)) {
-            printf("%s set function called\n", object);
+        if(0 == strcmp("DHCPv4.Client.1.", object)) {
+            amxc_var_set_type(ret, AMXC_VAR_ID_LIST);
+            amxc_var_t* client = amxc_var_add(amxc_htable_t, ret, NULL);
+            amxc_var_t* first = amxc_var_add_key(amxc_htable_t, client, "DHCPv4.Client.1.", NULL);
+            amxc_var_add_key(cstring_t, first, "Alias", "wan");
+            rc = 0;
+        } else if(0 == strcmp("Device.IP.Interface.2.", object)) {
+            rc = 0;
+            amxc_var_t* parameters = GET_ARG(args, "parameters");
+            assert_non_null(parameters);
+            const char* lower_layer = GET_CHAR(parameters, "LowerLayers");
+            if(test_ip_interface_ll == 0) {
+                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
+            } else if(test_ip_interface_ll == 1) {
+                assert_string_equal(lower_layer, "");
+            } else if(test_ip_interface_ll == 2) {
+                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
+            } else if(test_ip_interface_ll == 3) {
+                assert_string_equal(lower_layer, "");
+            } else if(test_ip_interface_ll == 4) {
+                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
+            } else if(test_ip_interface_ll == 5) {
+                assert_string_equal(lower_layer, "");
+            } else if(test_ip_interface_ll == 6) {
+                assert_string_equal(lower_layer, "Device.Ethernet.VLANTermination.1.");
+            } else {
+                printf("\ntest_ip_interface_ll %d, lower layer %s\n",
+                       test_ip_interface_ll, lower_layer);
+                fflush(stdout);
+                assert_true(false);
+            }
+            test_ip_interface_ll++;
+
+        } else if(0 == strcmp("X_PRPL-COM_WANAutoSensing.", object)) {
+            rc = 0;
             calls.autosensing.was_called = true;
             calls.autosensing.enable = GETP_BOOL(args, "parameters.Enable");
+        } else if(0 == strcmp("Device.Ethernet.VLANTermination.1.", object)) {
+            rc = 0;
+        } else {
+            printf("%s set function called\n", object);
+            fflush(stdout);
+            amxc_var_dump(args, STDOUT_FILENO);
+            fflush(stdout);
+            assert_true(false);
         }
     } else {
         printf("Error: Unexpected call [%s]\n", method);
+        amxc_var_dump(args, STDOUT_FILENO);
+        fflush(stdout);
         rc = 1;
     }
 exit:
@@ -272,11 +313,8 @@ exit:
 }
 
 void test_handle_events(void) {
-    printf("Handling events ");
     while(amxp_signal_read() == 0) {
-        printf(".");
     }
-    printf("\n");
 }
 
 void test_clear_amxb_calls(void) {
@@ -290,19 +328,18 @@ bool test_set_autosensing_called(bool* enable) {
     return calls.autosensing.was_called;
 }
 
-
 /*
  *
  * [
  *   {
  *       index = 2,
  *       name = "vlan201",
- *       object = "Ethernet.VLANTermination.vlan201.",
+ *       object = "Device.Ethernet.VLANTermination.vlan201.",
  *       parameters = {
  *           Alias = "vlan201"
  *           Name = "vlan201",
  *       },
- *       path = "Ethernet.VLANTermination.2."
+ *       path = "Device.Ethernet.VLANTermination.2."
  *   }
  *]
  *
@@ -312,65 +349,12 @@ static void test_vlan_add_instance(amxc_var_t* ret, uint32_t id) {
     amxc_string_t object;
     amxc_string_init(&object, 0);
     if(NULL != ret) {
-        amxc_string_setf(&object, "Ethernet.VLANTermination.%d.", id);
-        amxc_var_add_key(cstring_t, ret, "object", amxc_string_get(&object, 0));
+        amxc_string_setf(&object, "name%d", id);
+        amxc_var_add_key(cstring_t, ret, "path", "Device.Ethernet.VLANTermination.1.");
+        amxc_var_add_key(cstring_t, ret, "name", amxc_string_get(&object, 0));
     }
     amxc_string_clean(&object);
 }
-
-/*
- * [
- *    {
- *        Device.Ethernet.Link.1. = {
- *            Alias = "LO",
- *            Enable = 1,
- *            FlowControl = 0
- *            LastChange = 326,
- *            LowerLayers = "",
- *            MACAddress = "00:00:00:00:00:00",
- *            Name = "lo",
- *            PriorityTagging = 0,
- *            Status = "Unknown",
- *        },
- *        Device.Ethernet.Link.2. = {
- *            Alias = "ETH0",
- *            Enable = 1,
- *            FlowControl = 0
- *            LastChange = 272,
- *            LowerLayers = "Device.Ethernet.Interface.1.",
- *            MACAddress = "02:10:18:01:21:01",
- *            Name = "eth0",
- *            PriorityTagging = 0,
- *            Status = "Up",
- *        },
- *        Device.Ethernet.Link.3. = {
- *            Alias = "LAN",
- *            Enable = 1,
- *            FlowControl = 0
- *            LastChange = 209,
- *            LowerLayers = "Device.Bridging.Bridge.1.Port.1.",
- *            MACAddress = "02:10:18:01:21:01",
- *            Name = "br-lan",
- *            PriorityTagging = 0,
- *            Status = "Up",
- *        }
- *    }
- *]
- */
-
-static void test_get_ethernet_links(amxc_var_t* ret) {
-    amxc_var_t* link = NULL;
-
-    if(NULL != ret) {
-        link = amxc_var_add_key(amxc_htable_t, ret, "Device.Ethernet.Link.1.", NULL);
-        amxc_var_add_key(cstring_t, link, "Name", "lo");
-        link = amxc_var_add_key(amxc_htable_t, ret, "Device.Ethernet.Link.2.", NULL);
-        amxc_var_add_key(cstring_t, link, "Name", "eth0");
-        link = amxc_var_add_key(amxc_htable_t, ret, "Device.Ethernet.Link.3.", NULL);
-        amxc_var_add_key(cstring_t, link, "Name", "br-lan");
-    }
-}
-
 
 static void test_get_ip_interface_ipv4(amxc_var_t* ret) {
     amxc_var_t* link = NULL;
@@ -381,6 +365,25 @@ static void test_get_ip_interface_ipv4(amxc_var_t* ret) {
     }
 }
 
+/*
+ *
+ *
+ *[
+ *  {
+ *      Device.Ethernet.VLANTermination.1. = {
+ *      Alias = "vlan201",
+ *      }
+ *  }
+ *]
+ */
+
+static void test_get_vlan(amxc_var_t* ret) {
+    amxc_var_t* client = NULL;
+    if(NULL != ret) {
+        client = amxc_var_add_key(amxc_htable_t, ret, "Device.Ethernet.VLANTermination.1.", NULL);
+        amxc_var_add_key(cstring_t, client, "Alias", "vlan201");
+    }
+}
 
 /*
  *
@@ -388,19 +391,16 @@ static void test_get_ip_interface_ipv4(amxc_var_t* ret) {
  *[
  *  {
  *      DHCPv4.Client.1. = {
- *      Alias = "cpe-Client-1",
+ *      Alias = "wan",
  *      }
  *  }
  *]
  */
-
-static void test_get_dhcp_clients(amxc_var_t* ret) {
+static void test_get_dhcp_client_wan(amxc_var_t* ret) {
     amxc_var_t* client = NULL;
     if(NULL != ret) {
         client = amxc_var_add_key(amxc_htable_t, ret, "DHCPv4.Client.1.", NULL);
-        amxc_var_add_key(cstring_t, client, "Alias", "DHCP_Ethernet");
-        client = amxc_var_add_key(amxc_htable_t, ret, "DHCPv4.Client.2.", NULL);
-        amxc_var_add_key(cstring_t, client, "Alias", "DHCP_Vlan201");
+        amxc_var_add_key(cstring_t, client, "Alias", "wan");
     }
 }
 

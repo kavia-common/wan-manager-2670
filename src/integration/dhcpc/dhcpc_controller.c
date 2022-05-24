@@ -61,160 +61,148 @@
 ****************************************************************************/
 
 #include <string.h>
-#include <debug/sahtrace.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
 #include <amxc/amxc_macros.h>
-#include <stdlib.h>
 
-#include "utils.h"
 #include "dm_wan_mode.h"
 #include "dm_wan-manager.h"
 #include "ctrl/mode_ctrl.h"
 #include "integration/dhcpc/dhcpc.h"
 #include "integration/ethernet/ethernet.h"
-#include "integration/netmodel/netmodel.h"
-
 #include "component.h"
 
-#ifdef ME
-#undef ME
 #define ME "dhcpc-ctrl"
-#endif
 
-static const char* dhcp_client = "DHCPv4.Client";
-static const char* dhcp_query = "DHCPv4.Client.*";
 static mode_ctrl_actions_t dhcpc_actions;
-static amxb_bus_ctx_t* context = NULL;
+static amxb_bus_ctx_t* dhcpv4_ctx = NULL;
+static amxb_bus_ctx_t* ip_ctx = NULL;
+static amxb_bus_ctx_t* ip_get_context(void);
 
 static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const parameters);
 static amxd_status_t dhcpc_disable(wan_mode_type_t mode, const amxc_var_t* const parameters);
-static amxb_bus_ctx_t* dhcpc_get_context(void);
-static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* lower_layer);
-static amxd_status_t dhcp_set_ip_interface(const char* interface);
+static amxb_bus_ctx_t* dhcpv4_get_context(void);
+static char* dhcpv4_add_client_instance(const char* name, const char* lower_layer);
 
 AMXB_CONSTRUCTOR static void dhcp_controller_init(void) {
     dhcpc_actions.enable = dhcpc_enable;
     dhcpc_actions.disable = dhcpc_disable;
     (void) register_mode_controller(Untagged_DHCP, &dhcpc_actions);
     (void) register_mode_controller(Tagged_DHCP, &dhcpc_actions);
-
 }
 
-static amxd_status_t dhcpc_enable(wan_mode_type_t mode, const amxc_var_t* const parameters) {
+static amxd_status_t dhcpc_enable(wan_mode_type_t mode,
+                                  const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
+    char* dhcpv4_path = NULL;
     const char* intf_alias = NULL;
-    const char* object = NULL;
-    const char* ip_reference = NULL;
-    amxc_string_t* dhcpc_path = NULL;
+    const char* intf_path = NULL;
+    const char* lower_layer = NULL;
 
     when_null(parameters, exit);
+    lower_layer = GETP_CHAR(parameters, "LowerLayer");
 
     if(Tagged_DHCP == mode) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
         ethernet_vlan_set_enable(parameters, true);
     }
-
     intf_alias = GETP_CHAR(parameters, "Alias");
-    ip_reference = GETP_CHAR(parameters, "IPReference");
+    intf_path = GETP_CHAR(parameters, "IPReference");
 
     when_str_empty(intf_alias, exit);
-    when_str_empty(ip_reference, exit);
+    when_str_empty(intf_path, exit);
 
-    SAH_TRACEZ_INFO(ME, "Enable DHCPv4  client configuration with Alias %s", intf_alias);
-    dhcpc_path = component_match_first_with_parameter_str("Alias", intf_alias, dhcp_query, dhcpc_get_context());
-
-    if(NULL == dhcpc_path) {
-        SAH_TRACEZ_INFO(ME, "DHCPv4  %s Client configuration not exist. Create it", intf_alias);
-        dhcpc_path = dhcp_add_v4_client_instance(intf_alias, ip_reference);
-        when_null_l(dhcpc_path, exit, "Add DHCPv4 Client instance error");
+    dhcpv4_path = component_get_path_instance(dhcpv4_get_context(),
+                                              "DHCPv4.Client.[Interface=='%s'].",
+                                              intf_path);
+    if(NULL == dhcpv4_path) {
+        SAH_TRACEZ_INFO(ME, "DHCPv4.Client.[Interface=='%s']. instance does not exist." \
+                        " Create it", intf_path);
+        dhcpv4_path = dhcpv4_add_client_instance(intf_alias, intf_path);
+        when_null_trace(dhcpv4_path, exit, ERROR, "Add DHCPv4 Client instance error");
     }
-
-    if(Untagged_DHCP == mode) {
-        when_failed(dhcp_set_ip_interface(ip_reference), exit);
+    if(Tagged_DHCP == mode) {
+        lower_layer = GETP_CHAR(parameters, "VLANTermination");
     }
-
-    object = amxc_string_get(dhcpc_path, 0);
-    rc = component_set_enable(object, dhcpc_get_context(), true);
-
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
+    when_failed(rc, exit);
+    rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
 exit:
-    amxc_string_delete(&dhcpc_path);
+    free(dhcpv4_path);
     return rc;
 }
 
-static amxd_status_t dhcpc_disable(wan_mode_type_t mode, const amxc_var_t* const parameters) {
+static amxd_status_t dhcpc_disable(wan_mode_type_t mode,
+                                   const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* object = NULL;
-    amxc_string_t dhcpc_path;
-    amxc_string_init(&dhcpc_path, 0);
+    const char* intf_path = NULL;
+    char* dhcpv4_path = NULL;
 
     when_null(parameters, exit);
-
-    object = GETP_CHAR(parameters, "Alias");
-    when_str_empty(object, exit);
-
-    SAH_TRACEZ_INFO(ME, "Disable %s DHCPv4 client configuration", object);
-
-    amxc_string_setf(&dhcpc_path, "DHCPv4.Client.%s", object);
-    object = amxc_string_get(&dhcpc_path, 0);
-    when_failed((rc = component_set_enable(object, dhcpc_get_context(), false)), exit);
+    intf_path = GETP_CHAR(parameters, "IPReference");
+    when_str_empty(intf_path, exit);
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
+    when_failed(rc, exit);
 
     if(Tagged_DHCP == mode) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
         ethernet_vlan_set_enable(parameters, false);
     }
-
+    dhcpv4_path = component_get_path_instance(dhcpv4_get_context(),
+                                              "DHCPv4.Client.[Interface=='%s'].",
+                                              intf_path);
+    if(dhcpv4_path != NULL) {
+        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
+        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
+    } else {
+        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
+        rc = amxd_status_ok;
+    }
 exit:
-    amxc_string_clean(&dhcpc_path);
+    free(dhcpv4_path);
     return rc;
 }
 
-static amxb_bus_ctx_t* dhcpc_get_context(void) {
-    if(NULL == context) {
-        context = amxb_be_who_has(dhcp_client);
+static amxb_bus_ctx_t* dhcpv4_get_context(void) {
+    if(NULL == dhcpv4_ctx) {
+        dhcpv4_ctx = amxb_be_who_has("DHCPv4.");
     }
-    return context;
+    return dhcpv4_ctx;
 }
 
-static amxc_string_t* dhcp_add_v4_client_instance(const char* name, const char* lower_layer) {
-    amxc_string_t* path = NULL;
+static amxb_bus_ctx_t* ip_get_context(void) {
+    if(NULL == ip_ctx) {
+        ip_ctx = amxb_be_who_has("IP.");
+    }
+    return ip_ctx;
+}
+
+static char* dhcpv4_add_client_instance(const char* name, const char* lower_layer) {
+    char* path = NULL;
     amxc_var_t parameters;
+    amxc_string_t alias;
 
     amxc_var_init(&parameters);
+    amxc_string_init(&alias, 0);
     when_str_empty(name, exit);
     when_str_empty(lower_layer, exit);
+    amxc_string_setf(&alias, "wanm-%s", name);
 
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "Alias", name);
+    amxc_var_add_key(cstring_t, &parameters, "Alias", amxc_string_get(&alias, 0));
     amxc_var_add_key(cstring_t, &parameters, "Interface", lower_layer);
     amxc_var_add_key(bool, &parameters, "Enable", false);
 
-    path = component_add_instance("DHCPv4.Client.", &parameters, context);
-
+    path = component_add_instance("DHCPv4.Client.", &parameters, dhcpv4_get_context());
 exit:
     amxc_var_clean(&parameters);
+    amxc_string_clean(&alias);
     return path;
 }
 
-static amxd_status_t dhcp_set_ip_interface(const char* interface) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    amxc_string_t* lower_layer = NULL;
-
-    when_null(interface, exit);
-
-    lower_layer = netmodel_get_lower_layer_for_query("eth_link");
-    when_null(lower_layer, exit);
-    rc = component_set_str_param(interface, dhcpc_get_context(), "LowerLayers", amxc_string_get(lower_layer, 0));
-exit:
-    amxc_string_delete(&lower_layer);
-    return rc;
-}
-
-#undef ME

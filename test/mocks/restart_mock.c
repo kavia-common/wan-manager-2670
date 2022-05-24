@@ -75,9 +75,6 @@
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
-#include <debug/sahtrace.h>
-
-#include "utils.h"
 #include "dm_wan-manager.h"
 #include "ctrl/restart.h"
 #include "reset_mock.h"

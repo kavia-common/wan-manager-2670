@@ -61,8 +61,11 @@
 ****************************************************************************/
 
 #include <string.h>
-#include <debug/sahtrace.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -75,20 +78,10 @@
 #include <amxb/amxb.h>
 #include <amxb/amxb_types.h>
 #include <amxb/amxb_operators.h>
-#include <stdlib.h>
 
-#include "utils.h"
 #include "component.h"
 
-#ifdef ME
-#undef ME
 #define ME "com-ctrl"
-#endif
-
-static bool component_item_match(const char* parameter,
-                                 const char* param_value,
-                                 const amxc_htable_t* objects,
-                                 amxc_string_t** path);
 
 amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
@@ -122,104 +115,62 @@ exit:
     return rc;
 }
 
-amxc_string_t* component_match_first_with_parameter_str(const char* parameter,
-                                                        const char* parameter_value,
-                                                        const char* object_pattern,
-                                                        amxb_bus_ctx_t* bus) {
-    amxc_string_t* component_path = NULL;
-    amxc_var_t query;
-    const amxc_llist_t* query_items = NULL;
+/**
+   @brief
+   Retrieves the datamodel path of an instance
 
-    amxc_var_init(&query);
-
-    when_null(bus, exit);
-    when_str_empty(parameter, exit);
-    when_str_empty(parameter_value, exit);
-    when_str_empty(object_pattern, exit);
-
-    if(AMXB_STATUS_OK != amxb_get(bus, object_pattern, 0, &query, 10)) {
-        SAH_TRACEZ_INFO(ME, "Objects not found for pattern %s", object_pattern);
-        goto exit;
-    }
-    query_items = amxc_var_constcast(amxc_llist_t, &query);
-
-    when_null(query_items, exit);
-    amxc_llist_for_each(query_item, query_items) {
-        amxc_var_t* client_item = amxc_llist_it_get_data(query_item, amxc_var_t, lit);
-        if(component_item_match(parameter, parameter_value, amxc_var_constcast(amxc_htable_t, client_item), &component_path)) {
-            goto exit;
-        }
-    }
-
-exit:
-    amxc_var_clean(&query);
-    return component_path;
-}
-
-amxc_string_t* component_get_parameter_value(const char* parameter,
-                                             const char* object,
-                                             amxb_bus_ctx_t* bus) {
+   @param bus context
+   @param query for example "DHCPv4.Client.[Interface=='%s']."
+   @param token for example "Device.IP.Interface.2."
+   @return string on success
+           NULL pointer if failed
+ */
+char* component_get_path_instance(amxb_bus_ctx_t* bus,
+                                  const char* query,
+                                  const char* token) {
+    amxc_string_t path;
     amxc_var_t ret;
-    amxc_string_t* parameter_value = NULL;
-    amxc_var_t* item = NULL;
-    amxc_string_t query_object;
-    const char* value = NULL;
+    const char* result = NULL;
+    char* ret_str = NULL;
 
     amxc_var_init(&ret);
-    amxc_string_init(&query_object, 0);
-
-    when_null(bus, exit);
-    when_str_empty(parameter, exit);
-    when_str_empty(object, exit);
-
-    amxc_string_setf(&query_object, "%s%s", object, parameter);
-
-    if(AMXB_STATUS_OK != amxb_get(bus, amxc_string_get(&query_object, 0), 0, &ret, 5)) {
-        SAH_TRACEZ_ERROR(ME, "Cannot fetch value for %s parameter", amxc_string_get(&query_object, 0));
-        goto exit;
+    amxc_string_init(&path, 0);
+    if(token != NULL) {
+        amxc_string_setf(&path, query, token);
+    } else {
+        amxc_string_set(&path, query);
     }
-
-    item = amxc_var_get_index(&ret, 0, AMXC_VAR_FLAG_DEFAULT);
-    when_null(item, exit);
-    item = amxc_var_get_index(item, 0, AMXC_VAR_FLAG_DEFAULT);
-    when_null(item, exit);
-
-    value = GETP_CHAR(item, parameter);
-    amxc_string_new(&parameter_value, 0);
-    amxc_string_set(parameter_value, value);
-
+    amxb_get(bus, amxc_string_get(&path, 0), 0, &ret, 3);
+    result = amxc_var_key(GETP_ARG(&ret, "0.0"));
+    when_str_empty_trace(result, exit, INFO, "No results for '%s'",
+                         amxc_string_get(&path, 0));
+    SAH_TRACEZ_INFO(ME, "%s returned %s", amxc_string_get(&path, 0), result);
+    ret_str = strdup(result);
 exit:
-    amxc_string_clean(&query_object);
     amxc_var_clean(&ret);
-    return parameter_value;
-
+    amxc_string_clean(&path);
+    return ret_str;
 }
 
-amxc_string_t* component_add_instance(const char* object_path,
-                                      amxc_var_t* parameter,
-                                      amxb_bus_ctx_t* bus) {
-    amxc_string_t* object = NULL;
+char* component_add_instance(const char* object_path,
+                             amxc_var_t* parameter,
+                             amxb_bus_ctx_t* bus) {
+    const char* value = NULL;
+    char* path = NULL;
     amxc_var_t ret;
-    amxc_var_t* new_instance = NULL;
-    amxc_llist_it_t* object_item = NULL;
     amxc_var_init(&ret);
 
     when_str_empty(object_path, exit);
     when_null(bus, exit);
 
     when_false(AMXB_STATUS_OK == amxb_add(bus, object_path, 0, NULL, parameter, &ret, 5), exit);
-
-    object_item = amxc_llist_get_first(amxc_var_constcast(amxc_llist_t, &ret));
-    when_null(object_item, exit);
-
-    new_instance = amxc_container_of(object_item, amxc_var_t, lit);
-    when_null(object_item, exit);
-
-    amxc_string_new(&object, 0);
-    amxc_string_set(object, GETP_CHAR(new_instance, "object"));
+    value = GETP_CHAR(&ret, "0.path");
+    if(value != NULL) {
+        path = strdup(value);
+    }
 exit:
     amxc_var_clean(&ret);
-    return object;
+    return path;
 }
 
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
@@ -234,10 +185,10 @@ amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus
 
     when_null(bus, exit);
     when_str_empty(param, exit);
-    when_str_empty(value, exit);
+    when_null(value, exit);
     when_str_empty(component, exit);
 
-    SAH_TRACEZ_INFO(ME, "%s Set %s to %s", component, param, value);
+    SAH_TRACEZ_INFO(ME, "'%s%s' = '%s'", component, param, value);
     amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &parameters, param, value);
@@ -255,32 +206,3 @@ exit:
     amxc_var_clean(&ret);
     return rc;
 }
-
-static bool component_item_match(const char* parameter,
-                                 const char* param_value,
-                                 const amxc_htable_t* objects,
-                                 amxc_string_t** path) {
-    bool matched = false;
-    when_null(objects, exit);
-
-    amxc_htable_for_each(iter, objects) {
-        amxc_var_t* params = amxc_container_of(iter, amxc_var_t, hit);
-        const char* alias = NULL;
-        if(NULL == params) {
-            continue;
-        }
-        alias = GETP_CHAR(params, parameter);
-        if((NULL != alias) && (0 == strcmp(param_value, alias))) {
-            matched = true;
-            amxc_string_new(path, 0);
-            amxc_string_set(*path, amxc_htable_it_get_key(iter));
-            goto exit;
-        }
-    }
-
-exit:
-    return matched;
-}
-
-
-#undef ME

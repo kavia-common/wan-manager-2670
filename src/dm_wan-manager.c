@@ -65,6 +65,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
@@ -77,13 +81,15 @@
 
 #include <netmodel/client.h>
 
-#include "utils.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 
 #include "integration/autosensing/autosensing.h"
+#include "integration/netmodel/nm_query.h"
 
 #include "ctrl/mode_ctrl.h"
+
+#define ME "wan-man"
 
 static wan_manager_app_t app;
 
@@ -133,6 +139,7 @@ int _wan_manager_main(int reason,
         netmodel_cleanup();
         mode_ctrl_cleanup();
         wan_mode_cleanup();
+        nm_query_ll_cleanup();
         app.dm = NULL;
         app.parser = NULL;
         break;
@@ -174,6 +181,7 @@ exit:
     free(current_wan_mode_str);
     return status;
 }
+
 
 amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
                                        UNUSED amxd_function_t* func,
@@ -369,8 +377,8 @@ static bool interface_got_ip(const char* interface) {
     amxc_string_setf(&query_filter, "%s*", interface);
     SAH_TRACEZ_INFO(ME, "Check if IP.Interface path %s contain IPv4Addr objects", amxc_string_get(&query_filter, 0));
 
-    rv = amxb_get(amxb_be_who_has("IP"), amxc_string_get(&query_filter, 0), 0, &query, 3);
-    when_failed_l(rv, exit, "Failed to get IPv4Address objects, return '%d'", rv);
+    rv = amxb_get(amxb_be_who_has("IP."), amxc_string_get(&query_filter, 0), 0, &query, 3);
+    when_failed_trace(rv, exit, ERROR, "Failed to get IPv4Address objects, return '%d'", rv);
 
     amxc_var_for_each(addresses, GETP_ARG(&query, "0")) {
         const char* status = GETP_CHAR(addresses, "Status");

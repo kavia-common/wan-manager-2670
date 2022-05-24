@@ -61,6 +61,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
@@ -71,10 +75,9 @@
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
-#include <debug/sahtrace.h>
-
-#include "utils.h"
 #include "ctrl/mode_ctrl.h"
+
+#define ME "wan-man"
 
 #define ACTION_ENABLE 0
 #define ACTION_DISABLE 1
@@ -127,7 +130,8 @@ amxd_status_t register_mode_controller(int mode, const mode_ctrl_actions_t* cons
         mode_ctrl_init();
     }
 
-    when_failed_l((rc = mode_ctrl_is_valid_mode(mode)), exit, "%d is not a valid WAN mode type", mode);
+    when_failed_trace((rc = mode_ctrl_is_valid_mode(mode)), exit, ERROR,
+                      "%d is not a valid WAN mode type", mode);
     when_failed((rc = mode_ctrl_validate_ctrl(actions)), exit);
     rc = add_controller((wan_mode_type_t) mode, actions);
 
@@ -140,7 +144,8 @@ amxd_status_t unregister_mode_controller(int mode) {
     const char* mode_str = NULL;
     amxc_htable_it_t* it = NULL;
 
-    when_failed_l((rc = mode_ctrl_is_valid_mode(mode)), exit, "%d is not a valid WAN mode type", mode);
+    when_failed_trace((rc = mode_ctrl_is_valid_mode(mode)), exit, ERROR,
+                      "%d is not a valid WAN mode type", mode);
     mode_str = wan_mode_type_to_str((wan_mode_type_t) mode);
     it = amxc_htable_get(&manager.controllers, mode_str);
 
@@ -167,13 +172,15 @@ static amxd_status_t mode_ctrl_action(int mode, const amxc_var_t* const paramete
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_htable_it_t* it = NULL;
     controller_item_t* ctrl_actions = NULL;
-    when_failed_l((rc = mode_ctrl_is_valid_mode(mode)), exit, "%d is not valid WAN mode type", mode);
+    when_failed_trace((rc = mode_ctrl_is_valid_mode(mode)), exit, ERROR,
+                      "%d is not valid WAN mode type", mode);
     it = amxc_htable_get(&manager.controllers, wan_mode_type_to_str((wan_mode_type_t) mode));
     rc = amxd_status_function_not_implemented;
-    when_null_l(it, exit, "No controller register for WAN mode type %s", wan_mode_type_to_str((wan_mode_type_t) mode));
+    when_null_trace(it, exit, ERROR, "No controller register for WAN mode type %s",
+                    wan_mode_type_to_str((wan_mode_type_t) mode));
     ctrl_actions = amxc_container_of(it, controller_item_t, hit);
     if(NULL != ctrl_actions) {
-        rc = action_type == ACTION_ENABLE ?
+        rc = (action_type == ACTION_ENABLE) ?
             ctrl_actions->actions.enable((wan_mode_type_t) mode, parameters) :
             ctrl_actions->actions.disable((wan_mode_type_t) mode, parameters);
     }

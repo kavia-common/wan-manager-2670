@@ -66,6 +66,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
+
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
@@ -75,15 +78,13 @@
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
-#include <debug/sahtrace.h>
-
-#include "utils.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 #include "ctrl/restart.h"
 #include "ctrl/mode_ctrl.h"
+#include "integration/netmodel/nm_query.h"
 
-
+#define ME "wan-man"
 typedef enum {
     WAN_Mode_Enabled = 0,
     WAN_Mode_Disabled,
@@ -105,16 +106,25 @@ static const char* ipv4_mode_str[IPv4_Nr_] = {
 
 static amxd_object_t* wan_manager;
 
-static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* wan_mode);
+static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* interface);
 static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_object_t* const new_mode);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 
 
 void wan_mode_init(void) {
+    amxd_object_t* templ = NULL;
     const char* prefix = wan_get_prefix();
     if(NULL != prefix) {
         wan_manager = amxd_dm_findf(wan_get_dm(), "%sWANManager", prefix);
+    }
+    nm_query_ll_init();
+    templ = amxd_object_findf(wan_manager, ".WAN.");
+    amxd_object_for_each(instance, it, templ) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        char* type = amxd_object_get_value(cstring_t, instance, "PhysicalType", NULL);
+        nm_query_ll_add(type);
+        free(type);
     }
 }
 
@@ -154,17 +164,17 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* current_wan_
     when_true(((NULL == current_wan_mode) && (0 != len)), exit);
 
     new_wan_mode = get_wan_mode(wan_mode_to_set);
-    when_null_l(new_wan_mode, exit, "%s is not a valid WAN mode", wan_mode_to_set);
+    when_null_trace(new_wan_mode, exit, ERROR, "%s is not a valid WAN mode", wan_mode_to_set);
 
     if(NULL != current_wan_mode) {
-        when_failed_l((rc = wan_mode_disable(current_wan_mode)),
-                      exit,
-                      "WAN mode disable error [WANMode=%s]",
-                      current_wan_mode_str);
+        when_failed_trace((rc = wan_mode_disable(current_wan_mode)),
+                          exit, ERROR, "WAN mode disable error [WANMode=%s]",
+                          current_wan_mode_str);
     }
 
     wan_mode_dm_set(wan_mode_to_set);
-    when_failed_l((rc = wan_mode_enable(new_wan_mode)), exit, "WAN mode enable error [WANMode=%s]", wan_mode_to_set);
+    when_failed_trace((rc = wan_mode_enable(new_wan_mode)), exit, ERROR,
+                      "WAN mode enable error [WANMode=%s]", wan_mode_to_set);
 
     if(wan_mode_different_physical_type(current_wan_mode, new_wan_mode)) {
         rc = restart();
@@ -173,87 +183,91 @@ exit:
     return rc;
 }
 
-amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
+static amxd_status_t wan_mode_intf_disable (amxd_object_t* interface) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
-    amxc_var_init(&parameters);
     wan_mode_type_t wan_mode_type = Mode_Nr_;
-    amxd_object_t* interface_tmpl = NULL;
-    amxd_object_t* interface = NULL;
+    amxc_var_init(&parameters);
+    when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
+    SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
 
-    when_null(wan_mode, exit);
-    (void) wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
-
-    interface_tmpl = amxd_object_get_child(wan_mode, "Intf");
-    when_null_l(interface_tmpl, exit, "Cannot get Interface template object for WANMode");
-
-    interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
-    when_null_l(interface, exit, "Cannot get Interface object for WANMode");
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
 
-    wan_mode_type = get_ipv4_wan_mode_type(wan_mode);
+    wan_mode_type = get_ipv4_wan_mode_type(interface);
     when_true(Mode_Nr_ == wan_mode_type, exit);
     rc = disable_mode(wan_mode_type, &parameters);
 exit:
     amxc_var_clean(&parameters);
+    return rc;
+}
 
+amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
+    amxd_status_t rc = amxd_status_unknown_error;
+
+    when_null(wan_mode, exit);
+    (void) wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
+
+    amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
+        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+        rc = wan_mode_intf_disable(interface);
+        when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
+        // For now, use only first instance
+        break;
+    }
+exit:
+    return rc;
+}
+
+static amxd_status_t wan_mode_intf_enable (amxd_object_t* interface,
+                                           const char* lower_layer) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_var_t parameters;
+    wan_mode_type_t wan_mode_type = Mode_Nr_;
+
+    amxc_var_init(&parameters);
+    when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
+    SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
+
+    when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
+
+    wan_mode_type = get_ipv4_wan_mode_type(interface);
+    when_true(Mode_Nr_ == wan_mode_type, exit);
+
+    amxc_var_add_key(cstring_t, &parameters, "LowerLayer", lower_layer);
+    rc = set_mode(wan_mode_type, &parameters);
+exit:
+    amxc_var_clean(&parameters);
     return rc;
 }
 
 amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
-    wan_mode_type_t wan_mode_type = Mode_Nr_;
-    amxd_object_t* interface_tmpl = NULL;
-    amxd_object_t* interface = NULL;
-    amxc_var_t parameters;
-    amxc_var_init(&parameters);
+    const char* lower_layer = NULL;
+    char* physical_type = NULL;
 
     when_null(wan_mode, exit);
+    physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
+    lower_layer = nm_query_get_lower_layer(physical_type);
+    when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s" \
+                         " returned empty (or null)", physical_type);
 
-    interface_tmpl = amxd_object_get_child(wan_mode, "Intf");
-    when_null_l(interface_tmpl, exit, "Cannot get Interface template object for WANMode");
-
-    interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
-    when_null_l(interface, exit, "Cannot get Interface object for WANMode");
-    when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
-
-    wan_mode_type = get_ipv4_wan_mode_type(wan_mode);
-    rc = set_mode(wan_mode_type, &parameters);
-
+    amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
+        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+        rc = wan_mode_intf_enable(interface, lower_layer);
+        when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
+        // For now, use only first instance
+        break;
+    }
 exit:
-    amxc_var_clean(&parameters);
+    free(physical_type);
     rc = wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
     return rc;
 }
 
 amxd_object_t* get_wan_mode(const char* alias) {
-    amxd_object_t* mode = NULL;
-    amxd_object_t* wan_modes = amxd_object_get_child(wan_manager, "WAN");
-
-    when_null(wan_modes, exit);
-    when_null(alias, exit);
-
-    amxc_llist_for_each(iter, &wan_modes->instances) {
-        amxd_object_t* instance = amxc_llist_it_get_data(iter, amxd_object_t, it);
-        char* instance_alias = NULL;
-        bool found = false;
-
-        when_null(instance, exit);
-        instance_alias = amxd_object_get_value(cstring_t, instance, "Alias", NULL);
-        when_null(instance_alias, exit);
-        found = (0 == strcmp(alias, instance_alias));
-        free(instance_alias);
-
-        if(found) {
-            mode = instance;
-            goto exit;
-        }
-    }
-
-exit:
-    return mode;
+    return amxd_dm_findf(wan_get_dm(), "%sWANManager.WAN.[Alias=='%s'].",
+                         wan_get_prefix(), alias);
 }
-
 
 amxc_string_t* wan_mode_get_interface(void) {
     char* current_wan_mode_str = NULL;
@@ -267,13 +281,13 @@ amxc_string_t* wan_mode_get_interface(void) {
     current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
 
     wan_mode = get_wan_mode(current_wan_mode_str);
-    when_null_l(wan_mode, exit, "Cannot get current WANMode object");
+    when_null_trace(wan_mode, exit, ERROR, "Cannot get current WANMode object");
 
     interface_tmpl = amxd_object_get_child(wan_mode, "Intf");
-    when_null_l(interface_tmpl, exit, "Cannot get Interface template object for WANMode");
+    when_null_trace(interface_tmpl, exit, ERROR, "Cannot get Interface template object for WANMode");
 
     interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
-    when_null_l(interface, exit, "Cannot get Interface object for WANMode");
+    when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
 
     ip_ref = amxd_object_get_value(cstring_t, interface, "IPReference", NULL);
     amxc_string_new(&interface_name, 0);
@@ -297,13 +311,13 @@ ipv4_mode_t wan_mode_get_ipv4_mode(void) {
     current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
 
     wan_mode = get_wan_mode(current_wan_mode_str);
-    when_null_l(wan_mode, exit, "Cannot get current WANMode object");
+    when_null_trace(wan_mode, exit, ERROR, "Cannot get current WANMode object");
 
     interface_tmpl = amxd_object_get_child(wan_mode, "Intf");
-    when_null_l(interface_tmpl, exit, "Cannot get Interface template object for WANMode");
+    when_null_trace(interface_tmpl, exit, ERROR, "Cannot get Interface template object for WANMode");
 
     interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
-    when_null_l(interface, exit, "Cannot get Interface object for WANMode");
+    when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
 
     type = amxd_object_get_value(cstring_t, interface, "IPv4Mode", NULL);
     rc = wan_mode_ipv4_mode_from_str(type);
@@ -371,22 +385,12 @@ exit:
     return rc;
 }
 
-static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* wan_mode) {
+static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* interface) {
     wan_mode_type_t wan_mode_type = Mode_Nr_;
     char* type = NULL;
-    amxd_object_t* interface_tmpl = NULL;
-    amxd_object_t* interface = NULL;
     bool tagged = false;
     char* option = NULL;
     ipv4_mode_t mode = IPv4_None;
-
-    when_null(wan_mode, exit);
-
-    interface_tmpl = amxd_object_get_child(wan_mode, "Intf");
-    when_null_l(interface_tmpl, exit, "Cannot get Interface template object for WANMode");
-
-    interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
-    when_null_l(interface, exit, "Cannot get Interface object for WANMode");
 
     type = amxd_object_get_value(cstring_t, interface, "Type", NULL);
     if((NULL != type) && (0 == strcmp("vlan", type))) {

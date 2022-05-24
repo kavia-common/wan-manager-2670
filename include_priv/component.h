@@ -80,16 +80,12 @@ extern "C" {
 
 amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
-amxc_string_t* component_match_first_with_parameter_str(const char* parameter,
-                                                        const char* parameter_value,
-                                                        const char* object_pattern,
-                                                        amxb_bus_ctx_t* bus);
-amxc_string_t* component_add_instance(const char* object_path,
-                                      amxc_var_t* parameter,
-                                      amxb_bus_ctx_t* bus);
-amxc_string_t* component_get_parameter_value(const char* parameter,
-                                             const char* object,
-                                             amxb_bus_ctx_t* bus);
+char* component_get_path_instance(amxb_bus_ctx_t* bus,
+                                  const char* query,
+                                  const char* token);
+char* component_add_instance(const char* object_path,
+                             amxc_var_t* parameter,
+                             amxb_bus_ctx_t* bus);
 
 #ifdef __cplusplus
 }

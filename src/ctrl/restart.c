@@ -73,7 +73,6 @@
 
 #include <debug/sahtrace.h>
 
-#include "utils.h"
 #include "dm_wan-manager.h"
 #include "ctrl/restart.h"
 

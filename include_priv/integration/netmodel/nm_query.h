@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,34 +59,57 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__NM_QUERY_H__)
+#define __NM_QUERY_H__
 
-#if !defined(__UTILS__H__)
-#define __UTILS__H__
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <debug/sahtrace.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
+#include <amxc/amxc_macros.h>
+#include <amxb/amxb.h>
+#include <amxb/amxb_types.h>
+#include <amxb/amxb_operators.h>
+#include <amxb/amxb_be.h>
 
-#define ME "wan-man"
+#include <netmodel/common_api.h>
+#include <netmodel/client.h>
 
-#ifndef when_false_l
-#define when_false_l(cond, label, ...) if(false == (cond)) { SAH_TRACEZ_ERROR(ME, __VA_ARGS__); goto label; }
-#endif
+typedef enum _physical_type {
+    physical_type_ethernet,
+    physical_type_bridge,
+    physical_type_adsl,
+    physical_type_vdsl,
+    physical_type_sfp,
+    physical_type_gpon,
+    physical_type_gfast,
+    physical_type_wwan,
+    physical_type_last
+} physical_type_t;
 
-#ifndef when_null_l
-#define when_null_l(x, l, ...) if(NULL == (x)) { SAH_TRACEZ_ERROR(ME, __VA_ARGS__); goto l; }
-#endif
+typedef struct _nm_query_ll_info {
+    netmodel_query_t* q_name;
+    netmodel_query_t* q_intf_path;
+    char* intf_name;
+    char* lower_layer;
+    int index;
+    bool used;
+} nm_query_ll_info_t;
 
-
-#ifndef when_failed_l
-#define when_failed_l(x, l, ...) if((x) != 0) {SAH_TRACEZ_ERROR(ME, __VA_ARGS__);  goto l; }
-#endif
-
+void nm_query_ll_init(void);
+void nm_query_ll_cleanup(void);
+int nm_query_ll_add(const char* name);
+const char* nm_query_get_lower_layer(const char* name);
 
 #ifdef __cplusplus
 }
 #endif
-#endif //__UTILS__H__
+
+#endif // __NM_QUERY_H__
