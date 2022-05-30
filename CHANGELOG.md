@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.2.10 - 2022-05-30(12:15:20 +0000)
+
+### Other
+
+- [WANManager] make odl persistent
+
 ## Release v0.2.9 - 2022-05-24(14:49:03 +0000)
 
 ### Fixes
