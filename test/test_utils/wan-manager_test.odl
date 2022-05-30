@@ -46,7 +46,7 @@ include "../../odl/wan-manager_WAN_Intf_definition.odl";
     }
 }
 
-include "../../odl/wan-manager_defaults.odl";
+include "../../odl/defaults.d/10_wan_manager.odl";
 
 %populate {
     object '${prefix_}WANManager.WAN' {

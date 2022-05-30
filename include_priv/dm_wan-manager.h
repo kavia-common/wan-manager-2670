@@ -130,11 +130,6 @@ void _update_autosensing(const char* const event_name,
                          const amxc_var_t* const event_data,
                          void* const priv);
 
-
-void _wan_mode_added(const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     void* const priv);
-
 amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             amxd_param_t* param,
                                             amxd_action_t reason,

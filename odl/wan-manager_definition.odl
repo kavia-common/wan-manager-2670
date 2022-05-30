@@ -49,9 +49,5 @@
     on event "dm:object-changed" call update_autosensing
         filter 'path == "${prefix_}WANManager." && contains("parameters.OperationMode")';
 
-
-    on event "dm:object-added" call wan_mode_added
-        filter 'path matches "${prefix_}WANManager\.WAN\.[0-9]+\.Intf"';
-
     on event "*" call print_event;
 }

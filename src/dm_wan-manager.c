@@ -94,7 +94,6 @@
 static wan_manager_app_t app;
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode);
-static amxd_status_t add_default_intf_interface(amxd_object_t* root);
 static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode);
 static bool interface_got_ip(const char* interface);
 
@@ -249,17 +248,6 @@ exit:
     return;
 }
 
-void _wan_mode_added(UNUSED const char* const event_name,
-                     const amxc_var_t* const event_data,
-                     UNUSED void* const priv) {
-    const char* path = GETP_CHAR(event_data, "path");
-    if(NULL != path) {
-        amxd_object_t* root = amxd_dm_findf(wan_get_dm(), "%s", path);
-        amxc_var_get_path(event_data, "object", AMXC_VAR_FLAG_DEFAULT);
-        (void) add_default_intf_interface(root);
-    }
-}
-
 amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             UNUSED amxd_param_t* param,
                                             UNUSED amxd_action_t reason,
@@ -327,24 +315,6 @@ bool wan_mode_is_valid(void) {
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode) {
     return (NULL != new_wan_mode) && (NULL != get_wan_mode(new_wan_mode)) ? amxd_status_ok :  amxd_status_invalid_value;
-}
-
-static amxd_status_t add_default_intf_interface(amxd_object_t* root) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    amxd_object_t* instance = NULL;
-    amxc_var_t parameters;
-
-    when_null(root, exit);
-    when_failed(amxc_var_init(&parameters), exit);
-    when_failed(amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE), exit);
-    when_null(amxc_var_add_key(cstring_t, &parameters, "Name", "data"), exit);
-
-    when_false(((rc = amxd_object_add_instance(&instance, root, NULL, 0, &parameters)) != amxd_status_ok), exit);
-    amxd_object_emit_add_inst(instance);
-
-exit:
-    amxc_var_clean(&parameters);
-    return rc;
 }
 
 static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode) {

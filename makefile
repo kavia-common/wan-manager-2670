@@ -30,7 +30,8 @@ install: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_defaults.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_defaults.odl
+	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/$(COMPONENT)/defaults.d
+	$(INSTALL) -D -p -m 0644 odl/defaults.d/*.odl $(DEST)/etc/amx/$(COMPONENT)/defaults.d/
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
 	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(DEST)$(INITDIR)/$(COMPONENT)
@@ -41,7 +42,8 @@ package: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
-	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_defaults.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_defaults.odl
+	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/$(COMPONENT)/defaults.d
+	$(INSTALL) -D -p -m 0644 odl/defaults.d/*.odl $(PKGDIR)/etc/amx/$(COMPONENT)/defaults.d/
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
 	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(PKGDIR)$(INITDIR)/$(COMPONENT)
@@ -57,7 +59,8 @@ doc:
 	$(eval ODLFILES += odl/$(COMPONENT)_definition.odl)
 	$(eval ODLFILES += odl/$(COMPONENT)_WAN_definition.odl)
 	$(eval ODLFILES += odl/$(COMPONENT)_WAN_Intf_definition.odl)
-	$(eval ODLFILES += odl/$(COMPONENT)_defaults.odl)
+	# expand/substitute source wildcard instead of using destination directory: the destination directory can contain files from another artifact not intended for pcb_docgen use
+	$(eval ODLFILES += $(wildcard odl/defaults.d/*.odl))
 
 	mkdir -p output/xml
 	mkdir -p output/html

@@ -81,14 +81,24 @@
         "com-ctrl" = 200,
         "eth-ctrl" = 200,
         "netmod-ctrl" = 200
-         };
+    };
 
     // main files
     wan_manager_definition_file = "${name}_definition.odl";
     wan_mode_definition_file = "${name}_WAN_definition.odl";
     wan_mode_intf_definition_file = "${name}_WAN_Intf_definition.odl";
-    defaults_file = "${name}_defaults.odl";
-    save_file = "/etc/amx/${name}/${name}_save.odl";
+
+    // Use ODL persistent storage
+    storage-path = "${rw_data_path}/${name}";
+    odl = {
+        load-dm-events = true,
+        dm-load = true,
+        dm-save = true,
+        dm-save-on-changed = true,
+        dm-save-delay = 1000,
+        dm-defaults = "defaults.d/",
+        directory = "${storage-path}/odl"
+    };
 }
 
 import "${name}.so" as "${name}";
@@ -97,8 +107,7 @@ import "${name}.so" as "${name}";
 include "${wan_manager_definition_file}";
 include "${wan_mode_definition_file}";
 include "${wan_mode_intf_definition_file}";
-include "${defaults_file}";
 
 %define {
-    entry-point wan-manager.wan_manager_main;
+    entry-point "${name}".wan_manager_main;
 }

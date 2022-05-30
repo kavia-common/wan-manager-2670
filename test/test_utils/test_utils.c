@@ -132,7 +132,6 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getWANMode", AMXO_FUNC(_getWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getCurrentWANModeStatus", AMXO_FUNC(_getCurrentWANModeStatus)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "update_autosensing", AMXO_FUNC(_update_autosensing)), 0);
-    assert_int_equal(amxo_resolver_ftab_add(&parser, "wan_mode_added", AMXO_FUNC(_wan_mode_added)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "set_wan_mode", AMXO_FUNC(_set_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_already_configured", AMXO_FUNC(_interface_already_configured)), 0);
 
