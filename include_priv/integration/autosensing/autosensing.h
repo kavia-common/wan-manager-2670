@@ -66,15 +66,11 @@
 extern "C" {
 #endif
 
-#include <amxc/amxc_macros.h>
-#include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxp/amxp_slot.h>
-#include <amxd/amxd_types.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
+#include <stdbool.h>
 
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_types.h>
 
 amxd_status_t autosensing_set_enable(bool enable);
 

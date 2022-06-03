@@ -82,18 +82,10 @@
 int test_mode_ctrl_setup(void** state);
 int test_mode_ctrl_teardown(void** state);
 
-void test_mode_ctrl_register_invalid_mode(void** state);
-void test_mode_ctrl_register_invalid_controller(void** state);
-void test_mode_ctrl_register_valid_mode(void** state);
-
-void test_mode_ctrl_unregister_valid_mode(void** state);
-void test_mode_ctrl_unregister_invalid_mode(void** state);
-
-void test_mode_ctrl_call_valid_mode_enable(void** state);
-void test_mode_ctrl_call_valid_mode_disable(void** state);
-void test_mode_ctrl_call_invalid_mode_enable(void** state);
-void test_mode_ctrl_call_invalid_mode_disable(void** state);
-void test_mode_ctrl_call_unregister_mode_enable(void** state);
-void test_mode_ctrl_call_unregister_mode_disable(void** state);
+void test_mode_ctrl_missing_parameter(void** state);
+void test_mode_ctrl_invalid_mode(void** state);
+void test_mode_ctrl_dhcpc_enable_mode(void** state);
+void test_mode_ctrl_dhcpc_disable_mode(void** state);
+void test_mode_ctrl_ppp_modes(void** state);
 
 #endif //__TEST_WAN_MANAGER_MODE_CTRL_TEST_H__

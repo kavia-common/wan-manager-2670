@@ -66,15 +66,9 @@
 extern "C" {
 #endif
 
-#include <amxc/amxc_macros.h>
 #include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxp/amxp_slot.h>
+#include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
-
 
 amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable);
 

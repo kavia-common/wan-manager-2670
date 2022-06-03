@@ -69,24 +69,14 @@
 #include <cmocka.h>
 #include <string.h>
 
-#include <amxc/amxc_variant.h>
-#include <amxc/amxc_lqueue.h>
-#include <amxp/amxp_signal.h>
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
-#include <amxc/amxc_rbuffer.h>
-#include <amxc/amxc_astack.h>
-#include <amxc/amxc_lstack.h>
 #include <amxo/amxo.h>
-#include <amxp/amxp_slot.h>
 #include <amxb/amxb.h>
-#include <amxb/amxb_be.h>
 #include <amxb/amxb_register.h>
 
-#include <amxb/amxb.h>
-
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-
+#include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
 #include "test_utils.h"
 #include "integration/dhcpc/dhcpc.h"

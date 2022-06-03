@@ -73,15 +73,11 @@
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
 
+#include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 #include "ctrl/restart.h"
-#include "ctrl/mode_ctrl.h"
 #include "integration/netmodel/nm_query.h"
 
 #define ME "wan-man"
@@ -92,22 +88,36 @@ typedef enum {
     WAN_Mode_Nr_
 } wan_mode_status_t;
 
+typedef struct {
+    mode_ctrl_t mode;
+    const char* str;
+} mode_cnv_t;
+
+static mode_cnv_t mode_cnv[] = {
+    { IPv4_DHCP, "dhcp4" },
+    { IPv4_PPP, "ppp4" },
+    { IPv4_STATIC, "static" },
+    { IPv6_DHCP, "dhcp6" },
+    { IPv6_PPP, "ppp6" },
+    { IPv6_STATIC, "static" },
+    { TYPE_VLAN, "vlan" },
+    { TYPE_UNTAGGED, "untagged" },
+    { TYPE_ATM, "atm" },
+    { IP_None, NULL}
+};
+
 static const char* wan_mode_status_str[WAN_Mode_Nr_] = {
     "Enabled",
     "Disabled",
     "Error",
 };
 
-static const char* ipv4_mode_str[IPv4_Nr_] = {
-    [IPv4_DHCP] = "dhcp4",
-    [IPv4_PPP] = "ppp4",
-    [IPv4_None] = "none"
-};
-
 static amxd_object_t* wan_manager;
 
-static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* interface);
+static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
+                                     bool include_type);
 static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_object_t* const new_mode);
+static mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 
@@ -183,19 +193,21 @@ exit:
     return rc;
 }
 
-static amxd_status_t wan_mode_intf_disable (amxd_object_t* interface) {
+static amxd_status_t wan_mode_intf_disable(amxd_object_t* interface) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
-    wan_mode_type_t wan_mode_type = Mode_Nr_;
+    mode_ctrl_t mode = IP_None;
     amxc_var_init(&parameters);
     when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
     SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
 
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
 
-    wan_mode_type = get_ipv4_wan_mode_type(interface);
-    when_true(Mode_Nr_ == wan_mode_type, exit);
-    rc = disable_mode(wan_mode_type, &parameters);
+    // Get mode for IPv4 & IPv6
+    mode = get_wan_mode_type(interface, true);
+    if(IP_None != mode) {
+        rc = mode_ctrl_action(mode, &parameters, false);
+    }
 exit:
     amxc_var_clean(&parameters);
     return rc;
@@ -222,7 +234,7 @@ static amxd_status_t wan_mode_intf_enable (amxd_object_t* interface,
                                            const char* lower_layer) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
-    wan_mode_type_t wan_mode_type = Mode_Nr_;
+    mode_ctrl_t mode = IP_None;
 
     amxc_var_init(&parameters);
     when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
@@ -230,11 +242,14 @@ static amxd_status_t wan_mode_intf_enable (amxd_object_t* interface,
 
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
 
-    wan_mode_type = get_ipv4_wan_mode_type(interface);
-    when_true(Mode_Nr_ == wan_mode_type, exit);
-
     amxc_var_add_key(cstring_t, &parameters, "LowerLayer", lower_layer);
-    rc = set_mode(wan_mode_type, &parameters);
+
+    // Get mode for IPv4 & IPv6
+    mode = get_wan_mode_type(interface, true);
+    if(IP_None != mode) {
+        rc = mode_ctrl_action(mode, &parameters, true);
+    }
+
 exit:
     amxc_var_clean(&parameters);
     return rc;
@@ -299,10 +314,10 @@ exit:
     return interface_name;
 }
 
-ipv4_mode_t wan_mode_get_ipv4_mode(void) {
+mode_ctrl_t wan_mode_get_mode(void) {
     char* current_wan_mode_str = NULL;
     char* type = NULL;
-    ipv4_mode_t rc = IPv4_None;
+    mode_ctrl_t rc = IP_None;
     amxd_object_t* wan_mode = NULL;
     amxd_object_t* interface_tmpl = NULL;
     amxd_object_t* interface = NULL;
@@ -320,7 +335,7 @@ ipv4_mode_t wan_mode_get_ipv4_mode(void) {
     when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
 
     type = amxd_object_get_value(cstring_t, interface, "IPv4Mode", NULL);
-    rc = wan_mode_ipv4_mode_from_str(type);
+    rc = get_wan_mode_type(interface, false);
 
 exit:
     free(current_wan_mode_str);
@@ -373,50 +388,49 @@ exit:
     return rc;
 }
 
-ipv4_mode_t wan_mode_ipv4_mode_from_str(const char* mode) {
-    ipv4_mode_t rc = IPv4_None;
-    for(int i = 0; i < IPv4_Nr_; ++i) {
-        if(0 == strcmp(mode, ipv4_mode_str[i])) {
-            rc = (ipv4_mode_t) i;
-            goto exit;
+mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
+    mode_cnv_t* lookup = mode_cnv;
+    mode_ctrl_t rc = IP_None;
+    while(lookup->str != NULL) {
+        if(0 == strcmp(mode, lookup->str)) {
+            rc = lookup->mode;
+            // keyword static is used in both parameter IPv4Mode & IPv6Mode
+            if((rc == IPv4_STATIC) && (ipv4 == false)) {
+                rc = IPv6_STATIC;
+            }
+            break;
         }
+        lookup++;
     }
-exit:
     return rc;
 }
 
-static wan_mode_type_t get_ipv4_wan_mode_type(amxd_object_t* interface) {
-    wan_mode_type_t wan_mode_type = Mode_Nr_;
+static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
+                                     bool include_type) {
     char* type = NULL;
-    bool tagged = false;
-    char* option = NULL;
-    ipv4_mode_t mode = IPv4_None;
+    char* ipv4mode = NULL;
+    char* ipv6mode = NULL;
+    mode_ctrl_t mode = IP_None;
 
-    type = amxd_object_get_value(cstring_t, interface, "Type", NULL);
-    if((NULL != type) && (0 == strcmp("vlan", type))) {
-        tagged = true;
+    if(include_type == true) {
+        type = amxd_object_get_value(cstring_t, interface, "Type", NULL);
+        when_str_empty_trace(type, exit, ERROR, "Empty 'Type' parameter");
+        mode = wan_mode_convert_from_str(type, false);
     }
 
-    option = amxd_object_get_value(cstring_t, interface, "IPv4Mode", NULL);
-    when_str_empty(option, exit);
-    mode = wan_mode_ipv4_mode_from_str(option);
+    ipv4mode = amxd_object_get_value(cstring_t, interface, "IPv4Mode", NULL);
+    when_str_empty_trace(ipv4mode, exit, ERROR, "Empty 'IPv4Mode' parameter");
+    mode |= wan_mode_convert_from_str(ipv4mode, true);
 
-    switch(mode) {
-    case IPv4_DHCP:
-    {
-        wan_mode_type = tagged ? Tagged_DHCP : Untagged_DHCP;
-    }
-    break;
-    case IPv4_PPP:
-        wan_mode_type = tagged ? Tagged_PPP : Untagged_PPP;
-        break;
-    case IPv4_None:
-    case IPv4_Nr_:
-        break;
-    }
+    ipv6mode = amxd_object_get_value(cstring_t, interface, "IPv6Mode", NULL);
+    when_str_empty_trace(ipv6mode, exit, ERROR, "Empty 'IPv6Mode' parameter");
+    mode |= wan_mode_convert_from_str(ipv6mode, false);
 
 exit:
+    SAH_TRACEZ_INFO(ME, "Type '%s', ipv4 '%s', ipv6 '%s': mode 0x%06X",
+                    include_type ? type : "", ipv4mode, ipv6mode, mode);
     free(type);
-    free(option);
-    return wan_mode_type;
+    free(ipv4mode);
+    free(ipv6mode);
+    return mode;
 }

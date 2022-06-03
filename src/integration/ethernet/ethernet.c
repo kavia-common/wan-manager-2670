@@ -99,8 +99,7 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
 
     amxc_string_setf(&str_search, "Device.Ethernet.VLANTermination." \
                      "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);
-    vlan_path = component_get_path_instance(ethernet_get_context(),
-                                            amxc_string_get(&str_search, 0), NULL);
+    vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_search, 0));
 
     if((NULL == vlan_path) && enable) {
         SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",

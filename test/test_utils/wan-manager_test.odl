@@ -1,9 +1,12 @@
-%config{
+%config {
+    name = "wan-manager";
+    import-dbg = false;
     prefix_ = "X_PRPL-COM_";
 }
-include "../../odl/wan-manager_definition.odl";
-include "../../odl/wan-manager_WAN_definition.odl";
-include "../../odl/wan-manager_WAN_Intf_definition.odl";
+
+include "../../odl/${name}_definition.odl";
+include "../../odl/${name}_WAN_definition.odl";
+include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
     object Ethernet {
@@ -30,13 +33,53 @@ include "../../odl/wan-manager_WAN_Intf_definition.odl";
 
     object '${prefix_}WANAutoSensing'{}
 }
+
 %populate {
+    object '${prefix_}WANManager' {
+        parameter WANMode = "demo_wanmode";
+    }
+
+    object '${prefix_}WANManager.WAN' {
+        instance add ("demo_wanmode"){
+           parameter Alias = "demo_wanmode";
+           parameter PhysicalType = "Ethernet";
+        }
+
+        instance add ("demo_vlanmode"){
+           parameter Alias = "demo_vlanmode";
+           parameter PhysicalType = "Ethernet";
+        }
+     }
+
+    object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
+        instance add(0,"wan"){
+            parameter Name = "data";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter IPReference = "Device.IP.Interface.2.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
+        instance add(0,"wan"){
+            parameter Name = "data";
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter VlanID = 201;
+            parameter VlanPriority = 0;
+            parameter IPReference = "Device.IP.Interface.2.";
+        }
+    }
+
     object '${prefix_}WANManager.WAN' {
         instance add ("demo_SFP"){
            parameter Alias = "demo_SFP";
            parameter PhysicalType = "SFP";
            object Intf { 
                 instance add (0,"testwan"){
+                    parameter Name = "data";
                     parameter Type = "untagged";
                     parameter IPv4Mode = "dhcp4";
                     parameter IPReference = "Device.IP.Interface.2.";
@@ -44,17 +87,14 @@ include "../../odl/wan-manager_WAN_Intf_definition.odl";
             }
         }
     }
-}
 
-include "../../odl/defaults.d/10_wan_manager.odl";
-
-%populate {
     object '${prefix_}WANManager.WAN' {
         instance add ("demo_test"){
            parameter Alias = "demo_test";
            parameter PhysicalType = "Ethernet";
            object Intf { 
                 instance add (0,"testwan"){
+                    parameter Name = "data";
                     parameter Type = "untagged";
                     parameter IPv4Mode = "dhcp4";
                     parameter IPReference = "Device.IP.Interface.2.";

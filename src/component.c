@@ -120,35 +120,24 @@ exit:
    Retrieves the datamodel path of an instance
 
    @param bus context
-   @param query for example "DHCPv4.Client.[Interface=='%s']."
-   @param token for example "Device.IP.Interface.2."
+   @param query for example "DHCPv4.Client.[Interface=='Device.IP.Interface.2.']."
    @return string on success
            NULL pointer if failed
  */
 char* component_get_path_instance(amxb_bus_ctx_t* bus,
-                                  const char* query,
-                                  const char* token) {
-    amxc_string_t path;
+                                  const char* query) {
     amxc_var_t ret;
     const char* result = NULL;
     char* ret_str = NULL;
 
     amxc_var_init(&ret);
-    amxc_string_init(&path, 0);
-    if(token != NULL) {
-        amxc_string_setf(&path, query, token);
-    } else {
-        amxc_string_set(&path, query);
-    }
-    amxb_get(bus, amxc_string_get(&path, 0), 0, &ret, 3);
+    amxb_get(bus, query, 0, &ret, 3);
     result = amxc_var_key(GETP_ARG(&ret, "0.0"));
-    when_str_empty_trace(result, exit, INFO, "No results for '%s'",
-                         amxc_string_get(&path, 0));
-    SAH_TRACEZ_INFO(ME, "%s returned %s", amxc_string_get(&path, 0), result);
+    when_str_empty_trace(result, exit, INFO, "No results for '%s'", query);
+    SAH_TRACEZ_INFO(ME, "%s returned %s", query, result);
     ret_str = strdup(result);
 exit:
     amxc_var_clean(&ret);
-    amxc_string_clean(&path);
     return ret_str;
 }
 

@@ -70,25 +70,12 @@
 #include "test_wan_manager_mode_ctrl_tests.h"
 
 int main(void) {
-    int failed_tests = 0;
-    const struct CMUnitTest init_test[] = {
-        cmocka_unit_test(test_mode_ctrl_register_invalid_mode),
-        cmocka_unit_test(test_mode_ctrl_register_invalid_controller),
-        cmocka_unit_test(test_mode_ctrl_register_valid_mode),
-        cmocka_unit_test(test_mode_ctrl_unregister_invalid_mode),
-        cmocka_unit_test(test_mode_ctrl_unregister_valid_mode),
-
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_mode_ctrl_missing_parameter),
+        cmocka_unit_test(test_mode_ctrl_invalid_mode),
+        cmocka_unit_test(test_mode_ctrl_dhcpc_enable_mode),
+        cmocka_unit_test(test_mode_ctrl_dhcpc_disable_mode),
+        cmocka_unit_test(test_mode_ctrl_ppp_modes)
     };
-    const struct CMUnitTest runtime_test[] = {
-        cmocka_unit_test(test_mode_ctrl_call_valid_mode_enable),
-        cmocka_unit_test(test_mode_ctrl_call_valid_mode_disable),
-        cmocka_unit_test(test_mode_ctrl_call_invalid_mode_enable),
-        cmocka_unit_test(test_mode_ctrl_call_invalid_mode_disable),
-        cmocka_unit_test(test_mode_ctrl_call_unregister_mode_enable),
-        cmocka_unit_test(test_mode_ctrl_call_unregister_mode_disable),
-
-    };
-    failed_tests += cmocka_run_group_tests(init_test, test_mode_ctrl_setup, test_mode_ctrl_teardown);
-    failed_tests += cmocka_run_group_tests(runtime_test, test_mode_ctrl_setup, test_mode_ctrl_teardown);
-    return failed_tests;
+    return cmocka_run_group_tests(tests, test_mode_ctrl_setup, test_mode_ctrl_teardown);
 }

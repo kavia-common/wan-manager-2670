@@ -66,15 +66,12 @@
 extern "C" {
 #endif
 
-#include <amxc/amxc_macros.h>
 #include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxp/amxp_slot.h>
+#include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
 
+amxd_status_t dhcpc_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t dhcpc_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }

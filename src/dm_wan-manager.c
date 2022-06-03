@@ -74,20 +74,15 @@
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
 
 #include <netmodel/client.h>
 
+#include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 
 #include "integration/autosensing/autosensing.h"
 #include "integration/netmodel/nm_query.h"
-
-#include "ctrl/mode_ctrl.h"
 
 #define ME "wan-man"
 
@@ -135,10 +130,9 @@ int _wan_manager_main(int reason,
         wan_mode_init();
         break;
     case 1:
-        netmodel_cleanup();
-        mode_ctrl_cleanup();
         wan_mode_cleanup();
         nm_query_ll_cleanup();
+        netmodel_cleanup();
         app.dm = NULL;
         app.parser = NULL;
         break;
@@ -293,9 +287,9 @@ exit:
 }
 
 bool wan_mode_is_valid(void) {
-    ipv4_mode_t mode = wan_mode_get_ipv4_mode();
+    mode_ctrl_t mode = wan_mode_get_mode() & MASK_IPv4;
     bool rc = false;
-    SAH_TRACEZ_INFO(ME, "IPv4 mode of current WANMode %d", mode);
+    SAH_TRACEZ_INFO(ME, "IPv4 mode of current WANMode 0x%02X", mode);
 
     switch(mode) {
     case IPv4_DHCP:

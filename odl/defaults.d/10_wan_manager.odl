@@ -1,6 +1,9 @@
 %populate {
+    object '${prefix_}WANManager' {
+        parameter WANMode = "demo_wanmode";
+    }
 
-object '${prefix_}WANManager.WAN' {
+    object '${prefix_}WANManager.WAN' {
         instance add ("demo_wanmode"){
            parameter Alias = "demo_wanmode";
            parameter PhysicalType = "Ethernet";
@@ -12,25 +15,23 @@ object '${prefix_}WANManager.WAN' {
         }
      }
 
-object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
+    object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "dhcp6";
             parameter IPReference = "Device.IP.Interface.2.";
-
         }
     }
 
-object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
+    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "dhcp6";
             parameter VlanID = 201;
             parameter VlanPriority = 0;
             parameter IPReference = "Device.IP.Interface.2.";
         }
-    }
-object '${prefix_}WANManager' {
-        parameter WANMode = "demo_wanmode";
     }
 }

@@ -67,6 +67,11 @@
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
 
+#include <amxc/amxc.h>
+#include <amxc/amxc_macros.h>
+
+#include <netmodel/client.h>
+
 #include "integration/netmodel/nm_query.h"
 
 #define ME "netmod-ctrl"

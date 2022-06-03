@@ -81,107 +81,182 @@
 #include "ctrl/mode_ctrl.h"
 #include "test_wan_manager_mode_ctrl_tests.h"
 
-static amxd_status_t return_code = amxd_status_ok;
-static amxd_status_t test_enable(wan_mode_type_t mode, const amxc_var_t* const params);
-static amxd_status_t test_disable(wan_mode_type_t mode, const amxc_var_t* const params);
+#define FNC_DHCPC_ENABLE    0x0001
+#define FNC_DHCPC_DISABLE   0x0002
+#define FNC_PPP_ENABLE      0x0004
+#define FNC_PPP_DISABLE     0x0008
+#define FNC_PPP6_ENABLE     0x0010
+#define FNC_PPP6_DISABLE    0x0020
 
-static const mode_ctrl_actions_t test_controller = {
-    .enable = test_enable,
-    .disable = test_disable,
-};
+static int calls_flags = 0;
+
+amxd_status_t __wrap_dhcpc_enable(mode_ctrl_t mode,
+                                  UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_dhcpc_disable(mode_ctrl_t mode,
+                                   UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_ppp_enable(mode_ctrl_t mode,
+                                UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_ppp_disable(mode_ctrl_t mode,
+                                 UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_ppp6_enable(mode_ctrl_t mode,
+                                 UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_ppp6_disable(mode_ctrl_t mode,
+                                  UNUSED const amxc_var_t* const parameters);
+
+amxd_status_t __wrap_dhcpc_enable(UNUSED mode_ctrl_t mode,
+                                  UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_DHCPC_ENABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_dhcpc_disable(UNUSED mode_ctrl_t mode,
+                                   UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_DHCPC_DISABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_ppp_enable(UNUSED mode_ctrl_t mode,
+                                UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_PPP_ENABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_ppp_disable(UNUSED mode_ctrl_t mode,
+                                 UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_PPP_DISABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_ppp6_enable(UNUSED mode_ctrl_t mode,
+                                 UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_PPP6_ENABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_ppp6_disable(UNUSED mode_ctrl_t mode,
+                                  UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_PPP6_DISABLE;
+    return amxd_status_ok;
+}
 
 int test_mode_ctrl_setup(UNUSED void** state) {
-    /* Drop default controllers */
-    mode_ctrl_cleanup();
-
-    mode_ctrl_init();
-    assert_int_equal(amxd_status_ok, register_mode_controller(Untagged_DHCP, &test_controller));
     return 0;
 }
+
 int test_mode_ctrl_teardown(UNUSED void** state) {
-    mode_ctrl_cleanup();
     return 0;
 }
 
-void test_mode_ctrl_register_invalid_mode(UNUSED void** state) {
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(Mode_Nr_, &test_controller));
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(-1, &test_controller));
-}
-void test_mode_ctrl_register_invalid_controller(UNUSED void** state) {
-    mode_ctrl_actions_t invalid_ctrl = {
-        .enable = NULL,
-        .disable = NULL
-    };
-
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(Untagged_PPP, NULL));
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(Untagged_PPP, &invalid_ctrl));
-
-    invalid_ctrl.enable = test_enable;
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(Untagged_PPP, &invalid_ctrl));
-
-    invalid_ctrl.enable = NULL;
-    invalid_ctrl.disable = test_disable;
-    assert_int_not_equal(amxd_status_ok, register_mode_controller(Untagged_PPP, &invalid_ctrl));
+void test_mode_ctrl_missing_parameter(UNUSED void** state) {
+    assert_int_not_equal(mode_ctrl_action(TYPE_UNTAGGED | IPv4_DHCP, NULL, false), amxd_status_ok);
 }
 
-void test_mode_ctrl_register_valid_mode(UNUSED void** state) {
-    mode_ctrl_actions_t valid_ctrl = {
-        .enable = test_enable,
-        .disable = test_disable
-    };
-    assert_int_equal(amxd_status_ok, register_mode_controller(Untagged_PPP, &valid_ctrl));
+void test_mode_ctrl_invalid_mode(UNUSED void** state) {
+    amxc_var_t parameters;
+
+    amxc_var_init(&parameters);
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+
+    // Missing Type
+    assert_int_not_equal(mode_ctrl_action(IPv4_DHCP, &parameters, false), amxd_status_ok);
+
+    // Invalid Type
+    assert_int_not_equal(mode_ctrl_action(TYPE_UNTAGGED | TYPE_VLAN | IPv4_DHCP, &parameters, false), amxd_status_ok);
+
+    amxc_var_clean(&parameters);
 }
 
-void test_mode_ctrl_unregister_valid_mode(UNUSED void** state) {
-    assert_int_equal(amxd_status_ok, unregister_mode_controller(Untagged_DHCP));
-    assert_int_equal(amxd_status_ok, unregister_mode_controller(Untagged_PPP));
-    assert_int_not_equal(amxd_status_ok, unregister_mode_controller(Untagged_DHCP));
-
+static void test_mode_ctrl(mode_ctrl_t mode,
+                           const amxc_var_t* const parameters,
+                           bool enable,
+                           amxd_status_t expected_status,
+                           int expected_calls) {
+    assert_int_equal(mode_ctrl_action(mode, parameters, enable), expected_status);
+    assert_int_equal(calls_flags, expected_calls);
+    calls_flags = 0;
 }
 
-void test_mode_ctrl_unregister_invalid_mode(UNUSED void** state) {
-    assert_int_not_equal(amxd_status_ok, unregister_mode_controller(Mode_Nr_));
-    assert_int_not_equal(amxd_status_ok, unregister_mode_controller(-1));
+void test_mode_ctrl_dhcpc_enable_mode(UNUSED void** state) {
+    amxc_var_t parameters;
+
+    amxc_var_init(&parameters);
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+
+    // Type = "untagged", IPv4Mode = "dhcp4",  IPv6Mode = "none"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    // Type = "untagged", IPv4Mode = "none", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv6_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    // Type = "untagged", IPv4Mode = "dhcp4", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP | IPv6_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    // Type = "vlan", IPv4Mode = "dhcp4",  IPv6Mode = "none",
+    test_mode_ctrl(TYPE_VLAN | IPv4_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    // Type = "vlan", IPv4Mode = "none", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_VLAN | IPv6_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    // Type = "vlan", IPv4Mode = "dhcp4", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_VLAN | IPv4_DHCP | IPv6_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
+
+    amxc_var_clean(&parameters);
 }
 
-void test_mode_ctrl_call_valid_mode_enable(UNUSED void** state) {
-    assert_int_equal(return_code, set_mode(Untagged_DHCP, NULL));
-    return_code = amxd_status_function_not_implemented;
-    assert_int_equal(return_code, set_mode(Untagged_DHCP, NULL));
-    return_code = amxd_status_ok;
+void test_mode_ctrl_dhcpc_disable_mode(UNUSED void** state) {
+    amxc_var_t parameters;
+
+    amxc_var_init(&parameters);
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+
+    // Type = "untagged", IPv4Mode = "dhcp4",  IPv6Mode = "none"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    // Type = "untagged", IPv4Mode = "none", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv6_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    // Type = "untagged", IPv4Mode = "dhcp4", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP | IPv6_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    // Type = "vlan", IPv4Mode = "dhcp4",  IPv6Mode = "none",
+    test_mode_ctrl(TYPE_VLAN | IPv4_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    // Type = "vlan", IPv4Mode = "none", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_VLAN | IPv6_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    // Type = "vlan", IPv4Mode = "dhcp4", IPv6Mode = "dhcp6"
+    test_mode_ctrl(TYPE_VLAN | IPv4_DHCP | IPv6_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
+
+    amxc_var_clean(&parameters);
 }
 
-void test_mode_ctrl_call_valid_mode_disable(UNUSED void** state) {
-    assert_int_equal(return_code, disable_mode(Untagged_DHCP, NULL));
-    return_code = amxd_status_function_not_implemented;
-    assert_int_equal(return_code, disable_mode(Untagged_DHCP, NULL));
-    return_code = amxd_status_ok;
-}
+void test_mode_ctrl_ppp_modes(UNUSED void** state) {
+    amxc_var_t parameters;
 
-void test_mode_ctrl_call_invalid_mode_enable(UNUSED void** state) {
-    assert_int_not_equal(return_code, set_mode(-1, NULL));
-    assert_int_not_equal(return_code, set_mode(Mode_Nr_, NULL));
-}
+    amxc_var_init(&parameters);
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
 
-void test_mode_ctrl_call_invalid_mode_disable(UNUSED void** state) {
-    assert_int_not_equal(return_code, disable_mode(-1, NULL));
-    assert_int_not_equal(return_code, disable_mode(Mode_Nr_, NULL));
-}
+    // Type = "untagged", IPv4Mode = "ppp4",  IPv6Mode = "none"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE);
 
-void test_mode_ctrl_call_unregister_mode_enable(UNUSED void** state) {
-    assert_int_equal(amxd_status_function_not_implemented, set_mode(Untagged_PPP, NULL));
-    assert_int_equal(amxd_status_function_not_implemented, set_mode(Tagged_DHCP, NULL));
-}
+    // Type = "vlan", IPv4Mode = "ppp4", IPv6Mode = "none"
+    test_mode_ctrl(TYPE_VLAN | IPv4_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE);
 
-void test_mode_ctrl_call_unregister_mode_disable(UNUSED void** state) {
-    assert_int_equal(amxd_status_function_not_implemented, disable_mode(Untagged_PPP, NULL));
-    assert_int_equal(amxd_status_function_not_implemented, disable_mode(Tagged_DHCP, NULL));
-}
+    // Type = "untagged", IPv4Mode = "none", IPv6Mode = "ppp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP6_DISABLE);
 
-static amxd_status_t test_enable(UNUSED wan_mode_type_t mode, UNUSED const amxc_var_t* const params) {
-    return return_code;
-}
+    // Type = "vlan", IPv4Mode = "none", IPv6Mode = "ppp6"
+    test_mode_ctrl(TYPE_VLAN | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP6_ENABLE);
 
-static amxd_status_t test_disable(UNUSED wan_mode_type_t mode, UNUSED const amxc_var_t* const params) {
-    return return_code;
+    // Type = "untagged", IPv4Mode = "ppp4", IPv6Mode = "ppp6"
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_PPP | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE | FNC_PPP6_DISABLE);
+
+    // Type = "vlan", IPv4Mode = "ppp4", IPv6Mode = "ppp6"
+    test_mode_ctrl(TYPE_VLAN | IPv4_PPP | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE | FNC_PPP6_ENABLE);
+
+    amxc_var_clean(&parameters);
 }

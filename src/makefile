@@ -12,6 +12,7 @@ SRCDIR = .
 CTRL_SRCDIR = ./ctrl
 INTEGRATION_SRCDIR = ./integration
 DHCPC_INT_SRC = $(INTEGRATION_SRCDIR)/dhcpc
+PPP_INT_SRC = $(INTEGRATION_SRCDIR)/ppp
 AUTOSENSING_INT_SRC = $(INTEGRATION_SRCDIR)/autosensing
 ETHERNET_INT_SRC = $(INTEGRATION_SRCDIR)/ethernet
 NETMODEL_INT_SRC = $(INTEGRATION_SRCDIR)/netmodel
@@ -28,6 +29,7 @@ SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(AUTOSENSING_INT_SRC)/*.c \
  				 $(NETMODEL_INT_SRC)/*.c    \
  				 $(DHCPC_INT_SRC)/*.c       \
+ 				 $(PPP_INT_SRC)/*.c       \
  				 $(ETHERNET_INT_SRC)/*.c)
 
 
@@ -72,6 +74,10 @@ $(OBJDIR)/%.o: $(INTEGRATION_SRCDIR)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(DHCPC_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+	
+$(OBJDIR)/%.o: $(PPP_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

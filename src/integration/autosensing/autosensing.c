@@ -62,6 +62,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
@@ -69,21 +70,10 @@
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
-#include <amxc/amxc_macros.h>
-#include <amxb/amxb.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
-#include <stdlib.h>
 
-
+#include "ctrl/mode_ctrl.h"
 #include "dm_wan_mode.h"
 #include "dm_wan-manager.h"
-#include "ctrl/mode_ctrl.h"
 #include "integration/autosensing/autosensing.h"
 #include "component.h"
 

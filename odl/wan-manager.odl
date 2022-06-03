@@ -77,6 +77,7 @@
         "wan-man" = 200,
         "uci-ctrl" = 200,
         "dhcpc-ctrl" = 200,
+        "ppp-ctrl" = 200,
         "as-ctrl" = 200,
         "com-ctrl" = 200,
         "eth-ctrl" = 200,
@@ -91,7 +92,7 @@
     // Use ODL persistent storage
     storage-path = "${rw_data_path}/${name}";
     odl = {
-        load-dm-events = true,
+        load-dm-events = false,
         dm-load = true,
         dm-save = true,
         dm-save-on-changed = true,

@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,29 +59,24 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#if !defined(__COMPONENTN_H__)
-#define __COMPONENT_H__
+#if !defined(__PPP_H__)
+#define __PPP_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdbool.h>
-
 #include <amxc/amxc.h>
+#include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
-#include <amxb/amxb.h>
 
-amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
-amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
-char* component_get_path_instance(amxb_bus_ctx_t* bus,
-                                  const char* query);
-char* component_add_instance(const char* object_path,
-                             amxc_var_t* parameter,
-                             amxb_bus_ctx_t* bus);
+amxd_status_t ppp_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t ppp_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t ppp6_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t ppp6_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __COMPONENT_H__
+#endif // __PPP_H__

@@ -68,18 +68,8 @@ extern "C" {
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
-#include <amxc/amxc_macros.h>
-#include <amxb/amxb.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
-#include <amxb/amxb_be.h>
+#include <amxd/amxd_types.h>
 
-#include <netmodel/common_api.h>
 #include <netmodel/client.h>
 
 typedef enum _physical_type {
