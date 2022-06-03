@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.3.0 - 2022-06-03(09:48:26 +0000)
+
+### New
+
+- [WANManager] Add IPv6Mode = dhcp6 functionality
+
 ## Release v0.2.10 - 2022-05-30(12:15:20 +0000)
 
 ### Other
