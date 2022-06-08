@@ -193,7 +193,8 @@ exit:
     return rc;
 }
 
-static amxd_status_t wan_mode_intf_disable(amxd_object_t* interface) {
+static amxd_status_t wan_mode_intf_disable(amxd_object_t* interface,
+                                           const char* lower_layer) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
     mode_ctrl_t mode = IP_None;
@@ -202,6 +203,8 @@ static amxd_status_t wan_mode_intf_disable(amxd_object_t* interface) {
     SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
 
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
+
+    amxc_var_add_key(cstring_t, &parameters, "LowerLayer", lower_layer);
 
     // Get mode for IPv4 & IPv6
     mode = get_wan_mode_type(interface, true);
@@ -215,18 +218,26 @@ exit:
 
 amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
+    const char* lower_layer = NULL;
+    char* physical_type = NULL;
 
     when_null(wan_mode, exit);
     (void) wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
 
+    physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
+    lower_layer = nm_query_get_lower_layer(physical_type);
+    when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s" \
+                         " returned empty (or null)", physical_type);
+
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        rc = wan_mode_intf_disable(interface);
+        rc = wan_mode_intf_disable(interface, lower_layer);
         when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
         // For now, use only first instance
         break;
     }
 exit:
+    free(physical_type);
     return rc;
 }
 
