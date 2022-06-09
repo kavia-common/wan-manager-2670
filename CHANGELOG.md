@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.3.1 - 2022-06-09(08:11:35 +0000)
+
+### Fixes
+
+- [WANManager] vlan not disabled when switching from vlan to untagged
+
 ## Release v0.3.0 - 2022-06-03(09:48:26 +0000)
 
 ### New
