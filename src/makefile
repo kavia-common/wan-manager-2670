@@ -10,12 +10,11 @@ TARGET_SO = $(OBJDIR)/$(COMPONENT).so
 # source directories
 SRCDIR = .
 CTRL_SRCDIR = ./ctrl
-INTEGRATION_SRCDIR = ./integration
-DHCPC_INT_SRC = $(INTEGRATION_SRCDIR)/dhcpc
-PPP_INT_SRC = $(INTEGRATION_SRCDIR)/ppp
-AUTOSENSING_INT_SRC = $(INTEGRATION_SRCDIR)/autosensing
-ETHERNET_INT_SRC = $(INTEGRATION_SRCDIR)/ethernet
-NETMODEL_INT_SRC = $(INTEGRATION_SRCDIR)/netmodel
+DHCPC_INT_SRC = ./dhcpc
+PPP_INT_SRC = ./ppp
+AUTOSENSING_INT_SRC = ./autosensing
+ETHERNET_INT_SRC = ./ethernet
+NETMODEL_INT_SRC = ./netmodel
 
 INCDIR_PRIV = ../include_priv
 INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
@@ -24,7 +23,6 @@ STAGING_LIBDIR = $(if $(STAGINGDIR), -L$(STAGINGDIR)/lib) $(if $(STAGINGDIR), -L
 # files
 SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(CTRL_SRCDIR)/*.c 		\
- 				 $(INTEGRATION_SRCDIR)/*.c  \
  				 $(NETDEV_INT_SRC)/*.c      \
  				 $(AUTOSENSING_INT_SRC)/*.c \
  				 $(NETMODEL_INT_SRC)/*.c    \
@@ -66,10 +64,6 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(CTRL_SRCDIR)/%.c | $(OBJDIR)/
-	$(CC) $(CFLAGS) -c -o $@ $<
-	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
-
-$(OBJDIR)/%.o: $(INTEGRATION_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

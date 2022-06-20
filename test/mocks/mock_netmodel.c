@@ -67,6 +67,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "netmodel/nm_query.h"
+
 bool __wrap_netmodel_initialize(void) {
     return true;
 }
@@ -81,7 +83,7 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
                                                               UNUSED const char* flag,
                                                               const char* traverse,
                                                               amxp_slot_fn_t handler,
-                                                              UNUSED void* userdata) {
+                                                              void* userdata) {
     amxc_var_t data;
     amxc_var_init(&data);
 
@@ -91,11 +93,14 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
     assert_non_null(handler);
     assert_non_null(name);
     assert_true(strcmp(subscriber, "wan-manager") == 0);
-    assert_true(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0);
+    assert_true(strcmp(name, "InterfacePath") == 0);
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
-    if(strcmp(name, "InterfacePath") == 0) {
+    if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->index for "Ethernet" is 0 (index in array)
+        assert_int_equal(info->index, 0);
         // 1. call function with no data
         handler("sig_name", &data, userdata);
         // 2. call function with empty string
@@ -107,7 +112,7 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         // 4. call with same data
         handler("sig_name", &data, userdata);
     } else {
-        assert_string_equal(name, "unknown");
+        assert_string_equal(name, "NetModel.Intf.unknown.");
     }
     amxc_var_clean(&data);
     return q;
@@ -132,10 +137,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
-
     amxc_var_set_type(&data, AMXC_VAR_ID_LIST);
 
     if(strcmp(flag, "eth_intf && upstream") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->index for "Ethernet" is 0 (index in array)
+        assert_int_equal(info->index, 0);
         // 1. call function with no data
         handler("sig_name", &data, userdata);
         // 2. call function with empty string
@@ -145,6 +152,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
         amxc_var_add(cstring_t, &data, "ethIntf-ETH0");
         handler("sig_name", &data, userdata);
         // 4. call with same data
+        handler("sig_name", &data, userdata);
+    } else if(strcmp(flag, "bridge && upstream") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->index for "Bridge" is 1 (index in array)
+        assert_int_equal(info->index, 1);
+        // 1. call function with no data
         handler("sig_name", &data, userdata);
     } else {
         assert_string_equal(flag, "unknown");

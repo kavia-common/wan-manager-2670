@@ -1,9 +1,11 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: BSD-2-Clause-Patent
+** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
 **
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -60,37 +62,17 @@
 **
 ****************************************************************************/
 
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include <debug/sahtrace.h>
-#include <debug/sahtrace_macros.h>
+#include "test_wan_manager_nm.h"
+#include "test_utils.h"
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-
-#include "ctrl/mode_ctrl.h"
-#include "dm_wan_mode.h"
-#include "dm_wan-manager.h"
-#include "integration/autosensing/autosensing.h"
-#include "component.h"
-
-#define ME "as-ctrl"
-
-static amxb_bus_ctx_t* context = NULL;
-static amxb_bus_ctx_t* autosensing_get_context(void);
-
-static const char* autosensing = "X_PRPL-COM_WANAutoSensing.";
-
-amxd_status_t autosensing_set_enable(bool enable) {
-    return component_set_enable(autosensing, autosensing_get_context(), enable);
-}
-
-static amxb_bus_ctx_t* autosensing_get_context(void) {
-    if(NULL == context) {
-        context = amxb_be_who_has(autosensing);
-    }
-    return context;
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_wm_nm_change_physical_type)
+    };
+    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
 }

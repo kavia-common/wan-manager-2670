@@ -78,7 +78,8 @@
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 #include "ctrl/restart.h"
-#include "integration/netmodel/nm_query.h"
+#include "netmodel/nm_query.h"
+#include "autosensing/autosensing.h"
 
 #define ME "wan-man"
 typedef enum {
@@ -120,14 +121,16 @@ static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_
 static mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
-
+static void update_operation_mode(const char* new_operation_mode);
 
 void wan_mode_init(void) {
     amxd_object_t* templ = NULL;
+    char* current_operation_mode = NULL;
     const char* prefix = wan_get_prefix();
     if(NULL != prefix) {
         wan_manager = amxd_dm_findf(wan_get_dm(), "%sWANManager", prefix);
     }
+    when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
     nm_query_ll_init();
     templ = amxd_object_findf(wan_manager, ".WAN.");
     amxd_object_for_each(instance, it, templ) {
@@ -136,10 +139,32 @@ void wan_mode_init(void) {
         nm_query_ll_add(type);
         free(type);
     }
+
+    current_operation_mode = amxd_object_get_value(cstring_t, wan_manager, "OperationMode", NULL);
+    update_operation_mode(current_operation_mode);
+    free(current_operation_mode);
+exit:
+    return;
 }
 
 void wan_mode_cleanup(void) {
     wan_manager = NULL;
+}
+
+static void update_operation_mode(const char* new_operation_mode) {
+    when_str_empty_trace(new_operation_mode, exit, ERROR, "Bad new operation mode value");
+
+    if(0 == strcmp(new_operation_mode, "Automatic")) {
+        SAH_TRACEZ_INFO(ME, "WANManager set to automatic mode enable WANAutosensing");
+        autosensing_set_enable(true);
+    } else if(0 == strcmp(new_operation_mode, "Manual")) {
+        SAH_TRACEZ_INFO(ME, "WANManager set to manual mode disable WANAutosensing");
+        autosensing_set_enable(false);
+    } else {
+        SAH_TRACEZ_ERROR(ME, "Unsupported operation mode[%s]", new_operation_mode);
+    }
+exit:
+    return;
 }
 
 amxd_status_t wan_mode_dm_set(const char* value) {
@@ -159,22 +184,20 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* current_wan_
     size_t len = 0;
 
     when_null(wan_manager, exit);
+    new_wan_mode = get_wan_mode(wan_mode_to_set);
+    when_null_trace(new_wan_mode, exit, ERROR, "%s is not a valid WAN mode", wan_mode_to_set);
 
     if(NULL != current_wan_mode_str) {
         if(0 == strcmp(wan_mode_to_set, current_wan_mode_str)) {
             SAH_TRACEZ_INFO(ME, "%s WAN mode is already configured", wan_mode_to_set);
-            rc = amxd_status_ok;
+            rc = wan_mode_set_status(new_wan_mode, WAN_Mode_Enabled);
             goto exit;
         }
 
         current_wan_mode = get_wan_mode(current_wan_mode_str);
         len = strlen(current_wan_mode_str);
     }
-
     when_true(((NULL == current_wan_mode) && (0 != len)), exit);
-
-    new_wan_mode = get_wan_mode(wan_mode_to_set);
-    when_null_trace(new_wan_mode, exit, ERROR, "%s is not a valid WAN mode", wan_mode_to_set);
 
     if(NULL != current_wan_mode) {
         when_failed_trace((rc = wan_mode_disable(current_wan_mode)),
@@ -421,21 +444,21 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
     char* type = NULL;
     char* ipv4mode = NULL;
     char* ipv6mode = NULL;
-    mode_ctrl_t mode = IP_None;
+    int mode = (int) IP_None;
 
     if(include_type == true) {
         type = amxd_object_get_value(cstring_t, interface, "Type", NULL);
         when_str_empty_trace(type, exit, ERROR, "Empty 'Type' parameter");
-        mode = wan_mode_convert_from_str(type, false);
+        mode = (int) wan_mode_convert_from_str(type, false);
     }
 
     ipv4mode = amxd_object_get_value(cstring_t, interface, "IPv4Mode", NULL);
     when_str_empty_trace(ipv4mode, exit, ERROR, "Empty 'IPv4Mode' parameter");
-    mode |= wan_mode_convert_from_str(ipv4mode, true);
+    mode |= (int) wan_mode_convert_from_str(ipv4mode, true);
 
     ipv6mode = amxd_object_get_value(cstring_t, interface, "IPv6Mode", NULL);
     when_str_empty_trace(ipv6mode, exit, ERROR, "Empty 'IPv6Mode' parameter");
-    mode |= wan_mode_convert_from_str(ipv6mode, false);
+    mode |= (int) wan_mode_convert_from_str(ipv6mode, false);
 
 exit:
     SAH_TRACEZ_INFO(ME, "Type '%s', ipv4 '%s', ipv6 '%s': mode 0x%06X",
@@ -443,5 +466,11 @@ exit:
     free(type);
     free(ipv4mode);
     free(ipv6mode);
-    return mode;
+    return (mode_ctrl_t) mode;
+}
+
+void _update_autosensing(UNUSED const char* const event_name,
+                         const amxc_var_t* const event_data,
+                         UNUSED void* const priv) {
+    update_operation_mode(GETP_CHAR(event_data, "parameters.OperationMode.to"));
 }

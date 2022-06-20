@@ -93,7 +93,7 @@ amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, b
     amxc_var_init(&parameters);
     amxc_var_init(&ret);
 
-    when_null(bus, exit);
+    when_null_trace(bus, exit, ERROR, "amxb_bus_ctx_t was empty");
     when_str_empty(component, exit);
 
     SAH_TRACEZ_INFO(ME, "Set %s to %d", component, enable);

@@ -86,6 +86,9 @@ amxd_object_t* get_wan_mode(const char* alias);
 amxc_string_t* wan_mode_get_interface(void);
 mode_ctrl_t wan_mode_get_mode(void);
 
+void _update_autosensing(const char* const event_name,
+                         const amxc_var_t* const event_data,
+                         void* const priv);
 
 #ifdef __cplusplus
 }

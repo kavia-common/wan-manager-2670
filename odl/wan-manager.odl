@@ -109,6 +109,8 @@ include "${wan_manager_definition_file}";
 include "${wan_mode_definition_file}";
 include "${wan_mode_intf_definition_file}";
 
+requires "X_PRPL-COM_WANAutoSensing.";
+
 %define {
     entry-point "${name}".wan_manager_main;
 }

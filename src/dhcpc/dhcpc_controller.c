@@ -72,8 +72,8 @@
 #include <amxc/amxc_macros.h>
 
 #include "ctrl/mode_ctrl.h"
-#include "integration/dhcpc/dhcpc.h"
-#include "integration/ethernet/ethernet.h"
+#include "dhcpc/dhcpc.h"
+#include "ethernet/ethernet.h"
 #include "component.h"
 
 #define ME "dhcpc-ctrl"

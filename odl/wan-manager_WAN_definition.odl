@@ -38,5 +38,12 @@
 }
 
 %populate {
+    on event "dm:object-changed" call dm_wan_manager_physical_type_changed
+        filter 'path matches "${prefix_}WANManager." and
+            contains("parameters.PhysicalType")';
+
+    on event "dm:instance-added" call dm_wan_manager_wan_added
+       filter 'path matches "${prefix_}WANManager\.WAN\.$"';
+
     on event "*" call print_event;
 }

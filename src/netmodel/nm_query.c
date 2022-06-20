@@ -72,7 +72,7 @@
 
 #include <netmodel/client.h>
 
-#include "integration/netmodel/nm_query.h"
+#include "netmodel/nm_query.h"
 
 #define ME "netmod-ctrl"
 /**
@@ -152,6 +152,7 @@ static void nm_query_response_name_cb(UNUSED const char* sig_name,
     SAH_TRACEZ_INFO(ME, "Name query for PhysicalType = %s -> %s",
                     phys_types[info->index], name);
     when_str_empty(name, exit);
+    // If result has changed
     if(info->intf_name != NULL) {
         when_true((strcmp(info->intf_name, name) == 0), exit);
         netmodel_closeQuery(info->q_intf_path);
@@ -181,7 +182,10 @@ static int nm_query_create_name_query(nm_query_ll_info_t* info,
                                                netmodel_traverse_all,
                                                nm_query_response_name_cb, (void*) info);
     if(info->q_name != NULL) {
+        SAH_TRACEZ_INFO(ME, "Query getIntfs '%s' succeeded", amxc_string_get(&str_flags, 0));
         rv = 0;
+    } else {
+        SAH_TRACEZ_ERROR(ME, "Query getIntfs '%s' failed", amxc_string_get(&str_flags, 0));
     }
     amxc_string_clean(&str_flags);
     return rv;
@@ -195,11 +199,12 @@ int nm_query_ll_add(const char* name) {
     info = &ll_info[index];
     when_true_status(info->used, exit, rv = 0);
     when_null_trace(phys_types_flags[index], exit, WARNING,
-                    "Query flag for PhysicalType is not yet defined");
-    rv = nm_query_create_name_query(info, phys_types_flags[index]);
-    when_failed_trace(rv, exit, ERROR, "Query for %s failed", name);
+                    "Query flag for PhysicalType is not yet defined [index %d]", index);
+    SAH_TRACEZ_INFO(ME, "Create query for PhysicalType '%s' [index %d]", name, index);
     // index is used only for debug information
     info->index = index;
+    rv = nm_query_create_name_query(info, phys_types_flags[index]);
+    when_failed_trace(rv, exit, ERROR, "Query for %s failed", name);
     info->used = true;
 exit:
     return rv;

@@ -1,6 +1,8 @@
 /****************************************************************************
 **
-** Copyright (c) 2021 SoftAtHome
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -58,86 +60,97 @@
 **
 ****************************************************************************/
 
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_action.h>
+#include <amxc/amxc_macros.h>
+#include <amxb/amxb.h>
 
-#include "ctrl/mode_ctrl.h"
-#include "dhcpc/dhcpc.h"
-#include "ppp/ppp.h"
+#include "ethernet/ethernet.h"
+#include "component.h"
 
-#define ME "wan-man"
+#define ME "eth-ctrl"
 
-typedef struct {
-    mode_ctrl_t type;
-    mode_ctrl_t mode;
-    ctrl_fn enable;
-    ctrl_fn disable;
-} controller_item_t;
+static amxb_bus_ctx_t* context = NULL;
+static amxb_bus_ctx_t* ethernet_get_context(void);
+static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id);
 
-controller_item_t controllers [] = {
-    { TYPE_VLAN, (mode_ctrl_t) ((int) IPv4_DHCP | (int) IPv6_DHCP), dhcpc_enable, dhcpc_disable },
-    { TYPE_UNTAGGED, (mode_ctrl_t) ((int) IPv4_DHCP | (int) IPv6_DHCP), dhcpc_enable, dhcpc_disable },
-    { TYPE_VLAN, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_UNTAGGED, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_VLAN, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { TYPE_UNTAGGED, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
-    // last item of array must be 0
-    { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }
-};
-
-static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
-                                        mode_ctrl_t mode,
-                                        const amxc_var_t* const parameters,
-                                        bool enable) {
+amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
-    ctrl_fn call_fnc = enable ? ctrl->enable : ctrl->disable;
+    amxc_string_t str_search;
+    const char* lower_layer = NULL;
+    char* vlan_path = NULL;
+    int vlan_id = -1;
 
-    // if NULL, no action is needed -> OK
-    when_null_status(call_fnc, exit, rc = amxd_status_ok);
-    rc = call_fnc(mode, parameters);
+    amxc_string_init(&str_search, 0);
+    when_null(parameters, exit);
+    lower_layer = GETP_CHAR(parameters, "LowerLayer");
+    when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
+    vlan_id = GETP_UINT32(parameters, "VlanID");
+
+    amxc_string_setf(&str_search, "Device.Ethernet.VLANTermination." \
+                     "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);
+    vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_search, 0));
+
+    if((NULL == vlan_path) && enable) {
+        SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",
+                        vlan_id, lower_layer);
+
+        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id);
+        when_null_trace(vlan_path, exit, ERROR,
+                        "Cannot create VLAN configuration for id %d with lower lauer %s",
+                        vlan_id, lower_layer);
+    }
+    SAH_TRACEZ_INFO(ME, "vlan_path %s, lower_layer %s", vlan_path, lower_layer);
+
+    rc = component_set_enable(vlan_path, ethernet_get_context(), enable);
+    if(enable) {
+        amxc_var_add_key(cstring_t, (amxc_var_t*) parameters, "VLANTermination", vlan_path);
+    }
+
 exit:
+    free(vlan_path);
+    amxc_string_clean(&str_search);
     return rc;
 }
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
-                               const amxc_var_t* const parameters,
-                               bool enable) {
-    amxd_status_t rc = amxd_status_ok;
-    controller_item_t* ctrll = controllers;
-    int type = mode & MASK_TYPE;
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6);
-
-    SAH_TRACEZ_INFO(ME, "Type 0x%X ipmode 0x%X", type, ipmode);
-
-    when_false_trace((ipmode != 0), exit, INFO,
-                     "Nothing to do, IPv4Mode & IPv6Mode are 'none'");
-
-    rc = amxd_status_unknown_error;
-    when_null_trace(parameters, exit, ERROR, "Missing parameters");
-    when_false_trace((type != 0), exit, ERROR, "Type is 0");
-
-    for(int cnt = 0; (ctrll->type != 0) && (ipmode != 0); ctrll++, cnt++) {
-        SAH_TRACEZ_INFO(ME, "%d: Type 0x%X ipmode 0x%X", cnt, ctrll->type, ctrll->mode);
-        if(type != (type & (int) ctrll->type)) {
-            continue;
-        }
-        if((ipmode & ctrll->mode) != 0) {
-            rc = mode_ctrl_call_fnc(ctrll, mode, parameters, enable);
-            // Clear bits of IPv4Mode and / or IPv6Mode
-            ipmode &= ~ctrll->mode;
-        }
+static amxb_bus_ctx_t* ethernet_get_context(void) {
+    if(NULL == context) {
+        context = amxb_be_who_has("Ethernet.");
     }
+    return context;
+}
+
+static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
+    char* path = NULL;
+    amxc_string_t name;
+    amxc_var_t parameters;
+
+    amxc_string_init(&name, 0);
+    amxc_string_setf(&name, "vlan%d", id);
+    amxc_var_init(&parameters);
+    when_str_empty(lower_layer, exit);
+
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &parameters, "Name", amxc_string_get(&name, 0));
+    amxc_var_add_key(cstring_t, &parameters, "Alias", amxc_string_get(&name, 0));
+    amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
+    amxc_var_add_key(bool, &parameters, "Enable", false);
+    amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
+
+    path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, context);
+
 exit:
-    return rc;
+    amxc_var_clean(&parameters);
+    amxc_string_clean(&name);
+    return path;
 }

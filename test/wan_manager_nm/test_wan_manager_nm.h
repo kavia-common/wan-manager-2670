@@ -62,16 +62,10 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#ifndef __TEST_WAN_MANAGER_NM_H__
+#define __TEST_WAN_MANAGER_NM_H__
 
 #include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
@@ -84,65 +78,7 @@ extern "C"
 #include <amxo/amxo.h>
 #include <amxo/amxo_save.h>
 
-
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
-
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
-
-amxd_dm_t* PRIVATE wan_get_dm(void);
-
-amxo_parser_t* PRIVATE wan_get_parser(void);
-
-const char* PRIVATE wan_get_prefix(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
+void test_wm_nm_change_physical_type(void** state);
 
 
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-bool wan_mode_is_valid(void);
-
-void _dm_wan_manager_physical_type_changed(const char* const event_name,
-                                           const amxc_var_t* const event_data,
-                                           void* const priv);
-void _dm_wan_manager_wan_added(const char* const event_name,
-                               const amxc_var_t* const event_data,
-                               void* const priv);
-#ifdef __cplusplus
-}
-#endif
-
-#endif // __DM_WAN_MANAGER_H__
+#endif //__TEST_WAN_MANAGER_NM_H__

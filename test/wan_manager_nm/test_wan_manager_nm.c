@@ -1,9 +1,11 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: BSD-2-Clause-Patent
+** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
 **
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -60,52 +62,44 @@
 **
 ****************************************************************************/
 
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
-
-#include <debug/sahtrace.h>
-#include <debug/sahtrace_macros.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
+#include <string.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
 #include <amxc/amxc_macros.h>
 
-#include "ctrl/mode_ctrl.h"
-#include "integration/ppp/ppp.h"
-//#include "integration/ethernet/ethernet.h"
-//#include "component.h"
+#include "test_wan_manager_nm.h"
+#include "test_utils.h"
+#include "reset_mock.h"
 
-#define ME "ppp-ctrl"
+void test_wm_nm_change_physical_type(UNUSED void** state) {
+    amxd_trans_t trans;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan = amxd_dm_findf(test_get_dm(), "%sWANManager.WAN.1.", prefix);
+    assert_non_null(wan);
 
-amxd_status_t ppp_enable(mode_ctrl_t mode,
-                         UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
-    rc = amxd_status_ok;
-    return rc;
-}
+    amxd_trans_init(&trans);
+    amxd_trans_select_object(&trans, wan);
+    amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "Bridge");
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
+    test_handle_events();
 
-amxd_status_t ppp_disable(mode_ctrl_t mode,
-                          UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
-    rc = amxd_status_ok;
-    return rc;
-}
+    amxd_trans_clean(&trans);
 
-amxd_status_t ppp6_enable(mode_ctrl_t mode,
-                          UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
-    rc = amxd_status_ok;
-    return rc;
-}
+    amxd_trans_select_object(&trans, wan);
+    amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "GPON");
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
+    test_handle_events();
 
-amxd_status_t ppp6_disable(mode_ctrl_t mode,
-                           UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
-    rc = amxd_status_ok;
-    return rc;
+    amxd_trans_clean(&trans);
 }

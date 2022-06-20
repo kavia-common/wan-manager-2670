@@ -18,10 +18,6 @@ $(OBJDIR)/%.o: $(CTRL_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
-$(OBJDIR)/%.o: $(INTEGRATION_SRCDIR)/%.c | $(OBJDIR)/
-	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
-	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
-
 $(OBJDIR)/%.o: $(DHCPC_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)

@@ -81,8 +81,8 @@
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 
-#include "integration/autosensing/autosensing.h"
-#include "integration/netmodel/nm_query.h"
+#include "autosensing/autosensing.h"
+#include "netmodel/nm_query.h"
 
 #define ME "wan-man"
 
@@ -218,30 +218,6 @@ exit:
     return;
 }
 
-void _update_autosensing(UNUSED const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         UNUSED void* const priv) {
-
-    const char* new_wan_mode = GETP_CHAR(event_data, "parameters.OperationMode.to");
-    const char* old_wan_mode = GETP_CHAR(event_data, "parameters.OperationMode.from");
-
-    when_null(new_wan_mode, exit);
-    when_null(old_wan_mode, exit);
-    when_true((0 == strcmp(new_wan_mode, old_wan_mode)), exit);
-
-    if(0 == strcmp(new_wan_mode, "Automatic")) {
-        SAH_TRACEZ_INFO(ME, "WANManager set to automatic mode enable WANAutosensing");
-        autosensing_set_enable(true);
-    } else {
-        SAH_TRACEZ_INFO(ME, "WANManager set to manual mode disable WANAutosensing");
-        autosensing_set_enable(false);
-    }
-
-
-exit:
-    return;
-}
-
 amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             UNUSED amxd_param_t* param,
                                             UNUSED amxd_action_t reason,
@@ -287,7 +263,7 @@ exit:
 }
 
 bool wan_mode_is_valid(void) {
-    mode_ctrl_t mode = wan_mode_get_mode() & MASK_IPv4;
+    mode_ctrl_t mode = (mode_ctrl_t) (wan_mode_get_mode() & MASK_IPv4);
     bool rc = false;
     SAH_TRACEZ_INFO(ME, "IPv4 mode of current WANMode 0x%02X", mode);
 
@@ -356,4 +332,28 @@ exit:
     amxc_string_clean(&query_filter);
     amxc_var_clean(&query);
     return rc;
+}
+
+static void dm_wan_manager_change_physical(const amxc_var_t* const event_data,
+                                           const char* query) {
+    const char* type = NULL;
+    when_null_trace(event_data, exit, ERROR, "No data");
+    type = GETP_CHAR(event_data, query);
+    SAH_TRACEZ_INFO(ME, "PhysicalType: %s", type);
+    nm_query_ll_add(type);
+exit:
+    return;
+
+}
+
+void _dm_wan_manager_physical_type_changed(UNUSED const char* const event_name,
+                                           const amxc_var_t* const event_data,
+                                           UNUSED void* const priv) {
+    dm_wan_manager_change_physical(event_data, "parameters.PhysicalType.to");
+}
+
+void _dm_wan_manager_wan_added(UNUSED const char* const event_name,
+                               const amxc_var_t* const event_data,
+                               UNUSED void* const priv) {
+    dm_wan_manager_change_physical(event_data, "parameters.PhysicalType");
 }

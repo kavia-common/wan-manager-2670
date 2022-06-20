@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -69,88 +69,43 @@
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_action.h>
 #include <amxc/amxc_macros.h>
-#include <amxb/amxb.h>
 
-#include "integration/ethernet/ethernet.h"
-#include "component.h"
+#include "ctrl/mode_ctrl.h"
+#include "ppp/ppp.h"
+//#include "ethernet/ethernet.h"
+//#include "component.h"
 
-#define ME "eth-ctrl"
+#define ME "ppp-ctrl"
 
-static amxb_bus_ctx_t* context = NULL;
-static amxb_bus_ctx_t* ethernet_get_context(void);
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id);
-
-amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable) {
+amxd_status_t ppp_enable(mode_ctrl_t mode,
+                         UNUSED const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
-    amxc_string_t str_search;
-    const char* lower_layer = NULL;
-    char* vlan_path = NULL;
-    int vlan_id = -1;
-
-    amxc_string_init(&str_search, 0);
-    when_null(parameters, exit);
-    lower_layer = GETP_CHAR(parameters, "LowerLayer");
-    when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
-    vlan_id = GETP_UINT32(parameters, "VlanID");
-
-    amxc_string_setf(&str_search, "Device.Ethernet.VLANTermination." \
-                     "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);
-    vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_search, 0));
-
-    if((NULL == vlan_path) && enable) {
-        SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",
-                        vlan_id, lower_layer);
-
-        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id);
-        when_null_trace(vlan_path, exit, ERROR,
-                        "Cannot create VLAN configuration for id %d with lower lauer %s",
-                        vlan_id, lower_layer);
-    }
-    SAH_TRACEZ_INFO(ME, "vlan_path %s, lower_layer %s", vlan_path, lower_layer);
-
-    rc = component_set_enable(vlan_path, ethernet_get_context(), enable);
-    if(enable) {
-        amxc_var_add_key(cstring_t, (amxc_var_t*) parameters, "VLANTermination", vlan_path);
-    }
-
-exit:
-    free(vlan_path);
-    amxc_string_clean(&str_search);
+    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
+    rc = amxd_status_ok;
     return rc;
 }
 
-static amxb_bus_ctx_t* ethernet_get_context(void) {
-    if(NULL == context) {
-        context = amxb_be_who_has("Ethernet.");
-    }
-    return context;
+amxd_status_t ppp_disable(mode_ctrl_t mode,
+                          UNUSED const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
+    rc = amxd_status_ok;
+    return rc;
 }
 
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
-    char* path = NULL;
-    amxc_string_t name;
-    amxc_var_t parameters;
+amxd_status_t ppp6_enable(mode_ctrl_t mode,
+                          UNUSED const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
+    rc = amxd_status_ok;
+    return rc;
+}
 
-    amxc_string_init(&name, 0);
-    amxc_string_setf(&name, "vlan%d", id);
-    amxc_var_init(&parameters);
-    when_str_empty(lower_layer, exit);
-
-    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "Name", amxc_string_get(&name, 0));
-    amxc_var_add_key(cstring_t, &parameters, "Alias", amxc_string_get(&name, 0));
-    amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
-    amxc_var_add_key(bool, &parameters, "Enable", false);
-    amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
-
-    path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, context);
-
-exit:
-    amxc_var_clean(&parameters);
-    amxc_string_clean(&name);
-    return path;
+amxd_status_t ppp6_disable(mode_ctrl_t mode,
+                           UNUSED const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    SAH_TRACEZ_INFO(ME, "mode is 0x%06X", mode);
+    rc = amxd_status_ok;
+    return rc;
 }

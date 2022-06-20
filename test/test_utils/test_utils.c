@@ -78,8 +78,9 @@
 
 #include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
+#include "dm_wan_mode.h"
 #include "test_utils.h"
-#include "integration/dhcpc/dhcpc.h"
+#include "dhcpc/dhcpc.h"
 #include "dummy_backend.h"
 
 typedef struct {
@@ -124,6 +125,8 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "update_autosensing", AMXO_FUNC(_update_autosensing)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "set_wan_mode", AMXO_FUNC(_set_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_already_configured", AMXO_FUNC(_interface_already_configured)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);

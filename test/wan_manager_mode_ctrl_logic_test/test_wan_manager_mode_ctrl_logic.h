@@ -62,8 +62,8 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_WAN_MANAGER_STARTUP_H__
-#define __TEST_WAN_MANAGER_STARTUP_H__
+#ifndef __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
+#define __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -85,4 +85,4 @@ void test_wan_manager_switch_to_valid_different_intf(void** state);
 void test_wan_manager_switch_to_valid_same_intf(void** state);
 
 
-#endif //__TEST_WAN_MANAGER_STARTUP_H__
+#endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
