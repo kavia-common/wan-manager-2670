@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.3.2 - 2022-06-20(12:43:48 +0000)
+
+### Fixes
+
+- [WANManager] Update lower layer when creating new wanmodes
+
 ## Release v0.3.1 - 2022-06-09(08:11:35 +0000)
 
 ### Fixes
