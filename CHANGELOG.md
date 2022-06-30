@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.3.3 - 2022-06-30(08:21:31 +0000)
+
+### Fixes
+
+- Startup after getting lowerlayer name
+
 ## Release v0.3.2 - 2022-06-20(12:43:48 +0000)
 
 ### Fixes
