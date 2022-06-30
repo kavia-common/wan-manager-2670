@@ -75,6 +75,8 @@ extern "C"
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
 
+#include "ctrl/mode_ctrl.h"
+
 void wan_mode_init(void);
 void wan_mode_cleanup(void);
 amxd_status_t wan_mode_dm_set(const char* value);
@@ -85,7 +87,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode);
 amxd_object_t* get_wan_mode(const char* alias);
 amxc_string_t* wan_mode_get_interface(void);
 mode_ctrl_t wan_mode_get_mode(void);
-
+void wan_manager_found_ll(const char* phys_type);
 void _update_autosensing(const char* const event_name,
                          const amxc_var_t* const event_data,
                          void* const priv);

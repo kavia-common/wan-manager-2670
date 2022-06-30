@@ -92,7 +92,7 @@
     // Use ODL persistent storage
     storage-path = "${rw_data_path}/${name}";
     odl = {
-        load-dm-events = false,
+        load-dm-events = true,
         dm-load = true,
         dm-save = true,
         dm-save-on-changed = true,

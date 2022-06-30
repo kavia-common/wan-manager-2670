@@ -261,16 +261,18 @@ int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
             if(test_ip_interface_ll == 0) {
                 assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
             } else if(test_ip_interface_ll == 1) {
-                assert_string_equal(lower_layer, "");
+                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
             } else if(test_ip_interface_ll == 2) {
-                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
+                assert_string_equal(lower_layer, "");
             } else if(test_ip_interface_ll == 3) {
-                assert_string_equal(lower_layer, "");
-            } else if(test_ip_interface_ll == 4) {
                 assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
-            } else if(test_ip_interface_ll == 5) {
+            } else if(test_ip_interface_ll == 4) {
                 assert_string_equal(lower_layer, "");
+            } else if(test_ip_interface_ll == 5) {
+                assert_string_equal(lower_layer, "Device.Ethernet.Link.2.");
             } else if(test_ip_interface_ll == 6) {
+                assert_string_equal(lower_layer, "");
+            } else if(test_ip_interface_ll == 7) {
                 assert_string_equal(lower_layer, "Device.Ethernet.VLANTermination.1.");
             } else {
                 printf("\ntest_ip_interface_ll %d, lower layer %s\n",

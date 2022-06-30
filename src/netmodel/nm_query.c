@@ -69,9 +69,12 @@
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
-
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
 #include <netmodel/client.h>
 
+#include "dm_wan_mode.h"
 #include "netmodel/nm_query.h"
 
 #define ME "netmod-ctrl"
@@ -135,6 +138,7 @@ static void nm_query_response_ll_cb(UNUSED const char* sig_name,
     when_str_empty(lower_layer, exit);
     free(info->lower_layer);
     info->lower_layer = strdup(lower_layer);
+    wan_manager_found_ll(phys_types[info->index]);
 exit:
     return;
 }

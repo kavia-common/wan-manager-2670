@@ -74,7 +74,6 @@
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 
-#include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
 #include "ctrl/restart.h"
@@ -114,6 +113,7 @@ static const char* wan_mode_status_str[WAN_Mode_Nr_] = {
 };
 
 static amxd_object_t* wan_manager;
+static bool wan_autosensing_was_started = false;
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
                                      bool include_type);
@@ -122,33 +122,70 @@ static mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 static void update_operation_mode(const char* new_operation_mode);
+static void startup_wan_autosensing(void);
+static char* get_physical_type_for_wan_mode(const char* wan_mode);
 
 void wan_mode_init(void) {
-    amxd_object_t* templ = NULL;
-    char* current_operation_mode = NULL;
     const char* prefix = wan_get_prefix();
-    if(NULL != prefix) {
-        wan_manager = amxd_dm_findf(wan_get_dm(), "%sWANManager", prefix);
-    }
+
+    when_null_trace(prefix, exit, ERROR, "Failed to find the prefix");
+    wan_manager = amxd_dm_findf(wan_get_dm(), "%sWANManager", prefix);
     when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
     nm_query_ll_init();
-    templ = amxd_object_findf(wan_manager, ".WAN.");
-    amxd_object_for_each(instance, it, templ) {
-        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
-        char* type = amxd_object_get_value(cstring_t, instance, "PhysicalType", NULL);
-        nm_query_ll_add(type);
-        free(type);
-    }
-
-    current_operation_mode = amxd_object_get_value(cstring_t, wan_manager, "OperationMode", NULL);
-    update_operation_mode(current_operation_mode);
-    free(current_operation_mode);
 exit:
     return;
 }
 
 void wan_mode_cleanup(void) {
     wan_manager = NULL;
+}
+
+void wan_manager_found_ll(const char* phys_type) {
+    char* current_wan_mode_str = NULL;
+    char* physical_type = NULL;
+
+    startup_wan_autosensing();
+
+    //Check if the current wanmode needs this information
+    when_null_trace(wan_manager, exit, ERROR, "Did not get the wan-manager object yet")
+    when_null_trace(phys_type, exit, ERROR, "Bad phys type was given");
+    current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
+    when_null_trace(current_wan_mode_str, exit, ERROR, "Failed to get the current wan mode");
+
+    physical_type = get_physical_type_for_wan_mode(current_wan_mode_str);
+    when_null_trace(physical_type, exit, ERROR, "Failed to get the physical type for the current wan mode");
+    if(strcmp(phys_type, physical_type) == 0) {
+        wan_mode_set(current_wan_mode_str, "");
+    }
+exit:
+    free(physical_type);
+    free(current_wan_mode_str);
+}
+
+static char* get_physical_type_for_wan_mode(const char* wan_mode) {
+    amxd_object_t* wan_mode_inst = NULL;
+    char* physical_type = NULL;
+
+    when_null_trace(wan_mode, exit, ERROR, "Bad input parameter wan_mode given");
+    wan_mode_inst = get_wan_mode(wan_mode);
+    when_null_trace(wan_mode_inst, exit, ERROR, "%s is not a valid WAN mode", wan_mode);
+    physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
+exit:
+    return physical_type;
+}
+
+static void startup_wan_autosensing(void) {
+    char* current_operation_mode = NULL;
+
+    when_true(wan_autosensing_was_started, exit);
+    when_null_trace(wan_manager, exit, ERROR, "Did not get the wan-manager object yet")
+
+    current_operation_mode = amxd_object_get_value(cstring_t, wan_manager, "OperationMode", NULL);
+    update_operation_mode(current_operation_mode);
+    free(current_operation_mode);
+    wan_autosensing_was_started = true;
+exit:
+    return;
 }
 
 static void update_operation_mode(const char* new_operation_mode) {
@@ -198,16 +235,13 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* current_wan_
         len = strlen(current_wan_mode_str);
     }
     when_true(((NULL == current_wan_mode) && (0 != len)), exit);
-
-    if(NULL != current_wan_mode) {
-        when_failed_trace((rc = wan_mode_disable(current_wan_mode)),
-                          exit, ERROR, "WAN mode disable error [WANMode=%s]",
-                          current_wan_mode_str);
+    if((NULL != current_wan_mode) && (wan_mode_disable(current_wan_mode) != amxd_status_ok)) {
+        SAH_TRACEZ_ERROR(ME, "Failed to disable the previous wan mode");
     }
 
     wan_mode_dm_set(wan_mode_to_set);
-    when_failed_trace((rc = wan_mode_enable(new_wan_mode)), exit, ERROR,
-                      "WAN mode enable error [WANMode=%s]", wan_mode_to_set);
+    when_failed_trace((rc = wan_mode_enable(new_wan_mode)), exit, WARNING,
+                      "WAN mode enable error [WANMode=%s] -> should be added after netmodel cb", wan_mode_to_set);
 
     if(wan_mode_different_physical_type(current_wan_mode, new_wan_mode)) {
         rc = restart();
@@ -294,11 +328,11 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
     const char* lower_layer = NULL;
     char* physical_type = NULL;
 
-    when_null(wan_mode, exit);
+    when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
     physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
     lower_layer = nm_query_get_lower_layer(physical_type);
-    when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s" \
-                         " returned empty (or null)", physical_type);
+    when_str_empty_trace(lower_layer, exit, WARNING, "LowerLayer for PhysicalType %s" \
+                         " returned empty (or null) -> should be added after netmodel cb returns", physical_type);
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
@@ -309,7 +343,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
     }
 exit:
     free(physical_type);
-    rc = wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
+    wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
     return rc;
 }
 
