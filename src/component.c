@@ -131,7 +131,7 @@ char* component_get_path_instance(amxb_bus_ctx_t* bus,
     char* ret_str = NULL;
 
     amxc_var_init(&ret);
-    amxb_get(bus, query, 0, &ret, 3);
+    amxb_get(bus, query, 0, &ret, 5);
     result = amxc_var_key(GETP_ARG(&ret, "0.0"));
     when_str_empty_trace(result, exit, INFO, "No results for '%s'", query);
     SAH_TRACEZ_INFO(ME, "%s returned %s", query, result);

@@ -317,7 +317,7 @@ static bool interface_got_ip(const char* interface) {
     amxc_string_setf(&query_filter, "%s*", interface);
     SAH_TRACEZ_INFO(ME, "Check if IP.Interface path %s contain IPv4Addr objects", amxc_string_get(&query_filter, 0));
 
-    rv = amxb_get(amxb_be_who_has("IP."), amxc_string_get(&query_filter, 0), 0, &query, 3);
+    rv = amxb_get(amxb_be_who_has("IP."), amxc_string_get(&query_filter, 0), 0, &query, 5);
     when_failed_trace(rv, exit, ERROR, "Failed to get IPv4Address objects, return '%d'", rv);
 
     amxc_var_for_each(addresses, GETP_ARG(&query, "0")) {
