@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.3.4 - 2022-07-15(12:09:10 +0000)
+
+### Fixes
+
+- No dhcp v4 address on LAN
+
 ## Release v0.3.3 - 2022-06-30(08:21:31 +0000)
 
 ### Fixes
