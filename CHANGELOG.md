@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.4.0 - 2022-09-15(08:11:49 +0000)
+
+### New
+
+- Add a configuration for the Ethernet_PPP WANmode
+
 ## Release v0.3.4 - 2022-07-15(12:09:10 +0000)
 
 ### Fixes
