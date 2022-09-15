@@ -284,7 +284,7 @@ bool wan_mode_is_valid(void) {
 
 
 static amxd_status_t is_valid_mode(const char* new_wan_mode) {
-    return (NULL != new_wan_mode) && (NULL != get_wan_mode(new_wan_mode)) ? amxd_status_ok :  amxd_status_invalid_value;
+    return (NULL != new_wan_mode) && (NULL != get_wan_mode(new_wan_mode)) ? amxd_status_ok : amxd_status_invalid_value;
 }
 
 static amxd_status_t wan_mode_set_mode(amxd_object_t* const object, const char* mode) {

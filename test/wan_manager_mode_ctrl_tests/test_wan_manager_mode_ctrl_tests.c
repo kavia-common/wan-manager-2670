@@ -94,6 +94,10 @@ amxd_status_t __wrap_dhcpc_enable(mode_ctrl_t mode,
                                   UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_dhcpc_disable(mode_ctrl_t mode,
                                    UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_dhcpc6_enable(mode_ctrl_t mode,
+                                   UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_dhcpc6_disable(mode_ctrl_t mode,
+                                    UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_ppp_enable(mode_ctrl_t mode,
                                 UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_ppp_disable(mode_ctrl_t mode,
@@ -111,6 +115,18 @@ amxd_status_t __wrap_dhcpc_enable(UNUSED mode_ctrl_t mode,
 
 amxd_status_t __wrap_dhcpc_disable(UNUSED mode_ctrl_t mode,
                                    UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_DHCPC_DISABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_dhcpc6_enable(UNUSED mode_ctrl_t mode,
+                                   UNUSED const amxc_var_t* const parameters) {
+    calls_flags |= FNC_DHCPC_ENABLE;
+    return amxd_status_ok;
+}
+
+amxd_status_t __wrap_dhcpc6_disable(UNUSED mode_ctrl_t mode,
+                                    UNUSED const amxc_var_t* const parameters) {
     calls_flags |= FNC_DHCPC_DISABLE;
     return amxd_status_ok;
 }

@@ -1,6 +1,5 @@
 %define{
     %persistent object '${prefix_}WANManager' {
-
         /**
          * Set WAN mode
          * @param WANMode - value to which to change WANMode
@@ -8,15 +7,14 @@
          * @return - true on success
          * @version 1.0
          */
-         bool setWANMode(%in %mandatory string WANMode,
-                         %in string Autosensing);
+        bool setWANMode(%in %mandatory string WANMode, %in string Autosensing);
 
         /**
          * Get status of current WAN mode. Use by WANAutosensing
          * @return -  true when WANMode status is Enabled and configured interface obtain IP address
          * @version 1.0
          */
-         bool getCurrentWANModeStatus();
+        bool getCurrentWANModeStatus();
 
         /**
          *
@@ -24,21 +22,27 @@
          * @return - complete map with the whole configuration
          * @version 1.0
          */
-         string getWANMode();
+        string getWANMode();
 
         /**
          * Mode to which WAN interface is configured to
          * @version 1.0
          */
-         %persistent string WANMode {
+        %persistent string WANMode {
             on action validate call check_maximum_length 64;
             default "";
-         }
+        }
 
-         %persistent string OperationMode {
-           constraint enum ["Manual", "Automatic"];
-           default "Manual";
-         }
+        /**
+         * WANMode sensing operational mode.
+         * * OperationMode = Manual: The WANMode will be set fixed.
+         * * OperationMode = Automatic: The WANMode will be selected based on a WAN Autosensing mechanisme.
+         * @version 1.0
+         */
+        %persistent string OperationMode {
+            constraint enum ["Manual", "Automatic"];
+            default "Manual";
+        }
     }
 }
 

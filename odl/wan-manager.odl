@@ -110,6 +110,11 @@ include "${wan_mode_definition_file}";
 include "${wan_mode_intf_definition_file}";
 
 requires "X_PRPL-COM_WANAutoSensing.";
+requires "IP.";
+requires "DHCPv4.Client.";
+requires "DHCPv6.Client.";
+requires "PPP.";
+requires "Routing.";
 
 %define {
     entry-point "${name}".wan_manager_main;

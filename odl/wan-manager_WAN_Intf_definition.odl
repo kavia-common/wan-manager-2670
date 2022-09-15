@@ -1,98 +1,97 @@
 %define {
-   select '${prefix_}WANManager.WAN'  {
-
-     /**
-      *
-      * WAN mode definition
-      * @version 1.0
-      */
-      %persistent object Intf[4] {
+    select '${prefix_}WANManager.WAN' {
         /**
-          * A non-volatile unique key used to reference this instance (as defined in TR181)
-          * @version 1.0
-          */
-         %persistent %unique %key string Alias {
-             on action validate call check_maximum_length 64;
-         }
-
-         /**
-          * The textual name of interface (one of data, voip, mgmt, iptv)
-          * @version 1.0
-          */
-         %persistent string Name {
-            constraint enum ["","data", "voip", "mgmt", "iptv"];
-            on action validate call interface_already_configured;
-            default "";
-         }
-
-        /**
-          * PPP User name
-          * @version 1.0
-          */
-         %persistent string UserName{
-            on action validate call check_maximum_length 64;
-        }
-
-        /**
-         * PPP User password
+         *
+         * WAN mode definition
          * @version 1.0
          */
-        %persistent string Password;
+        %persistent object Intf[4] {
+            /**
+            * A non-volatile unique key used to reference this instance (as defined in TR181)
+            * @version 1.0
+            */
+            %persistent %unique %key string Alias {
+                on action validate call check_maximum_length 64;
+            }
 
-        /**
-         * Interface IPv4 configured mode
-         * @version 1.0
-         */
-        %persistent string IPv4Mode{
-            constraint enum ["dhcp4", "ppp4", "none", "static"];
-            default "none";
-        }
+            /**
+            * The textual name of interface (one of data, voip, mgmt, iptv)
+            * @version 1.0
+            */
+            %persistent string Name {
+                constraint enum ["","data", "voip", "mgmt", "iptv"];
+                on action validate call interface_already_configured;
+                default "";
+            }
 
-        /**
-         * Interface IPv6 configured mode
-         * @version 1.0
-         */
-        %persistent string IPv6Mode{
-            constraint enum ["dhcp6", "ppp6", "none", "static"];
-            default "none";
-        }
+            /**
+            * PPP User name
+            * @version 1.0
+            */
+            %persistent string UserName{
+                on action validate call check_maximum_length 64;
+            }
 
-        /**
-         * Mapped Lower layer interface
-         * @version 1.0
-         */
-        %persistent string IPReference{
-            default "";
-        }
+            /**
+            * PPP User password
+            * @version 1.0
+            */
+            %persistent string Password;
 
-        /**
-         * High level interface Type, one of "untagged", "vlan", "atm"
-         * @version 1.0
-         */
-        %persistent string Type{
-            constraint enum ["untagged", "vlan", "atm"];
-            default "untagged";
-        }
+            /**
+            * Interface IPv4 configured mode
+            * @version 1.0
+            */
+            %persistent string IPv4Mode{
+                constraint enum ["dhcp4", "ppp4", "none", "static"];
+                default "none";
+            }
 
-        /**
-         * Vlan ID, number between 0 and 4096
-         * @version 1.0
-         */
-        %persistent uint32 VlanID{
-            default 100;
-        }
+            /**
+            * Interface IPv6 configured mode
+            * @version 1.0
+            */
+            %persistent string IPv6Mode{
+                constraint enum ["dhcp6", "ppp6", "none", "static"];
+                default "none";
+            }
 
-        /**
-         * Vlan priority, number between -1 and 7
-         * -1 - priority not assigned
-         * @version 1.0
-         */
-        %persistent int32 VlanPriority{
-            on action validate call check_range { min = -1, max = 7};
-            default 0;
+            /**
+            * Mapped Lower layer interface
+            * @version 1.0
+            */
+            %persistent string IPReference{
+                default "";
+            }
+
+            /**
+            * High level interface Type, one of "untagged", "vlan", "atm"
+            * @version 1.0
+            */
+            %persistent string Type{
+                constraint enum ["untagged", "vlan", "atm"];
+                default "untagged";
+            }
+
+            /**
+            * Vlan ID, number between 0 and 4096
+            * @version 1.0
+            */
+            %persistent uint32 VlanID{
+                default 100;
+            }
+
+            /**
+            * Vlan priority, number between -1 and 7
+            * -1 - priority not assigned
+            * @version 1.0
+            */
+            %persistent int32 VlanPriority{
+                on action validate call check_range { min = -1, max = 7};
+                default 0;
+            }
         }
-      }
-   }
+    }
 }
 
 %populate {

@@ -75,15 +75,9 @@
 #include "dhcpc/dhcpc.h"
 #include "ethernet/ethernet.h"
 #include "component.h"
+#include "wan_manager_utils.h"
 
 #define ME "dhcpc-ctrl"
-
-static amxb_bus_ctx_t* dhcpv4_ctx = NULL;
-static amxb_bus_ctx_t* dhcpv6_ctx = NULL;
-static amxb_bus_ctx_t* ip_ctx = NULL;
-static amxb_bus_ctx_t* ip_get_context(void);
-static amxb_bus_ctx_t* dhcpv4_get_context(void);
-static amxb_bus_ctx_t* dhcpv6_get_context(void);
 
 static char* dhcpc_add_client_instance(amxb_bus_ctx_t* ctx,
                                        char ip,
@@ -109,122 +103,6 @@ static char* dhcpc_get_client(bool ipv4,
 exit:
     amxc_string_clean(&query);
     return path;
-}
-
-amxd_status_t dhcpc_enable(mode_ctrl_t mode,
-                           const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    char* dhcpv4_path = NULL;
-    char* dhcpv6_path = NULL;
-    const char* intf_alias = NULL;
-    const char* intf_path = NULL;
-    const char* lower_layer = NULL;
-
-    when_null(parameters, exit);
-    lower_layer = GETP_CHAR(parameters, "LowerLayer");
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-    }
-    intf_alias = GETP_CHAR(parameters, "Alias");
-    intf_path = GETP_CHAR(parameters, "IPReference");
-
-    when_str_empty(intf_alias, exit);
-    when_str_empty(intf_path, exit);
-    if((mode & IPv4_DHCP) != 0) {
-        dhcpv4_path = dhcpc_get_client(true, intf_path, intf_alias);
-        when_str_empty(dhcpv4_path, exit);
-    }
-    if((mode & IPv6_DHCP) != 0) {
-        dhcpv6_path = dhcpc_get_client(false, intf_path, intf_alias);
-        when_str_empty(dhcpv6_path, exit);
-    }
-    if((mode & TYPE_VLAN) != 0) {
-        lower_layer = GETP_CHAR(parameters, "VLANTermination");
-    }
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
-    when_failed(rc, exit);
-
-    if((mode & IPv4_DHCP) != 0) {
-        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
-        when_failed_trace(rc, exit, ERROR, "DHCPv4 Enable failed");
-    }
-    if((mode & IPv6_DHCP) != 0) {
-        rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
-        when_failed_trace(rc, exit, ERROR, "DHCPv6 Enable failed");
-    }
-exit:
-    free(dhcpv4_path);
-    free(dhcpv6_path);
-    return rc;
-}
-
-amxd_status_t dhcpc_disable(mode_ctrl_t mode,
-                            const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = NULL;
-    char* dhcpv4_path = NULL;
-    char* dhcpv6_path = NULL;
-
-    when_null(parameters, exit);
-    intf_path = GETP_CHAR(parameters, "IPReference");
-    when_str_empty(intf_path, exit);
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
-    when_failed(rc, exit);
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
-
-    if((mode & IPv4_DHCP) != 0) {
-        dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
-        if(dhcpv4_path != NULL) {
-            SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
-            rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
-            when_failed(rc, exit);
-        } else {
-            SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
-            rc = amxd_status_ok;
-        }
-    }
-    if((mode & IPv6_DHCP) != 0) {
-        dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
-        if(dhcpv6_path != NULL) {
-            SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
-            rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
-            when_failed(rc, exit);
-        } else {
-            SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
-            rc = amxd_status_ok;
-        }
-    }
-exit:
-    free(dhcpv4_path);
-    free(dhcpv6_path);
-    return rc;
-}
-
-static amxb_bus_ctx_t* ip_get_context(void) {
-    if(NULL == ip_ctx) {
-        ip_ctx = amxb_be_who_has("IP.");
-    }
-    return ip_ctx;
-}
-
-static amxb_bus_ctx_t* dhcpv4_get_context(void) {
-    if(NULL == dhcpv4_ctx) {
-        dhcpv4_ctx = amxb_be_who_has("DHCPv4.");
-    }
-    return dhcpv4_ctx;
-}
-
-static amxb_bus_ctx_t* dhcpv6_get_context(void) {
-    if(NULL == dhcpv6_ctx) {
-        dhcpv6_ctx = amxb_be_who_has("DHCPv6.");
-    }
-    return dhcpv6_ctx;
 }
 
 static char* dhcpc_add_client_instance(amxb_bus_ctx_t* ctx,
@@ -258,3 +136,138 @@ exit:
     return path;
 }
 
+amxd_status_t dhcpc_enable(mode_ctrl_t mode,
+                           const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    char* dhcpv4_path = NULL;
+    const char* intf_alias = GETP_CHAR(parameters, "Alias");
+    const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
+
+    when_str_empty(intf_alias, exit);
+    when_str_empty(intf_path, exit);
+
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
+        ethernet_vlan_set_enable(parameters, true);
+        lower_layer = GETP_CHAR(parameters, "VLANTermination");
+    }
+
+    // Get the matching DHCPv4 client
+    dhcpv4_path = dhcpc_get_client(true, intf_path, intf_alias);
+    when_str_empty(dhcpv4_path, exit);
+
+    // Enable the correct IPv4 Address instance
+    rc = ip_addr_toggle(intf_path, DHCP_ADDRESSING_TYPE, true);
+    when_failed(rc, exit);
+    // Set IP-manager LowerLayers parameter for the interface in the IPReference parameter
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
+    when_failed(rc, exit);
+
+    routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_DHCPV4);
+
+    // Enable the DHCPv4 Client
+    rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "DHCPv4 Enable failed");
+
+exit:
+    free(dhcpv4_path);
+    return rc;
+}
+
+amxd_status_t dhcpc_disable(mode_ctrl_t mode,
+                            const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    char* dhcpv4_path = NULL;
+
+    when_str_empty(intf_path, exit);
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
+    when_failed(rc, exit);
+    // Disable the correct IPv4 Address instance
+    rc = ip_addr_toggle(intf_path, DHCP_ADDRESSING_TYPE, false);
+    when_failed(rc, exit);
+
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
+        ethernet_vlan_set_enable(parameters, false);
+    }
+
+    dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
+    if(dhcpv4_path != NULL) {
+        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
+        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
+        when_failed(rc, exit);
+    } else {
+        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
+        rc = amxd_status_ok;
+    }
+
+exit:
+    free(dhcpv4_path);
+    return rc;
+}
+
+amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
+                            const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    char* dhcpv6_path = NULL;
+    const char* intf_alias = GETP_CHAR(parameters, "Alias");
+    const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
+
+    when_str_empty(intf_alias, exit);
+    when_str_empty(intf_path, exit);
+
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
+        ethernet_vlan_set_enable(parameters, true);
+        lower_layer = GETP_CHAR(parameters, "VLANTermination");
+    }
+
+    // Get the matching DHCPv6 client
+    dhcpv6_path = dhcpc_get_client(false, intf_path, intf_alias);
+    when_str_empty(dhcpv6_path, exit);
+
+    // Set IP-manager LowerLayers parameter for the interface in the IPReference parameter
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
+    when_failed(rc, exit);
+
+    // Enable the DHCPv6 Client
+    rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "DHCPv6 Enable failed");
+
+exit:
+    free(dhcpv6_path);
+    return rc;
+}
+
+amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
+                             const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    char* dhcpv6_path = NULL;
+
+    when_str_empty(intf_path, exit);
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
+    when_failed(rc, exit);
+
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
+        ethernet_vlan_set_enable(parameters, false);
+    }
+
+    dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
+    if(dhcpv6_path != NULL) {
+        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
+        rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
+        when_failed(rc, exit);
+    } else {
+        SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
+        rc = amxd_status_ok;
+    }
+
+exit:
+    free(dhcpv6_path);
+    return rc;
+}

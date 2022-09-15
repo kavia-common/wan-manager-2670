@@ -1,7 +1,11 @@
 /****************************************************************************
 **
-** Copyright (c) 2021 SoftAtHome
+** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
 **
+** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+**
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,7 +65,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
@@ -69,77 +72,81 @@
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxd/amxd_dm.h>
 
-#include "ctrl/mode_ctrl.h"
-#include "dhcpc/dhcpc.h"
-#include "ppp/ppp.h"
+#include "dm_wan-manager.h"
+#include "dm_wan_mode.h"
+#include "component.h"
 
+#include "wan_manager_utils.h"
 #define ME "wan-man"
 
-typedef struct {
-    mode_ctrl_t type;
-    mode_ctrl_t mode;
-    ctrl_fn enable;
-    ctrl_fn disable;
-} controller_item_t;
+;
+static amxb_bus_ctx_t* ip_ctx = NULL;
+static amxb_bus_ctx_t* dhcpv4_ctx = NULL;
+static amxb_bus_ctx_t* dhcpv6_ctx = NULL;
+static amxb_bus_ctx_t* ppp_ctx = NULL;
+static amxb_bus_ctx_t* routing_ctx = NULL;
 
-controller_item_t controllers [] = {
-    { TYPE_VLAN, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
-    { TYPE_UNTAGGED, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
-    { TYPE_VLAN, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_UNTAGGED, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_VLAN, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_UNTAGGED, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_VLAN, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { TYPE_UNTAGGED, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
-    // last item of array must be 0
-    { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }
-};
+amxb_bus_ctx_t* ip_get_context(void) {
+    if(NULL == ip_ctx) {
+        ip_ctx = amxb_be_who_has("IP.");
+    }
+    return ip_ctx;
+}
 
-static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
-                                        mode_ctrl_t mode,
-                                        const amxc_var_t* const parameters,
-                                        bool enable) {
+amxb_bus_ctx_t* dhcpv4_get_context(void) {
+    if(NULL == dhcpv4_ctx) {
+        dhcpv4_ctx = amxb_be_who_has("DHCPv4.");
+    }
+    return dhcpv4_ctx;
+}
+
+amxb_bus_ctx_t* dhcpv6_get_context(void) {
+    if(NULL == dhcpv6_ctx) {
+        dhcpv6_ctx = amxb_be_who_has("DHCPv6.");
+    }
+    return dhcpv6_ctx;
+}
+
+amxb_bus_ctx_t* ppp_get_context(void) {
+    if(NULL == ppp_ctx) {
+        ppp_ctx = amxb_be_who_has("PPP.");
+    }
+    return ppp_ctx;
+}
+
+amxb_bus_ctx_t* routing_get_context(void) {
+    if(NULL == routing_ctx) {
+        routing_ctx = amxb_be_who_has("Routing.");
+    }
+    return routing_ctx;
+}
+
+amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
-    ctrl_fn call_fnc = enable ? ctrl->enable : ctrl->disable;
+    amxc_string_t addr_path;
+    amxc_string_init(&addr_path, 0);
 
-    // if NULL, no action is needed -> OK
-    when_null_status(call_fnc, exit, rc = amxd_status_ok);
-    rc = call_fnc(mode, parameters);
+    amxc_string_setf(&addr_path, "%sIPv4Address.[AddressingType == '%s'].", intf_path, addr_type);
+    rc = component_set_enable(amxc_string_get(&addr_path, 0), ip_get_context(), enable);
+    when_failed_trace(rc, exit, ERROR, "Failed to %s ip address instance '%s'", enable ? "enable" : "disable", amxc_string_get(&addr_path, 0));
+
 exit:
+    amxc_string_clean(&addr_path);
     return rc;
 }
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
-                               const amxc_var_t* const parameters,
-                               bool enable) {
-    amxd_status_t rc = amxd_status_ok;
-    controller_item_t* ctrll = controllers;
-    int type = mode & MASK_TYPE;
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6);
+amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_string_t route_path;
+    amxc_string_init(&route_path, 0);
 
-    SAH_TRACEZ_INFO(ME, "Type 0x%X ipmode 0x%X", type, ipmode);
+    amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv4Forwarding.[Interface=='%s' && DestIPAddress=='0.0.0.0' && DestSubnetMask=='0.0.0.0'].", ip_path);
+    rc = component_set_str_param(amxc_string_get(&route_path, 0), routing_get_context(), "Origin", routing_origin);
+    when_failed_trace(rc, exit, ERROR, "Failed to set default route '%s' origin to '%s'", amxc_string_get(&route_path, 0), routing_origin);
 
-    when_false_trace((ipmode != 0), exit, INFO,
-                     "Nothing to do, IPv4Mode & IPv6Mode are 'none'");
-
-    rc = amxd_status_unknown_error;
-    when_null_trace(parameters, exit, ERROR, "Missing parameters");
-    when_false_trace((type != 0), exit, ERROR, "Type is 0");
-
-    for(int cnt = 0; (ctrll->type != 0) && (ipmode != 0); ctrll++, cnt++) {
-        SAH_TRACEZ_INFO(ME, "%d: Type 0x%X ipmode 0x%X", cnt, ctrll->type, ctrll->mode);
-        if(type != (type & (int) ctrll->type)) {
-            continue;
-        }
-        if((ipmode & ctrll->mode) != 0) {
-            rc = mode_ctrl_call_fnc(ctrll, mode, parameters, enable);
-            // Clear bits of IPv4Mode and / or IPv6Mode
-            ipmode &= ~ctrll->mode;
-        }
-    }
 exit:
+    amxc_string_clean(&route_path);
     return rc;
 }

@@ -288,6 +288,8 @@ int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx,
             calls.autosensing.enable = GETP_BOOL(args, "parameters.Enable");
         } else if(0 == strcmp("Device.Ethernet.VLANTermination.1.", object)) {
             rc = 0;
+        } else if(0 == strcmp("Device.IP.Interface.2.IPv4Address.[AddressingType == 'DHCP'].", object)) {
+            rc = 0;
         } else {
             printf("%s set function called\n", object);
             fflush(stdout);

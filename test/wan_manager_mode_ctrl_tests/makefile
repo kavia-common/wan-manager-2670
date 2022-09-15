@@ -13,6 +13,8 @@ OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 WRAP_FUNC=-Wl,--wrap=
 MOCK_WRAP = dhcpc_enable \
             dhcpc_disable \
+            dhcpc6_enable \
+            dhcpc6_disable \
             ppp_enable \
             ppp_disable \
             ppp6_enable \

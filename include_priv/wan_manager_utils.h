@@ -1,6 +1,8 @@
 /****************************************************************************
 **
-** Copyright (c) 2021 SoftAtHome
+** SPDX-License-Identifier: BSD-2-Clause-Patent
+**
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -57,89 +59,39 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__UTILS_H__)
+#define __UTILS_H__
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-#include <debug/sahtrace.h>
-#include <debug/sahtrace_macros.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxd/amxd_dm.h>
 
-#include "ctrl/mode_ctrl.h"
-#include "dhcpc/dhcpc.h"
-#include "ppp/ppp.h"
+#define DHCP_ADDRESSING_TYPE "DHCP"
+#define PPP_ADDRESSING_TYPE "IPCP"
 
-#define ME "wan-man"
+#define ROUTING_ORIGIN_DHCPV4 "DHCPv4"
+#define ROUTING_ORIGIN_IPCP "IPCP"
+#define ROUTING_ORIGIN_RIP "RIP"
+#define ROUTING_ORIGIN_OSPF "OSPF"
+#define ROUTING_ORIGIN_STATIC "Static"
+#define ROUTING_ORIGIN_AUTOMATIC "Automatic"
 
-typedef struct {
-    mode_ctrl_t type;
-    mode_ctrl_t mode;
-    ctrl_fn enable;
-    ctrl_fn disable;
-} controller_item_t;
+amxb_bus_ctx_t* ip_get_context(void);
+amxb_bus_ctx_t* dhcpv4_get_context(void);
+amxb_bus_ctx_t* dhcpv6_get_context(void);
+amxb_bus_ctx_t* ppp_get_context(void);
+amxb_bus_ctx_t* routing_get_context(void);
 
-controller_item_t controllers [] = {
-    { TYPE_VLAN, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
-    { TYPE_UNTAGGED, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
-    { TYPE_VLAN, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_UNTAGGED, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_VLAN, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_UNTAGGED, IPv4_PPP, ppp_enable, ppp_disable },
-    { TYPE_VLAN, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { TYPE_UNTAGGED, IPv6_PPP, ppp6_enable, ppp6_disable },
-    { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
-    // last item of array must be 0
-    { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }
-};
+amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable);
+amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin);
 
-static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
-                                        mode_ctrl_t mode,
-                                        const amxc_var_t* const parameters,
-                                        bool enable) {
-    amxd_status_t rc = amxd_status_unknown_error;
-    ctrl_fn call_fnc = enable ? ctrl->enable : ctrl->disable;
-
-    // if NULL, no action is needed -> OK
-    when_null_status(call_fnc, exit, rc = amxd_status_ok);
-    rc = call_fnc(mode, parameters);
-exit:
-    return rc;
+#ifdef __cplusplus
 }
+#endif
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
-                               const amxc_var_t* const parameters,
-                               bool enable) {
-    amxd_status_t rc = amxd_status_ok;
-    controller_item_t* ctrll = controllers;
-    int type = mode & MASK_TYPE;
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6);
-
-    SAH_TRACEZ_INFO(ME, "Type 0x%X ipmode 0x%X", type, ipmode);
-
-    when_false_trace((ipmode != 0), exit, INFO,
-                     "Nothing to do, IPv4Mode & IPv6Mode are 'none'");
-
-    rc = amxd_status_unknown_error;
-    when_null_trace(parameters, exit, ERROR, "Missing parameters");
-    when_false_trace((type != 0), exit, ERROR, "Type is 0");
-
-    for(int cnt = 0; (ctrll->type != 0) && (ipmode != 0); ctrll++, cnt++) {
-        SAH_TRACEZ_INFO(ME, "%d: Type 0x%X ipmode 0x%X", cnt, ctrll->type, ctrll->mode);
-        if(type != (type & (int) ctrll->type)) {
-            continue;
-        }
-        if((ipmode & ctrll->mode) != 0) {
-            rc = mode_ctrl_call_fnc(ctrll, mode, parameters, enable);
-            // Clear bits of IPv4Mode and / or IPv6Mode
-            ipmode &= ~ctrll->mode;
-        }
-    }
-exit:
-    return rc;
-}
+#endif // __UTILS_H__
