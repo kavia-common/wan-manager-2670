@@ -144,8 +144,8 @@ amxd_status_t dhcpc_enable(mode_ctrl_t mode,
     const char* intf_path = GETP_CHAR(parameters, "IPReference");
     const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
 
-    when_str_empty(intf_alias, exit);
-    when_str_empty(intf_path, exit);
+    when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");

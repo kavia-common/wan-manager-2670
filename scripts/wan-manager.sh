@@ -1,13 +1,17 @@
 #!/bin/sh
 ulimit -c unlimited
+name="wan-manager"
+name_pid="`pgrep ${name}`"
 
 case $1 in
     start|boot)
-	amxrt -D /etc/amx/wan-manager/wan-manager.odl
+        if [ -z "${name_pid}" ]; then
+            ${name} -D
+        fi
         ;;
     stop)
-        if [ -f /var/run/wan-manager.pid ]; then
-            kill `cat /var/run/wan-manager.pid`
+        if [ -n "${name_pid}" ]; then
+            kill ${name_pid}
         fi
         ;;
     debuginfo)

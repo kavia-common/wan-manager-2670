@@ -73,26 +73,37 @@
 
 #include "ctrl/mode_ctrl.h"
 #include "ppp/ppp.h"
-//#include "ethernet/ethernet.h"
+#include "ethernet/ethernet.h"
 #include "component.h"
 #include "wan_manager_utils.h"
 
 #define ME "ppp-ctrl"
 
-amxd_status_t ppp_enable(UNUSED mode_ctrl_t mode,
+static const char* ppp_get_client(UNUSED bool ipv4,
+                                  UNUSED const char* intf_path,
+                                  UNUSED const char* intf_alias) {
+    // For now a fixed path to the first instance is used, in the future it should be possible to get a specific instance
+    return "Device.PPP.Interface.1.";
+}
+
+amxd_status_t ppp_enable(mode_ctrl_t mode,
                          const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
+    const char* intf_alias = GETP_CHAR(parameters, "Alias");
     const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
 
+    when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+
+    // Get the matching PPP client
+    ppp_path = ppp_get_client(true, intf_path, intf_alias);
 
     // Enable the correct IPv4 Address instance
     rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, true);
     when_failed(rc, exit);
 
-    // For now a fixed path to the first instance is used, in the future it should be possible to get a specific instance
-    ppp_path = "Device.PPP.Interface.1.";
     // Set LowerLayers path in IP-manager to the PPP instance
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", ppp_path);
     when_failed_trace(rc, exit, ERROR, "Failed to set '%s.LowerLayers' to '%s'", intf_path, ppp_path);
@@ -101,24 +112,28 @@ amxd_status_t ppp_enable(UNUSED mode_ctrl_t mode,
     routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP);
 
     // VLANS
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
+        ethernet_vlan_set_enable(parameters, true);
+        lower_layer = GETP_CHAR(parameters, "VLANTermination");
+    }
 
     // Enable PPP
+    rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", lower_layer);
+    when_failed(rc, exit);
     rc = component_set_enable(ppp_path, ppp_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable PPP instance '%s'", ppp_path);
 
-    rc = amxd_status_ok;
 exit:
     return rc;
 }
 
-amxd_status_t ppp_disable(UNUSED mode_ctrl_t mode,
+amxd_status_t ppp_disable(mode_ctrl_t mode,
                           const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* ppp_path = NULL;
     const char* intf_path = GETP_CHAR(parameters, "IPReference");
+    const char* ppp_path = ppp_get_client(true, intf_path, NULL);
 
-    // For now a fixed path to the first instance is used, in the future it should be possible to get a specific instance
-    ppp_path = "Device.PPP.Interface.1.";
     // Disable PPP
     rc = component_set_enable(ppp_path, ppp_get_context(), false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable PPP instance '%s'", ppp_path);
@@ -127,12 +142,18 @@ amxd_status_t ppp_disable(UNUSED mode_ctrl_t mode,
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear '%s.LowerLayers'", intf_path);
+    rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", "");
+    when_failed_trace(rc, exit, ERROR, "Failed to clear '%s.LowerLayers'", ppp_path);
 
     // Disable the IPv4 address instance
     rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, false);
     when_failed(rc, exit);
 
-    rc = amxd_status_ok;
+    if((mode & TYPE_VLAN) != 0) {
+        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
+        ethernet_vlan_set_enable(parameters, false);
+    }
+
 exit:
     return rc;
 }
