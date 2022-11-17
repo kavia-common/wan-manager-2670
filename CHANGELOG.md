@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.5.0 - 2022-11-17(09:11:46 +0000)
+
+### New
+
+- [WAN-Manager] Not possible to use Ethernet_PPP with vlan
+
 ## Release v0.4.0 - 2022-09-15(08:11:49 +0000)
 
 ### New
