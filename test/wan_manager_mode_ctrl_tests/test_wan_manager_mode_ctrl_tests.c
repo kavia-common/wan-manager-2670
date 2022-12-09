@@ -90,10 +90,10 @@
 
 static int calls_flags = 0;
 
-amxd_status_t __wrap_dhcpc_enable(mode_ctrl_t mode,
-                                  UNUSED const amxc_var_t* const parameters);
-amxd_status_t __wrap_dhcpc_disable(mode_ctrl_t mode,
+amxd_status_t __wrap_dhcpc4_enable(mode_ctrl_t mode,
                                    UNUSED const amxc_var_t* const parameters);
+amxd_status_t __wrap_dhcpc4_disable(mode_ctrl_t mode,
+                                    UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_dhcpc6_enable(mode_ctrl_t mode,
                                    UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_dhcpc6_disable(mode_ctrl_t mode,
@@ -107,14 +107,14 @@ amxd_status_t __wrap_ppp6_enable(mode_ctrl_t mode,
 amxd_status_t __wrap_ppp6_disable(mode_ctrl_t mode,
                                   UNUSED const amxc_var_t* const parameters);
 
-amxd_status_t __wrap_dhcpc_enable(UNUSED mode_ctrl_t mode,
-                                  UNUSED const amxc_var_t* const parameters) {
+amxd_status_t __wrap_dhcpc4_enable(UNUSED mode_ctrl_t mode,
+                                   UNUSED const amxc_var_t* const parameters) {
     calls_flags |= FNC_DHCPC_ENABLE;
     return amxd_status_ok;
 }
 
-amxd_status_t __wrap_dhcpc_disable(UNUSED mode_ctrl_t mode,
-                                   UNUSED const amxc_var_t* const parameters) {
+amxd_status_t __wrap_dhcpc4_disable(UNUSED mode_ctrl_t mode,
+                                    UNUSED const amxc_var_t* const parameters) {
     calls_flags |= FNC_DHCPC_DISABLE;
     return amxd_status_ok;
 }
@@ -172,7 +172,7 @@ void test_mode_ctrl_invalid_mode(UNUSED void** state) {
 
     amxc_var_init(&parameters);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+    amxc_var_add_key(cstring_t, &parameters, "IPv4Reference", "Device.IP.Interface.2.");
 
     // Missing Type
     assert_int_not_equal(mode_ctrl_action(IPv4_DHCP, &parameters, false), amxd_status_ok);
@@ -193,12 +193,12 @@ static void test_mode_ctrl(mode_ctrl_t mode,
     calls_flags = 0;
 }
 
-void test_mode_ctrl_dhcpc_enable_mode(UNUSED void** state) {
+void test_mode_ctrl_dhcpc4_enable_mode(UNUSED void** state) {
     amxc_var_t parameters;
 
     amxc_var_init(&parameters);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+    amxc_var_add_key(cstring_t, &parameters, "IPv4Reference", "Device.IP.Interface.2.");
 
     // Type = "untagged", IPv4Mode = "dhcp4",  IPv6Mode = "none"
     test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
@@ -221,12 +221,12 @@ void test_mode_ctrl_dhcpc_enable_mode(UNUSED void** state) {
     amxc_var_clean(&parameters);
 }
 
-void test_mode_ctrl_dhcpc_disable_mode(UNUSED void** state) {
+void test_mode_ctrl_dhcpc4_disable_mode(UNUSED void** state) {
     amxc_var_t parameters;
 
     amxc_var_init(&parameters);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+    amxc_var_add_key(cstring_t, &parameters, "IPv4Reference", "Device.IP.Interface.2.");
 
     // Type = "untagged", IPv4Mode = "dhcp4",  IPv6Mode = "none"
     test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP, &parameters, false, amxd_status_ok, FNC_DHCPC_DISABLE);
@@ -254,7 +254,7 @@ void test_mode_ctrl_ppp_modes(UNUSED void** state) {
 
     amxc_var_init(&parameters);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "IPReference", "Device.IP.Interface.2.");
+    amxc_var_add_key(cstring_t, &parameters, "IPv4Reference", "Device.IP.Interface.2.");
 
     // Type = "untagged", IPv4Mode = "ppp4",  IPv6Mode = "none"
     test_mode_ctrl(TYPE_UNTAGGED | IPv4_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE);

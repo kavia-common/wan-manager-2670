@@ -81,46 +81,29 @@
 #include "wan_manager_utils.h"
 #define ME "wan-man"
 
-;
-static amxb_bus_ctx_t* ip_ctx = NULL;
-static amxb_bus_ctx_t* dhcpv4_ctx = NULL;
-static amxb_bus_ctx_t* dhcpv6_ctx = NULL;
-static amxb_bus_ctx_t* ppp_ctx = NULL;
-static amxb_bus_ctx_t* routing_ctx = NULL;
-
 amxb_bus_ctx_t* ip_get_context(void) {
-    if(NULL == ip_ctx) {
-        ip_ctx = amxb_be_who_has("IP.");
-    }
-    return ip_ctx;
+
+    return amxb_be_who_has("IP.");
 }
 
 amxb_bus_ctx_t* dhcpv4_get_context(void) {
-    if(NULL == dhcpv4_ctx) {
-        dhcpv4_ctx = amxb_be_who_has("DHCPv4.");
-    }
-    return dhcpv4_ctx;
+
+    return amxb_be_who_has("DHCPv4.");
 }
 
 amxb_bus_ctx_t* dhcpv6_get_context(void) {
-    if(NULL == dhcpv6_ctx) {
-        dhcpv6_ctx = amxb_be_who_has("DHCPv6.");
-    }
-    return dhcpv6_ctx;
+
+    return amxb_be_who_has("DHCPv6.");
 }
 
 amxb_bus_ctx_t* ppp_get_context(void) {
-    if(NULL == ppp_ctx) {
-        ppp_ctx = amxb_be_who_has("PPP.");
-    }
-    return ppp_ctx;
+
+    return amxb_be_who_has("PPP.");
 }
 
 amxb_bus_ctx_t* routing_get_context(void) {
-    if(NULL == routing_ctx) {
-        routing_ctx = amxb_be_who_has("Routing.");
-    }
-    return routing_ctx;
+
+    return amxb_be_who_has("Routing.");
 }
 
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable) {

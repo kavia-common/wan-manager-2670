@@ -20,9 +20,6 @@ MOCK_WRAP = netmodel_initialize		\
             amxp_proc_ctrl_start 	\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
-            amxb_add				\
-            amxb_get 				\
-            amxb_call				\
             restart
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))

@@ -209,7 +209,6 @@ amxd_status_t wan_mode_dm_set(const char* value) {
     when_null(value, exit);
 
     rc = amxd_object_set_value(cstring_t, wan_manager, "WANMode", value);
-
 exit:
     return rc;
 }
@@ -372,7 +371,7 @@ amxc_string_t* wan_mode_get_interface(void) {
     interface = amxd_object_get_instance(interface_tmpl, NULL, 1);
     when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
 
-    ip_ref = amxd_object_get_value(cstring_t, interface, "IPReference", NULL);
+    ip_ref = amxd_object_get_value(cstring_t, interface, "IPv4Reference", NULL);
     amxc_string_new(&interface_name, 0);
     amxc_string_setf(interface_name, "%sIPv4Address.", ip_ref);
 

@@ -57,10 +57,18 @@
             }
 
             /**
-            * Mapped Lower layer interface
+            * Mapped Lower layer interface for IPv4
             * @version 1.0
             */
-            %persistent string IPReference{
+            %persistent string IPv4Reference{
+                default "";
+            }
+
+            /**
+            * Mapped Lower layer interface for IPv6
+            * @version 1.0
+            */
+            %persistent string IPv6Reference{
                 default "";
             }
 

@@ -9,23 +9,30 @@ include "../../odl/${name}_WAN_definition.odl";
 include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
-    object Ethernet {
-        object VLANTermination{}
-    }
+    object Ethernet {}
 
     object Device{
-        object Ethernet {
-        object Link{}
+        object Ethernet{
+            object VLANTermination[] {
+                %unique %key string Alias;
+                uint32 VLANID;
+                string LowerLayers;
+            }
+            object Link{}
         }
     }
 
     object DHCPv4 {
-        object Client {}
+        object Client[] {
+            %unique %key string Alias;
+            bool Enable;
+            string Interface;
+        }
     }
 
-        object IP{
-            object Interface {}
-        }
+    object IP{
+        object Interface {}
+    }
 
     object NetDev{
         object Link {}
@@ -57,7 +64,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter Type = "untagged";
             parameter IPv4Mode = "dhcp4";
             parameter IPv6Mode = "none";
-            parameter IPReference = "Device.IP.Interface.2.";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
         }
     }
 
@@ -69,7 +77,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv6Mode = "none";
             parameter VlanID = 201;
             parameter VlanPriority = 0;
-            parameter IPReference = "Device.IP.Interface.2.";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
         }
     }
 
@@ -82,7 +90,9 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
                     parameter Name = "data";
                     parameter Type = "untagged";
                     parameter IPv4Mode = "dhcp4";
-                    parameter IPReference = "Device.IP.Interface.2.";
+                    parameter IPv6Mode= "dhcp6";
+                    parameter IPv4Reference = "Device.IP.Interface.2.";
+                    parameter IPv6Reference = "Device.IP.Interface.2.";
                 }
             }
         }
@@ -97,9 +107,24 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
                     parameter Name = "data";
                     parameter Type = "untagged";
                     parameter IPv4Mode = "dhcp4";
-                    parameter IPReference = "Device.IP.Interface.2.";
+                    parameter IPv6Mode= "dhcp6";
+                    parameter IPv4Reference = "Device.IP.Interface.2.";
+                    parameter IPv6Reference = "Device.IP.Interface.2.";
                 }
             }
+        }
+    }
+
+    object 'DHCPv4.Client' {
+        instance add (1, "wan") {
+            parameter Interface = "Device.IP.Interface.2.";
+        }
+    }
+
+    object 'Device.Ethernet.VLANTermination' {
+        instance add (1, "vlan201") {
+            parameter LowerLayers = "Device.Ethernet.Link.2.";
+            parameter VLANID = 201;
         }
     }
 }

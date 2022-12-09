@@ -72,6 +72,7 @@ extern "C" {
 #include <amxd/amxd_types.h>
 #include <amxb/amxb.h>
 
+amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value);
 amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
 char* component_get_path_instance(amxb_bus_ctx_t* bus,

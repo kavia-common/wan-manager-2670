@@ -11,8 +11,8 @@ SOURCES += $(wildcard ./*.c) $(MOCK_SOURCES) $(TEST_UTILS_SOURCES)
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 
 WRAP_FUNC=-Wl,--wrap=
-MOCK_WRAP = dhcpc_enable \
-            dhcpc_disable \
+MOCK_WRAP = dhcpc4_enable \
+            dhcpc4_disable \
             dhcpc6_enable \
             dhcpc6_disable \
             ppp_enable \

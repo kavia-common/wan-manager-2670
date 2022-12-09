@@ -2,10 +2,18 @@
     select Device {
         object IP {
             object Interface[] {
+
+                bool Enable;
+                bool IPv6Enable;
+                bool IPv4Enable;
+                string LowerLayers;
+
                 object IPv4Address[] {
                     string Status = "Disabled";
                     string IPAddress;
                     string SubnetMask;
+                    string AddressingType;
+                    bool Enable;
                 }
             }
         }
@@ -14,6 +22,22 @@
 
 %populate {
     object Device.IP.Interface {
-        instance add(2, "wan");
+        instance add(2, "wan") {
+            object IPv4Address {
+                instance add(0,"") {
+                    parameter AddressingType = "DHCP";
+                }
+            }
+        }
+    }
+
+    object Device.IP.Interface {
+        instance add(6, "wan6") {
+            object IPv4Address {
+                instance add(0,"") {
+                    parameter AddressingType = "DHCP";
+                }
+            }
+        }
     }
 }

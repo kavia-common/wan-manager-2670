@@ -85,8 +85,8 @@ typedef struct {
 } controller_item_t;
 
 controller_item_t controllers [] = {
-    { TYPE_VLAN, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
-    { TYPE_UNTAGGED, IPv4_DHCP, dhcpc_enable, dhcpc_disable },
+    { TYPE_VLAN, IPv4_DHCP, dhcpc4_enable, dhcpc4_disable },
+    { TYPE_UNTAGGED, IPv4_DHCP, dhcpc4_enable, dhcpc4_disable },
     { TYPE_VLAN, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
     { TYPE_UNTAGGED, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
     { TYPE_VLAN, IPv4_PPP, ppp_enable, ppp_disable },

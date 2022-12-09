@@ -83,36 +83,35 @@
 
 #define ME "com-ctrl"
 
-amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
+amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
     amxd_status_t rc = amxd_status_unknown_error;
-    amxc_var_t args;
     amxc_var_t parameters;
     amxc_var_t ret;
 
-    amxc_var_init(&args);
     amxc_var_init(&parameters);
     amxc_var_init(&ret);
 
     when_null_trace(bus, exit, ERROR, "amxb_bus_ctx_t was empty");
     when_str_empty(component, exit);
 
-    SAH_TRACEZ_INFO(ME, "Set %s to %d", component, enable);
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    SAH_TRACEZ_INFO(ME, "Set %s.%s to %d", component, param, value);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(bool, &parameters, "Enable", enable);
-    amxc_var_set_key(&args, "parameters", &parameters, AMXC_VAR_FLAG_COPY);
+    amxc_var_add_key(bool, &parameters, param, value);
 
-    if(AMXB_STATUS_OK != amxb_call(bus, component, "_set", &args, &ret, 5)) {
-        SAH_TRACEZ_ERROR(ME, "%s client set enable %d failed", component, enable);
+    if(AMXB_STATUS_OK != amxb_set(bus, component, &parameters, &ret, 5)) {
+        SAH_TRACEZ_ERROR(ME, "%s.%s client set enable %d failed", component, param, value);
         goto exit;
     }
     rc = amxd_status_ok;
 
 exit:
-    amxc_var_clean(&args);
     amxc_var_clean(&parameters);
     amxc_var_clean(&ret);
     return rc;
+}
+
+amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
+    return component_set_bool(component, bus, "Enable", enable);
 }
 
 /**
@@ -164,11 +163,9 @@ exit:
 
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
     amxd_status_t rc = amxd_status_unknown_error;
-    amxc_var_t args;
     amxc_var_t parameters;
     amxc_var_t ret;
 
-    amxc_var_init(&args);
     amxc_var_init(&parameters);
     amxc_var_init(&ret);
 
@@ -178,19 +175,16 @@ amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus
     when_str_empty(component, exit);
 
     SAH_TRACEZ_INFO(ME, "'%s%s' = '%s'", component, param, value);
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &parameters, param, value);
-    amxc_var_set_key(&args, "parameters", &parameters, AMXC_VAR_FLAG_COPY);
 
-    if(AMXB_STATUS_OK != amxb_call(bus, component, "_set", &args, &ret, 5)) {
+    if(AMXB_STATUS_OK != amxb_set(bus, component, &parameters, &ret, 5)) {
         SAH_TRACEZ_ERROR(ME, "%s client set param %s failed", component, param);
         goto exit;
     }
     rc = amxd_status_ok;
 
 exit:
-    amxc_var_clean(&args);
     amxc_var_clean(&parameters);
     amxc_var_clean(&ret);
     return rc;

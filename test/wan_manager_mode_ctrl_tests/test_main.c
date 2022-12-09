@@ -73,8 +73,8 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_mode_ctrl_missing_parameter),
         cmocka_unit_test(test_mode_ctrl_invalid_mode),
-        cmocka_unit_test(test_mode_ctrl_dhcpc_enable_mode),
-        cmocka_unit_test(test_mode_ctrl_dhcpc_disable_mode),
+        cmocka_unit_test(test_mode_ctrl_dhcpc4_enable_mode),
+        cmocka_unit_test(test_mode_ctrl_dhcpc4_disable_mode),
         cmocka_unit_test(test_mode_ctrl_ppp_modes)
     };
     return cmocka_run_group_tests(tests, test_mode_ctrl_setup, test_mode_ctrl_teardown);

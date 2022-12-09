@@ -84,8 +84,8 @@ int test_mode_ctrl_teardown(void** state);
 
 void test_mode_ctrl_missing_parameter(void** state);
 void test_mode_ctrl_invalid_mode(void** state);
-void test_mode_ctrl_dhcpc_enable_mode(void** state);
-void test_mode_ctrl_dhcpc_disable_mode(void** state);
+void test_mode_ctrl_dhcpc4_enable_mode(void** state);
+void test_mode_ctrl_dhcpc4_disable_mode(void** state);
 void test_mode_ctrl_ppp_modes(void** state);
 
 #endif //__TEST_WAN_MANAGER_MODE_CTRL_TEST_H__
