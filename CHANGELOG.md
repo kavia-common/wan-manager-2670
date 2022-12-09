@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.6.0 - 2022-12-09(14:14:57 +0000)
+
+### New
+
+- Create support for mixed IPModes
+
 ## Release v0.5.1 - 2022-12-09(09:31:59 +0000)
 
 ### Fixes
