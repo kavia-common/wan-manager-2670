@@ -1,5 +1,6 @@
 #!/bin/sh
-ulimit -c unlimited
+[ -f /etc/environment ] && source /etc/environment
+ulimit -c ${ULIMIT_CONFIGURATION:0}
 name="wan-manager"
 name_pid="`pgrep ${name}`"
 
