@@ -15,13 +15,13 @@
             }
 
             /**
-            * The textual name of interface (one of data, voip, mgmt, iptv)
+            * The textual name of interface (one of wan, voip, mgmt, iptv)
             * @version 1.0
             */
             %persistent string Name {
-                constraint enum ["","data", "voip", "mgmt", "iptv"];
+                constraint enum ["wan", "voip", "mgmt", "iptv"];
                 on action validate call interface_already_configured;
-                default "";
+                default "wan";
             }
 
             /**

@@ -289,8 +289,6 @@ amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
         rc = wan_mode_intf_disable(interface, lower_layer);
         when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
-        // For now, use only first instance
-        break;
     }
 exit:
     free(physical_type);
@@ -337,8 +335,6 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
         rc = wan_mode_intf_enable(interface, lower_layer);
         when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
-        // For now, use only first instance
-        break;
     }
 exit:
     free(physical_type);
