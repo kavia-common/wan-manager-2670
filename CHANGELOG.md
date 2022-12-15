@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.7.0 - 2022-12-15(08:22:06 +0000)
+
+### New
+
+- [WANMode] Add default WANModes (Ethernet_DHCP and Ethernet_PPP)
+
 ## Release v0.6.0 - 2022-12-09(14:14:57 +0000)
 
 ### New
