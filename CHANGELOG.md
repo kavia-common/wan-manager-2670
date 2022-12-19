@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.7.1 - 2022-12-19(16:15:22 +0000)
+
+### Fixes
+
+- LLA address does not come back to IP.Interface.2. when switching back from ppp-mode to wan-mode
+
 ## Release v0.7.0 - 2022-12-15(08:22:06 +0000)
 
 ### New
