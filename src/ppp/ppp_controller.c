@@ -100,17 +100,6 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     // Get the matching PPP client
     ppp_path = ppp_get_client(true, intf_path, intf_alias);
 
-    // Enable the correct IPv4 Address instance
-    rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the correct IPv4 Address instance");
-
-    // Set LowerLayers path in IP-manager to the PPP instance
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", ppp_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to set '%s.LowerLayers' to '%s'", intf_path, ppp_path);
-
-    // Set the default route origin
-    routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP);
-
     // VLANS
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
@@ -123,6 +112,17 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     when_failed(rc, exit);
     rc = component_set_enable(ppp_path, ppp_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable PPP instance '%s'", ppp_path);
+
+    // Set LowerLayers path in IP-manager to the PPP instance
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", ppp_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to set '%s.LowerLayers' to '%s'", intf_path, ppp_path);
+
+    // Enable the correct IPv4 Address instance
+    rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable the correct IPv4 Address instance");
+
+    // Set the default route origin
+    routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP);
 
     // Enable the right IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "Enable", true);
@@ -141,10 +141,6 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
 
     when_str_empty(intf_path, exit);
-
-    // Disable the right IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "Enable", false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
 
     // Disable PPP
     rc = component_set_enable(ppp_path, ppp_get_context(), false);

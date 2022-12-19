@@ -197,8 +197,14 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
 
     when_str_empty(intf_path, exit);
 
-    rc = component_set_bool(intf_path, ip_get_context(), "Enable", false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
+    dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
+    if(dhcpv4_path != NULL) {
+        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
+        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
+        when_failed(rc, exit);
+    } else {
+        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
+    }
 
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
@@ -210,15 +216,6 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
         ethernet_vlan_set_enable(parameters, false);
-    }
-
-    dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
-    if(dhcpv4_path != NULL) {
-        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
-        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
-    } else {
-        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
-        rc = amxd_status_ok;
     }
 
 exit:
@@ -243,13 +240,13 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
         lower_layer = GETP_CHAR(parameters, "VLANTermination");
     }
 
-    // Enable IPv6 on the IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
-
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv6Reference LowerLayers to '%s'", lower_layer);
+
+    // Enable IPv6 on the IP interface
+    rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
 
     //Enable the whole interface
     rc = component_set_bool(intf_path, ip_get_context(), "Enable", true);
@@ -280,13 +277,6 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
 
     when_str_empty(intf_path, exit);
 
-    //Disable the whole interface
-    rc = component_set_bool(intf_path, ip_get_context(), "Enable", false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
-
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
-    when_failed(rc, exit);
-
     dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
     if(dhcpv6_path != NULL) {
         SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
@@ -299,6 +289,9 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     // Disable IPv6 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable IPv6 on %s", intf_path);
+
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
+    when_failed(rc, exit);
 
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
