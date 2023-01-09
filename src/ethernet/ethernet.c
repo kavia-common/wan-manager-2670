@@ -134,6 +134,7 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
     char* path = NULL;
     amxc_string_t name;
     amxc_var_t parameters;
+    amxc_var_t* tmp = NULL;
 
     amxc_string_init(&name, 0);
     amxc_string_setf(&name, "vlan%d", id);
@@ -141,8 +142,9 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
     when_str_empty(lower_layer, exit);
 
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &parameters, "Name", amxc_string_get(&name, 0));
-    amxc_var_add_key(cstring_t, &parameters, "Alias", amxc_string_get(&name, 0));
+    tmp = amxc_var_add_new_key(&parameters, "Name");
+    amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&name));
+    amxc_var_add_key(cstring_t, &parameters, "Alias", GET_CHAR(tmp, NULL));
     amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
     amxc_var_add_key(bool, &parameters, "Enable", false);
     amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
