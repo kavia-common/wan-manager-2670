@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.7.2 - 2023-01-09(09:22:44 +0000)
+
+### Fixes
+
+- avoidable copies of strings, htables and lists
+
 ## Release v0.7.1 - 2022-12-19(16:15:22 +0000)
 
 ### Fixes
