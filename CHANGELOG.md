@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.7.3 - 2023-01-09(11:54:14 +0000)
+
+### Fixes
+
+- RoutingManager does not get its interface reference updated when switching modes in wan-manager
+
 ## Release v0.7.2 - 2023-01-09(09:22:44 +0000)
 
 ### Fixes
