@@ -92,12 +92,12 @@ static amxd_dm_t dm;
 static amxo_parser_t parser;
 static const char* odl_defs = "../test_utils/wan-manager_test.odl";
 static const char* odl_ip_mock = "../mocks/mock_ip.odl";
+static const char* odl_routing_mock = "../mocks/mock_routing.odl";
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
     amxp_signal_t* signal = NULL;
     amxb_bus_ctx_t* bus_ctx = NULL;
-
 
     assert_int_equal(amxd_dm_init(&dm), amxd_status_ok);
     assert_int_equal(amxo_parser_init(&parser), 0);
@@ -120,6 +120,7 @@ int test_wan_manager_setup(UNUSED void** state) {
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_routing_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser,
@@ -130,7 +131,6 @@ int test_wan_manager_setup(UNUSED void** state) {
                                          bus_ctx)
                      , 0);
     assert_int_equal(amxb_register(bus_ctx, &dm), 0);
-
 
     _wan_manager_main(0, &dm, &parser);
 

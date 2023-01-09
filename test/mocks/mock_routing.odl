@@ -1,0 +1,14 @@
+%define {
+    select Device {
+        object Routing {
+            object RouteInformation {
+                object InterfaceSetting[] {
+
+                    string Alias;
+                    string Interface;
+                    string PreferredRouteFlag;
+                }
+            }
+        }
+    }
+}

@@ -79,6 +79,8 @@
 
 #define ME "dhcpc-ctrl"
 
+static int routing_nr_inst = 0;
+
 /**
  * @brief
  *
@@ -94,8 +96,8 @@
 char* dhcpc_get_client(bool ipv4,
                        const char* intf_path,
                        const char* intf_alias) {
-    amxc_string_t query;
-    amxc_string_t upper_query;
+    amxc_string_t test_path;
+    amxc_string_t upper_test_path;
     amxc_string_t param;
     amxb_bus_ctx_t* ctx = ipv4 ? dhcpv4_get_context() : dhcpv6_get_context();
     amxc_var_t dhcp_data;
@@ -104,41 +106,93 @@ char* dhcpc_get_client(bool ipv4,
     char ip = ipv4 ? '4' : '6';
     char* path = NULL;
 
-    amxc_string_init(&query, 0);
-    amxc_string_setf(&query, "DHCPv%c.Client.[Interface=='%s'].", ip, intf_path);
-    amxc_string_init(&upper_query, 0);
-    amxc_string_setf(&upper_query, "DHCPv%c.Client.", ip);
+    amxc_string_init(&test_path, 0);
+    amxc_string_setf(&test_path, "DHCPv%c.Client.[Interface=='%s'].", ip, intf_path);
+    amxc_string_init(&upper_test_path, 0);
+    amxc_string_setf(&upper_test_path, "DHCPv%c.Client.", ip);
     amxc_string_init(&param, 0);
     amxc_var_init(&dhcp_data);
 
-    path = component_get_path_instance(ctx, amxc_string_get(&query, 0));
+    path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
     if((NULL == path) && (NULL != intf_alias) && !ipv4) {
         SAH_TRACEZ_INFO(ME, "DHCPv%c.Client.[Interface=='%s']. instance does not exist." \
                         " Selecting the first one", ip, intf_path);
 
-        amxb_get_instances(ctx, amxc_string_get(&upper_query, 0), 0, &dhcp_data, 10);
+        amxb_get_instances(ctx, amxc_string_get(&upper_test_path, 0), 0, &dhcp_data, 10);
         instance = amxc_var_get_first(&dhcp_data);
         when_null_trace(instance, exit, ERROR, "Getting the DHCPv%c clients timed out", ipv4);
 
         if(instance != NULL) {
-            amxc_string_setf(&param, "DHCPv%c.Client.%s.", ip, GETP_CHAR(amxc_var_get_first(instance), "Alias"));
+            amxc_string_setf(&param, "DHCPv%c.Client.%s.", ip, GETP_CHAR(instance, "0.Alias"));
             rv = component_set_str_param(amxc_string_get(&param, 0), ctx, "Interface", intf_path);
-            when_failed_trace(rv, skip, ERROR, "Could not change the Interface parameter");
+            when_failed_trace(rv, exit, ERROR, "Could not change the DHCPv%c Client Interface parameter", ip);
 
-            path = component_get_path_instance(ctx, amxc_string_get(&query, 0));
-            when_null_trace(path, skip, ERROR, "DHCPv%c Client interface change error", ip);
-
-            goto exit;
+            path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
+            when_null_trace(path, exit, ERROR, "DHCPv%c Client interface change error", ip);
         }
-skip:
-        when_null_trace(path, exit, ERROR, "DHCPv%c Client Interface error", ip);
     }
 exit:
     amxc_var_clean(&dhcp_data);
-    amxc_string_clean(&upper_query);
-    amxc_string_clean(&query);
+    amxc_string_clean(&upper_test_path);
+    amxc_string_clean(&test_path);
     amxc_string_clean(&param);
+    return path;
+}
+
+
+/**
+ * @brief Function that returns the path of a Routing.RouteInformation.InterfaceSetting. instance
+ * if the interface path exists. If the interface path does not exist, the function creates a blank
+ * Routing.RouteInformation.InterfaceSetting. instance while also providing the path to it.
+ *
+ * @param intf_path
+ * @return The path to the found/created instance of Routing.RouteInformation.InterfaceSetting., NULL if it fails to create the instance.
+ */
+char* routing_get_interfacesetting(const char* intf_path) {
+    amxb_bus_ctx_t* ctx = routing_get_context();
+    amxc_string_t test_path;
+    amxc_var_t parameter;
+    amxc_var_t* tmp = NULL;
+    amxc_string_t alias;
+    char* path = NULL;
+    const char* tag = "Wan-Manager";
+
+    amxc_string_init(&test_path, 0);
+    amxc_string_init(&alias, 0);
+    amxc_var_init(&parameter);
+
+    when_null_trace(intf_path, exit, ERROR, "Null interface path provided for the Routing mananger");
+
+    amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
+
+    path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
+
+    if(path == NULL) {
+        amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '']");
+        path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
+
+        // Create the instance if none are found in the routing manager
+        if(path == NULL) {
+            routing_nr_inst++;
+            amxc_string_setf(&alias, "%s-%d", tag, routing_nr_inst);
+
+            amxc_var_set_type(&parameter, AMXC_VAR_ID_HTABLE);
+            tmp = amxc_var_add_new_key(&parameter, "Alias");
+            amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&alias));
+            amxc_var_add_key(cstring_t, &parameter, "Interface", "");
+            amxc_var_add_key(cstring_t, &parameter, "PreferredRouteFlag", "High");
+
+            //Add the instance to the datamodel
+            path = component_add_instance("Device.Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
+            when_null_trace(path, exit, ERROR, "Could not add a blank InterfaceSetting to the Routing plugin");
+        }
+    }
+
+exit:
+    amxc_var_clean(&parameter);
+    amxc_string_clean(&test_path);
+    amxc_string_clean(&alias);
     return path;
 }
 
@@ -230,9 +284,13 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     const char* intf_alias = GETP_CHAR(parameters, "Alias");
     const char* intf_path = GETP_CHAR(parameters, "IPv6Reference");
     const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
+    char* route_path = routing_get_interfacesetting(intf_path);
 
     when_str_empty(intf_alias, exit);
     when_str_empty(intf_path, exit);
+
+    rc = component_set_str_param(route_path, routing_get_context(), "Interface", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to update the Routing manager's interface with %s", intf_path);
 
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
@@ -265,6 +323,7 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     }
 
 exit:
+    free(route_path);
     free(dhcpv6_path);
     return rc;
 }
@@ -274,8 +333,10 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GETP_CHAR(parameters, "IPv6Reference");
     char* dhcpv6_path = NULL;
+    char* route_path = routing_get_interfacesetting(intf_path);
 
-    when_str_empty(intf_path, exit);
+    rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
+    when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");
 
     dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
     if(dhcpv6_path != NULL) {
@@ -299,6 +360,7 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     }
 
 exit:
+    free(route_path);
     free(dhcpv6_path);
     return rc;
 }
