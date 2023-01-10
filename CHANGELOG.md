@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.7.4 - 2023-01-10(11:07:45 +0000)
+
+### Fixes
+
+- [Wan Manager] PPP credentials not used
+
 ## Release v0.7.3 - 2023-01-09(11:54:14 +0000)
 
 ### Fixes
