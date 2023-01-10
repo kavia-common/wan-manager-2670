@@ -26,6 +26,7 @@
 
             /**
             * PPP User name
+            * Takes precedence over username filled in tr181-ppp plugin, except when it is empty.
             * @version 1.0
             */
             %persistent string UserName{
@@ -34,6 +35,7 @@
 
             /**
             * PPP User password
+            * Takes precedence over password filled in tr181-ppp plugin, except when it is empty.
             * @version 1.0
             */
             %persistent string Password;

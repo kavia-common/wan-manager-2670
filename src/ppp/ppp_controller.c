@@ -93,6 +93,8 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* intf_alias = GETP_CHAR(parameters, "Alias");
     const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
     const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
+    const char* username = GETP_CHAR(parameters, "UserName");
+    const char* password = GETP_CHAR(parameters, "Password");
 
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
@@ -107,9 +109,20 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         lower_layer = GETP_CHAR(parameters, "VLANTermination");
     }
 
-    // Enable PPP
+    // Setup and Enable PPP
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", lower_layer);
     when_failed(rc, exit);
+
+    // Only override default PPP credentials if they are set in our Datamodel
+    if((username != NULL) && (username[0] != 0)) {
+        rc = component_set_str_param(ppp_path, ppp_get_context(), "Username", username);
+        when_failed(rc, exit);
+    }
+    if((password != NULL) && (password[0] != 0)) {
+        rc = component_set_str_param(ppp_path, ppp_get_context(), "Password", password);
+        when_failed(rc, exit);
+    }
+
     rc = component_set_enable(ppp_path, ppp_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable PPP instance '%s'", ppp_path);
 
