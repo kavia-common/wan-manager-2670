@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.8.0 - 2023-01-12(10:31:42 +0000)
+
+### New
+
+- Add the possibility to configure the DNS (Mode + Servers)
+
 ## Release v0.7.4 - 2023-01-10(11:07:45 +0000)
 
 ### Fixes
