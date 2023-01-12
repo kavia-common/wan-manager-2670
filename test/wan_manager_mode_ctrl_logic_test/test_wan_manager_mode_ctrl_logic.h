@@ -85,6 +85,8 @@ void test_wan_manager_switch_to_valid_different_intf(void** state);
 void test_wan_manager_switch_to_valid_same_intf(void** state);
 void test_wan_manager_routing_interface_switch(void** state);
 void test_wan_manager_routing_interface_create(void** state);
+void test_wan_manager_dns_inst_add(void** state);
+void test_wan_manager_dns_inst_remove(void** state);
 
 
 #endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__

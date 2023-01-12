@@ -189,3 +189,26 @@ exit:
     amxc_var_clean(&ret);
     return rc;
 }
+
+char* component_del_instance(const char* object_path,
+                             amxb_bus_ctx_t* bus) {
+    amxc_var_t* value = NULL;
+    char* path = NULL;
+    amxc_var_t ret;
+    amxc_var_init(&ret);
+
+    when_str_empty(object_path, exit);
+    when_null(bus, exit);
+
+    if(AMXB_STATUS_OK != amxb_del(bus, object_path, 0, NULL, &ret, 5)) {
+        SAH_TRACEZ_ERROR(ME, "Could not delete instance %s", object_path);
+        goto exit;
+    }
+    value = GETP_ARG(&ret, "0.path");
+    if(value != NULL) {
+        path = amxc_var_take(cstring_t, value);
+    }
+exit:
+    amxc_var_clean(&ret);
+    return path;
+}

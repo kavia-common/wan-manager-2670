@@ -12,6 +12,7 @@ SRCDIR = .
 CTRL_SRCDIR = ./ctrl
 DHCPC_INT_SRC = ./dhcpc
 PPP_INT_SRC = ./ppp
+DNS_INT_SRC = ./dns
 AUTOSENSING_INT_SRC = ./autosensing
 ETHERNET_INT_SRC = ./ethernet
 NETMODEL_INT_SRC = ./netmodel
@@ -27,8 +28,9 @@ SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(AUTOSENSING_INT_SRC)/*.c \
  				 $(NETMODEL_INT_SRC)/*.c    \
  				 $(DHCPC_INT_SRC)/*.c       \
- 				 $(PPP_INT_SRC)/*.c       \
- 				 $(ETHERNET_INT_SRC)/*.c)
+ 				 $(PPP_INT_SRC)/*.c         \
+ 				 $(ETHERNET_INT_SRC)/*.c    \
+				 $(DNS_INT_SRC)/*.c)
 
 
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
@@ -84,6 +86,10 @@ $(OBJDIR)/%.o: $(ETHERNET_INT_SRC)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(NETMODEL_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(DNS_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

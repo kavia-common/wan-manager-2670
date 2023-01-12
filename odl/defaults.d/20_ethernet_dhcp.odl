@@ -4,7 +4,7 @@
             parameter Alias = "Ethernet_DHCP";
             parameter PhysicalType = "Ethernet";
         }
-     }
+    }
 
     object '${prefix_}WANManager.WAN.Ethernet_DHCP.Intf'{
         instance add(0,"wan"){

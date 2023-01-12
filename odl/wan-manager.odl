@@ -51,6 +51,7 @@ requires "DHCPv4.Client.";
 requires "DHCPv6.Client.";
 requires "PPP.";
 requires "Routing.";
+requires "DNS.";
 
 %define {
     entry-point "${name}".wan_manager_main;

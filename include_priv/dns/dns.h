@@ -62,8 +62,8 @@
 **
 ****************************************************************************/
 
-#if !defined(__MODE_CTRL_H__)
-#define __MODE_CTRL_H__
+#if !defined(__DNS_H__)
+#define __DNS_H__
 
 #ifdef __cplusplus
 extern "C"
@@ -71,46 +71,21 @@ extern "C"
 #endif
 
 #include <stdbool.h>
-
-#include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
 
-typedef enum {
-    IP_None       = 0x000000,
-    IPv4_DHCP     = 0x000001,
-    IPv4_PPP      = 0x000002,
-    IPv4_STATIC   = 0x000004,
-    IPv6_DHCP     = 0x000100,
-    IPv6_PPP      = 0x000200,
-    IPv6_STATIC   = 0x000400,
-    MASK_DHCP     = 0x000101,
-    MASK_PPP      = 0x000202,
-    MASK_STATIC   = 0x000404,
-    TYPE_VLAN     = 0x010000,
-    TYPE_UNTAGGED = 0x020000,
-    TYPE_ATM      = 0x040000,
-    MASK_IPv4     = 0x0000FF,
-    MASK_IPv6     = 0x00FF00,
-    MASK_TYPE     = 0xFF0000
-} mode_ctrl_t;
-
-typedef enum {
-    DNS_DHCPv4              = 0b00010,
-    DNS_DHCPv6              = 0b00100,
-    DNS_RouterAdvertisement = 0b01000,
-    DNS_IPCP                = 0b10000,
-    DNS_STATIC              = 0b00001,
-    DNS_DYNAMIC             = 0b11110,
-    DNS_NONE                = 0b11111
-} dns_mode_t;
-
-typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
-
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);
+dns_mode_t string_to_dns_mode(const char* dns_mode);
+amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode);
+amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode);
+amxd_status_t dns_server_toggle(const char* dns_mode, amxd_object_t* wan_mode, bool toggle);
+amxd_status_t dns_server_mod_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4, bool rm);
+amxd_status_t dns_server_del_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4);
+amxd_status_t dns_server_add_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4);
+amxd_status_t dns_servers_setup(amxd_object_t* interface, const char* dns_mode, bool ipv4, bool toggle);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __MODE_CTRL_H__
+#endif // __DNS_H__

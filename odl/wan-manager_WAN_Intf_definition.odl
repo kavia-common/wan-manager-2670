@@ -100,6 +100,88 @@
                 on action validate call check_range { min = -1, max = 7};
                 default 0;
             }
+
+            /**
+            * Static IPv4 network configuration
+            * Only applicable if Mode4 is set to static
+            * Only one instance is expected per wan_mode
+            * @version 1.0
+            */
+            %persistent object IPv4Address[1]{
+
+                /**
+                * Static IPv4 Address
+                * @version 1.0
+                */
+                %persistent string IPv4Address{
+                    on action validate call check_maximum_length 15;
+                }
+
+                /**
+                * Static IPv4 Subnetmask
+                * @version 1.0
+                */
+                %persistent string SubnetMask{
+                    on action validate call check_maximum_length 15;
+                }
+
+                /**
+                * Static IPv4 default router address
+                * @version 1.0
+                */
+                %persistent string DefaultRouter{
+                    on action validate call check_maximum_length 15;
+                }
+
+                /**
+                * comma separated list of static IPv4 DNS Server addresses.
+                * at most 4 ipv4 addresses can be provided.
+                * @version 1.0
+                */
+                %persistent csv_string DNSServers{
+                    on action validate call check_maximum_length 64;
+                }
+            }
+
+            /**
+            * Static IPv6 network configuration
+            * Only applicable if Mode6 is set to static
+            * Only one instance is expected per wan_mode
+            * @version 1.0
+            */
+            %persistent object IPv6Address[1]{
+        
+                /**
+                * Static IPv6 Address
+                * @version 1.0
+                */
+                %persistent string IPv6Address{
+                    on action validate call check_maximum_length 45;
+                }
+
+                /**
+                * Static IPv6 PrefixLength, typically a number between 0 and 128
+                * @version 1.0
+                */
+                %persistent uint32 PrefixLength = 64;
+
+                /**
+                * Static IPv6 default router address
+                * @version 1.0
+                */
+                %persistent string DefaultRouter{
+                    on action validate call check_maximum_length 45;
+                }
+
+                /**
+                * comma separated list of static IPv6 DNS Server addresses.
+                * at most 4 ipv6 addresses can be provided.
+                * @version 1.0
+                */
+                %persistent csv_string DNSServers{
+                    on action validate call check_maximum_length 180;
+                }
+            }
         }
     }
 }

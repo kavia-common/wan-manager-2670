@@ -79,6 +79,9 @@
 #include "ctrl/restart.h"
 #include "netmodel/nm_query.h"
 #include "autosensing/autosensing.h"
+#include "wan_manager_utils.h"
+#include "component.h"
+#include "dns/dns.h"
 
 #define ME "wan-man"
 typedef enum {
@@ -275,6 +278,7 @@ exit:
 amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = NULL;
+    const char* dns_mode = NULL;
     char* physical_type = NULL;
 
     when_null(wan_mode, exit);
@@ -282,6 +286,7 @@ amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
 
     physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
     lower_layer = nm_query_get_lower_layer(physical_type);
+    dns_mode = GET_CHAR(amxd_object_get_param_value(wan_mode, "DNSMode"), NULL);
     when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s" \
                          " returned empty (or null)", physical_type);
 
@@ -290,13 +295,17 @@ amxd_status_t wan_mode_disable(amxd_object_t* wan_mode) {
         rc = wan_mode_intf_disable(interface, lower_layer);
         when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
     }
+
+    rc = dns_mode_unset(wan_mode, dns_mode);
+    when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to unset the DNS mode", rc);
+
 exit:
     free(physical_type);
     return rc;
 }
 
-static amxd_status_t wan_mode_intf_enable (amxd_object_t* interface,
-                                           const char* lower_layer) {
+static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
+                                          const char* lower_layer) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
     mode_ctrl_t mode = IP_None;
@@ -324,10 +333,12 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = NULL;
     char* physical_type = NULL;
+    char* dns_mode = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
     physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
     lower_layer = nm_query_get_lower_layer(physical_type);
+    dns_mode = amxd_object_get_value(cstring_t, wan_mode, "DNSMode", NULL);
     when_str_empty_trace(lower_layer, exit, WARNING, "LowerLayer for PhysicalType %s" \
                          " returned empty (or null) -> should be added after netmodel cb returns", physical_type);
 
@@ -336,8 +347,13 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode) {
         rc = wan_mode_intf_enable(interface, lower_layer);
         when_failed_trace(rc, exit, ERROR, "failed with code %d", rc);
     }
+
+    rc = dns_mode_set(wan_mode, dns_mode);
+    when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to set the DNS mode", rc);
+
 exit:
     free(physical_type);
+    free(dns_mode);
     wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
     return rc;
 }

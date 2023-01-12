@@ -34,6 +34,12 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         object Interface {}
     }
 
+    object DNS{
+        object Relay {
+            object Forwarding{}
+        }
+    }
+
     object NetDev{
         object Link {}
     }
@@ -61,6 +67,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add ("demo_vlanmode"){
            parameter Alias = "demo_vlanmode";
            parameter PhysicalType = "Ethernet";
+           parameter DNSMode = "Static";
         }
 
         instance add ("demo_pppmode"){
@@ -146,6 +153,18 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add (1, "vlan201") {
             parameter LowerLayers = "Device.Ethernet.Link.2.";
             parameter VLANID = 201;
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DNSServers = "8.8.8.8,1.1.1.1";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf.wan.IPv6Address'{
+        instance add("ipv6"){
+            parameter DNSServers = "2620:119:35::35";
         }
     }
 }

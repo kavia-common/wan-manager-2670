@@ -106,6 +106,11 @@ amxb_bus_ctx_t* routing_get_context(void) {
     return amxb_be_who_has("Routing.");
 }
 
+amxb_bus_ctx_t* dns_get_context(void) {
+
+    return amxb_be_who_has("DNS.");
+}
+
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t addr_path;

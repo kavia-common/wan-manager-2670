@@ -93,6 +93,7 @@ static amxo_parser_t parser;
 static const char* odl_defs = "../test_utils/wan-manager_test.odl";
 static const char* odl_ip_mock = "../mocks/mock_ip.odl";
 static const char* odl_routing_mock = "../mocks/mock_routing.odl";
+static const char* odl_dns_mock = "../mocks/mock_dns.odl";
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
@@ -121,6 +122,8 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_routing_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_dns_mock, root_obj), 0);
+
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser,

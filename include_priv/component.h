@@ -80,6 +80,8 @@ char* component_get_path_instance(amxb_bus_ctx_t* bus,
 char* component_add_instance(const char* object_path,
                              amxc_var_t* parameter,
                              amxb_bus_ctx_t* bus);
+char* component_del_instance(const char* object_path,
+                             amxb_bus_ctx_t* bus);
 
 #ifdef __cplusplus
 }

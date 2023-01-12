@@ -1,0 +1,81 @@
+%define {
+    select Device {
+        object DNS {
+            object Relay{
+                object Forwarding[]{
+
+                    string Alias;
+                    string DNSServer;
+                    bool Enable;
+                    string Interface;
+                    string Status;
+                    string Type;
+                    string Tag;
+                    string State;
+                }
+            }
+        }
+    }
+}
+
+%populate{
+    object Device.DNS.Relay.Forwarding {
+        instance add(2,"recovery-1") {
+            parameter DNSServer = "8.8.8.8";
+            parameter Enable = true;
+            parameter Interface ="Device.Logical.Interface.1.";
+            parameter State ="Standby";
+            parameter Status = "Disabled";
+            parameter Tag = "Failover";
+            parameter Type = "Static";
+        }
+    }
+
+    object Device.DNS.Relay.Forwarding {
+        instance add(3,"ppp-2") {
+            parameter DNSServer = "";
+            parameter Enable = true;
+            parameter Interface ="Device.PPP.Interface.1.";
+            parameter State ="";
+            parameter Status = "Disabled";
+            parameter Tag = "";
+            parameter Type = "IPCP";
+        }
+    }
+
+    object Device.DNS.Relay.Forwarding {
+        instance add(4,"dhcpv4-1") {
+            parameter DNSServer = "172.16.110.10";
+            parameter Enable = true;
+            parameter Interface ="Device.Logical.Interface.1.";
+            parameter State ="Used";
+            parameter Status = "Enabled";
+            parameter Tag = "";
+            parameter Type = "DHCPv4";
+        }
+    }
+
+    object Device.DNS.Relay.Forwarding {
+        instance add(5,"dhcpv6-1") {
+            parameter DNSServer = "2a02:1802:94:3200::10";
+            parameter Enable = true;
+            parameter Interface ="Device.Logical.Interface.1.";
+            parameter State ="Used";
+            parameter Status = "Enabled";
+            parameter Tag = "";
+            parameter Type = "DHCPv6";
+        }
+    }
+
+    object Device.DNS.Relay.Forwarding {
+        instance add(6,"ra-1") {
+            parameter DNSServer = "";
+            parameter Enable = true;
+            parameter Interface ="Device.Logical.Interface.1.";
+            parameter State ="Used";
+            parameter Status = "Disabled";
+            parameter Tag = "";
+            parameter Type = "RouterAdvertisement";
+        }
+    }
+}
