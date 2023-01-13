@@ -1,0 +1,59 @@
+{
+    "Controller" : "mod-autosensing",
+    "OperationMode" : "Manual",
+    "SensingPolicy" : "AtBoot",
+    "SensingTimeout" : 25,
+    "SupportedControllers" : "mod-autosensing",
+    "WANMode" : "test_mode",
+    "modes" : [
+        {
+            "Alias" : "demo_wanmode",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        },
+        {
+            "Alias" : "demo_vlanmode",
+            "DNSMode" : "Static",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        },
+        {
+            "Alias" : "test_mode",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Enabled"
+        },
+        {
+            "Alias" : "demo_pppmode",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        },
+        {
+            "Alias" : "demo_SFP",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "SFP",
+            "Status" : "Disabled"
+        },
+        {
+            "Alias" : "demo_test",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        }
+    ],
+    "sense_current_mode" : true
+}

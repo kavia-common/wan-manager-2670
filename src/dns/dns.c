@@ -165,7 +165,7 @@ exit:
 }
 
 
-amxd_status_t dns_server_toggle(const char* dns_mode, UNUSED amxd_object_t* wan_mode, bool toggle) {
+amxd_status_t dns_server_toggle(const char* dns_mode, amxd_object_t* wan_mode, bool toggle) {
 
     amxc_string_t dns_path;
     amxc_var_t dns_data;

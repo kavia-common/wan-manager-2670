@@ -82,33 +82,31 @@
 #define ME "wan-man"
 
 amxb_bus_ctx_t* ip_get_context(void) {
-
     return amxb_be_who_has("IP.");
 }
 
 amxb_bus_ctx_t* dhcpv4_get_context(void) {
-
     return amxb_be_who_has("DHCPv4.");
 }
 
 amxb_bus_ctx_t* dhcpv6_get_context(void) {
-
     return amxb_be_who_has("DHCPv6.");
 }
 
 amxb_bus_ctx_t* ppp_get_context(void) {
-
     return amxb_be_who_has("PPP.");
 }
 
 amxb_bus_ctx_t* routing_get_context(void) {
-
     return amxb_be_who_has("Routing.");
 }
 
 amxb_bus_ctx_t* dns_get_context(void) {
-
     return amxb_be_who_has("DNS.");
+}
+
+amxb_bus_ctx_t* ethernet_get_context(void) {
+    return amxb_be_who_has("Ethernet.");
 }
 
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable) {

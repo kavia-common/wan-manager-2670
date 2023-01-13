@@ -1,0 +1,7 @@
+{
+    "Alias" : "test_mode",
+    "EnableSensing" : true,
+    "Origin" : "user",
+    "PhysicalType" : "Ethernet",
+    "Status" : "Disabled"
+}

@@ -1,0 +1,26 @@
+%define {
+    object Ethernet;
+    select Device {
+        object Ethernet {
+            object VLANTermination[] {
+                bool Enable;
+                string Status = "Down";
+                %unique %key string Alias;
+                %unique %key string Name;
+                %read-only uint32 LastChange;
+                string LowerLayers = "";
+                uint32 VLANID = 1;
+                uint32 TPID = 33024;
+            }
+        }
+    }
+}
+
+%populate {
+    object 'Device.Ethernet.VLANTermination' {
+        instance add (0, "vlan201", Name = "vlan201") {
+            parameter LowerLayers = "Device.Ethernet.Link.2.";
+            parameter VLANID = 201;
+        }
+    }
+}

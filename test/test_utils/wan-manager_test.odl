@@ -9,19 +9,7 @@ include "../../odl/${name}_WAN_definition.odl";
 include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
-    object Ethernet {}
-
-    object Device{
-        object Ethernet{
-            object VLANTermination[] {
-                %unique %key string Alias;
-                uint32 VLANID;
-                string LowerLayers;
-            }
-            object Link{}
-        }
-    }
-
+    object Device;
     object DHCPv4 {
         object Client[] {
             %unique %key string Alias;
@@ -60,14 +48,14 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
 
     object '${prefix_}WANManager.WAN' {
         instance add ("demo_wanmode"){
-           parameter Alias = "demo_wanmode";
            parameter PhysicalType = "Ethernet";
         }
-
         instance add ("demo_vlanmode"){
-           parameter Alias = "demo_vlanmode";
            parameter PhysicalType = "Ethernet";
            parameter DNSMode = "Static";
+        }
+        instance add ("test_mode"){
+           parameter PhysicalType = "Ethernet";
         }
 
         instance add ("demo_pppmode"){
@@ -102,7 +90,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
     object '${prefix_}WANManager.WAN.demo_pppmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
-            parameter IPv4Mode = "none";
+            parameter IPv4Mode = "ppp4";
             parameter IPv6Mode = "dhcp6";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.6.";
@@ -143,16 +131,20 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object 'DHCPv4.Client' {
-        instance add (1, "wan") {
-            parameter Interface = "Device.IP.Interface.2.";
+    object '${prefix_}WANManager.WAN.test_mode.Intf'{
+        instance add(0,"wan"){
+            parameter Name = "wan";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
         }
     }
 
-    object 'Device.Ethernet.VLANTermination' {
-        instance add (1, "vlan201") {
-            parameter LowerLayers = "Device.Ethernet.Link.2.";
-            parameter VLANID = 201;
+    object 'DHCPv4.Client' {
+        instance add (1, "wan") {
+            parameter Interface = "Device.IP.Interface.2.";
         }
     }
 

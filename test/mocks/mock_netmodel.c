@@ -68,6 +68,9 @@
 #include <string.h>
 
 #include "netmodel/nm_query.h"
+#include "dm_wan_mode.h"
+
+bool isUp_result = false;
 
 bool __wrap_netmodel_initialize(void) {
     return true;
@@ -92,8 +95,8 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
     assert_non_null(traverse);
     assert_non_null(handler);
     assert_non_null(name);
-    assert_true(strcmp(subscriber, "wan-manager") == 0);
-    assert_true(strcmp(name, "InterfacePath") == 0);
+    assert_string_equal(subscriber, "wan-manager");
+    assert_string_equal(name, "InterfacePath");
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
@@ -132,8 +135,8 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
     assert_non_null(flag);
     assert_non_null(traverse);
     assert_non_null(handler);
-    assert_true(strcmp(subscriber, "wan-manager") == 0);
-    assert_true(strcmp(intf, "NetModel.Intf.resolver.") == 0);
+    assert_string_equal(subscriber, "wan-manager");
+    assert_string_equal(intf, "NetModel.Intf.resolver.");
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
@@ -166,8 +169,69 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
     return q;
 }
 
+netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
+                                                 const char* subscriber,
+                                                 const char* flag,
+                                                 const char* traverse,
+                                                 netmodel_callback_t handler,
+                                                 UNUSED void* userdata) {
+    netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
+    amxd_object_t* wanmode_obj_priv = (amxd_object_t*) userdata;
+    amxd_object_t* wanmode_obj = get_current_wan_mode();
+    amxd_object_t* intf_obj = amxd_object_findf(wanmode_obj, "Intf.1.");
+    char* ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv4Reference", NULL);
+
+    assert_non_null(intf);
+    assert_non_null(subscriber);
+    assert_non_null(flag);
+    assert_non_null(traverse);
+    assert_non_null(handler);
+    assert_non_null(wanmode_obj_priv);
+    assert_non_null(wanmode_obj);
+    assert_non_null(ip_reference);
+
+    assert_string_equal(intf, ip_reference);
+    assert_string_equal(subscriber, "wan-manager");
+    assert_string_equal(flag, "ipv4-up");
+    assert_string_equal(traverse, netmodel_traverse_this);
+    assert_string_equal(wanmode_obj_priv->name, wanmode_obj->name);
+
+    free(ip_reference);
+    return q;
+}
+
 void __wrap_netmodel_closeQuery(netmodel_query_t* query) {
     free(query);
 }
 
+void set_isUp_result(bool result) {
+    isUp_result = result;
+}
 
+bool __wrap_netmodel_isUp(const char* const interface,
+                          const char* const flag,
+                          const char* const traverse) {
+    amxd_object_t* current_mode_obj = get_current_wan_mode();
+    char* ip_reference = NULL;
+
+    printf("%s, %s, %s\n", interface, flag, traverse);
+    fflush(stdout);
+
+    assert_non_null(current_mode_obj);
+    assert_non_null(interface);
+    assert_non_null(flag);
+    assert_non_null(traverse);
+
+    amxd_object_for_each(instance, it, amxd_object_findf(current_mode_obj, ".Intf.")) {
+        amxd_object_t* interface_obj = amxc_container_of(it, amxd_object_t, it);
+        ip_reference = amxd_object_get_value(cstring_t, interface_obj, "IPv4Reference", NULL);
+        assert_non_null(ip_reference);
+        assert_string_equal(interface, ip_reference);
+        assert_string_equal(flag, "ipv4-up");
+        assert_string_equal(traverse, "this");
+        break;
+    }
+
+    free(ip_reference);
+    return isUp_result;
+}

@@ -72,7 +72,12 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t autosensing_set_enable(bool enable);
+#define MOD_AUTOSENSING_CTRL    "autosensing-ctrl"
+#define MOD_DM_MNGR             "dm-mngr"
+
+int autosensing_init(void);
+int mod_autosensing_start(void);
+int mod_autosensing_stop(void);
 
 #ifdef __cplusplus
 }

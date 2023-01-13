@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,45 +59,78 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-#if !defined(__DM_WAN_MODE_H__)
-#define __DM_WAN_MODE_H__
+#include <amxc/amxc_macros.h>
+#include <amxc/amxc.h>
+#include <amxm/amxm.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "mod-dummy.h"
 
-#include <stdbool.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
+char* test = NULL;
+bool autosensing_running = false;
 
-#include "ctrl/mode_ctrl.h"
+amxc_var_t* provided_sensing_data = NULL;
 
-void wan_mode_init(void);
-amxd_object_t* get_wan_manager_obj(void);
-void wan_mode_cleanup(void);
-amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
+static int dummy_start_func(UNUSED const char* function_name,
+                            amxc_var_t* args,
+                            UNUSED amxc_var_t* ret) {
+    amxc_var_delete(&provided_sensing_data);
+    amxc_var_new(&provided_sensing_data);
 
-amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode);
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable);
-amxd_object_t* get_wan_mode(const char* alias);
-char* get_current_wan_mode_str(void);
-amxd_object_t* get_current_wan_mode(void);
-void wan_manager_found_ll(const char* phys_type);
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-void _update_sensing_policy(const char* const event_name,
-                            const amxc_var_t* const event_data,
-                            void* const priv);
-void _wan_sensing_toggled(const char* const event_name,
-                          const amxc_var_t* const event_data,
-                          void* const priv);
-
-#ifdef __cplusplus
+    amxc_var_copy(provided_sensing_data, args);
+    autosensing_running = true;
+    return 0;
 }
-#endif
 
-#endif // __DM_WAN_MODE_H__
+static int dummy_stop_func(UNUSED const char* function_name,
+                           amxc_var_t* args,
+                           UNUSED amxc_var_t* ret) {
+    amxc_var_delete(&provided_sensing_data);
+    amxc_var_new(&provided_sensing_data);
+
+    amxc_var_copy(provided_sensing_data, args);
+    autosensing_running = false;
+    return 0;
+}
+
+static int is_autosensing_running(UNUSED const char* function_name,
+                                  amxc_var_t* args,
+                                  amxc_var_t* ret) {
+    int rv = -1;
+    int result = 0;
+
+    amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
+    rv = amxc_var_compare(args, provided_sensing_data, &result);
+    amxc_var_add_key(bool, ret, "data_ok", ((result == 0) && rv == 0));
+    amxc_var_add_key(bool, ret, "running", autosensing_running);
+
+    return 0;
+}
+
+static AMXM_CONSTRUCTOR dummy_module_start(void) {
+    amxm_shared_object_t* so = amxm_so_get_current();
+    amxm_module_t* mod = NULL;
+
+    test = strdup("If stop is not called, valgrind will report this");
+    (void) test;
+
+    amxm_module_register(&mod, so, MOD_AUTOSENSING_CTRL);
+    amxm_module_add_function(mod, "autosensing-start", dummy_start_func);
+    amxm_module_add_function(mod, "autosensing-stop", dummy_stop_func);
+
+    // Function for testing
+    amxm_module_add_function(mod, "is-autosensing-running", is_autosensing_running);
+
+    return 0;
+}
+
+static AMXM_DESTRUCTOR dummy_module_stop(void) {
+
+    amxc_var_delete(&provided_sensing_data);
+
+    free(test);
+    return 0;
+}

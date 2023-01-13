@@ -133,7 +133,7 @@ amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             amxc_var_t* const retval,
                                             void* priv);
 
-bool wan_mode_is_valid(void);
+amxd_status_t is_valid_mode(const char* new_wan_mode);
 
 void _dm_wan_manager_physical_type_changed(const char* const event_name,
                                            const amxc_var_t* const event_data,
@@ -142,6 +142,13 @@ void _dm_wan_manager_physical_type_changed(const char* const event_name,
 void _dm_wan_manager_wan_added(const char* const event_name,
                                const amxc_var_t* const event_data,
                                void* const priv);
+
+amxd_status_t _interface_destroy(amxd_object_t* intf,
+                                 amxd_param_t* param,
+                                 amxd_action_t reason,
+                                 const amxc_var_t* const args,
+                                 amxc_var_t* const retval,
+                                 void* priv);
 
 #ifdef __cplusplus
 }

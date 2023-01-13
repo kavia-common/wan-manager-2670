@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,44 +60,22 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MODE_H__)
-#define __DM_WAN_MODE_H__
+#if !defined(__MOD_DUMMY_H__)
+#define __MOD_DUMMY_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdbool.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
+// Core module name
+#define MOD_DM_MNGR "dm-mngr"
 
-#include "ctrl/mode_ctrl.h"
-
-void wan_mode_init(void);
-amxd_object_t* get_wan_manager_obj(void);
-void wan_mode_cleanup(void);
-amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
-
-amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode);
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable);
-amxd_object_t* get_wan_mode(const char* alias);
-char* get_current_wan_mode_str(void);
-amxd_object_t* get_current_wan_mode(void);
-void wan_manager_found_ll(const char* phys_type);
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-void _update_sensing_policy(const char* const event_name,
-                            const amxc_var_t* const event_data,
-                            void* const priv);
-void _wan_sensing_toggled(const char* const event_name,
-                          const amxc_var_t* const event_data,
-                          void* const priv);
+// module names
+#define MOD_AUTOSENSING_CTRL "autosensing-ctrl"
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __DM_WAN_MODE_H__
+#endif // __MOD_DUMMY_H__

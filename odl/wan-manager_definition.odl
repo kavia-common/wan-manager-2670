@@ -1,6 +1,25 @@
 %define{
     %persistent object '${prefix_}WANManager' {
         /**
+        * Only modules that are added to this comma separated list can be configured
+        * in the Controller parameters.
+        * The name used should be the name of the so file without the extension.
+        *
+        * @version 1.0
+        */
+        %read-only %protected csv_string SupportedControllers = "mod-autosensing";
+
+        /**
+        * Configures the module that should be used for autosensing.
+        * Can only be one of the supported controllers configured in SupportedControllers
+        *
+        * @version 1.0
+        */
+        %persistent %protected string Controller = "mod-autosensing" {
+            on action validate call check_is_empty_or_in "${prefix_}WANManager.SupportedControllers";
+        }
+
+        /**
          * Set WAN mode
          * @param WANMode - value to which to change WANMode
          * @param Autosensing - Change requested by WANAutosensing
@@ -11,7 +30,7 @@
 
         /**
          * Get status of current WAN mode. Use by WANAutosensing
-         * @return -  true when WANMode status is Enabled and configured interface obtain IP address
+         * @return - true when WANMode status is Enabled and configured interface obtain IP address
          * @version 1.0
          */
         bool getCurrentWANModeStatus();
@@ -43,15 +62,36 @@
             constraint enum ["Manual", "Automatic"];
             default "Manual";
         }
+
+        /**
+         * WANMode sensing Policy: Defines how the autosensing mechanism should work. Different behavior can be applied
+         * * Policy = AtBoot: WAN Sensing will be started at boot, once a WANMode is detected, it will be set 'fixed'
+         * * Policy = Continuous: The WANMode selection procedure will be continuous looping over all applicable WANModes
+         *   until we found a working WANMode.
+         * @version 1.0
+         */
+         %persistent string SensingPolicy {
+            constraint enum ["AtBoot", "Continuous"];
+            default "AtBoot";
+         }
+
+        /**
+         * Defines the maximum time to wait to decide if a WANMode is active or not.
+         * Only one timeout is used for each WANMode.
+         * @version 1.0
+         */
+         %persistent uint32 SensingTimeout {
+            default 25;
+         }
     }
 }
 
 %populate {
     on event "dm:object-changed" call set_wan_mode
         filter 'path == "${prefix_}WANManager." && contains("parameters.WANMode")';
-
     on event "dm:object-changed" call update_autosensing
         filter 'path == "${prefix_}WANManager." && contains("parameters.OperationMode")';
+    on event "dm:object-changed" call update_sensing_policy
+        filter 'path == "${prefix_}WANManager." && contains("parameters.SensingPolicy")';
 
-    on event "*" call print_event;
 }

@@ -97,6 +97,8 @@ void nm_query_ll_init(void);
 void nm_query_ll_cleanup(void);
 int nm_query_ll_add(const char* name);
 const char* nm_query_get_lower_layer(const char* name);
+int nm_query_mode_active(void);
+void nm_close_sensing_queries(void);
 
 #ifdef __cplusplus
 }

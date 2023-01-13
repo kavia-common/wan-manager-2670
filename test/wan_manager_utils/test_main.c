@@ -62,44 +62,17 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MODE_H__)
-#define __DM_WAN_MODE_H__
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "test_wan_manager_utils.h"
+#include "test_utils.h"
 
-#include <stdbool.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-
-#include "ctrl/mode_ctrl.h"
-
-void wan_mode_init(void);
-amxd_object_t* get_wan_manager_obj(void);
-void wan_mode_cleanup(void);
-amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
-
-amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode);
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable);
-amxd_object_t* get_wan_mode(const char* alias);
-char* get_current_wan_mode_str(void);
-amxd_object_t* get_current_wan_mode(void);
-void wan_manager_found_ll(const char* phys_type);
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-void _update_sensing_policy(const char* const event_name,
-                            const amxc_var_t* const event_data,
-                            void* const priv);
-void _wan_sensing_toggled(const char* const event_name,
-                          const amxc_var_t* const event_data,
-                          void* const priv);
-
-#ifdef __cplusplus
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_ethernet_vlan_set_enable),
+    };
+    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
 }
-#endif
-
-#endif // __DM_WAN_MODE_H__

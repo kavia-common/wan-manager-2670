@@ -6,6 +6,8 @@
          * @version 1.0
          */
         %persistent object Intf[4] {
+            on action destroy call interface_destroy;
+
             /**
             * A non-volatile unique key used to reference this instance (as defined in TR181)
             * @version 1.0
@@ -38,7 +40,9 @@
             * Takes precedence over password filled in tr181-ppp plugin, except when it is empty.
             * @version 1.0
             */
-            %persistent string Password;
+            %persistent string Password {
+                on action validate call check_maximum_length 64;
+            }
 
             /**
             * Interface IPv4 configured mode
@@ -46,7 +50,7 @@
             */
             %persistent string IPv4Mode{
                 constraint enum ["dhcp4", "ppp4", "none", "static"];
-                default "none";
+                default "dhcp4";
             }
 
             /**
@@ -187,5 +191,6 @@
 }
 
 %populate {
-    on event "*" call print_event;
+    on event "dm:object-changed" call wan_sensing_toggled
+        filter 'path matches "${prefix_}WANManager\.WAN\.[0-9]+\.$" and contains("parameters.EnableSensing")';
 }

@@ -204,6 +204,7 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
     const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
     const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
 
+    SAH_TRACEZ_INFO(ME, "Enabling DHCPv4");
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
@@ -249,6 +250,7 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
     const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
     char* dhcpv4_path = NULL;
 
+    SAH_TRACEZ_INFO(ME, "Disabling DHCPv4");
     when_str_empty(intf_path, exit);
 
     dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
@@ -286,6 +288,7 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
     char* route_path = routing_get_interfacesetting(intf_path);
 
+    SAH_TRACEZ_INFO(ME, "Enabling DHCPv6");
     when_str_empty(intf_alias, exit);
     when_str_empty(intf_path, exit);
 
@@ -334,6 +337,9 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     const char* intf_path = GETP_CHAR(parameters, "IPv6Reference");
     char* dhcpv6_path = NULL;
     char* route_path = routing_get_interfacesetting(intf_path);
+
+    SAH_TRACEZ_INFO(ME, "Disabling DHCPv6");
+    when_str_empty(intf_path, exit);
 
     rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
     when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");

@@ -76,13 +76,38 @@
 #include <amxb/amxb.h>
 
 #include "ethernet/ethernet.h"
+#include "wan_manager_utils.h"
 #include "component.h"
 
 #define ME "eth-ctrl"
 
-static amxb_bus_ctx_t* context = NULL;
-static amxb_bus_ctx_t* ethernet_get_context(void);
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id);
+static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
+    char* path = NULL;
+    amxc_string_t name;
+    amxc_var_t parameters;
+    amxc_var_t* tmp = NULL;
+
+    amxc_string_init(&name, 0);
+    amxc_string_setf(&name, "vlan%d", id);
+    amxc_var_init(&parameters);
+    when_str_empty(lower_layer, exit);
+
+    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
+    tmp = amxc_var_add_new_key(&parameters, "Name");
+    amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&name));
+    amxc_var_add_key(cstring_t, &parameters, "Alias", GET_CHAR(tmp, NULL));
+    amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
+    amxc_var_add_key(bool, &parameters, "Enable", false);
+    amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
+
+    path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, ethernet_get_context());
+
+exit:
+    amxc_var_clean(&parameters);
+    amxc_string_clean(&name);
+    return path;
+}
+
 
 amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
@@ -107,7 +132,7 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
 
         vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id);
         when_null_trace(vlan_path, exit, ERROR,
-                        "Cannot create VLAN configuration for id %d with lower lauer %s",
+                        "Cannot create VLAN configuration for id %d with lowerlayer %s",
                         vlan_id, lower_layer);
     }
     SAH_TRACEZ_INFO(ME, "vlan_path %s, lower_layer %s", vlan_path, lower_layer);
@@ -121,38 +146,4 @@ exit:
     free(vlan_path);
     amxc_string_clean(&str_search);
     return rc;
-}
-
-static amxb_bus_ctx_t* ethernet_get_context(void) {
-    if(NULL == context) {
-        context = amxb_be_who_has("Ethernet.");
-    }
-    return context;
-}
-
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
-    char* path = NULL;
-    amxc_string_t name;
-    amxc_var_t parameters;
-    amxc_var_t* tmp = NULL;
-
-    amxc_string_init(&name, 0);
-    amxc_string_setf(&name, "vlan%d", id);
-    amxc_var_init(&parameters);
-    when_str_empty(lower_layer, exit);
-
-    amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
-    tmp = amxc_var_add_new_key(&parameters, "Name");
-    amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&name));
-    amxc_var_add_key(cstring_t, &parameters, "Alias", GET_CHAR(tmp, NULL));
-    amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
-    amxc_var_add_key(bool, &parameters, "Enable", false);
-    amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
-
-    path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, context);
-
-exit:
-    amxc_var_clean(&parameters);
-    amxc_string_clean(&name);
-    return path;
 }

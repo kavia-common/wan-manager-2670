@@ -84,7 +84,7 @@
 #define ME "com-ctrl"
 
 amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
-    amxd_status_t rc = amxd_status_unknown_error;
+    int rc = -1;
     amxc_var_t parameters;
     amxc_var_t ret;
 
@@ -98,16 +98,13 @@ amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, con
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(bool, &parameters, param, value);
 
-    if(AMXB_STATUS_OK != amxb_set(bus, component, &parameters, &ret, 5)) {
-        SAH_TRACEZ_ERROR(ME, "%s.%s client set enable %d failed", component, param, value);
-        goto exit;
-    }
-    rc = amxd_status_ok;
+    rc = amxb_set(bus, component, &parameters, &ret, 5);
+    when_failed_trace(rc, exit, ERROR, "%s client set '%s' to '%d' failed with '%d'", component, param, value, rc);
 
 exit:
     amxc_var_clean(&parameters);
     amxc_var_clean(&ret);
-    return rc;
+    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
 amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
@@ -143,15 +140,17 @@ exit:
 char* component_add_instance(const char* object_path,
                              amxc_var_t* parameter,
                              amxb_bus_ctx_t* bus) {
+    int rv = -1;
     const char* value = NULL;
     char* path = NULL;
     amxc_var_t ret;
     amxc_var_init(&ret);
 
     when_str_empty(object_path, exit);
-    when_null(bus, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
 
-    when_false(AMXB_STATUS_OK == amxb_add(bus, object_path, 0, NULL, parameter, &ret, 5), exit);
+    rv = amxb_add(bus, object_path, 0, NULL, parameter, &ret, 5);
+    when_failed_trace(rv, exit, ERROR, "Failed to add instance to '%s', error '%d'", object_path, rv);
     value = GETP_CHAR(&ret, "0.path");
     if(value != NULL) {
         path = strdup(value);
@@ -162,7 +161,7 @@ exit:
 }
 
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
-    amxd_status_t rc = amxd_status_unknown_error;
+    int rc = -1;
     amxc_var_t parameters;
     amxc_var_t ret;
 
@@ -178,16 +177,13 @@ amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &parameters, param, value);
 
-    if(AMXB_STATUS_OK != amxb_set(bus, component, &parameters, &ret, 5)) {
-        SAH_TRACEZ_ERROR(ME, "%s client set param %s failed", component, param);
-        goto exit;
-    }
-    rc = amxd_status_ok;
+    rc = amxb_set(bus, component, &parameters, &ret, 5);
+    when_failed_trace(rc, exit, ERROR, "%s client set param %s failed", component, param);
 
 exit:
     amxc_var_clean(&parameters);
     amxc_var_clean(&ret);
-    return rc;
+    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
 char* component_del_instance(const char* object_path,

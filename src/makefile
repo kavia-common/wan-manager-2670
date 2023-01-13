@@ -49,7 +49,7 @@ else
 	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=gnu11
 endif
 
-LDFLAGS += $(STAGING_LIBDIR) -shared -fPIC -lamxc -lamxd -lamxb -lamxo -lsahtrace -lnetmodel
+LDFLAGS += $(STAGING_LIBDIR) -shared -fPIC -lamxc -lamxd -lamxb -lamxm -lamxo -lamxj -lsahtrace -lnetmodel
 
 CFLAGS += -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL=500
 

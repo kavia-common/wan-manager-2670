@@ -1,12 +1,15 @@
 all: $(TARGET)
 
-run: $(TARGET)
-	set -o pipefail; valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1 ./$< 2>&1 | tee -a $(OBJDIR)/unit_test_results.txt;
+run: $(TARGET) $(TARGET_MODULE)
+	set -o pipefail; valgrind --leak-check=full --keep-debuginfo=yes --exit-on-first-error=yes --error-exitcode=1 ./$< 2>&1 | tee -a $(OBJDIR)/unit_test_results.txt;
 
 executables: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS)  $(LDFLAGS) -fprofile-arcs -ftest-coverage
+
+$(TARGET_MODULE): $(OBJECTS)
+	$(CC) -shared $(OBJECTS) -fprofile-arcs -ftest-coverage -Wl,-soname,$(@) -o $@ $(LDFLAGS)
 
 -include $(OBJECTS:.o=.d)
 
@@ -60,5 +63,6 @@ $(OBJDIR)/:
 
 clean:
 	rm -f $(TARGET) $(OBJDIR)/*
+	rm -f $(TARGET_MODULE) $(OBJDIR)
 
 .PHONY: clean $(OBJDIR)/

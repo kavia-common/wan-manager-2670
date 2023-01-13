@@ -82,7 +82,7 @@
 #include "test_utils.h"
 #include "reset_mock.h"
 
-static bool set_wan_mode(const char* mode_to_set) {
+static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status) {
     amxc_var_t args;
     amxc_var_t ret;
     bool rc = false;
@@ -96,8 +96,10 @@ static bool set_wan_mode(const char* mode_to_set) {
     assert_non_null(mode_to_set);
     amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_set);
-    assert_int_equal(amxd_object_invoke_function(wan_mode, "setWANMode", &args, &ret), amxd_status_ok);
+    assert_int_equal(amxd_object_invoke_function(wan_mode, "setWANMode", &args, &ret), expected_status);
     rc = GETP_BOOL(&ret, "status");
+
+    test_handle_events();
 
     amxc_var_clean(&args);
     amxc_var_clean(&ret);
@@ -112,7 +114,7 @@ void test_wan_manager_set_invalid_mode(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_false(set_wan_mode("test"));
+    assert_false(set_wan_mode("test", amxd_status_invalid_attr));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -131,7 +133,7 @@ void test_wan_manager_set_valid_mode(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
 
@@ -149,7 +151,7 @@ void test_wan_manager_switch_to_invalid(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -157,7 +159,7 @@ void test_wan_manager_switch_to_invalid(UNUSED void** state) {
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
 
-    assert_false(set_wan_mode("test"));
+    assert_false(set_wan_mode("test", amxd_status_invalid_attr));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -174,7 +176,7 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     int reset_counter = get_reset_counter();
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -182,7 +184,7 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
 
-    assert_true(set_wan_mode("demo_test"));
+    assert_true(set_wan_mode("demo_test", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -201,7 +203,7 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     int reset_counter = 0;
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
@@ -210,7 +212,7 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
 
-    assert_true(set_wan_mode("demo_vlanmode"));
+    assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -242,7 +244,7 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     int reset_counter = 0;
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
@@ -254,7 +256,7 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
     assert_non_null(routing_inst);
 
-    assert_true(set_wan_mode("demo_pppmode"));
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -283,7 +285,7 @@ void test_wan_manager_dns_inst_add(UNUSED void** state) {
 
     amxc_var_init(&status);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
@@ -293,16 +295,16 @@ void test_wan_manager_dns_inst_add(UNUSED void** state) {
     assert_string_equal("demo_wanmode", wan_mode_str);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '1.1.1.1']");
-    assert_true(dns_server == NULL);
+    assert_null(dns_server);
 
-    assert_true(set_wan_mode("demo_vlanmode"));
+    assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
     assert_string_equal("demo_vlanmode", wan_mode_str);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '1.1.1.1']");
-    assert_true(dns_server != NULL);
+    assert_non_null(dns_server);
 
     assert_int_equal(reset_counter, get_reset_counter());
 
@@ -323,12 +325,12 @@ void test_wan_manager_dns_inst_remove(UNUSED void** state) {
     amxc_var_init(&status);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '1.1.1.1']");
-    assert_true(dns_server != NULL);
+    assert_non_null(dns_server);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '2620:119:35::35']");
-    assert_true(dns_server != NULL);
+    assert_non_null(dns_server);
 
-    assert_true(set_wan_mode("demo_wanmode"));
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
@@ -338,10 +340,10 @@ void test_wan_manager_dns_inst_remove(UNUSED void** state) {
     assert_string_equal("demo_wanmode", wan_mode_str);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '1.1.1.1']");
-    assert_true(dns_server == NULL);
+    assert_null(dns_server);
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '2620:119:35::35']");
-    assert_true(dns_server == NULL);
+    assert_null(dns_server);
 
     assert_int_equal(reset_counter, get_reset_counter());
 

@@ -1,5 +1,5 @@
 variables:
-  BUILD_DEPS: libamxc libamxd libamxp libamxb libamxo sah-lib-sahtrace-dev libyajl-dev libnetmodel
+  BUILD_DEPS: libamxc libamxd libamxp libamxb libamxo libamxm libamxj sah-lib-sahtrace-dev libyajl-dev libnetmodel
   BUILD_TARGET: wan-manager
 
 include:

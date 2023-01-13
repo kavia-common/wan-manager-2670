@@ -33,4 +33,4 @@ CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
 		   -DSAHTRACES_ENABLED -DSAHTRACES_LEVEL=500
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -ldl -lsahtrace -lnetmodel
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -lamxm -lamxj -ldl -lsahtrace -lnetmodel

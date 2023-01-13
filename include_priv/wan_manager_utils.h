@@ -87,6 +87,7 @@ amxb_bus_ctx_t* dhcpv6_get_context(void);
 amxb_bus_ctx_t* ppp_get_context(void);
 amxb_bus_ctx_t* routing_get_context(void);
 amxb_bus_ctx_t* dns_get_context(void);
+amxb_bus_ctx_t* ethernet_get_context(void);
 
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable);
 amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin);

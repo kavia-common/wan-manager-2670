@@ -78,6 +78,7 @@
 #include <amxd/amxd_action.h>
 #include <amxc/amxc_macros.h>
 
+#include "mock_netmodel.h"
 #include "test_wan_manager_startup.h"
 #include "dm_wan-manager.h"
 #include "test_utils.h"
@@ -132,39 +133,27 @@ void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** sta
     free(operation_mode);
 }
 
+/**
+ * This test makes sure that
+ *      * the _getCurrentWANModeStatus provides the correct values to the netmodel_isUp function,
+ *        this check is done by the __wrap_netmodel_isUp function
+ *      * the function correctly populates the return with the netmodel_isUp result
+ *        mocked by setting the return with the set_isUp_result function
+ */
 void test_getCurrentWANModeStatus(UNUSED void** state) {
     amxc_var_t ret;
-    amxd_trans_t trans;
 
+    set_isUp_result(false);
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_false(GETP_BOOL(&ret, "status"));
+    assert_false(GETP_BOOL(&ret, "active"));
     amxc_var_clean(&ret);
 
-    amxd_trans_init(&trans);
-    amxd_trans_select_pathf(&trans, "Device.IP.Interface.2.IPv4Address");
-    amxd_trans_add_inst(&trans, 2, NULL);
-    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), amxd_status_ok);
-    amxd_trans_clean(&trans);
-
+    set_isUp_result(true);
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_false(GETP_BOOL(&ret, "status"));
+    assert_true(GETP_BOOL(&ret, "active"));
     amxc_var_clean(&ret);
-
-    amxd_trans_init(&trans);
-    amxd_trans_select_pathf(&trans, "Device.IP.Interface.2.IPv4Address.2.");
-    amxd_trans_set_value(cstring_t, &trans, "IPAddress", "192.168.1.1");
-    amxd_trans_set_value(cstring_t, &trans, "SubnetMask", "255.255.255.0");
-    amxd_trans_set_value(cstring_t, &trans, "Status", "Enabled");
-    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), amxd_status_ok);
-    amxd_trans_clean(&trans);
-
-    amxc_var_init(&ret);
-    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_true(GETP_BOOL(&ret, "status"));
-    amxc_var_clean(&ret);
-
 }
 
 static void test_wan_manager_set_operation_mode(const char* mode) {

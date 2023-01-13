@@ -96,6 +96,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* username = GETP_CHAR(parameters, "UserName");
     const char* password = GETP_CHAR(parameters, "Password");
 
+    SAH_TRACEZ_INFO(ME, "Enabling PPP4");
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
@@ -153,14 +154,15 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
 
-    when_str_empty(intf_path, exit);
+    SAH_TRACEZ_INFO(ME, "Disabling PPP4");
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(ppp_path, exit, ERROR, "No PPP interface path found");
 
     // Disable PPP
     rc = component_set_enable(ppp_path, ppp_get_context(), false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable PPP instance '%s'", ppp_path);
 
     // Clear the LowerLayers parameter
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear '%s.LowerLayers'", intf_path);
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", "");
@@ -183,6 +185,7 @@ amxd_status_t ppp6_enable(UNUSED mode_ctrl_t mode,
                           UNUSED const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
 
+    SAH_TRACEZ_INFO(ME, "Enabling PPP6");
     rc = amxd_status_ok;
     return rc;
 }
@@ -191,6 +194,7 @@ amxd_status_t ppp6_disable(UNUSED mode_ctrl_t mode,
                            UNUSED const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
 
+    SAH_TRACEZ_INFO(ME, "Disabling PPP6");
     rc = amxd_status_ok;
     return rc;
 }

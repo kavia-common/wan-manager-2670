@@ -5,3 +5,4 @@ compile_commands.json
 *.deb
 .clangd/
 run_test
+*.d

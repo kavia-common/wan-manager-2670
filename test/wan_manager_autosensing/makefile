@@ -11,13 +11,13 @@ SOURCES += $(wildcard ./*.c) $(MOCK_SOURCES) $(TEST_UTILS_SOURCES)
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 
 WRAP_FUNC=-Wl,--wrap=
-MOCK_WRAP = amxp_proc_ctrl_new 		\
-            amxp_proc_ctrl_start 	\
-            amxp_proc_ctrl_stop 	\
-            amxp_proc_ctrl_delete	\
-            netmodel_isUp	\
-            restart
-            # uses the real implementation for amxb_get
+
+MOCK_WRAP = netmodel_initialize		\
+            netmodel_cleanup		\
+            netmodel_openQuery_getFirstParameter \
+            netmodel_openQuery_getIntfs \
+            netmodel_openQuery_isUp \
+            netmodel_closeQuery
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

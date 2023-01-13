@@ -83,7 +83,18 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
                                                      netmodel_callback_t handler,
                                                      void* userdata);
 
+netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
+                                                 const char* subscriber,
+                                                 const char* flag,
+                                                 const char* traverse,
+                                                 netmodel_callback_t handler,
+                                                 void* userdata);
 
 void __wrap_netmodel_closeQuery(netmodel_query_t* query);
+
+void set_isUp_result(bool result);
+bool __wrap_netmodel_isUp(const char* const interface,
+                          const char* const flag,
+                          const char* const traverse);
 
 #endif // __MOCK_NETMODEL_H__

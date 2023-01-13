@@ -1,12 +1,15 @@
 PKG_CONFIG_LIBDIR := /usr/lib/pkgconfig:/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:$(PKG_CONFIG_LIBDIR)
 MACHINE = $(shell $(CC) -dumpmachine)
 SUBDIRS := $(wildcard wan_manager_* mock)
+MODDIRS := $(wildcard mocks/mod-*)
 OBJDIR = ../output/$(MACHINE)/coverage
 COVERREPORT = report
 
 run: $(OBJDIR)/
+	@for dir in $(MODDIRS); do make -C $$dir || exit -1; done
 	@for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
 	@rm -rf $(OBJDIR)/test_*
+	@for dir in $(MODDIRS); do make -C $$dir clean || exit -1; done
 
 executables: $(OBJDIR)/
 	@for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
@@ -15,6 +18,7 @@ executables: $(OBJDIR)/
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(OBJDIR)/$(COVERREPORT)
+	@for dir in $(MODDIRS); do make -C $$dir clean || exit -1; done
 	find .. -name "run_test" -delete
 
 coverage: $(OBJDIR)/$(COVERREPORT)/

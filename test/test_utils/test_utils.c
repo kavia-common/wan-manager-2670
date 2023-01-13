@@ -68,6 +68,9 @@
 #include <stdarg.h>
 #include <cmocka.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <yajl/yajl_gen.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -75,6 +78,7 @@
 #include <amxo/amxo.h>
 #include <amxb/amxb.h>
 #include <amxb/amxb_register.h>
+#include <amxj/amxj_variant.h>
 
 #include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
@@ -94,6 +98,7 @@ static const char* odl_defs = "../test_utils/wan-manager_test.odl";
 static const char* odl_ip_mock = "../mocks/mock_ip.odl";
 static const char* odl_routing_mock = "../mocks/mock_routing.odl";
 static const char* odl_dns_mock = "../mocks/mock_dns.odl";
+static const char* odl_ethernet_mock = "../mocks/mock_ethernet.odl";
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
@@ -114,25 +119,24 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getWANMode", AMXO_FUNC(_getWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getCurrentWANModeStatus", AMXO_FUNC(_getCurrentWANModeStatus)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "update_autosensing", AMXO_FUNC(_update_autosensing)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "update_sensing_policy", AMXO_FUNC(_update_sensing_policy)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "wan_sensing_toggled", AMXO_FUNC(_wan_sensing_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "set_wan_mode", AMXO_FUNC(_set_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_already_configured", AMXO_FUNC(_interface_already_configured)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_routing_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_dns_mock, root_obj), 0);
 
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_ethernet_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
-    assert_int_equal(amxo_connection_add(&parser,
-                                         amxb_get_fd(bus_ctx),
-                                         connection_read,
-                                         "dummy:/tmp/dummy.sock",
-                                         AMXO_BUS,
-                                         bus_ctx)
-                     , 0);
+    assert_int_equal(amxo_connection_add(&parser, amxb_get_fd(bus_ctx), connection_read,
+                                         "dummy:/tmp/dummy.sock", AMXO_BUS, bus_ctx), 0);
     assert_int_equal(amxb_register(bus_ctx, &dm), 0);
 
     _wan_manager_main(0, &dm, &parser);
@@ -169,4 +173,40 @@ const char* test_get_prefix(void) {
 void test_handle_events(void) {
     while(amxp_signal_read() == 0) {
     }
+}
+
+
+amxc_var_t* read_json_from_file(const char* fname) {
+    int fd = -1;
+    variant_json_t* reader = NULL;
+    amxc_var_t* data = NULL;
+
+    // create a json reader
+    if(amxj_reader_new(&reader) != 0) {
+        printf("Failed to create json file reader");
+        goto exit;
+    }
+
+    // open the json file
+    fd = open(fname, O_RDONLY);
+    if(fd == -1) {
+        printf("File open file %s - error 0x%8.8X\n", fname, errno);
+        goto exit;
+    }
+
+    // read the json file and parse the json text
+    while(amxj_read(reader, fd) > 0) {
+    }
+
+    // get the variant
+    data = amxj_reader_result(reader);
+
+    if(data == NULL) {
+        printf("Invalid JSON in file %s\n", fname);
+    }
+
+    close(fd);
+exit:
+    amxj_reader_delete(&reader);
+    return data;
 }

@@ -17,9 +17,29 @@
             * Physical interface type of the WAN mode.
             * @version 1.0
             */
-            %persistent string PhysicalType  {
+            %persistent string PhysicalType {
                 constraint enum ["Ethernet", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "Bridge", "WWAN"];
                 default "Ethernet";
+            }
+
+            /**
+            * Indicates if the WANMode is considered owned by the:
+            * * "system": Typically a predefined WANMode which is configured by an ISP for a specific network layout.
+            * * "user": Typically a WANMode defined by a HGW user via a webui, or a configuration APP.
+            * By default we consider new WANModes owned by a "user".
+            * @version 1.0
+            */
+            %persistent string Origin {
+                constraint enum ["system", "user"];
+                default "user";
+            }
+
+            /**
+            * Indicates if the WANMode is applicable for WANAutoSensing or not.
+            * @version 1.0
+            */
+            %persistent bool EnableSensing {
+                default true;
             }
 
             /**
@@ -29,18 +49,6 @@
             %read-only string Status {
                 constraint enum ["Enabled", "Disabled", "Error"];
                 default "Disabled";
-            }
-
-           /**
-            * Mechanism via which the wanmode was assigned. Enumeration of:
-            * - system
-            * - user
-            *
-            * @version 1.0
-            */
-            %persistent %read-only string Origin {
-                constraint enum ["system","user"];
-                default "user";
             }
 
             /**
@@ -67,6 +75,4 @@
         filter 'path matches "${prefix_}WANManager." and contains("parameters.PhysicalType")';
     on event "dm:instance-added" call dm_wan_manager_wan_added
         filter 'path matches "${prefix_}WANManager\.WAN\.$"';
-
-    on event "*" call print_event;
 }

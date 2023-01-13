@@ -15,7 +15,6 @@ MOCK_WRAP = amxp_proc_ctrl_new 		\
             amxp_proc_ctrl_start 	\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
-            netmodel_isUp	\
             restart
             # uses the real implementation for amxb_get
 

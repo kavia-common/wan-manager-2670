@@ -62,44 +62,56 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MODE_H__)
-#define __DM_WAN_MODE_H__
+#include <stdlib.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
+#include <string.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
-#include <stdbool.h>
+#include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
+#include <amxc/amxc_macros.h>
+#include <amxb/amxb.h>
 
-#include "ctrl/mode_ctrl.h"
+#include "test_utils.h"
+#include "ethernet/ethernet.h"
+#include "test_wan_manager_utils.h"
 
-void wan_mode_init(void);
-amxd_object_t* get_wan_manager_obj(void);
-void wan_mode_cleanup(void);
-amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
+#include "debug/sahtrace.h"
 
-amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode);
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable);
-amxd_object_t* get_wan_mode(const char* alias);
-char* get_current_wan_mode_str(void);
-amxd_object_t* get_current_wan_mode(void);
-void wan_manager_found_ll(const char* phys_type);
-void _update_autosensing(const char* const event_name,
-                         const amxc_var_t* const event_data,
-                         void* const priv);
-void _update_sensing_policy(const char* const event_name,
-                            const amxc_var_t* const event_data,
-                            void* const priv);
-void _wan_sensing_toggled(const char* const event_name,
-                          const amxc_var_t* const event_data,
-                          void* const priv);
+void test_ethernet_vlan_set_enable(UNUSED void** state) {
+    amxd_object_t* vlan_obj = NULL;
+    amxc_var_t* parameters = NULL;
+    amxc_var_t ret;
 
-#ifdef __cplusplus
+    amxc_var_init(&ret);
+    parameters = read_json_from_file("test_data/test_vlan_set.json");
+
+    vlan_obj = amxd_dm_get_object(test_get_dm(), "Device.Ethernet.VLANTermination.vlan400.");
+    assert_null(vlan_obj);
+
+    assert_int_equal(ethernet_vlan_set_enable(parameters, true), amxd_status_ok);
+    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    assert_true(GETP_BOOL(&ret, "0.0.Enable"));
+    amxc_var_clean(&ret);
+
+    amxc_var_init(&ret);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, false), amxd_status_ok);
+    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    assert_false(GETP_BOOL(&ret, "0.0.Enable"));
+    amxc_var_clean(&ret);
+
+    amxc_var_init(&ret);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, true), amxd_status_ok);
+    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    assert_true(GETP_BOOL(&ret, "0.0.Enable"));
+    amxc_var_clean(&ret);
+    amxc_var_delete(&parameters);
 }
-#endif
-
-#endif // __DM_WAN_MODE_H__
