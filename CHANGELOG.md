@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.9.0 - 2023-01-13(12:03:36 +0000)
+
+### New
+
+- Implement autosensing directly in the DM/plugin
+
 ## Release v0.8.0 - 2023-01-12(10:31:42 +0000)
 
 ### New
