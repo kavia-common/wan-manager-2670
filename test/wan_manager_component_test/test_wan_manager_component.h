@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -62,8 +62,8 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
-#define __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
+#ifndef __TEST_WAN_MANAGER_COMPONENT_H__
+#define __TEST_WAN_MANAGER_COMPONENT_H__
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -78,16 +78,7 @@
 #include <amxo/amxo.h>
 #include <amxo/amxo_save.h>
 
-void test_wan_manager_set_invalid_mode(void** state);
-void test_wan_manager_set_valid_mode(void** state);
-void test_wan_manager_switch_to_invalid(void** state);
-void test_wan_manager_switch_to_valid_different_intf(void** state);
-void test_wan_manager_switch_to_valid_same_intf(void** state);
-void test_wan_manager_routing_interface_switch(void** state);
-void test_wan_manager_routing_interface_create(void** state);
-void test_wan_manager_dns_inst_add(void** state);
-void test_wan_manager_dns_inst_remove(void** state);
-void test_wan_manager_logical_interface(void** state);
+void test_wan_manager_component_add_str_to_csv(void** state);
+void test_wan_manager_component_remove_str_from_csv(void** state);
 
-
-#endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
+#endif //__TEST_WAN_MANAGER_COMPONENT_H__

@@ -83,6 +83,10 @@ char* component_add_instance(const char* object_path,
 char* component_del_instance(const char* object_path,
                              amxb_bus_ctx_t* bus);
 
+amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter);
+amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
+amxd_status_t component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
+
 #ifdef __cplusplus
 }
 #endif

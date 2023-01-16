@@ -1,0 +1,35 @@
+%define {
+    select Device {
+        object Logical {
+            object Interface[] {
+                string LowerLayers;
+            }
+        }
+    }
+}
+
+%populate {
+    object Device.Logical.Interface {
+        instance add(1, "wan") {
+            parameter LowerLayers = "";
+        }
+    }
+
+    object Device.Logical.Interface {
+        instance add(2, "mgmt") {
+            parameter LowerLayers = "";
+        }
+    }
+
+    object Device.Logical.Interface {
+        instance add(3, "voip") {
+            parameter LowerLayers = "";
+        }
+    }
+
+    object Device.Logical.Interface {
+        instance add(4, "iptv") {
+            parameter LowerLayers = "";
+        }
+    }
+}

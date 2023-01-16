@@ -81,6 +81,8 @@ extern "C" {
 #define ROUTING_ORIGIN_STATIC "Static"
 #define ROUTING_ORIGIN_AUTOMATIC "Automatic"
 
+#define STRING_EMPTY(TEXT) ((TEXT == NULL) || (*TEXT == 0))
+
 amxb_bus_ctx_t* ip_get_context(void);
 amxb_bus_ctx_t* dhcpv4_get_context(void);
 amxb_bus_ctx_t* dhcpv6_get_context(void);
@@ -88,9 +90,13 @@ amxb_bus_ctx_t* ppp_get_context(void);
 amxb_bus_ctx_t* routing_get_context(void);
 amxb_bus_ctx_t* dns_get_context(void);
 amxb_bus_ctx_t* ethernet_get_context(void);
+amxb_bus_ctx_t* logical_get_context(void);
 
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable);
 amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin);
+void add_str_to_list(amxc_var_t* list, const char* str);
+void remove_str_from_list(amxc_var_t* list, const char* str);
+char* create_logical_path(const char* intf_name);
 
 #ifdef __cplusplus
 }

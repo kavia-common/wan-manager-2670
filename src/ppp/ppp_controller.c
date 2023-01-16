@@ -90,15 +90,18 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
                          const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
-    const char* intf_alias = GETP_CHAR(parameters, "Alias");
-    const char* lower_layer = GETP_CHAR(parameters, "LowerLayer");
-    const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
-    const char* username = GETP_CHAR(parameters, "UserName");
-    const char* password = GETP_CHAR(parameters, "Password");
+    const char* intf_alias = GET_CHAR(parameters, "Alias");
+    const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
+    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* username = GET_CHAR(parameters, "UserName");
+    const char* password = GET_CHAR(parameters, "Password");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Enabling PPP4");
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter for interface %s is emtpy", intf_path);
 
     // Get the matching PPP client
     ppp_path = ppp_get_client(true, intf_path, intf_alias);
@@ -142,21 +145,36 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     rc = component_set_bool(intf_path, ip_get_context(), "Enable", true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
+    //Add the IPReference to the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv4Reference to '%s'", logical_path);
+
+
     rc = amxd_status_ok;
 
 exit:
+    free(logical_path);
     return rc;
 }
 
 amxd_status_t ppp_disable(mode_ctrl_t mode,
                           const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GETP_CHAR(parameters, "IPv4Reference");
+    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Disabling PPP4");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
     when_str_empty_trace(ppp_path, exit, ERROR, "No PPP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+
+    //Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s.LowerLayers'", logical_path);
 
     // Disable PPP
     rc = component_set_enable(ppp_path, ppp_get_context(), false);
@@ -178,6 +196,7 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     }
 
 exit:
+    free(logical_path);
     return rc;
 }
 

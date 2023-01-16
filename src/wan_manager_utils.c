@@ -109,6 +109,10 @@ amxb_bus_ctx_t* ethernet_get_context(void) {
     return amxb_be_who_has("Ethernet.");
 }
 
+amxb_bus_ctx_t* logical_get_context(void) {
+    return amxb_be_who_has("Logical.");
+}
+
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t addr_path;
@@ -135,4 +139,49 @@ amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* 
 exit:
     amxc_string_clean(&route_path);
     return rc;
+}
+
+// Add a string to a list only if that list does not yet contain that string
+void add_str_to_list(amxc_var_t* list, const char* str) {
+    bool found = false;
+
+    when_null(list, exit);
+    when_str_empty(str, exit);
+    amxc_var_for_each(var, list) {
+        if(strcmp(GET_CHAR(var, NULL), str) == 0) {
+            found = true;
+            break;
+        }
+    }
+    if(!found) {
+        amxc_var_add(cstring_t, list, str);
+    }
+exit:
+    return;
+}
+
+// Remove all occurrences of a string from a list
+void remove_str_from_list(amxc_var_t* list, const char* str) {
+    when_null(list, exit);
+    when_str_empty(str, exit);
+
+    amxc_var_for_each(var, list) {
+        if(strcmp(GET_CHAR(var, NULL), str) == 0) {
+            amxc_var_delete(&var);
+        }
+    }
+exit:
+    return;
+}
+
+char* create_logical_path(const char* intf_name) {
+    char* path = NULL;
+    amxc_string_t logical_intf;
+
+    amxc_string_init(&logical_intf, 0);
+    amxc_string_setf(&logical_intf, "Device.Logical.Interface.%s.", intf_name);
+    path = amxc_string_take_buffer(&logical_intf);
+    amxc_string_clean(&logical_intf);
+
+    return path;
 }

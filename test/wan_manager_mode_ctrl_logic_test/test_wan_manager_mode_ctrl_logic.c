@@ -349,3 +349,46 @@ void test_wan_manager_dns_inst_remove(UNUSED void** state) {
 
     amxc_var_clean(&status);
 }
+
+void test_wan_manager_logical_interface(UNUSED void** state) {
+    amxc_var_t value;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* logical_intf = amxd_dm_findf(test_get_dm(), "Device.Logical.Interface.wan.");
+    const char* wan_mode_str = NULL;
+    const char* logical_ll = NULL;
+
+    amxc_var_init(&value);
+
+    assert_non_null(logical_intf);
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+
+    amxd_object_get_param(wan_mgr, "WANMode", &value);
+    wan_mode_str = amxc_var_constcast(cstring_t, &value);
+
+    assert_non_null(wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
+
+    amxd_object_get_param(logical_intf, "LowerLayers", &value);
+    logical_ll = amxc_var_constcast(cstring_t, &value);
+
+    assert_non_null(logical_ll);
+    assert_string_equal("Device.IP.Interface.2.", logical_ll);
+
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
+
+    amxd_object_get_param(wan_mgr, "WANMode", &value);
+    wan_mode_str = amxc_var_constcast(cstring_t, &value);
+
+    assert_non_null(wan_mode_str);
+    assert_string_equal("demo_pppmode", wan_mode_str);
+
+    amxd_object_get_param(logical_intf, "LowerLayers", &value);
+    logical_ll = amxc_var_constcast(cstring_t, &value);
+
+    assert_non_null(logical_ll);
+    assert_string_equal("Device.IP.Interface.6.", logical_ll);
+
+    amxc_var_clean(&value);
+}

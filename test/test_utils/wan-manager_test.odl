@@ -32,6 +32,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         object Link {}
     }
 
+    object Logical {
+        object Interface {}
+    }
+
     object Routing{
         object RouteInformation{
             object InterfaceSetting{}

@@ -80,6 +80,7 @@
 #include <amxb/amxb_operators.h>
 
 #include "component.h"
+#include "wan_manager_utils.h"
 
 #define ME "com-ctrl"
 
@@ -207,4 +208,101 @@ char* component_del_instance(const char* object_path,
 exit:
     amxc_var_clean(&ret);
     return path;
+}
+
+amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter) {
+    amxc_string_t param_path;
+    amxd_status_t rc = amxd_status_unknown_error;
+
+    amxc_string_init(&param_path, 0);
+
+    when_null(bus, exit);
+    when_str_empty(component, exit);
+    when_str_empty(parameter, exit);
+
+    amxc_string_setf(&param_path, "%s.%s", component, parameter);
+
+    if(AMXB_STATUS_OK != amxb_get(bus, amxc_string_get(&param_path, 0), 0, ret_var, 3)) {
+        SAH_TRACEZ_ERROR(ME, "Failed to get %s", amxc_string_get(&param_path, 0));
+        goto exit;
+    }
+    rc = amxd_status_ok;
+exit:
+    amxc_string_clean(&param_path);
+    return rc;
+}
+
+
+amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    amxc_var_t orig_value;
+    amxc_var_t new_value;
+    amxc_var_t llist;
+    amxd_status_t rc = amxd_status_unknown_error;
+
+    amxc_var_init(&orig_value);
+    amxc_var_init(&new_value);
+    amxc_var_init(&llist);
+    amxc_var_set_type(&llist, AMXC_VAR_ID_LIST);
+
+    when_null(bus, exit);
+    when_str_empty(component, exit);
+    when_str_empty(parameter, exit);
+    when_str_empty(str, exit);
+
+    when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
+
+    if(!STRING_EMPTY(GETP_CHAR(&orig_value, "0.0.0"))) {
+        when_failed_trace(amxc_var_convert(&llist, GETP_ARG(&orig_value, "0.0.0"), AMXC_VAR_ID_LIST), exit, ERROR, "Failed to cast %s.%s to list variant", component, parameter);
+    }
+
+    add_str_to_list(&llist, str);
+    when_failed_trace(amxc_var_convert(&new_value, &llist, AMXC_VAR_ID_CSV_STRING), exit, ERROR, "Failed to cast list to CSV string");
+
+    when_failed_trace(component_set_str_param(component, bus, parameter, GET_CHAR(&new_value, NULL)), exit, ERROR, "Failed to set %s.%s to %s", component, parameter, GET_CHAR(&new_value, NULL));
+
+    rc = amxd_status_ok;
+
+exit:
+    amxc_var_clean(&new_value);
+    amxc_var_clean(&orig_value);
+    amxc_var_clean(&llist);
+    return rc;
+}
+
+amxd_status_t component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    amxc_var_t orig_value;
+    amxc_var_t new_value;
+    amxc_var_t llist;
+    amxd_status_t rc = amxd_status_unknown_error;
+
+    amxc_var_init(&orig_value);
+    amxc_var_init(&new_value);
+    amxc_var_init(&llist);
+    amxc_var_set_type(&llist, AMXC_VAR_ID_LIST);
+
+    when_null(bus, exit);
+    when_str_empty(component, exit);
+    when_str_empty(parameter, exit);
+    when_str_empty(str, exit);
+
+    when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
+
+    if(STRING_EMPTY(GETP_CHAR(&orig_value, "0.0.0"))) {
+        SAH_TRACEZ_INFO(ME, "CSV is empty, can't remove %s from this", str);
+        rc = amxd_status_ok;
+        goto exit;
+    }
+
+    when_failed_trace(amxc_var_convert(&llist, GETP_ARG(&orig_value, "0.0.0"), AMXC_VAR_ID_LIST), exit, ERROR, "Failed to cast %s.%s to list variant", component, parameter);
+    remove_str_from_list(&llist, str);
+    when_failed_trace(amxc_var_convert(&new_value, &llist, AMXC_VAR_ID_CSV_STRING), exit, ERROR, "Failed to cast list to CSV string");
+    when_failed_trace(component_set_str_param(component, bus, parameter, GET_CHAR(&new_value, NULL)), exit, ERROR, "Failed to set %s.%s to %s", component, parameter, GET_CHAR(&new_value, NULL));
+
+    rc = amxd_status_ok;
+
+exit:
+    amxc_var_clean(&new_value);
+    amxc_var_clean(&orig_value);
+    amxc_var_clean(&llist);
+    return rc;
 }

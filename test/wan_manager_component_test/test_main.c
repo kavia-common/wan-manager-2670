@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -62,32 +62,18 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
-#define __TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include "test_wan_manager_component.h"
+#include "test_utils.h"
 
-#include <amxb/amxb.h>
-
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-
-void test_wan_manager_set_invalid_mode(void** state);
-void test_wan_manager_set_valid_mode(void** state);
-void test_wan_manager_switch_to_invalid(void** state);
-void test_wan_manager_switch_to_valid_different_intf(void** state);
-void test_wan_manager_switch_to_valid_same_intf(void** state);
-void test_wan_manager_routing_interface_switch(void** state);
-void test_wan_manager_routing_interface_create(void** state);
-void test_wan_manager_dns_inst_add(void** state);
-void test_wan_manager_dns_inst_remove(void** state);
-void test_wan_manager_logical_interface(void** state);
-
-
-#endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_wan_manager_component_add_str_to_csv),
+        cmocka_unit_test(test_wan_manager_component_remove_str_from_csv)
+    };
+    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
+}
