@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.10.0 - 2023-01-16(13:56:28 +0000)
+
+### New
+
+- Set/clear Logical.Interface.X in WANManager
+
 ## Release v0.9.0 - 2023-01-13(12:03:36 +0000)
 
 ### New
