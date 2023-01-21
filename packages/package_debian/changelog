@@ -1,0 +1,7 @@
+wan-manager (0.10.0) unstable; urgency=medium
+
+  * Set/clear Logical.Interface.X in WANManager
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 16 Jan 2023 13:56:28 +0000
+
+ 2023-01-16(13:56:28 +0000)

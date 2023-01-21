@@ -1,0 +1,9 @@
+Source: wan-manager
+Section: devel
+Priority: optional
+Maintainer: Softathome <support.opensource@softathome.com>
+
+Package: wan-manager
+Architecture: amd64
+Depends: ${shlibs:Depends}
+Description: Plugin for advanced WAN mode configuration
