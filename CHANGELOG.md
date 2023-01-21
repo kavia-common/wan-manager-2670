@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.11.0 - 2023-01-21(08:27:09 +0000)
+
+### New
+
+- Prepare debian package + changelog
+
 ## Release v0.10.0 - 2023-01-16(13:56:28 +0000)
 
 ### New
