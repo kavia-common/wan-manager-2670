@@ -16,6 +16,7 @@ DNS_INT_SRC = ./dns
 AUTOSENSING_INT_SRC = ./autosensing
 ETHERNET_INT_SRC = ./ethernet
 NETMODEL_INT_SRC = ./netmodel
+DSLITE_INT_SRC = ./dslite
 
 INCDIR_PRIV = ../include_priv
 INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
@@ -28,9 +29,11 @@ SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(AUTOSENSING_INT_SRC)/*.c \
  				 $(NETMODEL_INT_SRC)/*.c    \
  				 $(DHCPC_INT_SRC)/*.c       \
- 				 $(PPP_INT_SRC)/*.c         \
- 				 $(ETHERNET_INT_SRC)/*.c    \
+ 				 $(PPP_INT_SRC)/*.c       \
+ 				 $(ETHERNET_INT_SRC)/*.c \
+				 $(DSLITE_INT_SRC)/*.c \
 				 $(DNS_INT_SRC)/*.c)
+
 
 
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
@@ -90,6 +93,10 @@ $(OBJDIR)/%.o: $(NETMODEL_INT_SRC)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(DNS_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(DSLITE_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

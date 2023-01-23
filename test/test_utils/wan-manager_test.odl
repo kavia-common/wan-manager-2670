@@ -18,6 +18,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
+    object DSLite {
+        bool Enable;
+    }
+
     object IP{
         object Interface {}
     }
@@ -66,6 +70,11 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
            parameter Alias = "demo_pppmode";
            parameter PhysicalType = "Ethernet";
         }
+
+        instance add("demo_dslite"){
+            parameter Alias = "demo_dslite";
+            parameter PhysicalType = "Ethernet";
+        }
      }
 
     object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
@@ -98,6 +107,16 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv6Mode = "dhcp6";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.6.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_dslite.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dslite";
+            parameter IPv6Mode = "dhcp6";
+            parameter IPv4Reference = "Device.IP.Interface.7.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
         }
     }
 

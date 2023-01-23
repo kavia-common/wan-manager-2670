@@ -90,6 +90,7 @@ amxb_bus_ctx_t* ppp_get_context(void);
 amxb_bus_ctx_t* routing_get_context(void);
 amxb_bus_ctx_t* dns_get_context(void);
 amxb_bus_ctx_t* ethernet_get_context(void);
+amxb_bus_ctx_t* dslite_get_context(void);
 amxb_bus_ctx_t* logical_get_context(void);
 
 amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable);

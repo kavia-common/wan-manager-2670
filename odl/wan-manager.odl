@@ -18,7 +18,8 @@
         "com-ctrl" = 200,
         "eth-ctrl" = 200,
         "netmod-ctrl" = 200,
-        "mod-autosensing" = 200
+        "mod-autosensing" = 200,
+        "dslite-ctrl" = 200
     };
 
     // main files
@@ -55,6 +56,8 @@ requires "DHCPv6.Client.";
 requires "PPP.";
 requires "Routing.";
 requires "DNS.";
+requires "DSLite.";
+requires "Logical.";
 
 %define {
     entry-point "${name}".wan_manager_main;

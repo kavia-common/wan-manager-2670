@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,56 +60,70 @@
 **
 ****************************************************************************/
 
-#if !defined(__MODE_CTRL_H__)
-#define __MODE_CTRL_H__
+#include <string.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <stdbool.h>
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxc/amxc_macros.h>
 
-typedef enum {
-    IP_None       = 0x000000,
-    IPv4_DHCP     = 0x000001,
-    IPv4_PPP      = 0x000002,
-    IPv4_STATIC   = 0x000004,
-    IPv4_DSLITE   = 0x000008,
-    IPv6_DHCP     = 0x000100,
-    IPv6_PPP      = 0x000200,
-    IPv6_STATIC   = 0x000400,
-    MASK_DHCP     = 0x000101,
-    MASK_PPP      = 0x000202,
-    MASK_STATIC   = 0x000404,
-    TYPE_VLAN     = 0x010000,
-    TYPE_UNTAGGED = 0x020000,
-    TYPE_ATM      = 0x040000,
-    MASK_IPv4     = 0x0000FF,
-    MASK_IPv6     = 0x00FF00,
-    MASK_TYPE     = 0xFF0000
-} mode_ctrl_t;
+#include "ctrl/mode_ctrl.h"
+#include "dslite/dslite.h"
+#include "ethernet/ethernet.h"
+#include "component.h"
+#include "wan_manager_utils.h"
 
-typedef enum {
-    DNS_DHCPv4              = 0b00010,
-    DNS_DHCPv6              = 0b00100,
-    DNS_RouterAdvertisement = 0b01000,
-    DNS_IPCP                = 0b10000,
-    DNS_STATIC              = 0b00001,
-    DNS_DYNAMIC             = 0b11110,
-    DNS_NONE                = 0b11111
-} dns_mode_t;
+#define ME "dslite-ctrl"
 
-typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
+#define DSLITE_PATH "DSLite."
+#define LOGICAL_PATH "Logical.Interface.1."
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);
+amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
+                            const amxc_var_t* const parameters) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* dhcpv4_path = NULL;
+    char* logical_path = NULL;
 
-#ifdef __cplusplus
+    when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
+
+    //Add the IPReference to the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", ipv4_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
+
+    // Enable DSLite
+    rc = component_set_enable(DSLITE_PATH, dslite_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_PATH);
+
+exit:
+    free(dhcpv4_path);
+    free(logical_path);
+    return rc;
 }
-#endif
 
-#endif // __MODE_CTRL_H__
+amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
+                             const amxc_var_t* const parameters) {
+
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
+
+    //Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", ipv4_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s'", logical_path);
+
+    // Disable DSLite
+    rc = component_set_enable(DSLITE_PATH, dslite_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_PATH);
+
+exit:
+    free(logical_path);
+    return rc;
+}

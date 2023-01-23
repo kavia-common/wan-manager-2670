@@ -109,6 +109,7 @@ static mode_cnv_t mode_cnv[] = {
     { IPv6_DHCP, "dhcp6" },
     { IPv6_PPP, "ppp6" },
     { IPv6_STATIC, "static" },
+    { IPv4_DSLITE, "dslite" },
     { TYPE_VLAN, "vlan" },
     { TYPE_UNTAGGED, "untagged" },
     { TYPE_ATM, "atm" },

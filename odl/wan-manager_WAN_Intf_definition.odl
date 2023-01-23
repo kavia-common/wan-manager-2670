@@ -49,7 +49,7 @@
             * @version 1.0
             */
             %persistent string IPv4Mode{
-                constraint enum ["dhcp4", "ppp4", "none", "static"];
+                constraint enum ["dhcp4", "ppp4", "none", "static", "dslite"];
                 default "dhcp4";
             }
 

@@ -217,9 +217,14 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
         lower_layer = GETP_CHAR(parameters, "VLANTermination");
     }
 
+    // Enable IPv4 on the IP interface
+    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
+
     // Enable the correct IPv4 Address instance
     rc = ip_addr_toggle(intf_path, DHCP_ADDRESSING_TYPE, true);
     when_failed(rc, exit);
+
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
@@ -285,6 +290,10 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
     // Disable the correct IPv4 Address instance
     rc = ip_addr_toggle(intf_path, DHCP_ADDRESSING_TYPE, false);
     when_failed(rc, exit);
+
+    // Disable IPv4 on the IP interface
+    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable IPv4 on %s", intf_path);
 
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");

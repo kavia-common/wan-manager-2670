@@ -8,7 +8,7 @@ AUTOSENSING_SRCDIR = $(realpath ../../src/autosensing)
 ETHERNET_SRCDIR = $(realpath ../../src/ethernet)
 NETMODEL_SRCDIR = $(realpath ../../src/netmodel)
 DNS_INT_SRC = $(realpath ../../src/dns)
-
+DSLITE_SRCDIR = $(realpath ../../src/dslite)
 
 OBJDIR = $(realpath ../../output/$(MACHINE)/coverage)
 INCDIR = $(realpath ../../include ../../include_priv ../include ../mocks ../test_utils)
@@ -22,6 +22,7 @@ SOURCES += $(wildcard $(AUTOSENSING_SRCDIR)/*.c)
 SOURCES += $(wildcard $(ETHERNET_SRCDIR)/*.c)
 SOURCES += $(wildcard $(NETMODEL_SRCDIR)/*.c)
 SOURCES += $(wildcard $(DNS_INT_SRC)/*.c)
+SOURCES += $(wildcard $(DSLITE_SRCDIR)/*.c)
 
 
 CFLAGS += -Werror -Wall -Wextra -Wno-attributes\

@@ -1,11 +1,9 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -61,57 +59,22 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
-#if !defined(__MODE_CTRL_H__)
-#define __MODE_CTRL_H__
+#if !defined(__DSLITE_H__)
+#define __DSLITE_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
-#include <stdbool.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-typedef enum {
-    IP_None       = 0x000000,
-    IPv4_DHCP     = 0x000001,
-    IPv4_PPP      = 0x000002,
-    IPv4_STATIC   = 0x000004,
-    IPv4_DSLITE   = 0x000008,
-    IPv6_DHCP     = 0x000100,
-    IPv6_PPP      = 0x000200,
-    IPv6_STATIC   = 0x000400,
-    MASK_DHCP     = 0x000101,
-    MASK_PPP      = 0x000202,
-    MASK_STATIC   = 0x000404,
-    TYPE_VLAN     = 0x010000,
-    TYPE_UNTAGGED = 0x020000,
-    TYPE_ATM      = 0x040000,
-    MASK_IPv4     = 0x0000FF,
-    MASK_IPv6     = 0x00FF00,
-    MASK_TYPE     = 0xFF0000
-} mode_ctrl_t;
-
-typedef enum {
-    DNS_DHCPv4              = 0b00010,
-    DNS_DHCPv6              = 0b00100,
-    DNS_RouterAdvertisement = 0b01000,
-    DNS_IPCP                = 0b10000,
-    DNS_STATIC              = 0b00001,
-    DNS_DYNAMIC             = 0b11110,
-    DNS_NONE                = 0b11111
-} dns_mode_t;
-
-typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
-
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);
+amxd_status_t dslite_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t dslite_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __MODE_CTRL_H__
+#endif // __DSLITE_H__

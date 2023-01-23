@@ -74,6 +74,7 @@
 #include "ctrl/mode_ctrl.h"
 #include "dhcpc/dhcpc.h"
 #include "ppp/ppp.h"
+#include "dslite/dslite.h"
 
 #define ME "wan-man"
 
@@ -93,6 +94,7 @@ controller_item_t controllers [] = {
     { TYPE_UNTAGGED, IPv4_PPP, ppp_enable, ppp_disable },
     { TYPE_VLAN, IPv6_PPP, ppp6_enable, ppp6_disable },
     { TYPE_UNTAGGED, IPv6_PPP, ppp6_enable, ppp6_disable },
+    { TYPE_UNTAGGED, IPv4_DSLITE, dslite_enable, dslite_disable },
     { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
     // last item of array must be 0
     { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }

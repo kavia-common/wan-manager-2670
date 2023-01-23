@@ -1,0 +1,19 @@
+%populate {
+    object '${prefix_}WANManager.WAN' {
+        instance add ("Ethernet_DSLite"){
+            parameter Alias = "Ethernet_DSLite";
+            parameter PhysicalType = "Ethernet";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.Ethernet_DSLite.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dslite";
+            parameter IPv6Mode = "dhcp6";
+            parameter Name = "wan";
+            parameter IPv4Reference = "Device.IP.Interface.7.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+        }
+    }
+}

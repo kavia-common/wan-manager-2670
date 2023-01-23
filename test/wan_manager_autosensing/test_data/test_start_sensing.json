@@ -39,6 +39,14 @@
             "Status" : "Disabled"
         },
         {
+            "Alias" : "demo_dslite",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        },
+        {
             "Alias" : "demo_SFP",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
