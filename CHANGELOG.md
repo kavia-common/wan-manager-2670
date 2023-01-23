@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.12.0 - 2023-01-23(08:37:00 +0000)
+
+### New
+
+- [ipv6][dslite][wanmanager] Add support for dslite in the WANManager
+
 ## Release v0.11.0 - 2023-01-21(08:27:09 +0000)
 
 ### New
