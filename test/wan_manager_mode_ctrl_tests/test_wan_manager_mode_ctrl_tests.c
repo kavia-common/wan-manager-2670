@@ -85,8 +85,6 @@
 #define FNC_DHCPC_DISABLE   0x0002
 #define FNC_PPP_ENABLE      0x0004
 #define FNC_PPP_DISABLE     0x0008
-#define FNC_PPP6_ENABLE     0x0010
-#define FNC_PPP6_DISABLE    0x0020
 
 static int calls_flags = 0;
 
@@ -102,10 +100,6 @@ amxd_status_t __wrap_ppp_enable(mode_ctrl_t mode,
                                 UNUSED const amxc_var_t* const parameters);
 amxd_status_t __wrap_ppp_disable(mode_ctrl_t mode,
                                  UNUSED const amxc_var_t* const parameters);
-amxd_status_t __wrap_ppp6_enable(mode_ctrl_t mode,
-                                 UNUSED const amxc_var_t* const parameters);
-amxd_status_t __wrap_ppp6_disable(mode_ctrl_t mode,
-                                  UNUSED const amxc_var_t* const parameters);
 
 amxd_status_t __wrap_dhcpc4_enable(UNUSED mode_ctrl_t mode,
                                    UNUSED const amxc_var_t* const parameters) {
@@ -140,18 +134,6 @@ amxd_status_t __wrap_ppp_enable(UNUSED mode_ctrl_t mode,
 amxd_status_t __wrap_ppp_disable(UNUSED mode_ctrl_t mode,
                                  UNUSED const amxc_var_t* const parameters) {
     calls_flags |= FNC_PPP_DISABLE;
-    return amxd_status_ok;
-}
-
-amxd_status_t __wrap_ppp6_enable(UNUSED mode_ctrl_t mode,
-                                 UNUSED const amxc_var_t* const parameters) {
-    calls_flags |= FNC_PPP6_ENABLE;
-    return amxd_status_ok;
-}
-
-amxd_status_t __wrap_ppp6_disable(UNUSED mode_ctrl_t mode,
-                                  UNUSED const amxc_var_t* const parameters) {
-    calls_flags |= FNC_PPP6_DISABLE;
     return amxd_status_ok;
 }
 
@@ -263,16 +245,16 @@ void test_mode_ctrl_ppp_modes(UNUSED void** state) {
     test_mode_ctrl(TYPE_VLAN | IPv4_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE);
 
     // Type = "untagged", IPv4Mode = "none", IPv6Mode = "ppp6"
-    test_mode_ctrl(TYPE_UNTAGGED | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP6_DISABLE);
+    test_mode_ctrl(TYPE_UNTAGGED | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE);
 
     // Type = "vlan", IPv4Mode = "none", IPv6Mode = "ppp6"
-    test_mode_ctrl(TYPE_VLAN | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP6_ENABLE);
+    test_mode_ctrl(TYPE_VLAN | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE);
 
     // Type = "untagged", IPv4Mode = "ppp4", IPv6Mode = "ppp6"
-    test_mode_ctrl(TYPE_UNTAGGED | IPv4_PPP | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE | FNC_PPP6_DISABLE);
+    test_mode_ctrl(TYPE_UNTAGGED | IPv4_PPP | IPv6_PPP, &parameters, false, amxd_status_ok, FNC_PPP_DISABLE);
 
     // Type = "vlan", IPv4Mode = "ppp4", IPv6Mode = "ppp6"
-    test_mode_ctrl(TYPE_VLAN | IPv4_PPP | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE | FNC_PPP6_ENABLE);
+    test_mode_ctrl(TYPE_VLAN | IPv4_PPP | IPv6_PPP, &parameters, true, amxd_status_ok, FNC_PPP_ENABLE);
 
     amxc_var_clean(&parameters);
 }

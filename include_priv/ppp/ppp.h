@@ -72,8 +72,6 @@ extern "C" {
 
 amxd_status_t ppp_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 amxd_status_t ppp_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t ppp6_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t ppp6_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }

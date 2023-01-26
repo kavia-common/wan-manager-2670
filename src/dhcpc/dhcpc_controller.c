@@ -79,8 +79,6 @@
 
 #define ME "dhcpc-ctrl"
 
-static int routing_nr_inst = 0;
-
 /**
  * @brief
  *
@@ -137,62 +135,6 @@ exit:
     amxc_string_clean(&upper_test_path);
     amxc_string_clean(&test_path);
     amxc_string_clean(&param);
-    return path;
-}
-
-
-/**
- * @brief Function that returns the path of a Routing.RouteInformation.InterfaceSetting. instance
- * if the interface path exists. If the interface path does not exist, the function creates a blank
- * Routing.RouteInformation.InterfaceSetting. instance while also providing the path to it.
- *
- * @param intf_path
- * @return The path to the found/created instance of Routing.RouteInformation.InterfaceSetting., NULL if it fails to create the instance.
- */
-char* routing_get_interfacesetting(const char* intf_path) {
-    amxb_bus_ctx_t* ctx = routing_get_context();
-    amxc_string_t test_path;
-    amxc_var_t parameter;
-    amxc_var_t* tmp = NULL;
-    amxc_string_t alias;
-    char* path = NULL;
-    const char* tag = "Wan-Manager";
-
-    amxc_string_init(&test_path, 0);
-    amxc_string_init(&alias, 0);
-    amxc_var_init(&parameter);
-
-    when_null_trace(intf_path, exit, ERROR, "Null interface path provided for the Routing mananger");
-
-    amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
-
-    path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
-
-    if(path == NULL) {
-        amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '']");
-        path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
-
-        // Create the instance if none are found in the routing manager
-        if(path == NULL) {
-            routing_nr_inst++;
-            amxc_string_setf(&alias, "%s-%d", tag, routing_nr_inst);
-
-            amxc_var_set_type(&parameter, AMXC_VAR_ID_HTABLE);
-            tmp = amxc_var_add_new_key(&parameter, "Alias");
-            amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&alias));
-            amxc_var_add_key(cstring_t, &parameter, "Interface", "");
-            amxc_var_add_key(cstring_t, &parameter, "PreferredRouteFlag", "High");
-
-            //Add the instance to the datamodel
-            path = component_add_instance("Device.Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
-            when_null_trace(path, exit, ERROR, "Could not add a blank InterfaceSetting to the Routing plugin");
-        }
-    }
-
-exit:
-    amxc_var_clean(&parameter);
-    amxc_string_clean(&test_path);
-    amxc_string_clean(&alias);
     return path;
 }
 

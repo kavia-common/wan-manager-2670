@@ -88,23 +88,33 @@ static const char* ppp_get_client(UNUSED bool ipv4,
 
 amxd_status_t ppp_enable(mode_ctrl_t mode,
                          const amxc_var_t* const parameters) {
+    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_PPP;
+    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
-    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* username = GET_CHAR(parameters, "UserName");
     const char* password = GET_CHAR(parameters, "Password");
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
+    char* route_path = NULL;
 
-    SAH_TRACEZ_INFO(ME, "Enabling PPP4");
+    SAH_TRACEZ_INFO(ME, "Enabling PPP%d", ip_version);
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
-    when_str_empty_trace(name, exit, ERROR, "Name parameter for interface %s is emtpy", intf_path);
+    when_str_empty_trace(name, exit, ERROR, "Name parameter for interface %s is empty", intf_path);
 
     // Get the matching PPP client
     ppp_path = ppp_get_client(true, intf_path, intf_alias);
+
+    if(ip_version == 6) {
+        route_path = routing_get_interfacesetting(intf_path);
+        rc = component_set_str_param(route_path, routing_get_context(), "Interface", intf_path);
+        when_failed_trace(rc, exit, ERROR, "Failed to set the routing interface to %s'", intf_path);
+    }
 
     // VLANS
     if((mode & TYPE_VLAN) != 0) {
@@ -113,9 +123,25 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         lower_layer = GETP_CHAR(parameters, "VLANTermination");
     }
 
-    // Enable IPv4 on the IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
+    if(ip_version == 4) {
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", true);
+        when_failed(rc, exit);
+
+        // Enable IPv4 on the IP interface
+        rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
+
+        // Enable the correct IPv4 Address instance
+        rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable the correct IPv4 Address instance");
+    } else {
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", true);
+        when_failed(rc, exit);
+
+        // Enable IPv6 on the IP interface
+        rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
+    }
 
     // Setup and Enable PPP
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", lower_layer);
@@ -138,10 +164,6 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", ppp_path);
     when_failed_trace(rc, exit, ERROR, "Failed to set '%s.LowerLayers' to '%s'", intf_path, ppp_path);
 
-    // Enable the correct IPv4 Address instance
-    rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the correct IPv4 Address instance");
-
     // Set the default route origin
     routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP);
 
@@ -152,25 +174,30 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     //Add the IPReference to the Logical Interface
     logical_path = create_logical_path(name);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to add IPv4Reference to '%s'", logical_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv%dReference to '%s'", ip_version, logical_path);
 
 
     rc = amxd_status_ok;
 
 exit:
+    free(route_path);
     free(logical_path);
     return rc;
 }
 
 amxd_status_t ppp_disable(mode_ctrl_t mode,
                           const amxc_var_t* const parameters) {
+    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_PPP;
+    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
+    char* route_path = NULL;
 
-    SAH_TRACEZ_INFO(ME, "Disabling PPP4");
+    SAH_TRACEZ_INFO(ME, "Disabling PPP%d", ip_version);
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
     when_str_empty_trace(ppp_path, exit, ERROR, "No PPP interface path found");
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
@@ -178,11 +205,37 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     //Remove the IPReference from the Logical Interface
     logical_path = create_logical_path(name);
     rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s.LowerLayers'", logical_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv%dReference from '%s.LowerLayers'", ip_version, logical_path);
+
+    if(ip_version == 6) {
+        route_path = routing_get_interfacesetting(intf_path);
+        rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
+        when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
+    }
 
     // Disable PPP
     rc = component_set_enable(ppp_path, ppp_get_context(), false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable PPP instance '%s'", ppp_path);
+
+    if(ip_version == 4) {
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", false);
+        when_failed(rc, exit);
+
+        // Disable IPv4 on the IP interface
+        rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", false);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
+
+        // Disable the IPv4 address instance
+        rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, false);
+        when_failed(rc, exit);
+    } else {
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", false);
+        when_failed(rc, exit);
+
+        // Disable IPv6 on the IP interface
+        rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable IPv6 on %s", intf_path);
+    }
 
     // Clear the LowerLayers parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
@@ -190,38 +243,14 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear '%s.LowerLayers'", ppp_path);
 
-    // Disable the IPv4 address instance
-    rc = ip_addr_toggle(intf_path, PPP_ADDRESSING_TYPE, false);
-    when_failed(rc, exit);
-
-    // Disable IPv4 on the IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
-
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
         ethernet_vlan_set_enable(parameters, false);
     }
 
 exit:
+    free(route_path);
     free(logical_path);
     return rc;
 }
 
-amxd_status_t ppp6_enable(UNUSED mode_ctrl_t mode,
-                          UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-
-    SAH_TRACEZ_INFO(ME, "Enabling PPP6");
-    rc = amxd_status_ok;
-    return rc;
-}
-
-amxd_status_t ppp6_disable(UNUSED mode_ctrl_t mode,
-                           UNUSED const amxc_var_t* const parameters) {
-    amxd_status_t rc = amxd_status_unknown_error;
-
-    SAH_TRACEZ_INFO(ME, "Disabling PPP6");
-    rc = amxd_status_ok;
-    return rc;
-}

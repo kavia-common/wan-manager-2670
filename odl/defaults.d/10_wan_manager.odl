@@ -26,6 +26,12 @@
             parameter PhysicalType = "Ethernet";
             parameter DNSMode = "Static";
         }
+
+        instance add ("demo_ppp6mode"){
+            parameter Alias = "demo_ppp6mode";
+            parameter PhysicalType = "Ethernet";
+            parameter DNSMode = "RouterAdvertisement";
+        }
     }
 
     object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
@@ -55,6 +61,8 @@
             parameter Type = "untagged";
             parameter IPv4Mode = "ppp4";
             parameter IPv6Mode = "dhcp6";
+            parameter UserName = "softathome";
+            parameter Password = "softathome";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.6.";
         }
@@ -70,6 +78,20 @@
         }
     }
 
+    object '${prefix_}WANManager.WAN.demo_ppp6mode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "none";
+            parameter IPv6Mode = "ppp6";
+            parameter UserName = "prpl_ipv6";
+            parameter Password = "softathome";
+            parameter VlanID = 144;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+        }
+    }
+
     object '${prefix_}WANManager.WAN.demo_staticmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DNSServers = "8.8.8.8,1.1.1.1";
@@ -80,5 +102,5 @@
         instance add("ipv6"){
             parameter DNSServers = "2620:119:35::35,2620:119:53::53";
         }
-    }   
+    }
 }
