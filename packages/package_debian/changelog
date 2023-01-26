@@ -1,3 +1,9 @@
+wan-manager (0.13.0) unstable; urgency=medium
+
+  * [ppp][ipv6] It must be possible to support pppv6 (ip6cp) with the ppp plugin
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 26 Jan 2023 12:44:30 +0000
+
 wan-manager (0.12.0) unstable; urgency=medium
 
   * [ipv6][dslite][wanmanager] Add support for dslite in the WANManager

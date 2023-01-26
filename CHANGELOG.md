@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.13.0 - 2023-01-26(12:44:30 +0000)
+
+### New
+
+- [ppp][ipv6] It must be possible to support pppv6 (ip6cp) with the ppp plugin
+
 ## Release v0.12.0 - 2023-01-23(08:37:00 +0000)
 
 ### New
