@@ -1,3 +1,9 @@
+wan-manager (0.13.1) unstable; urgency=medium
+
+  * Configure static IPv4 and IPv6 addresses trough the wan-manager
+
+ -- SAH bot <sahbot@softathome.com>  Fri, 27 Jan 2023 09:50:38 +0000
+
 wan-manager (0.13.0) unstable; urgency=medium
 
   * [ppp][ipv6] It must be possible to support pppv6 (ip6cp) with the ppp plugin

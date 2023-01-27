@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.13.1 - 2023-01-27(09:50:37 +0000)
+
+### Other
+
+- Configure static IPv4 and IPv6 addresses trough the wan-manager
+
 ## Release v0.13.0 - 2023-01-26(12:44:30 +0000)
 
 ### New
