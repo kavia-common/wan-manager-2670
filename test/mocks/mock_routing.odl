@@ -2,13 +2,75 @@
     select Device {
         object Routing {
             object RouteInformation {
+
+                bool Enable;
                 object InterfaceSetting[] {
 
                     string Alias;
                     string Interface;
-                    string PreferredRouteFlag;
+                }
+            }
+
+            object Router[]{
+
+                string Alias;
+                bool Enable;
+                object IPv4Forwarding[]{
+
+                    string Alias;
+                    string DestIPAddress;
+                    string DestSubnetMask;
+                    bool Enable;
+                    string GatewayIPAddress;
+                    string Interface;
+                    string Origin;
+                }
+                object IPv6Forwarding[]{
+                    
+                    string Alias;
+                    string DestIPPrefix;
+                    bool Enable;
+                    string Interface;
+                    string NextHop;
+                    string Origin;
                 }
             }
         }
     }
+}
+
+
+%populate {
+    object Device.Routing.RouteInformation {
+
+        parameter Enable = 1;
+        object InterfaceSetting{
+            instance add("wan"){
+
+                parameter Alias = "wan";
+                parameter Interface = "Device.IP.Interface.2.";
+            }
+        }
+    }
+
+    object Device.Routing.Router {
+        instance add("main"){
+
+            parameter Alias = "main";
+            parameter Enable = 1;
+            object IPv4Forwarding {
+                instance add("cpe-default"){
+
+                    parameter Alias = "cpe-default";
+                    parameter DestIPAddress = "0.0.0.0";
+                    parameter DestSubnetMask = "0.0.0.0";
+                    parameter Enable = 1;
+                    parameter GatewayIPAddress = "172.16.110.10";
+                    parameter Interface = "Device.IP.Interface.2.";
+                    parameter Origin = "DHCPv4";
+                }
+            }
+        }
+    }
+
 }

@@ -146,13 +146,13 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
     set_isUp_result(false);
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_false(GETP_BOOL(&ret, "active"));
+    assert_false(GET_BOOL(&ret, "active"));
     amxc_var_clean(&ret);
 
     set_isUp_result(true);
     amxc_var_init(&ret);
     assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_true(GETP_BOOL(&ret, "active"));
+    assert_true(GET_BOOL(&ret, "active"));
     amxc_var_clean(&ret);
 }
 

@@ -88,6 +88,7 @@ void test_wan_manager_routing_interface_create(void** state);
 void test_wan_manager_dns_inst_add(void** state);
 void test_wan_manager_dns_inst_remove(void** state);
 void test_wan_manager_logical_interface(void** state);
+void test_wan_manager_set_static_ip(void** state);
 
 
 #endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__

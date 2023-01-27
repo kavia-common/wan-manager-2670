@@ -9,11 +9,20 @@
                 string LowerLayers;
 
                 object IPv4Address[] {
+                    string Alias;
                     string Status = "Disabled";
                     string IPAddress;
                     string SubnetMask;
                     string AddressingType;
                     bool Enable;
+                }
+
+                object IPv6Address[]{
+                    string Alias;
+                    bool Enable = 1;
+                    string IPAddress;
+                    string IPAddressStatus;
+                    string Origin;
                 }
             }
         }
@@ -24,8 +33,16 @@
     object Device.IP.Interface {
         instance add(2, "wan") {
             object IPv4Address {
-                instance add(0,"") {
+                instance add(0,"wan") {
+                    parameter Alias = "wan";
                     parameter AddressingType = "DHCP";
+                }
+            }
+            
+            object IPv6Address {
+                instance add(0,"GUA_RA"){
+                    parameter Alias = "GUA_RA";
+                    parameter Enable = 1;
                 }
             }
         }
@@ -34,7 +51,7 @@
     object Device.IP.Interface {
         instance add(6, "wan6") {
             object IPv4Address {
-                instance add(0,"") {
+                instance add(0,"wan6") {
                     parameter AddressingType = "DHCP";
                 }
             }

@@ -141,8 +141,8 @@ amxd_status_t _setWANMode(amxd_object_t* object,
                           amxc_var_t* args,
                           amxc_var_t* ret) {
     amxd_status_t status = amxd_status_invalid_attr;
-    const char* wan_mode_value = GETP_CHAR(args, "WANMode");
-    bool autosensing_req = GETP_BOOL(args, "Autosensing");
+    const char* wan_mode_value = GET_CHAR(args, "WANMode");
+    bool autosensing_req = GET_BOOL(args, "Autosensing");
 
     if(!autosensing_req) {
         char* current_mode = amxd_object_get_value(cstring_t, object, "OperationMode", NULL);
@@ -206,7 +206,7 @@ void _set_wan_mode(UNUSED const char* const event_name,
     char* current_operation_mode = amxd_object_get_value(cstring_t, get_wan_manager_obj(), "OperationMode", NULL);
 
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
-    when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, INFO, "Ignoring changes made when autosensing is active");
+    when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
 
     if(is_valid_mode(new_wan_mode) == amxd_status_ok) {
         wan_mode_set(new_wan_mode, old_wan_mode);

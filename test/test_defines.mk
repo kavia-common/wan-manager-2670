@@ -3,6 +3,7 @@ SRCDIR = $(realpath ../../src)
 
 CTRL_SRCDIR = $(realpath ../../src/ctrl)
 DHCPC_SRCDIR = $(realpath ../../src/dhcpc)
+STATICC_SRCDIR = $(realpath ../../src/staticc)
 PPP_SRCDIR = $(realpath ../../src/ppp)
 AUTOSENSING_SRCDIR = $(realpath ../../src/autosensing)
 ETHERNET_SRCDIR = $(realpath ../../src/ethernet)
@@ -23,6 +24,7 @@ SOURCES += $(wildcard $(ETHERNET_SRCDIR)/*.c)
 SOURCES += $(wildcard $(NETMODEL_SRCDIR)/*.c)
 SOURCES += $(wildcard $(DNS_INT_SRC)/*.c)
 SOURCES += $(wildcard $(DSLITE_SRCDIR)/*.c)
+SOURCES += $(wildcard $(STATICC_SRCDIR)/*.c)
 
 
 CFLAGS += -Werror -Wall -Wextra -Wno-attributes\

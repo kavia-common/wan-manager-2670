@@ -49,6 +49,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
+$(OBJDIR)/%.o: $(STATICC_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
 $(OBJDIR)/%.o: $(DNS_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)

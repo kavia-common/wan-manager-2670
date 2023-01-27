@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -75,13 +75,14 @@ extern "C" {
 amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value);
 amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
+amxd_status_t component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values);
 char* component_get_path_instance(amxb_bus_ctx_t* bus,
                                   const char* query);
 char* component_add_instance(const char* object_path,
                              amxc_var_t* parameter,
                              amxb_bus_ctx_t* bus);
-char* component_del_instance(const char* object_path,
-                             amxb_bus_ctx_t* bus);
+amxd_status_t component_del_instance(const char* object_path,
+                                     amxb_bus_ctx_t* bus);
 
 amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter);
 amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);

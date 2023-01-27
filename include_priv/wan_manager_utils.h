@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -73,6 +73,7 @@ extern "C" {
 
 #define DHCP_ADDRESSING_TYPE "DHCP"
 #define PPP_ADDRESSING_TYPE "IPCP"
+#define STATIC_ADDRESSING_TYPE "Static"
 
 #define ROUTING_ORIGIN_DHCPV4 "DHCPv4"
 #define ROUTING_ORIGIN_IPCP "IPCP"
@@ -92,13 +93,17 @@ amxb_bus_ctx_t* dns_get_context(void);
 amxb_bus_ctx_t* ethernet_get_context(void);
 amxb_bus_ctx_t* dslite_get_context(void);
 amxb_bus_ctx_t* logical_get_context(void);
+amxb_bus_ctx_t* neighbor_discovery_get_context(void);
 
-amxd_status_t ip_addr_toggle(const char* intf_path, const char* addr_type, bool enable);
-amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin);
+amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
+amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type);
+amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin, const char* ip_addr);
+amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, const char* next_hop, const char* ip_intf, bool enable);
 char* routing_get_interfacesetting(const char* intf_path);
 void add_str_to_list(amxc_var_t* list, const char* str);
 void remove_str_from_list(amxc_var_t* list, const char* str);
 char* create_logical_path(const char* intf_name);
+amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable);
 
 #ifdef __cplusplus
 }

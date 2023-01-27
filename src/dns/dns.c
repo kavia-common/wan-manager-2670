@@ -240,11 +240,7 @@ amxd_status_t dns_server_mod_inst(const char* dns_ip_addr, const char* dns_mode,
     // If rm == true, this part will remove the related dns server from the plugin using the Tag parameter
     if(rm) {
         amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[Tag == '%s' && DNSServer == '%s']", tag, dns_ip_addr);
-        path = component_del_instance(amxc_string_get(&dns_path, 0), ctx);
-
-        if(path != NULL) {
-            rc = amxd_status_ok;
-        }
+        rc = component_del_instance(amxc_string_get(&dns_path, 0), ctx);
         goto exit;
     }
 
@@ -292,8 +288,8 @@ exit:
     amxc_var_clean(&parameter);
     amxc_string_clean(&alias);
     amxc_string_clean(&dns_path);
-    free(ip_ref);
     free(path);
+    free(ip_ref);
     return rc;
 }
 

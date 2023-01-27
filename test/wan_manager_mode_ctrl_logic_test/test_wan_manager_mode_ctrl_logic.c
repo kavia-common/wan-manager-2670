@@ -97,7 +97,7 @@ static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status)
     amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_set);
     assert_int_equal(amxd_object_invoke_function(wan_mode, "setWANMode", &args, &ret), expected_status);
-    rc = GETP_BOOL(&ret, "status");
+    rc = GET_BOOL(&ret, "status");
 
     test_handle_events();
 
@@ -224,9 +224,9 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
 }
 
 /*
-    This test assumes that no instance is created be default in the datamodel of the Routing manager.
-    The code has to create an instance if none are found in the datamodel.
-    This test verifies that it is actually the case
+    This test assumes that no instance is created by default in the datamodel of the Routing manager.
+    The code has to create an instance if none are found.
+    This test then verifies that it is actually the case.
  */
 void test_wan_manager_routing_interface_create(UNUSED void** state) {
     amxd_object_t* routing_inst = amxd_dm_findf(test_get_dm(), "Device.Routing.RouteInformation.InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
@@ -344,6 +344,69 @@ void test_wan_manager_dns_inst_remove(UNUSED void** state) {
 
     dns_server = amxd_object_findf(dns_dm, "Forwarding.[DNSServer == '2620:119:35::35']");
     assert_null(dns_server);
+
+    assert_int_equal(reset_counter, get_reset_counter());
+
+    amxc_var_clean(&status);
+}
+
+void test_wan_manager_set_static_ip(UNUSED void** state) {
+    amxc_var_t status;
+    const char* prefix = test_get_prefix();
+    const char* wan_mode_str = NULL;
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "Device.IP.Interface.2.");
+    amxd_object_t* ip_addr = NULL;
+    int reset_counter = 0;
+
+    assert_non_null(ip_dm);
+
+    amxc_var_init(&status);
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    reset_counter = get_reset_counter();
+
+    amxd_object_get_param(wan_mode, "WANMode", &status);
+    wan_mode_str = amxc_var_constcast(cstring_t, &status);
+
+    assert_non_null(wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
+    assert_true(ip_addr == NULL);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static']");
+    assert_true(ip_addr == NULL);
+
+    assert_true(set_wan_mode("demo_staticmode", amxd_status_ok));
+    reset_counter = get_reset_counter();
+
+    amxd_object_get_param(wan_mode, "WANMode", &status);
+    wan_mode_str = amxc_var_constcast(cstring_t, &status);
+
+    assert_non_null(wan_mode_str);
+    assert_string_equal("demo_staticmode", wan_mode_str);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static' && IPAddress == '172.16.110.45']");
+    assert_non_null(ip_addr);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static' && IPAddress == '2a02:1802:94:3200:10:18ff:fe01:cc01']");
+    assert_non_null(ip_addr);
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    reset_counter = get_reset_counter();
+
+    amxd_object_get_param(wan_mode, "WANMode", &status);
+    wan_mode_str = amxc_var_constcast(cstring_t, &status);
+
+    assert_non_null(wan_mode_str);
+    assert_string_equal("demo_wanmode", wan_mode_str);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
+    assert_true(ip_addr == NULL);
+
+    ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static']");
+    assert_true(ip_addr == NULL);
 
     assert_int_equal(reset_counter, get_reset_counter());
 

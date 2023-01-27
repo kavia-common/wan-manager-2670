@@ -12,17 +12,20 @@
         instance add ("demo_vlanmode"){
             parameter Alias = "demo_vlanmode";
             parameter PhysicalType = "Ethernet";
-            parameter DNSMode = "Static";
         }
 
         instance add ("demo_pppmode"){
             parameter Alias = "demo_pppmode";
             parameter PhysicalType = "Ethernet";
-            parameter DNSMode = "IPCP";
         }
 
         instance add ("demo_staticmode"){
             parameter Alias = "demo_staticmode";
+            parameter PhysicalType = "Ethernet";
+        }
+
+        instance add ("demo_dns_staticmode"){
+            parameter Alias = "demo_dns_staticmode";
             parameter PhysicalType = "Ethernet";
             parameter DNSMode = "Static";
         }
@@ -71,6 +74,16 @@
     object '${prefix_}WANManager.WAN.demo_staticmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
+            parameter IPv4Mode = "static";
+            parameter IPv6Mode = "static";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_dns_staticmode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
             parameter IPv4Mode = "dhcp4";
             parameter IPv6Mode = "dhcp6";
             parameter IPv4Reference = "Device.IP.Interface.2.";
@@ -94,13 +107,28 @@
 
     object '${prefix_}WANManager.WAN.demo_staticmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
-            parameter DNSServers = "8.8.8.8,1.1.1.1";
+            parameter IPv4Address = "172.16.110.45";
+            parameter SubnetMask = "255.255.255.0";
+            parameter DefaultRouter = "172.16.110.10";
         }
     }
 
     object '${prefix_}WANManager.WAN.demo_staticmode.Intf.wan.IPv6Address'{
         instance add("ipv6"){
+            parameter IPv6Address = "2a02:1802:94:3200:10:18ff:fe01:cc01";
+            parameter DefaultRouter = "fe80::5014:93ff:fe4d:7cf";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_dns_staticmode.Intf.wan.IPv6Address'{
+        instance add("ipv6"){
             parameter DNSServers = "2620:119:35::35,2620:119:53::53";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_dns_staticmode.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DNSServers = "8.8.8.8,1.1.1.1";
         }
     }
 }

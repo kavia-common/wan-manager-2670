@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -118,9 +118,9 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
 
     amxc_string_init(&str_search, 0);
     when_null(parameters, exit);
-    lower_layer = GETP_CHAR(parameters, "LowerLayer");
+    lower_layer = GET_CHAR(parameters, "LowerLayer");
     when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
-    vlan_id = GETP_UINT32(parameters, "VlanID");
+    vlan_id = GET_UINT32(parameters, "VlanID");
 
     amxc_string_setf(&str_search, "Device.Ethernet.VLANTermination." \
                      "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);

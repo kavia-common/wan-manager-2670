@@ -103,7 +103,6 @@ static int is_autosensing_running(UNUSED const char* function_name,
     int result = 0;
 
     amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
-
     rv = amxc_var_compare(args, provided_sensing_data, &result);
     amxc_var_add_key(bool, ret, "data_ok", ((result == 0) && rv == 0));
     amxc_var_add_key(bool, ret, "running", autosensing_running);

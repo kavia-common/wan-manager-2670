@@ -305,15 +305,32 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
                                           bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
+    amxc_var_t* ipv4_var = NULL;
+    amxc_var_t* ipv6_var = NULL;
+    amxd_object_t* ipv4_addr = NULL;
+    amxd_object_t* ipv6_addr = NULL;
     mode_ctrl_t mode = IP_None;
+    amxc_llist_it_t* it = NULL;
 
     amxc_var_init(&parameters);
+
     when_null_trace(interface, exit, ERROR, "Cannot get Interface object for WANMode");
     SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
 
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
 
+    it = amxd_object_first_instance(amxd_object_findf(interface, ".IPv6Address."));
+    ipv6_addr = amxc_container_of(it, amxd_object_t, it);
+
+    it = amxd_object_first_instance(amxd_object_findf(interface, ".IPv4Address."));
+    ipv4_addr = amxc_container_of(it, amxd_object_t, it);
+
     amxc_var_add_key(cstring_t, &parameters, "LowerLayer", lower_layer);
+    ipv4_var = amxc_var_add_key(amxc_htable_t, &parameters, "ipv4", NULL);
+    ipv6_var = amxc_var_add_key(amxc_htable_t, &parameters, "ipv6", NULL);
+
+    amxd_object_get_params(ipv4_addr, ipv4_var, amxd_dm_access_private);
+    amxd_object_get_params(ipv6_addr, ipv6_var, amxd_dm_access_private);
 
     // Get mode for IPv4 & IPv6
     mode = get_wan_mode_type(interface, true);

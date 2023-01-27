@@ -59,8 +59,8 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#if !defined(__ETHERNET_H__)
-#define __ETHERNET_H__
+#if !defined(__STATICC_H__)
+#define __STATICC_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,10 +70,13 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable);
+amxd_status_t static4_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t static4_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t static6_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t static6_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __ETHERNET_H__
+#endif // __STATICC_H__

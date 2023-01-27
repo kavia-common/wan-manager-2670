@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2021 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -87,10 +87,8 @@
 amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
     int rc = -1;
     amxc_var_t parameters;
-    amxc_var_t ret;
 
     amxc_var_init(&parameters);
-    amxc_var_init(&ret);
 
     when_null_trace(bus, exit, ERROR, "amxb_bus_ctx_t was empty");
     when_str_empty(component, exit);
@@ -99,12 +97,11 @@ amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, con
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(bool, &parameters, param, value);
 
-    rc = amxb_set(bus, component, &parameters, &ret, 5);
+    rc = component_set_params(component, bus, &parameters);
     when_failed_trace(rc, exit, ERROR, "%s client set '%s' to '%d' failed with '%d'", component, param, value, rc);
 
 exit:
     amxc_var_clean(&parameters);
-    amxc_var_clean(&ret);
     return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
 }
 
@@ -156,18 +153,17 @@ char* component_add_instance(const char* object_path,
     if(value != NULL) {
         path = strdup(value);
     }
+
 exit:
     amxc_var_clean(&ret);
     return path;
 }
 
 amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
-    int rc = -1;
+    amxd_status_t rc = amxd_status_ok;
     amxc_var_t parameters;
-    amxc_var_t ret;
 
     amxc_var_init(&parameters);
-    amxc_var_init(&ret);
 
     when_null(bus, exit);
     when_str_empty(param, exit);
@@ -178,20 +174,17 @@ amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &parameters, param, value);
 
-    rc = amxb_set(bus, component, &parameters, &ret, 5);
-    when_failed_trace(rc, exit, ERROR, "%s client set param %s failed", component, param);
+    rc = component_set_params(component, bus, &parameters);
 
 exit:
     amxc_var_clean(&parameters);
-    amxc_var_clean(&ret);
-    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
+    return rc;
 }
 
-char* component_del_instance(const char* object_path,
-                             amxb_bus_ctx_t* bus) {
-    amxc_var_t* value = NULL;
-    char* path = NULL;
+amxd_status_t component_del_instance(const char* object_path,
+                                     amxb_bus_ctx_t* bus) {
     amxc_var_t ret;
+    amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_init(&ret);
 
     when_str_empty(object_path, exit);
@@ -201,13 +194,10 @@ char* component_del_instance(const char* object_path,
         SAH_TRACEZ_ERROR(ME, "Could not delete instance %s", object_path);
         goto exit;
     }
-    value = GETP_ARG(&ret, "0.path");
-    if(value != NULL) {
-        path = amxc_var_take(cstring_t, value);
-    }
+    rc = amxd_status_ok;
 exit:
     amxc_var_clean(&ret);
-    return path;
+    return rc;
 }
 
 amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter) {
@@ -305,4 +295,22 @@ exit:
     amxc_var_clean(&orig_value);
     amxc_var_clean(&llist);
     return rc;
+}
+
+amxd_status_t component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values) {
+    amxc_var_t ret;
+    int rc = -1;
+
+    when_null(bus, exit);
+    when_null(values, exit);
+    when_str_empty(component, exit);
+
+    amxc_var_init(&ret);
+
+    rc = amxb_set(bus, component, values, &ret, 10);
+    when_failed_trace(rc, exit, ERROR, "%s client set params failed with error code %d", component, rc);
+
+exit:
+    amxc_var_clean(&ret);
+    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
 }
