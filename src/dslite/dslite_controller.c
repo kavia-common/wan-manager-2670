@@ -75,6 +75,7 @@
 #include "ethernet/ethernet.h"
 #include "component.h"
 #include "wan_manager_utils.h"
+#include "dm_wan-manager.h"
 
 #define ME "dslite-ctrl"
 
@@ -88,8 +89,13 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     const char* name = GET_CHAR(parameters, "Name");
     char* dhcpv4_path = NULL;
     char* logical_path = NULL;
+    amxc_string_t pcp_enable;
+    const char* prefix = wan_get_prefix();
+
+    amxc_string_init(&pcp_enable, 0);
 
     when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
+    when_null_trace(prefix, exit, ERROR, "Couldn't retrieve prefix");
 
     //Add the IPReference to the Logical Interface
     logical_path = create_logical_path(name);
@@ -100,7 +106,13 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     rc = component_set_enable(DSLITE_PATH, dslite_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_PATH);
 
+    // Enable PCP
+    amxc_string_setf(&pcp_enable, "%sEnable", prefix);
+    rc = component_set_bool("PCP.", pcp_get_context(), amxc_string_get(&pcp_enable, 0), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
+
 exit:
+    amxc_string_clean(&pcp_enable);
     free(dhcpv4_path);
     free(logical_path);
     return rc;
@@ -113,6 +125,12 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
+    amxc_string_t pcp_enable;
+    const char* prefix = wan_get_prefix();
+
+    amxc_string_init(&pcp_enable, 0);
+
+    when_null_trace(prefix, exit, ERROR, "Couldn't retrieve prefix");
 
     //Remove the IPReference from the Logical Interface
     logical_path = create_logical_path(name);
@@ -123,7 +141,13 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     rc = component_set_enable(DSLITE_PATH, dslite_get_context(), false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_PATH);
 
+    // Disable PCP
+    amxc_string_setf(&pcp_enable, "%sEnable", prefix);
+    rc = component_set_bool("PCP.", pcp_get_context(), amxc_string_get(&pcp_enable, 0), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
+
 exit:
+    amxc_string_clean(&pcp_enable);
     free(logical_path);
     return rc;
 }

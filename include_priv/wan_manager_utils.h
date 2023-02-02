@@ -94,6 +94,7 @@ amxb_bus_ctx_t* ethernet_get_context(void);
 amxb_bus_ctx_t* dslite_get_context(void);
 amxb_bus_ctx_t* logical_get_context(void);
 amxb_bus_ctx_t* neighbor_discovery_get_context(void);
+amxb_bus_ctx_t* pcp_get_context(void);
 
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type);

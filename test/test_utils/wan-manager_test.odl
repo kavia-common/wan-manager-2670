@@ -22,6 +22,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         bool Enable;
     }
 
+    object PCP {
+        string '${prefix_}Enable';
+    }
+
     object IP{
         object Interface {}
     }
