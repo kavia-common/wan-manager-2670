@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.14.0 - 2023-02-02(08:59:20 +0000)
+
+### New
+
+- Enable PCP when WANMode == DSLite
+
 ## Release v0.13.1 - 2023-01-27(09:50:37 +0000)
 
 ### Other

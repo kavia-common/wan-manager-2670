@@ -1,3 +1,9 @@
+wan-manager (0.14.0) unstable; urgency=medium
+
+  * Enable PCP when WANMode == DSLite
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 02 Feb 2023 08:59:20 +0000
+
 wan-manager (0.13.1) unstable; urgency=medium
 
   * Configure static IPv4 and IPv6 addresses trough the wan-manager
