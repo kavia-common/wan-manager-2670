@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.14.1 - 2023-02-02(14:55:24 +0000)
+
+### Fixes
+
+- Adapt the Wan-Manager to use DNS management functions of the TR181-DNS plugin
+
 ## Release v0.14.0 - 2023-02-02(08:59:20 +0000)
 
 ### New

@@ -1,3 +1,9 @@
+wan-manager (0.14.1) unstable; urgency=medium
+
+  * Adapt the Wan-Manager to use DNS management functions of the TR181-DNS plugin
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 02 Feb 2023 14:55:24 +0000
+
 wan-manager (0.14.0) unstable; urgency=medium
 
   * Enable PCP when WANMode == DSLite
