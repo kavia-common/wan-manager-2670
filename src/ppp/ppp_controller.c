@@ -176,7 +176,6 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv%dReference to '%s'", ip_version, logical_path);
 
-
     rc = amxd_status_ok;
 
 exit:

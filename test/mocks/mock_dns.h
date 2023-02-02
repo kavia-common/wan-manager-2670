@@ -1,11 +1,7 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** Copyright (c) 2023 SoftAtHome
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
-**
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,25 +58,27 @@
 **
 ****************************************************************************/
 
-#include <stdlib.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
+#if !defined(__MOCK_DNS_H__)
+#define __MOCK_DNS_H__
 
-#include "test_wan_manager_mode_ctrl_logic.h"
-#include "test_utils.h"
+#include <amxc/amxc.h>
+#include <amxc/amxc_macros.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
+#include <amxo/amxo.h>
 
-int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wan_manager_set_invalid_mode),
-        cmocka_unit_test(test_wan_manager_set_valid_mode),
-        cmocka_unit_test(test_wan_manager_routing_interface_create),
-        cmocka_unit_test(test_wan_manager_switch_to_invalid),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_different_intf),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_same_intf),
-        cmocka_unit_test(test_wan_manager_routing_interface_switch),
-        cmocka_unit_test(test_wan_manager_logical_interface),
-        cmocka_unit_test(test_wan_manager_set_static_ip)
-    };
-    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
-}
+amxd_status_t _setMode(amxd_object_t* object,
+                       amxd_function_t* func,
+                       amxc_var_t* args,
+                       amxc_var_t* ret);
+
+amxd_status_t _deleteForwardings(amxd_object_t* object,
+                                 amxd_function_t* func,
+                                 amxc_var_t* args,
+                                 amxc_var_t* ret);
+
+#endif // __MOCK_DNS_H__

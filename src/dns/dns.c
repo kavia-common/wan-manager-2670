@@ -82,6 +82,16 @@
 
 #define ME "wan-man"
 
+typedef enum {
+    DNS_DHCPv4              = 0b00010,
+    DNS_DHCPv6              = 0b00100,
+    DNS_RouterAdvertisement = 0b01000,
+    DNS_IPCP                = 0b10000,
+    DNS_STATIC              = 0b00001,
+    DNS_DYNAMIC             = 0b11110,
+    DNS_NONE                = 0b11111
+} dns_mode_t;
+
 typedef struct {
     dns_mode_t dns_mode;
     const char* dns_str;
@@ -97,15 +107,7 @@ static dns_mode_cnv_t dns_mode_cnv[] = {
     {DNS_NONE, NULL}
 };
 
-amxd_status_t dns_server_del_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4) {
-    return dns_server_mod_inst(dns_ip_addr, dns_mode, wan_interface, ipv4, true);
-}
-
-amxd_status_t dns_server_add_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4) {
-    return dns_server_mod_inst(dns_ip_addr, dns_mode, wan_interface, ipv4, false);
-}
-
-dns_mode_t string_to_dns_mode(const char* dns_mode) {
+static dns_mode_t string_to_dns_mode(const char* dns_mode) {
     dns_mode_cnv_t* lookup = dns_mode_cnv;
     dns_mode_t dns = DNS_NONE;
 
@@ -119,9 +121,100 @@ dns_mode_t string_to_dns_mode(const char* dns_mode) {
     return dns;
 }
 
+static void dns_server_build_args(amxc_var_t* dns_servers, amxd_object_t* interface, bool ipv4) {
+    amxc_llist_it_t* ip_it = NULL;
+    amxc_llist_t* ip_var_list = NULL;
+    amxc_var_t ip_dns_servers_var;
+    amxc_llist_t* ip_dns_servers_list = NULL;
+    amxc_var_t* ip_var = NULL;
+    amxd_object_t* ip_addr = NULL;
+    const char* dns_server_ip = NULL;
+    const char* ip_ref_param = ipv4 ? "IPv4Reference" : "IPv6Reference";
+    const char* ip_addr_param = ipv4 ? ".IPv4Address." : ".IPv6Address.";
+    char* ip_ref = NULL;
+
+    ip_ref = amxd_object_get_value(cstring_t, interface, ip_ref_param, NULL);
+
+    amxc_var_init(&ip_dns_servers_var);
+
+    ip_it = amxd_object_first_instance(amxd_object_findf(interface, "%s", ip_addr_param));
+    ip_addr = amxc_container_of(ip_it, amxd_object_t, it);
+
+    dns_server_ip = GET_CHAR(amxd_object_get_param_value(ip_addr, "DNSServers"), NULL);
+    amxc_var_set(cstring_t, &ip_dns_servers_var, dns_server_ip);
+    ip_dns_servers_list = amxc_var_dyncast(amxc_llist_t, &ip_dns_servers_var);
+
+    ip_var = amxc_var_add_key(amxc_llist_t, dns_servers, ip_ref, NULL);
+    if(ip_var == NULL) {
+        ip_var = amxc_var_get_key(dns_servers, ip_ref, AMXC_VAR_FLAG_DEFAULT);
+    }
+
+    ip_var_list = (amxc_llist_t*) amxc_var_constcast(amxc_llist_t, ip_var);
+
+    amxc_llist_for_each(it, ip_dns_servers_list) {
+        amxc_llist_it_take(it);
+        amxc_llist_append(ip_var_list, it);
+    }
+
+    amxc_llist_delete(&ip_dns_servers_list, NULL);
+    amxc_var_clean(&ip_dns_servers_var);
+    free(ip_ref);
+}
+
+/**
+ * @brief Function that sets/unsets the DNS mode and servers in the tr181-dns plugin.
+ *
+ * @param interface Interface of the wan-manager that contains the dns servers, can be NULL.
+ * @param dns_mode The dns mode in which the tr181-dns needs to be set.
+ * @param ipv4 The IP version of the servers. This helps the function to only set specific dns servers depending on the ip version.
+ * @param enable Adds the servers or disables them by deleting them.
+ * @return amxd_status_t
+ */
+static amxd_status_t dns_server_toggle(amxd_object_t* interface, const char* dns_mode, bool enable) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_var_t args;
+    amxc_var_t ret;
+    dns_mode_t dns = string_to_dns_mode(dns_mode);
+
+    amxc_var_init(&args);
+    amxc_var_init(&ret);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+
+    when_str_empty_trace(dns_mode, exit, ERROR, "Empty 'dns_mode' parameter");
+
+    if((interface != NULL) && (dns == DNS_STATIC)) {
+        amxc_var_t* dns_servers;
+
+        if(enable) {
+            amxc_var_add_key(cstring_t, &args, "Mode", dns_mode);
+        } else {
+            amxc_var_add_key(cstring_t, &args, "Type", dns_mode);
+        }
+        dns_servers = amxc_var_add_key(amxc_htable_t, &args, "DNSServers", NULL);
+        dns_server_build_args(dns_servers, interface, true);  //ipv4 dns servers
+        dns_server_build_args(dns_servers, interface, false); //ipv6 dns servers
+    } else {
+        if(enable) {
+            amxc_var_add_key(cstring_t, &args, "Mode", dns_mode);
+        }
+    }
+
+    if(enable) {
+        rc = amxb_call(dns_get_context(), "Device.DNS.", "SetMode", &args, &ret, 5);
+        when_failed_trace(rc, exit, ERROR, "Failed to set DNS mode in tr181-dns datamodel");
+    } else if((interface != NULL) && (dns == DNS_STATIC)) {
+        rc = amxb_call(dns_get_context(), "Device.DNS.", "DeleteForwardings", &args, &ret, 5);
+        when_failed_trace(rc, exit, ERROR, "Failed to delete DNS mode in tr181-dns datamodel");
+    }
+
+exit:
+    amxc_var_clean(&ret);
+    amxc_var_clean(&args);
+    return rc;
+}
+
 amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
-    dns_mode_cnv_t* lookup = dns_mode_cnv;
     dns_mode_t dns = DNS_NONE;
 
     when_str_empty_trace(dns_mode, exit, ERROR, "Empty 'dns_mode' parameter");
@@ -133,14 +226,17 @@ amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode) {
         goto exit;
     }
 
-    rc = amxd_status_ok;
-    lookup = dns_mode_cnv;
+    if(dns == DNS_STATIC) {
 
-    while(lookup->dns_str != NULL) {
-        if(dns_server_toggle(lookup->dns_str, wan_mode, ((lookup->dns_mode & dns) != 0)) != amxd_status_ok) {
-            rc = amxd_status_unknown_error;
+        amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
+
+            amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+            rc = dns_server_toggle(interface, dns_mode, true);
+            when_failed_trace(rc, exit, ERROR, "Could not toggle dns servers for ipv6/ipv4");
         }
-        lookup++;
+    } else {
+        rc = dns_server_toggle(NULL, dns_mode, true);
+        when_failed_trace(rc, exit, ERROR, "Could not toggle dns servers for ipv6/ipv4");
     }
 
 exit:
@@ -148,203 +244,21 @@ exit:
 }
 
 amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode) {
-
-    amxd_status_t rc = amxd_status_ok;
+    amxd_status_t rc = amxd_status_unknown_error;
 
     when_null_trace(wan_mode, exit, ERROR, "No wan mode reference provided, could not unset the previous dns mode");
     when_str_empty_trace(dns_mode, exit, ERROR, "No dns mode provided, could not unset previous dns mode");
 
-    if(string_to_dns_mode(dns_mode) == DNS_STATIC) {
-        if(dns_server_toggle(dns_mode, wan_mode, false) != amxd_status_ok) {
-            rc = amxd_status_unknown_error;
-        }
-    }
-
-exit:
-    return rc;
-}
-
-
-amxd_status_t dns_server_toggle(const char* dns_mode, amxd_object_t* wan_mode, bool toggle) {
-
-    amxc_string_t dns_path;
-    amxc_var_t dns_data;
-    amxc_var_t* dns_instances = NULL;
-    amxb_bus_ctx_t* ctx = dns_get_context();
-    amxd_status_t rc = amxd_status_ok;
-    int i = 0;
-
-    amxc_string_init(&dns_path, 0);
-    amxc_var_init(&dns_data);
-
-    when_str_empty_trace(dns_mode, exit, ERROR, "Empty 'dns_mode' parameter");
-
-    amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[Type == '%s']", dns_mode);
-
-    if(amxb_get(ctx, amxc_string_get(&dns_path, 0), 0, &dns_data, 10) != amxd_status_ok) {
-        SAH_TRACEZ_ERROR(ME, "amxb_get() error, could not retrieve any dns instance");
-    }
-    dns_instances = amxc_var_get_first(&dns_data);
-    when_null_trace(dns_instances, exit, ERROR, "No %s DNS server to %s", dns_mode, toggle ? "enable":"disable");
-
-    amxc_var_for_each(server, dns_instances) {
-        i++;
-        SAH_TRACEZ_INFO(ME, "%s %d %s DNS servers", toggle ? "Enabling":"Disabling", i, dns_mode);
-        if(component_set_bool(amxc_var_key(server), ctx, "Enable", toggle) != amxd_status_ok) {
-            rc = amxd_status_unknown_error;
-        }
-    }
-    when_failed(rc, exit);
+    rc = amxd_status_ok;
 
     if(string_to_dns_mode(dns_mode) == DNS_STATIC) {
 
         amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
+
             amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-
-            // IPv4 DNS servers add/delete
-            dns_servers_setup(interface, dns_mode, true, toggle);
-
-            // IPv6 DNS servers add/delete
-            dns_servers_setup(interface, dns_mode, false, toggle);
+            rc = dns_server_toggle(interface, dns_mode, false);
+            when_failed_trace(rc, exit, ERROR, "Could not disable dns servers for ipv6/ipv4");
         }
-    }
-
-exit:
-    amxc_string_clean(&dns_path);
-    amxc_var_clean(&dns_data);
-    return rc;
-}
-
-amxd_status_t dns_server_mod_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4, bool rm) {
-
-    amxd_status_t rc = amxd_status_unknown_error;
-    amxb_bus_ctx_t* ctx = dns_get_context();
-    amxc_string_t alias;
-    amxc_string_t dns_path;
-    amxc_var_t dns_data;
-    amxc_var_t parameter;
-    amxc_var_t* tmp = NULL;
-    char* ip_ref = amxd_object_get_value(cstring_t, wan_interface, ipv4 ? "IPv4Reference":"IPv6Reference", NULL);
-    int index = 0;
-    char* path = NULL;
-    const char* tag = "wanmngr";
-
-    amxc_var_init(&dns_data);
-    amxc_var_init(&parameter);
-    amxc_string_init(&alias, 0);
-    amxc_string_init(&dns_path, 0);
-
-    when_null_trace(ip_ref, exit, ERROR, "Could not retrieve the wan mode interface data");
-    when_null_trace(dns_ip_addr, exit, ERROR, "No DNS ip address given");
-
-    // If rm == true, this part will remove the related dns server from the plugin using the Tag parameter
-    if(rm) {
-        amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[Tag == '%s' && DNSServer == '%s']", tag, dns_ip_addr);
-        rc = component_del_instance(amxc_string_get(&dns_path, 0), ctx);
-        goto exit;
-    }
-
-    /**
-     * Creation of the Alias with the following rule:
-     * Alias = "dns_mode"+"-"+"index"
-     *
-     * Example: dns_mode = Static -> Alias = static-3 if 2 static instances already exist
-     */
-    amxc_string_set(&alias, dns_mode);
-    amxc_string_to_lower(&alias);
-
-    index++;
-    amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[Alias == '%s-%d']", amxc_string_get(&alias, 0), index);
-    amxb_get(ctx, amxc_string_get(&dns_path, 0), 0, &dns_data, 10);
-
-    while((amxc_var_get_first(amxc_var_get_first(&dns_data)) != NULL)) {
-        index++;
-        amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[Alias == '%s-%d']", amxc_string_get(&alias, 0), index);
-        amxb_get(ctx, amxc_string_get(&dns_path, 0), 0, &dns_data, 10);
-    }
-
-    //Creating the Alias and adding the instance
-    amxc_string_appendf(&alias, "-%d", index);
-
-    amxc_var_set_type(&parameter, AMXC_VAR_ID_HTABLE);
-    tmp = amxc_var_add_new_key(&parameter, "Alias");
-    amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&alias));
-    amxc_var_add_key(cstring_t, &parameter, "DNSServer", dns_ip_addr);
-    amxc_var_add_key(cstring_t, &parameter, "Interface", ip_ref);
-    amxc_var_add_key(cstring_t, &parameter, "Type", dns_mode);
-    amxc_var_add_key(cstring_t, &parameter, "Tag", tag);
-    amxc_var_add_key(bool, &parameter, "Enable", true);
-
-    //Add the instance to the datamodel
-    path = component_add_instance("Device.DNS.Relay.Forwarding.", &parameter, ctx);
-    when_null_trace(path, exit, ERROR, "Could not add %s to the dns plugin.", GET_CHAR(tmp, NULL));
-
-    if(path != NULL) {
-        rc = amxd_status_ok;
-    }
-
-exit:
-    amxc_var_clean(&dns_data);
-    amxc_var_clean(&parameter);
-    amxc_string_clean(&alias);
-    amxc_string_clean(&dns_path);
-    free(path);
-    free(ip_ref);
-    return rc;
-}
-
-amxd_status_t dns_servers_setup(amxd_object_t* interface, const char* dns_mode, bool ipv4, bool toggle) {
-
-    const char* ip_ref = ipv4 ? ".IPv4Address.":".IPv6Address.";
-    amxd_status_t rc = amxd_status_ok;
-    amxb_bus_ctx_t* ctx = dns_get_context();
-
-    when_str_empty_trace(dns_mode, exit, ERROR, "No DNS mode provided");
-    when_null_trace(interface, exit, ERROR, "No wanmode interface provided");
-
-    amxd_object_iterate(instance, list, amxd_object_findf(interface, "%s", ip_ref)) {
-        const char* dns_server_ip = NULL;
-        amxc_var_t ip_dns_servers_list;
-        amxd_object_t* ip = amxc_container_of(list, amxd_object_t, it);
-
-        amxc_var_init(&ip_dns_servers_list);
-
-        dns_server_ip = GET_CHAR(amxd_object_get_param_value(ip, "DNSServers"), NULL);
-        amxc_var_set(cstring_t, &ip_dns_servers_list, dns_server_ip);
-        amxc_var_cast(&ip_dns_servers_list, AMXC_VAR_ID_LIST);
-
-        amxc_var_for_each(addr, &ip_dns_servers_list) {
-            amxc_var_t dns_data;
-            amxc_string_t dns_path;
-
-            amxc_string_init(&dns_path, 0);
-            amxc_var_init(&dns_data);
-
-            amxc_string_setf(&dns_path, "Device.DNS.Relay.Forwarding.[DNSServer == '%s']", amxc_var_constcast(cstring_t, addr));
-            amxb_get(ctx, amxc_string_get(&dns_path, 0), 0, &dns_data, 10);
-
-            //Check if the DNSServer does not exist in the DNS plugin
-            if((amxc_var_get_first(amxc_var_get_first(&dns_data)) == NULL) && toggle) {
-
-                //Add the DNS server to the dm of the plugin
-                SAH_TRACEZ_INFO(ME, "Adding this address: %s to the DNS plugin", amxc_var_constcast(cstring_t, addr));
-                if(dns_server_add_inst(amxc_var_constcast(cstring_t, addr), dns_mode, interface, ipv4) != amxd_status_ok) {
-                    rc = amxd_status_unknown_error;
-                }
-            } else if((amxc_var_get_first(amxc_var_get_first(&dns_data)) != NULL) && !toggle) {
-
-                //Remove the DNS Server from the dm of the plugin
-                SAH_TRACEZ_INFO(ME, "Removing this address: %s from the DNS plugin", amxc_var_constcast(cstring_t, addr));
-                if(dns_server_del_inst(amxc_var_constcast(cstring_t, addr), dns_mode, interface, ipv4) != amxd_status_ok) {
-                    rc = amxd_status_unknown_error;
-                }
-            }
-
-            amxc_var_clean(&dns_data);
-            amxc_string_clean(&dns_path);
-        }
-
-        amxc_var_clean(&ip_dns_servers_list);
     }
 
 exit:

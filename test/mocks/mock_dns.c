@@ -1,11 +1,7 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** Copyright (c) 2022 SoftAtHome
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
-**
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
 ** conditions are met:
@@ -62,25 +58,27 @@
 **
 ****************************************************************************/
 
-#include <stdlib.h>
+#include "mock_dns.h"
+
 #include <setjmp.h>
-#include <stdarg.h>
 #include <cmocka.h>
 
-#include "test_wan_manager_mode_ctrl_logic.h"
-#include "test_utils.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wan_manager_set_invalid_mode),
-        cmocka_unit_test(test_wan_manager_set_valid_mode),
-        cmocka_unit_test(test_wan_manager_routing_interface_create),
-        cmocka_unit_test(test_wan_manager_switch_to_invalid),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_different_intf),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_same_intf),
-        cmocka_unit_test(test_wan_manager_routing_interface_switch),
-        cmocka_unit_test(test_wan_manager_logical_interface),
-        cmocka_unit_test(test_wan_manager_set_static_ip)
-    };
-    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
+#include "dm_wan_mode.h"
+
+amxd_status_t _setMode(UNUSED amxd_object_t* object,
+                       UNUSED amxd_function_t* func,
+                       UNUSED amxc_var_t* args,
+                       UNUSED amxc_var_t* ret) {
+    return amxd_status_ok;
+}
+
+amxd_status_t _deleteForwardings(UNUSED amxd_object_t* object,
+                                 UNUSED amxd_function_t* func,
+                                 UNUSED amxc_var_t* args,
+                                 UNUSED amxc_var_t* ret) {
+    return amxd_status_ok;
 }

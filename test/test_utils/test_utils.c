@@ -86,6 +86,7 @@
 #include "test_utils.h"
 #include "dhcpc/dhcpc.h"
 #include "dummy_backend.h"
+#include "../mocks/mock_dns.h"
 
 typedef struct {
     bool was_called;
@@ -127,6 +128,8 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "SetMode", AMXO_FUNC(_setMode)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "DeleteForwardings", AMXO_FUNC(_deleteForwardings)), 0);
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);

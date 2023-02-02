@@ -105,6 +105,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter VlanID = 201;
             parameter VlanPriority = 0;
             parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
         }
     }
 

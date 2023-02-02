@@ -14,6 +14,9 @@
                     string State;
                 }
             }
+
+            void SetMode(%in %mandatory string Mode, %in htable DNSServers);
+            void DeleteForwardings(%in %mandatory htable DNSServers, %in string Type);
         }
     }
 }

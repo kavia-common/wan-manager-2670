@@ -96,16 +96,6 @@ typedef enum {
     MASK_TYPE     = 0xFF0000
 } mode_ctrl_t;
 
-typedef enum {
-    DNS_DHCPv4              = 0b00010,
-    DNS_DHCPv6              = 0b00100,
-    DNS_RouterAdvertisement = 0b01000,
-    DNS_IPCP                = 0b10000,
-    DNS_STATIC              = 0b00001,
-    DNS_DYNAMIC             = 0b11110,
-    DNS_NONE                = 0b11111
-} dns_mode_t;
-
 typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
 
 amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);

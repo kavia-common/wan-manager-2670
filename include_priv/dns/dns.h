@@ -75,14 +75,8 @@ extern "C"
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
 
-dns_mode_t string_to_dns_mode(const char* dns_mode);
 amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode);
 amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode);
-amxd_status_t dns_server_toggle(const char* dns_mode, amxd_object_t* wan_mode, bool toggle);
-amxd_status_t dns_server_mod_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4, bool rm);
-amxd_status_t dns_server_del_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4);
-amxd_status_t dns_server_add_inst(const char* dns_ip_addr, const char* dns_mode, amxd_object_t* wan_interface, bool ipv4);
-amxd_status_t dns_servers_setup(amxd_object_t* interface, const char* dns_mode, bool ipv4, bool toggle);
 
 #ifdef __cplusplus
 }
