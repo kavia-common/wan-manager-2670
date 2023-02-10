@@ -2,7 +2,7 @@
     "Controller" : "mod-autosensing",
     "OperationMode" : "Manual",
     "SensingPolicy" : "AtBoot",
-    "SensingTimeout" : 25,
+    "SensingTimeout" : 8,
     "SupportedControllers" : "mod-autosensing",
     "WANMode" : "test_mode",
     "modes" : [
@@ -32,14 +32,6 @@
         },
         {
             "Alias" : "demo_pppmode",
-            "DNSMode" : "Dynamic",
-            "EnableSensing" : true,
-            "Origin" : "user",
-            "PhysicalType" : "Ethernet",
-            "Status" : "Disabled"
-        },
-        {
-            "Alias" : "demo_staticmode",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
             "Origin" : "user",

@@ -83,12 +83,11 @@
 amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
+    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
-    when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
     if((mode & TYPE_VLAN) != 0) {
@@ -97,21 +96,27 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
         lower_layer = GET_CHAR(parameters, "VLANTermination");
     }
 
-    // Enable the whole interface
-    rc = component_set_enable(intf_path, ip_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
-    // Enable IPv4 on the IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
-    // Setting up the default route instance for static ipv4
-    rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
-    when_failed_trace(rc, exit, ERROR, "Failed to set the default route for instance for ipv4");
-    // Enable the correct IPv4 Address instance
-    rc = ipv4_addr_toggle(intf_path, ipv4, STATIC_ADDRESSING_TYPE);
+
+    // Enable the IPv4 Address instance
+    rc = ipv4_addr_toggle(intf_path, ipv4, STATIC_ADDRESSING_TYPE, true);
     when_failed(rc, exit);
+
+    // Enable IPv4 on the IP interface
+    rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
+
+    // Enable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
+
+    // Setting up the default route instance for static ipv4
+    if(default_interface) {
+        rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
+        when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
+    }
 
 exit:
     return rc;
@@ -124,13 +129,19 @@ amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
-    // Disable the correct IPv4 Address instance
-    rc = ipv4_addr_toggle(intf_path, NULL, STATIC_ADDRESSING_TYPE);
-    when_failed(rc, exit);
+    // Disable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
+
     // Disable IPv4 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable IPv4 on %s", intf_path);
-    // Empty the lower layer of the ip interface
+
+    // Disable the IPv4 Address instance
+    rc = ipv4_addr_toggle(intf_path, NULL, STATIC_ADDRESSING_TYPE, false);
+    when_failed(rc, exit);
+
+    // Empty the LowerLayers of the ip interface
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
 
@@ -149,9 +160,8 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
-    const char* default_router = GET_CHAR(ipv6, "DefaultRouter");
 
-    when_str_empty(intf_path, exit);
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
@@ -159,21 +169,26 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
         lower_layer = GET_CHAR(parameters, "VLANTermination");
     }
 
-    // Enable the whole interface
-    rc = component_set_enable(intf_path, ip_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
-    // Enable IPv6 on the IP interface
-    rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv6Reference LowerLayers to '%s'", lower_layer);
-    // Setting up the right IPv6Forwarding instance in routing manager
-    rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, default_router, intf_path, true);
-    when_failed_trace(rc, exit, ERROR, "Failed to set the default router to '%s'", default_router);
-    // Enable the correct IPv6 Address instance
+
+    // Enable the IPv6 Address instance
     rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, true);
     when_failed_trace(rc, exit, ERROR, "Failed to set the static ipv6 address in interface %s", intf_path);
+
+    // Enable IPv6 on the IP interface
+    rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
+
+    // Enable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
+
+    // Setting up the default route instance
+    rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GET_CHAR(ipv6, "DefaultRouter"), intf_path, true);
+    when_failed_trace(rc, exit, ERROR, "Failed to set the static default IPv6 route");
+
 
 exit:
     return rc;
@@ -186,17 +201,24 @@ amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
     const char* default_router = GET_CHAR(ipv6, "DefaultRouter");
 
-    when_str_empty(intf_path, exit);
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
-    // Disable the correct IPv6 Address instance
-    rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, false);
-    when_failed_trace(rc, exit, ERROR, "Failed to unset the static ipv6 address in interface %s", intf_path);
-    // Setting down the right IPv6Forwarding instance in routing manager
+    // Disable the default route instance
     rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, default_router, intf_path, false);
     when_failed_trace(rc, exit, ERROR, "Failed to remove the default route");
+
+    // Disable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
+
+    // Disable the IPv6 Address instance
+    rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, false);
+    when_failed_trace(rc, exit, ERROR, "Failed to unset the static ipv6 address in interface %s", intf_path);
+
     // Disable IPv6 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable IPv6 on %s", intf_path);
+
     // Emptying the LowerLayer parameter of the IP-manager's interface
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to unset the lower layer in interface %s", intf_path);

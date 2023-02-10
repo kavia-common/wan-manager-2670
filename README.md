@@ -7,6 +7,83 @@ You can build and install the Wan Manager by running
 make && sudo make install
 ```
 
+## General requirements
+* A single wan-mode interface can have two different modes for IPv4Mode and IPv6Mode
+* A single IP interface can not be used by multiple wan-mode interfaces in the same wan-mode
+* Only one wan-mode interface can have the "DefaultInterface" parameter set to true
+
+## Interactions with other plugins
+### IP-manager
+The wan-manager makes quite a few changes to the IP-manager when switching wan-modes. In order to do these the wan-manager makes a few assumptions on the configuration of the IP-manager.
+
+#### Requirements
+* Every IP interface that is configured as a "IPv4Reference" has an IPv4Address instance that is named "primary".
+  * This is the IPv4 address instance that will be configured by the wan-manager when a mode is enabled
+  * This instance should not contain any manual configuration since these will be lost when switching wan-mode
+* Every IP interface that is configured as a "IPv6Reference", is correctly configured with the required IPv6 addresses and IPv6 prefixes
+  * The only exceptions are static IPv6 addresses, for these the wan-manager will create new instances. These instances will be named "wan-mngr", possibly suffixed with an index.
+
+#### Changes made
+All changes will be applied to the IP interface instances referenced by the IPvXReference parameters
+* The LowerLayers parameter will be set, wan-manager will determine what the correct lower layer path is.
+* IPv4
+  * Toggle the primary IPv4 Address instance
+  * Toggle IPv4 on the referenced IP interface
+* IPv6
+  * For static addresses new IPv6Address instances are created
+  * Toggle IPv6 on the referenced IP interface
+* Toggle the referenced IP interface
+
+### DHCPv4
+When switching to or from a mode that has "dhcpv4" set as IPv4Mode, the wan-manager will make configuration changes to the DHCPv4 client.
+
+#### Requirements
+
+* A wan-mode interface with IPv4Mode set to "dhcpv4" should have a matching DHCPv4.Client instance
+  * The instances "Interface" parameter should match the IPv4Reference
+  * The instance should be correctly configured
+
+#### Changes made
+The wan-manager will only enable or disable the DHCPv4.Client instance
+
+### DHCPv6
+When switching to or from a mode that has "dhcpv6" set as IPv6Mode, the wan-manager will make configuration changes to the DHCPv6 client.
+
+#### Requirements
+* No requirements
+
+#### Changes made
+* The wan-manager will look for a matching DHCPv6.Client (Interface == IPv6Reference)
+  * If no match is found it will take the first client
+  * If there is no client a new client will be created, this client will have the default configurations
+  * If multiple interfaces in the same mode use dhcpv6 as IPv6Mode:
+    * There should be multiple clients preconfigured for the interfaces
+    * If not the same client will be reconfigured multiple times and only the last interface will have an active dhcpv6 client
+
+### PPP
+When switching to or from a mode that has "ppp4" as IPv4Mode or "ppp6" as IPv6Mode, the wan-manager will make configuration changes to the PPP plugin.
+
+### Requirement
+* A PPP interface with following path should exist "Device.PPP.Interface.1."
+  * This is the interface the wan-manager will use and reconfigure
+
+#### Changes made
+* Set LowerLayers in PPP-manager
+* Overrides the default PPP credentials, only if they are set in wan-manager datamodel
+* Toggle IPCPEnable, if the IPv4Mode is ppp4
+* Togle IPCP6Enable, if the IPv6Mode is ppp6
+* Toggle the PPP interface "Device.PPP.Interface.1."
+
+### Ethernet
+* No requirements
+
+#### Changes made
+A new vlan termination will be added if all the following points apply:
+  * A wan-mode interface for the current wan-mode is configured to use vlans
+  * No matching vlan termination is found, a match is when
+    * it has the same vlanid
+    * it has the same LowerLayers (lowerlayers is determined by the wan-manager it self)
+
 ## Autosensing
 ### Sensing parameters
 The wan manager has a few parameters to configure how autosensing should behave and if it should be used or not.

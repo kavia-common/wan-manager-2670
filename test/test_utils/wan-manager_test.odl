@@ -77,6 +77,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add ("demo_staticmode"){
             parameter Alias = "demo_staticmode";
             parameter PhysicalType = "Ethernet";
+            parameter EnableSensing = false;
         }
 
         instance add("demo_dslite"){

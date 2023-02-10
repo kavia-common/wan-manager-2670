@@ -131,7 +131,6 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     amxc_string_t addr_path;
     char* path = NULL;
     const char* ip_param = "IPv6Address";
-    const char* ip_v = "6";
     const char* gua_ra = "GUA_RA";
     const char* alias = "wan-mngr";
 
@@ -142,8 +141,7 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     when_str_empty_trace(addr_type, exit, ERROR, "Addressing type of the ipv6 address is empty");
 
     if(enable) {
-
-        amxc_string_setf(&addr_path, "%sIPv%sAddress.[Alias == '%s']", intf_path, ip_v, alias);
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, alias);
         path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
 
         //Setting up the new ipv6 address
@@ -153,10 +151,9 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
         amxc_var_add_key(bool, &params, "Enable", false);
 
         if(path == NULL) {
-
             //Creating an ipv6 instance
             amxc_var_add_key(cstring_t, &params, "Alias", alias);
-            amxc_string_setf(&addr_path, "%sIPv%sAddress.", intf_path, ip_v);
+            amxc_string_setf(&addr_path, "%sIPv6Address.", intf_path);
             path = component_add_instance(amxc_string_get(&addr_path, 0), &params, ip_get_context());
 
             if(path == NULL) {
@@ -165,7 +162,6 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
                 goto exit;
             }
         } else {
-
             //Setting the parameters in the right ipv6 instance
             rc = component_set_params(path, ip_get_context(), &params);
             when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 instance to %s", path);
@@ -174,29 +170,27 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
         //Activating the custom IPv6 address
         rc = component_set_enable(path, ip_get_context(), true);
         when_failed_trace(rc, exit, ERROR, "Could not enable %s", path);
+        free(path);
 
         //Deactivating the GUA_RA
-        amxc_string_setf(&addr_path, "%sIPv%sAddress.[Alias == '%s']", intf_path, ip_v, gua_ra);
-        free(path);
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua_ra);
         path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
-
         rc = component_set_enable(path, ip_get_context(), !enable);
         when_failed_trace(rc, exit, ERROR, "Could not disable the %s IPv6 address.", gua_ra);
     } else {
-
-        amxc_string_setf(&addr_path, "%sIPv%sAddress.[Alias == '%s' && Origin == '%s']", intf_path, ip_v, alias, addr_type);
-
         //Deleting the ipv6 instance
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s' && Origin == 'Static']", intf_path, alias);
         rc = component_del_instance(amxc_string_get(&addr_path, 0), ip_get_context());
         when_failed_trace(rc, exit, ERROR, "Could not delete instance %s", amxc_string_get(&addr_path, 0));
 
         //Activating the GUA_RA
-        amxc_string_setf(&addr_path, "%sIPv%sAddress.[Alias == '%s']", intf_path, ip_v, gua_ra);
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua_ra);
         path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
 
         rc = component_set_enable(path, ip_get_context(), !enable);
         when_failed_trace(rc, exit, ERROR, "Could not enable the %s IPv6 address.", gua_ra);
     }
+
 exit:
     free(path);
     amxc_var_clean(&params);
@@ -204,14 +198,12 @@ exit:
     return rc;
 }
 
-amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type) {
+amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t addr_path;
     amxc_var_t params;
     char* path = NULL;
-    const char* alias = "wan";
-    const char* ip_v = "4";
-    const char* ip_param = "IPv4Address";
+    const char* alias = "primary";
 
     amxc_string_init(&addr_path, 0);
     amxc_var_init(&params);
@@ -219,26 +211,33 @@ amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     when_str_empty_trace(intf_path, exit, ERROR, "Interface path for the ipv4 address is empty");
     when_str_empty_trace(addr_type, exit, ERROR, "Addressing type of the ipv4 address is empty");
 
-    amxc_string_setf(&addr_path, "%sIPv%sAddress.[Alias == '%s']", intf_path, ip_v, alias);
+    amxc_string_setf(&addr_path, "%sIPv4Address.[Alias == '%s']", intf_path, alias);
     path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
+    when_str_empty_trace(path, exit, ERROR, "Failed to find path '%s'", amxc_string_get(&addr_path, 0));
 
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &params, "AddressingType", addr_type);
 
     if(ip_addr != NULL) {
-        amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, ip_param));
+        amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, "IPv4Address"));
         amxc_var_add_key(cstring_t, &params, "SubnetMask", GET_CHAR(ip_addr, "SubnetMask"));
     } else {
         amxc_var_add_key(cstring_t, &params, "IPAddress", "");
         amxc_var_add_key(cstring_t, &params, "SubnetMask", "");
     }
 
+    if(!enable) {
+        rc = component_set_enable(path, ip_get_context(), false);
+        when_failed_trace(rc, exit, ERROR, "Could not disable %s", path);
+    }
+
     rc = component_set_params(path, ip_get_context(), &params);
     when_failed_trace(rc, exit, ERROR, "Could not fill %s into the datamodel", path);
 
-    rc = component_set_enable(path, ip_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Could not %s %s", "enable", path);
-
+    if(enable) {
+        rc = component_set_enable(path, ip_get_context(), true);
+        when_failed_trace(rc, exit, ERROR, "Could not %s %s", "enable", path);
+    }
 exit:
     free(path);
     amxc_var_clean(&params);
@@ -248,20 +247,16 @@ exit:
 
 amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin, const char* ip_addr) {
     amxd_status_t rc = amxd_status_unknown_error;
-    amxc_string_t path;
     amxc_var_t params;
-    const char* route_path = NULL;
+    const char* route_path = "Device.Routing.Router.1.IPv4Forwarding.[DestIPAddress=='0.0.0.0' && DestSubnetMask=='0.0.0.0'].";
 
-    amxc_string_init(&path, 0);
     amxc_var_init(&params);
 
     when_str_empty_trace(routing_origin, exit, ERROR, "Routing Origin parameter empty");
 
-    amxc_string_setf(&path, "Device.Routing.Router.1.IPv4Forwarding.[Interface=='%s' && DestIPAddress=='0.0.0.0' && DestSubnetMask=='0.0.0.0'].", ip_path);
-    route_path = amxc_string_get(&path, 0);
-
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &params, "Origin", routing_origin);
+    amxc_var_add_key(cstring_t, &params, "Interface", ip_path);
 
     if((ip_addr != NULL) && (strcmp(routing_origin, ROUTING_ORIGIN_STATIC) == 0)) {
         amxc_var_add_key(cstring_t, &params, "GatewayIPAddress", ip_addr);
@@ -272,7 +267,6 @@ amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* 
 
 exit:
     amxc_var_clean(&params);
-    amxc_string_clean(&path);
     return rc;
 }
 
@@ -281,22 +275,19 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
     const char* id = "wan-mngr";
     char* path = NULL;
     static int my_index = 0;
+    amxc_var_t* tmp = NULL;
     amxc_string_t route_path;
     amxc_string_t alias;
-    amxc_var_t* tmp = NULL;
+    amxc_var_t params;
 
     amxc_string_init(&route_path, 0);
     amxc_string_init(&alias, 0);
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
 
     if(enable) {
-
-        amxc_var_t params;
-
         when_str_empty(routing_origin, exit);
         when_str_empty(next_hop, exit);
-
-        amxc_var_init(&params);
-        amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
 
         amxc_var_add_key(cstring_t, &params, "DestIPPrefix", "::/0");
         amxc_var_add_key(bool, &params, "Enable", true);
@@ -307,7 +298,6 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
         amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", id);
         path = component_get_path_instance(routing_get_context(), amxc_string_get(&route_path, 0));
         while(path != NULL) {
-
             my_index++;
             amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv6Forwarding.[Alias=='%s-%d'].", id, my_index);
             free(path);
@@ -329,9 +319,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
             rc = amxd_status_unknown_error;
             SAH_TRACEZ_ERROR(ME, "Could not add an IPv6Forwarding instance with alias %s to routing manager", amxc_string_get(&alias, 0));
         }
-        amxc_var_clean(&params);
     } else {
-
         if(my_index == 0) {
             amxc_string_setf(&alias, "%s", id);
         } else {
@@ -345,6 +333,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
     }
 
 exit:
+    amxc_var_clean(&params);
     amxc_string_clean(&alias);
     amxc_string_clean(&route_path);
     free(path);
@@ -359,7 +348,7 @@ amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
     amxc_string_setf(&nd_path, "Device.NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
 
     rc = component_set_enable(amxc_string_get(&nd_path, 0), neighbor_discovery_get_context(), enable);
-    when_failed_trace(rc, exit, ERROR, "Could not %s %s in Device.NeighborDiscovery.InterfaceSetting", enable? "enable":"disable", intf_alias);
+    when_failed_trace(rc, exit, ERROR, "Could not %s %s in Device.NeighborDiscovery.InterfaceSetting", enable ? "enable" : "disable", intf_alias);
 
 exit:
     amxc_string_clean(&nd_path);

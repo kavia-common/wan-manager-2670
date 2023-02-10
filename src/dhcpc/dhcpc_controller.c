@@ -114,8 +114,7 @@ char* dhcpc_get_client(bool ipv4,
     path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
     if((NULL == path) && (NULL != intf_alias) && !ipv4) {
-        SAH_TRACEZ_INFO(ME, "DHCPv%c.Client.[Interface=='%s']. instance does not exist." \
-                        " Selecting the first one", ip, intf_path);
+        SAH_TRACEZ_WARNING(ME, "DHCPv%c.Client.[Interface=='%s']. instance does not exist, selecting the first one", ip, intf_path);
 
         amxb_get_instances(ctx, amxc_string_get(&upper_test_path, 0), 0, &dhcp_data, 10);
         instance = amxc_var_get_first(&dhcp_data);
@@ -148,6 +147,7 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* name = GET_CHAR(parameters, "Name");
+    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     char* logical_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv4");
@@ -161,40 +161,39 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
         lower_layer = GET_CHAR(parameters, "VLANTermination");
     }
 
-    //Enable the whole interface
-    rc = component_set_enable(intf_path, ip_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
+    // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
+    when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
+
+    // Enable the IPv4 Address instance
+    rc = ipv4_addr_toggle(intf_path, NULL, DHCP_ADDRESSING_TYPE, true);
+    when_failed(rc, exit);
 
     // Enable IPv4 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
 
-    // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
-    when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
+    // Enable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
-    // Enable the correct IPv4 Address instance
-    rc = ipv4_addr_toggle(intf_path, NULL, DHCP_ADDRESSING_TYPE);
-    when_failed(rc, exit);
+    // Set the default route origin
+    if(default_interface) {
+        rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_DHCPV4, NULL);
+        when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
+    }
 
-    routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_DHCPV4, NULL);
-
-    //Add the IPReference to the Logical Interface
+    // Add the IPReference to the Logical Interface
     logical_path = create_logical_path(name);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv4Reference to '%s'", logical_path);
 
     // Get the matching DHCPv4 client
     dhcpv4_path = dhcpc_get_client(true, intf_path, intf_alias);
-
     // Enable the DHCPv4 Client
-    if(dhcpv4_path != NULL) {
-        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
-        rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
-    } else {
-        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
-        rc = amxd_status_ok;
-    }
+    when_str_empty_trace(dhcpv4_path, exit, ERROR, "No DHCPv4 client found with Interface='%s'", intf_path);
+    SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
+    rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
 
 exit:
     free(dhcpv4_path);
@@ -214,12 +213,9 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
     when_str_empty(intf_path, exit);
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
-    //Remove the IPReference from the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s.LowerLayers'", logical_path);
-
+    // Get the matching DHCPv4 client
     dhcpv4_path = dhcpc_get_client(true, intf_path, NULL);
+    // Disable the DHCPv4 Client
     if(dhcpv4_path != NULL) {
         SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
         rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
@@ -228,13 +224,24 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
         SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
     }
 
-    // Disable the correct IPv4 Address instance
-    rc = ipv4_addr_toggle(intf_path, NULL, DHCP_ADDRESSING_TYPE);
-    when_failed(rc, exit);
+    //Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s.LowerLayers'", logical_path);
+
+    // Disable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable the whole IP interface %s", intf_path);
+
     // Disable IPv4 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable IPv4 on %s", intf_path);
 
+    // Disable the IPv4 Address instance
+    rc = ipv4_addr_toggle(intf_path, NULL, DHCP_ADDRESSING_TYPE, false);
+    when_failed(rc, exit);
+
+    // Clear the IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
 
@@ -281,19 +288,19 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
         lower_layer = GET_CHAR(parameters, "VLANTermination");
     }
 
-    //Enable the whole interface
-    rc = component_set_enable(intf_path, ip_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
+    // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
+    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
+    when_failed_trace(rc, exit, ERROR, "Failed to set IPv6Reference LowerLayers to '%s'", lower_layer);
 
     // Enable IPv6 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable IPv6 on %s", intf_path);
 
-    // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
-    rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
-    when_failed_trace(rc, exit, ERROR, "Failed to set IPv6Reference LowerLayers to '%s'", lower_layer);
+    // Enable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable the IP interface %s", intf_path);
 
-    //Add the IPReference to the Logical Interface
+    // Add the IPReference to the Logical Interface
     logical_path = create_logical_path(name);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
@@ -330,26 +337,12 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
 
-    when_str_empty_trace(name, exit, ERROR, "Interface path is empty");
+    SAH_TRACEZ_INFO(ME, "Disabling DHCPv6");
+    when_str_empty_trace(intf_path, exit, ERROR, "Interface path is empty");
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
     // Disable NeighborDiscovery for the wan
     nd_interface_setting_toggle(nd_intf, false);
-
-    //Remove the IPReference from the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv6Reference from '%s'", logical_path);
-
-    SAH_TRACEZ_INFO(ME, "Disabling DHCPv6");
-    when_str_empty(intf_path, exit);
-
-    // Empty the interface reference of the RouteInformation
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
-    when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");
-    // Disable the RouteInformation instance
-    rc = component_set_enable(router_info, routing_get_context(), false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disble the Routing manager's RoutingInformation");
 
     // Get the matching DHCPv6 client
     dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
@@ -362,9 +355,19 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
         SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
     }
 
+    // Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv6Reference from '%s'", logical_path);
+
+    // Disable the IP interface
+    rc = component_set_enable(intf_path, ip_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable the IP interface %s", intf_path);
+
     // Disable IPv6 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable IPv6 on %s", intf_path);
+
     // Make the lower layer of the IP-Manager's interface empty
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
@@ -373,6 +376,14 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
         ethernet_vlan_set_enable(parameters, false);
     }
+
+    // Disable the RouteInformation instance
+    rc = component_set_enable(router_info, routing_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disble the Routing manager's RoutingInformation");
+
+    // Empty the interface reference of the RouteInformation
+    rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
+    when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");
 
 exit:
     free(route_path);

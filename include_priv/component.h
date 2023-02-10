@@ -72,21 +72,16 @@ extern "C" {
 #include <amxd/amxd_types.h>
 #include <amxb/amxb.h>
 
-amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value);
-amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
-amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
-amxd_status_t component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values);
-char* component_get_path_instance(amxb_bus_ctx_t* bus,
-                                  const char* query);
-char* component_add_instance(const char* object_path,
-                             amxc_var_t* parameter,
-                             amxb_bus_ctx_t* bus);
-amxd_status_t component_del_instance(const char* object_path,
-                                     amxb_bus_ctx_t* bus);
-
-amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter);
-amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
-amxd_status_t component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
+int component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value);
+int component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable);
+int component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value);
+int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values);
+char* component_get_path_instance(amxb_bus_ctx_t* bus, const char* query);
+char* component_add_instance(const char* object_path, amxc_var_t* parameter, amxb_bus_ctx_t* bus);
+int component_del_instance(const char* object_path, amxb_bus_ctx_t* bus);
+int component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter);
+int component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
+int component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str);
 
 #ifdef __cplusplus
 }

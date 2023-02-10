@@ -33,12 +33,12 @@
     object Device.IP.Interface {
         instance add(2, "wan") {
             object IPv4Address {
-                instance add(0,"wan") {
-                    parameter Alias = "wan";
+                instance add(0,"primary") {
+                    parameter Alias = "primary";
                     parameter AddressingType = "DHCP";
                 }
             }
-            
+
             object IPv6Address {
                 instance add(0,"GUA_RA"){
                     parameter Alias = "GUA_RA";

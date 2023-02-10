@@ -10,6 +10,7 @@
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";
+            parameter DefaultInterface = true;
             parameter IPv6Mode = "dhcp6";
             parameter Name = "wan";
             parameter VlanID = 100;

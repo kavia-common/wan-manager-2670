@@ -18,8 +18,9 @@
         "com-ctrl" = 200,
         "eth-ctrl" = 200,
         "netmod-ctrl" = 200,
-        "mod-autosensing" = 200,
-        "dslite-ctrl" = 200
+        "dslite-ctrl" = 200,
+        "static-ctrl" = 200,
+        "mod-autosensing" = 200
     };
 
     // main files

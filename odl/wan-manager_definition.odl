@@ -81,7 +81,7 @@
          * @version 1.0
          */
          %persistent uint32 SensingTimeout {
-            default 25;
+            default 8;
          }
     }
 }

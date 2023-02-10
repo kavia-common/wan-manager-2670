@@ -13,7 +13,7 @@ ARCHITECTURE = $(shell dpkg-architecture | grep DEB_TARGET_ARCH= | cut -d'=' -f2
 PACKAGE_DEB = $(COMPONENT)_$(VERSION)_$(ARCHITECTURE).deb
 
 AFLAGS = -d -k --fixperms --test --description="Plugin for advanced WAN mode configuration" \
-         --version="$(VERSION)" --target="$(ARCHITECTURE)" -g -v 
+         --version="$(VERSION)" --target="$(ARCHITECTURE)" -g -v
 
 # helper functions - used in multiple targets
 # 1 - destination dir
@@ -46,7 +46,7 @@ $(PKGDIR)$(PACKAGE_DEB): $(DEBDIR)/ changelog
 
 changelog: $(DEBDIR)/
 ifneq ($(LOG),)
-	$(call create_changelog,$(DEBDIR),changelog) 
+	$(call create_changelog,$(DEBDIR),changelog)
 else
 	$(INSTALL) -m 0644 changelog $(DEBDIR)
 endif
@@ -56,7 +56,7 @@ $(DEBDIR)/: $(PKGDIR)$(PACKAGE_TAR_GZ)
 	cd $(PKGDIR) && $(FAKEROOT) $(ALIEN) $(AFLAGS) $(PACKAGE_TAR_GZ)
 
 update_changelog:
-	$(call create_changelog,.,changelog.tmp) 
+	$(call create_changelog,.,changelog.tmp)
 	mv changelog.tmp changelog
 
 .PHONY: all changelog update_changelog

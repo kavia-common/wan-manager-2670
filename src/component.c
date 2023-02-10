@@ -69,29 +69,23 @@
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include <amxd/amxd_types.h>
 #include <amxc/amxc_macros.h>
 #include <amxb/amxb.h>
-#include <amxb/amxb_types.h>
-#include <amxb/amxb_operators.h>
 
 #include "component.h"
 #include "wan_manager_utils.h"
 
 #define ME "com-ctrl"
 
-amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
+int component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
     int rc = -1;
     amxc_var_t parameters;
 
     amxc_var_init(&parameters);
 
     when_null_trace(bus, exit, ERROR, "amxb_bus_ctx_t was empty");
-    when_str_empty(component, exit);
+    when_str_empty_trace(component, exit, WARNING, "No component provided for which to set boolean");
 
     SAH_TRACEZ_INFO(ME, "Set %s.%s to %d", component, param, value);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
@@ -102,10 +96,10 @@ amxd_status_t component_set_bool(const char* component, amxb_bus_ctx_t* bus, con
 
 exit:
     amxc_var_clean(&parameters);
-    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
+    return rc;
 }
 
-amxd_status_t component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
+int component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
     return component_set_bool(component, bus, "Enable", enable);
 }
 
@@ -130,6 +124,7 @@ char* component_get_path_instance(amxb_bus_ctx_t* bus,
     when_str_empty_trace(result, exit, INFO, "No results for '%s'", query);
     SAH_TRACEZ_INFO(ME, "%s returned %s", query, result);
     ret_str = strdup(result);
+
 exit:
     amxc_var_clean(&ret);
     return ret_str;
@@ -144,8 +139,8 @@ char* component_add_instance(const char* object_path,
     amxc_var_t ret;
     amxc_var_init(&ret);
 
-    when_str_empty(object_path, exit);
     when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_str_empty_trace(object_path, exit, ERROR, "No object path provided to add");
 
     rv = amxb_add(bus, object_path, 0, NULL, parameter, &ret, 5);
     when_failed_trace(rv, exit, ERROR, "Failed to add instance to '%s', error '%d'", object_path, rv);
@@ -159,16 +154,16 @@ exit:
     return path;
 }
 
-amxd_status_t component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
-    amxd_status_t rc = amxd_status_ok;
+int component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
+    int rc = -1;
     amxc_var_t parameters;
 
     amxc_var_init(&parameters);
 
-    when_null(bus, exit);
-    when_str_empty(param, exit);
-    when_null(value, exit);
-    when_str_empty(component, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_str_empty_trace(component, exit, WARNING, "No component given from which to set string parameter");
+    when_str_empty_trace(param, exit, WARNING, "No parameter given to set string parameter");
+    when_null_trace(value, exit, WARNING, "No value provided to set");
 
     SAH_TRACEZ_INFO(ME, "'%s%s' = '%s'", component, param, value);
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
@@ -181,63 +176,58 @@ exit:
     return rc;
 }
 
-amxd_status_t component_del_instance(const char* object_path,
-                                     amxb_bus_ctx_t* bus) {
+int component_del_instance(const char* object_path, amxb_bus_ctx_t* bus) {
+    int rc = -1;
     amxc_var_t ret;
-    amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_init(&ret);
 
-    when_str_empty(object_path, exit);
-    when_null(bus, exit);
+    when_str_empty_status(object_path, exit, rc = 0); // If no path is provided, nothing needs to be deleted so we should return with an ok
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
 
-    if(AMXB_STATUS_OK != amxb_del(bus, object_path, 0, NULL, &ret, 5)) {
-        SAH_TRACEZ_ERROR(ME, "Could not delete instance %s", object_path);
-        goto exit;
-    }
-    rc = amxd_status_ok;
+    rc = amxb_del(bus, object_path, 0, NULL, &ret, 5);
+    when_failed_trace(rc, exit, ERROR, "Could not delete instance %s", object_path);
+
 exit:
     amxc_var_clean(&ret);
     return rc;
 }
 
-amxd_status_t component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter) {
+int component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter) {
+    int rc = -1;
     amxc_string_t param_path;
-    amxd_status_t rc = amxd_status_unknown_error;
 
     amxc_string_init(&param_path, 0);
 
-    when_null(bus, exit);
-    when_str_empty(component, exit);
-    when_str_empty(parameter, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_str_empty_trace(component, exit, WARNING, "No component given from which to fetch parameter");
+    when_str_empty_trace(parameter, exit, WARNING, "No parameter given to fetch");
 
     amxc_string_setf(&param_path, "%s.%s", component, parameter);
 
-    if(AMXB_STATUS_OK != amxb_get(bus, amxc_string_get(&param_path, 0), 0, ret_var, 3)) {
-        SAH_TRACEZ_ERROR(ME, "Failed to get %s", amxc_string_get(&param_path, 0));
-        goto exit;
-    }
-    rc = amxd_status_ok;
+    rc = amxb_get(bus, amxc_string_get(&param_path, 0), 0, ret_var, 3);
+    when_failed_trace(rc, exit, ERROR, "Failed to get %s", amxc_string_get(&param_path, 0));
+
 exit:
     amxc_string_clean(&param_path);
     return rc;
 }
 
 
-amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+int component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    int rc = -1;
     amxc_var_t orig_value;
     amxc_var_t new_value;
     amxc_var_t llist;
-    amxd_status_t rc = amxd_status_unknown_error;
 
     amxc_var_init(&orig_value);
     amxc_var_init(&new_value);
     amxc_var_init(&llist);
     amxc_var_set_type(&llist, AMXC_VAR_ID_LIST);
 
-    when_null(bus, exit);
-    when_str_empty(component, exit);
-    when_str_empty(parameter, exit);
-    when_str_empty(str, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_str_empty_trace(component, exit, WARNING, "No component given to set string");
+    when_str_empty_trace(parameter, exit, WARNING, "No parameter given to set string");
+    when_str_empty_trace(str, exit, WARNING, "No string provided to set");
 
     when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
 
@@ -247,10 +237,9 @@ amxd_status_t component_add_string_to_csv(const char* component, amxb_bus_ctx_t*
 
     add_str_to_list(&llist, str);
     when_failed_trace(amxc_var_convert(&new_value, &llist, AMXC_VAR_ID_CSV_STRING), exit, ERROR, "Failed to cast list to CSV string");
-
     when_failed_trace(component_set_str_param(component, bus, parameter, GET_CHAR(&new_value, NULL)), exit, ERROR, "Failed to set %s.%s to %s", component, parameter, GET_CHAR(&new_value, NULL));
 
-    rc = amxd_status_ok;
+    rc = 0;
 
 exit:
     amxc_var_clean(&new_value);
@@ -259,27 +248,27 @@ exit:
     return rc;
 }
 
-amxd_status_t component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+int component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    int rc = -1;
     amxc_var_t orig_value;
     amxc_var_t new_value;
     amxc_var_t llist;
-    amxd_status_t rc = amxd_status_unknown_error;
 
     amxc_var_init(&orig_value);
     amxc_var_init(&new_value);
     amxc_var_init(&llist);
     amxc_var_set_type(&llist, AMXC_VAR_ID_LIST);
 
-    when_null(bus, exit);
-    when_str_empty(component, exit);
-    when_str_empty(parameter, exit);
-    when_str_empty(str, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_str_empty_trace(component, exit, WARNING, "No component given from which to remove string");
+    when_str_empty_trace(parameter, exit, WARNING, "No parameter given from which to remove");
+    when_str_empty_trace(str, exit, WARNING, "No string provided to remove");
 
     when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
 
     if(STRING_EMPTY(GETP_CHAR(&orig_value, "0.0.0"))) {
         SAH_TRACEZ_INFO(ME, "CSV is empty, can't remove %s from this", str);
-        rc = amxd_status_ok;
+        rc = 0;
         goto exit;
     }
 
@@ -288,7 +277,7 @@ amxd_status_t component_remove_string_from_csv(const char* component, amxb_bus_c
     when_failed_trace(amxc_var_convert(&new_value, &llist, AMXC_VAR_ID_CSV_STRING), exit, ERROR, "Failed to cast list to CSV string");
     when_failed_trace(component_set_str_param(component, bus, parameter, GET_CHAR(&new_value, NULL)), exit, ERROR, "Failed to set %s.%s to %s", component, parameter, GET_CHAR(&new_value, NULL));
 
-    rc = amxd_status_ok;
+    rc = 0;
 
 exit:
     amxc_var_clean(&new_value);
@@ -297,13 +286,13 @@ exit:
     return rc;
 }
 
-amxd_status_t component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values) {
+int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values) {
     amxc_var_t ret;
     int rc = -1;
 
-    when_null(bus, exit);
-    when_null(values, exit);
-    when_str_empty(component, exit);
+    when_null_trace(bus, exit, ERROR, "No bus context provided");
+    when_null_trace(values, exit, WARNING, "No data provided to set");
+    when_str_empty_trace(component, exit, WARNING, "No component provided to set parameters");
 
     amxc_var_init(&ret);
 
@@ -312,5 +301,5 @@ amxd_status_t component_set_params(const char* component, amxb_bus_ctx_t* bus, a
 
 exit:
     amxc_var_clean(&ret);
-    return (rc == 0) ? amxd_status_ok : amxd_status_unknown_error;
+    return rc;
 }

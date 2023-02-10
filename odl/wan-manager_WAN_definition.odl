@@ -59,7 +59,7 @@
             * - IPCP
             * - Static
             * - Dynamic
-            *   
+            *
             * @version 1.0
             */
             %persistent string DNSMode {

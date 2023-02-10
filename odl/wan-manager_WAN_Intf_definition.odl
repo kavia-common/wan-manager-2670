@@ -71,6 +71,16 @@
             }
 
             /**
+            * Indicates if the interface should be used as the default or not.
+            * A default route will be created for the default interface.
+            * Every wan-mode can only have one default interface.
+            * @version 1.0
+            */
+            %persistent bool DefaultInterface = false {
+                on action validate call mode_check_default_interface;
+            }
+
+            /**
             * Mapped Lower layer interface for IPv6
             * @version 1.0
             */
@@ -154,7 +164,7 @@
             * @version 1.0
             */
             %persistent object IPv6Address[1]{
-        
+
                 /**
                 * Static IPv6 Address
                 * @version 1.0
