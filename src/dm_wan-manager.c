@@ -191,11 +191,61 @@ exit:
     return rv;
 }
 
-amxd_status_t _getWANMode(UNUSED amxd_object_t* object,
+amxd_status_t _getWANMode(amxd_object_t* object,
                           UNUSED amxd_function_t* func,
                           UNUSED amxc_var_t* args,
-                          UNUSED amxc_var_t* ret) {
-    return amxd_status_function_not_implemented;
+                          amxc_var_t* ret) {
+    amxd_status_t rv = amxd_status_unknown_error;
+    amxc_var_t* wan_mode_config = NULL;
+    amxc_var_t* interface_config = NULL;
+    amxd_object_t* wan_obj = NULL;
+
+    amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
+
+    rv = amxd_object_get_params(object, ret, amxd_dm_access_public);
+    when_failed_trace(rv, exit, ERROR, "Failed to fetch general configuration");
+
+    wan_mode_config = amxc_var_add_key(amxc_htable_t, ret, "WANModeConfig", NULL);
+    wan_obj = get_wan_mode(GET_CHAR(ret, "WANMode"));
+    rv = amxd_object_get_params(wan_obj, wan_mode_config, amxd_dm_access_public);
+    when_failed_trace(rv, exit, ERROR, "Failed to fetch current wan mode configuration");
+
+    interface_config = amxc_var_add_key(amxc_htable_t, wan_mode_config, "Interfaces", NULL);
+    amxd_object_iterate(instance, it, amxd_object_findf(wan_obj, ".Intf.")) {
+        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+        amxc_var_t* intf_params = NULL;
+        amxc_var_t* address_config = NULL;
+
+        when_null_trace(interface, exit, ERROR, "No interface object found");
+        intf_params = amxc_var_add_key(amxc_htable_t, interface_config, interface->name, NULL);
+        rv = amxd_object_get_params(interface, intf_params, amxd_dm_access_public);
+        when_failed_trace(rv, exit, ERROR, "Failed to fetch current interface configuration");
+
+        address_config = amxc_var_add_key(amxc_htable_t, intf_params, "IPv4Addresses", NULL);
+        amxd_object_iterate(instance, ip_it, amxd_object_findf(interface, ".IPv4Address.")) {
+            amxd_object_t* ip_addr_obj = amxc_container_of(ip_it, amxd_object_t, it);
+            amxc_var_t* addr_params = NULL;
+
+            when_null_trace(ip_addr_obj, exit, ERROR, "No IPv4Address object found");
+            addr_params = amxc_var_add_key(amxc_htable_t, address_config, ip_addr_obj->name, NULL);
+            rv = amxd_object_get_params(ip_addr_obj, addr_params, amxd_dm_access_public);
+            when_failed_trace(rv, exit, ERROR, "Failed to fetch current IPv4Address configuration");
+        }
+
+        address_config = amxc_var_add_key(amxc_htable_t, intf_params, "IPv6Addresses", NULL);
+        amxd_object_iterate(instance, ip_it, amxd_object_findf(interface, ".IPv6Address.")) {
+            amxd_object_t* ip_addr_obj = amxc_container_of(ip_it, amxd_object_t, it);
+            amxc_var_t* addr_params = NULL;
+
+            when_null_trace(ip_addr_obj, exit, ERROR, "No IPv6Address object found");
+            addr_params = amxc_var_add_key(amxc_htable_t, address_config, ip_addr_obj->name, NULL);
+            rv = amxd_object_get_params(ip_addr_obj, addr_params, amxd_dm_access_public);
+            when_failed_trace(rv, exit, ERROR, "Failed to fetch current IPv6Address configuration");
+        }
+    }
+
+exit:
+    return rv;
 }
 
 void _set_wan_mode(UNUSED const char* const event_name,
