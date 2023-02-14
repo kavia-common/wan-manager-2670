@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.14.3 - 2023-02-14(12:17:00 +0000)
+
+### Fixes
+
+- [tr181-ppp] Sometimes there is no default route for ppp6
+
 ## Release v0.14.2 - 2023-02-10(10:48:23 +0000)
 
 ### Fixes

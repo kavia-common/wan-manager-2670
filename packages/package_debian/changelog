@@ -1,3 +1,9 @@
+wan-manager (0.14.3) unstable; urgency=medium
+
+  * [tr181-ppp] Sometimes there is no default route for ppp6
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 14 Feb 2023 12:17:00 +0000
+
 wan-manager (0.14.2) unstable; urgency=medium
 
   * Improve stability
