@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.15.0 - 2023-02-14(13:19:49 +0000)
+
+### New
+
+- implement the getWANMode function
+
 ## Release v0.14.3 - 2023-02-14(12:17:00 +0000)
 
 ### Fixes
