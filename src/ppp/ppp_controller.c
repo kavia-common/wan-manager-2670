@@ -101,7 +101,9 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* name = GET_CHAR(parameters, "Name");
     bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     char* logical_path = NULL;
+    const char* router_info = "Device.Routing.RouteInformation.";
     char* route_path = NULL;
+    const char* nd_intf = "wan";
 
     SAH_TRACEZ_INFO(ME, "Enabling PPP%d", ip_version);
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
@@ -167,7 +169,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
     // Set the default route origin
-    if(default_interface) {
+    if((ip_version == 4) && default_interface) {
         rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
@@ -176,6 +178,13 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         route_path = routing_get_interfacesetting(intf_path);
         rc = component_set_str_param(route_path, routing_get_context(), "Interface", intf_path);
         when_failed_trace(rc, exit, ERROR, "Failed to set the routing interface to %s'", intf_path);
+
+        // Enable the RouteInformation instance
+        rc = component_set_enable(router_info, routing_get_context(), true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable the Routing manager's RoutingInformation");
+
+        // Enable NeighborDiscovery for the wan
+        nd_interface_setting_toggle(nd_intf, true);
     }
 
     // Add the IPReference to the Logical Interface
@@ -195,10 +204,12 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
                           const amxc_var_t* const parameters) {
     int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_PPP;
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+    const char* nd_intf = "wan";
 
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
+    const char* router_info = "Device.Routing.RouteInformation.";
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
     char* route_path = NULL;
@@ -214,6 +225,9 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to remove IPv%dReference from '%s.LowerLayers'", ip_version, logical_path);
 
     if(ip_version == 6) {
+        // Disable NeighborDiscovery for the wan
+        nd_interface_setting_toggle(nd_intf, false);
+
         route_path = routing_get_interfacesetting(intf_path);
         rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
         when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
@@ -260,6 +274,16 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     if((mode & TYPE_VLAN) != 0) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
         ethernet_vlan_set_enable(parameters, false);
+    }
+
+    if(ip_version == 6) {
+        // Disable the RouteInformation instance
+        rc = component_set_enable(router_info, routing_get_context(), false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable the Routing manager's RoutingInformation");
+
+        route_path = routing_get_interfacesetting(intf_path);
+        rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
+        when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
     }
 
 exit:
