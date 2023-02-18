@@ -82,15 +82,17 @@
 static const char* ppp_get_client(UNUSED bool ipv4,
                                   UNUSED const char* intf_path,
                                   UNUSED const char* intf_alias) {
+    SAH_TRACEZ_IN(ME);
     // For now a fixed path to the first instance is used, in the future it should be possible to get a specific instance
+    SAH_TRACEZ_OUT(ME);
     return "Device.PPP.Interface.1.";
 }
 
 amxd_status_t ppp_enable(mode_ctrl_t mode,
                          const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_PPP;
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
-
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
@@ -197,11 +199,13 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
 exit:
     free(route_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t ppp_disable(mode_ctrl_t mode,
                           const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_PPP;
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
     const char* nd_intf = "wan";
@@ -289,5 +293,6 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
 exit:
     free(route_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

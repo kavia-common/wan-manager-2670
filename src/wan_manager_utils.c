@@ -126,6 +126,7 @@ amxb_bus_ctx_t* pcp_get_context(void) {
 }
 
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_ok;
     amxc_var_t params;
     amxc_string_t addr_path;
@@ -195,10 +196,12 @@ exit:
     free(path);
     amxc_var_clean(&params);
     amxc_string_clean(&addr_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t addr_path;
     amxc_var_t params;
@@ -242,10 +245,12 @@ exit:
     free(path);
     amxc_var_clean(&params);
     amxc_string_clean(&addr_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin, const char* ip_addr) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t params;
     const char* route_path = "Device.Routing.Router.1.IPv4Forwarding.[DestIPAddress=='0.0.0.0' && DestSubnetMask=='0.0.0.0'].";
@@ -267,10 +272,12 @@ amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* 
 
 exit:
     amxc_var_clean(&params);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, const char* next_hop, const char* ip_intf, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_ok;
     const char* id = "wan-mngr";
     char* path = NULL;
@@ -337,10 +344,12 @@ exit:
     amxc_string_clean(&alias);
     amxc_string_clean(&route_path);
     free(path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxc_string_t nd_path;
     amxd_status_t rc = amxd_status_ok;
 
@@ -352,6 +361,7 @@ amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
 
 exit:
     amxc_string_clean(&nd_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
@@ -364,6 +374,7 @@ exit:
  * @return The path to the found/created instance of Routing.RouteInformation.InterfaceSetting., NULL if it fails to create the instance.
  */
 char* routing_get_interfacesetting(const char* intf_path) {
+    SAH_TRACEZ_IN(ME);
     amxb_bus_ctx_t* ctx = routing_get_context();
     amxc_string_t test_path;
     amxc_var_t parameter;
@@ -408,11 +419,13 @@ exit:
     amxc_var_clean(&parameter);
     amxc_string_clean(&test_path);
     amxc_string_clean(&alias);
+    SAH_TRACEZ_OUT(ME);
     return path;
 }
 
 // Add a string to a list only if that list does not yet contain that string
 void add_str_to_list(amxc_var_t* list, const char* str) {
+    SAH_TRACEZ_IN(ME);
     bool found = false;
 
     when_null(list, exit);
@@ -427,11 +440,13 @@ void add_str_to_list(amxc_var_t* list, const char* str) {
         amxc_var_add(cstring_t, list, str);
     }
 exit:
+    SAH_TRACEZ_OUT(ME);
     return;
 }
 
 // Remove all occurrences of a string from a list
 void remove_str_from_list(amxc_var_t* list, const char* str) {
+    SAH_TRACEZ_IN(ME);
     when_null(list, exit);
     when_str_empty(str, exit);
 
@@ -441,10 +456,12 @@ void remove_str_from_list(amxc_var_t* list, const char* str) {
         }
     }
 exit:
+    SAH_TRACEZ_OUT(ME);
     return;
 }
 
 char* create_logical_path(const char* intf_name) {
+    SAH_TRACEZ_IN(ME);
     char* path = NULL;
     amxc_string_t logical_intf;
 
@@ -453,5 +470,6 @@ char* create_logical_path(const char* intf_name) {
     path = amxc_string_take_buffer(&logical_intf);
     amxc_string_clean(&logical_intf);
 
+    SAH_TRACEZ_OUT(ME);
     return path;
 }

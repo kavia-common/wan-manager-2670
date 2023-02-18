@@ -84,6 +84,7 @@
 
 amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
                             const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
     const char* name = GET_CHAR(parameters, "Name");
@@ -115,12 +116,13 @@ exit:
     amxc_string_clean(&pcp_enable);
     free(dhcpv4_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
-
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
     const char* name = GET_CHAR(parameters, "Name");
@@ -149,5 +151,6 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
 exit:
     amxc_string_clean(&pcp_enable);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

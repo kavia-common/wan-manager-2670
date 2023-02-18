@@ -108,6 +108,7 @@ static dns_mode_cnv_t dns_mode_cnv[] = {
 };
 
 static dns_mode_t string_to_dns_mode(const char* dns_mode) {
+    SAH_TRACEZ_IN(ME);
     dns_mode_cnv_t* lookup = dns_mode_cnv;
     dns_mode_t dns = DNS_NONE;
 
@@ -118,10 +119,12 @@ static dns_mode_t string_to_dns_mode(const char* dns_mode) {
         }
         lookup++;
     }
+    SAH_TRACEZ_OUT(ME);
     return dns;
 }
 
 static void dns_server_build_args(amxc_var_t* dns_servers, amxd_object_t* interface, bool ipv4) {
+    SAH_TRACEZ_IN(ME);
     amxc_llist_it_t* ip_it = NULL;
     amxc_llist_t* ip_var_list = NULL;
     amxc_var_t ip_dns_servers_var;
@@ -159,6 +162,7 @@ static void dns_server_build_args(amxc_var_t* dns_servers, amxd_object_t* interf
     amxc_llist_delete(&ip_dns_servers_list, NULL);
     amxc_var_clean(&ip_dns_servers_var);
     free(ip_ref);
+    SAH_TRACEZ_OUT(ME);
 }
 
 /**
@@ -171,6 +175,7 @@ static void dns_server_build_args(amxc_var_t* dns_servers, amxd_object_t* interf
  * @return amxd_status_t
  */
 static amxd_status_t dns_server_toggle(amxd_object_t* interface, const char* dns_mode, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t args;
     amxc_var_t ret;
@@ -210,10 +215,12 @@ static amxd_status_t dns_server_toggle(amxd_object_t* interface, const char* dns
 exit:
     amxc_var_clean(&ret);
     amxc_var_clean(&args);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     dns_mode_t dns = DNS_NONE;
 
@@ -240,10 +247,12 @@ amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode) {
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
 
     when_null_trace(wan_mode, exit, ERROR, "No wan mode reference provided, could not unset the previous dns mode");
@@ -262,5 +271,6 @@ amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode) {
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

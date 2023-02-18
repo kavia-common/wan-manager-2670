@@ -176,25 +176,34 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
                                                  netmodel_callback_t handler,
                                                  UNUSED void* userdata) {
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
-    amxd_object_t* wanmode_obj_priv = (amxd_object_t*) userdata;
+    amxd_object_t* priv_obj = (amxd_object_t*) userdata;
     amxd_object_t* wanmode_obj = get_current_wan_mode();
-    amxd_object_t* intf_obj = amxd_object_findf(wanmode_obj, "Intf.1.");
-    char* ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv4Reference", NULL);
+    amxd_object_t* intf_obj = NULL;
+    char* ip_reference = NULL;
 
     assert_non_null(intf);
     assert_non_null(subscriber);
     assert_non_null(flag);
     assert_non_null(traverse);
     assert_non_null(handler);
-    assert_non_null(wanmode_obj_priv);
-    assert_non_null(wanmode_obj);
-    assert_non_null(ip_reference);
+    assert_non_null(priv_obj);
+    // Check to see if interface object in userdata is an interface from the current wanmode
+    intf_obj = amxd_object_findf(wanmode_obj, "Intf.%s.", priv_obj->name);
+    assert_non_null(intf_obj);
 
+    if(strcmp(flag, "ipv4-up") == 0) {
+        ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv4Reference", NULL);
+    } else if(strcmp(flag, "ipv6-up") == 0) {
+        ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv6Reference", NULL);
+    } else {
+        // This is to generate an error if the flag is not ipv4-up or ipv6-up
+        assert_string_equal(flag, "ipv4-up or ipv6-up");
+    }
+
+    assert_non_null(ip_reference);
     assert_string_equal(intf, ip_reference);
     assert_string_equal(subscriber, "wan-manager");
-    assert_string_equal(flag, "ipv4-up");
     assert_string_equal(traverse, netmodel_traverse_this);
-    assert_string_equal(wanmode_obj_priv->name, wanmode_obj->name);
 
     free(ip_reference);
     return q;

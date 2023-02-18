@@ -107,6 +107,7 @@ static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
                                         mode_ctrl_t mode,
                                         const amxc_var_t* const parameters,
                                         bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     ctrl_fn call_fnc = enable ? ctrl->enable : ctrl->disable;
 
@@ -114,12 +115,14 @@ static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
     when_null_status(call_fnc, exit, rc = amxd_status_ok);
     rc = call_fnc(mode, parameters);
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
                                const amxc_var_t* const parameters,
                                bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_ok;
     controller_item_t* ctrll = controllers;
     int type = mode & MASK_TYPE;
@@ -146,5 +149,6 @@ amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
         }
     }
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

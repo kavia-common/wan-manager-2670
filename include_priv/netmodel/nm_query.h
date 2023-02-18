@@ -93,6 +93,11 @@ typedef struct _nm_query_ll_info {
     bool used;
 } nm_query_ll_info_t;
 
+typedef struct _intf_isup_queries {
+    netmodel_query_t* nm_ipv4_up_query;                 // pointer to a netmodel ipv4-up query
+    netmodel_query_t* nm_ipv6_up_query;                 // pointer to a netmodel ipv6-up query
+} intf_isup_queries_t;
+
 void nm_query_ll_init(void);
 void nm_query_ll_cleanup(void);
 int nm_query_ll_add(const char* name);

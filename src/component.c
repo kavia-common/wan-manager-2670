@@ -79,6 +79,7 @@
 #define ME "com-ctrl"
 
 int component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* param, bool value) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_var_t parameters;
 
@@ -96,11 +97,15 @@ int component_set_bool(const char* component, amxb_bus_ctx_t* bus, const char* p
 
 exit:
     amxc_var_clean(&parameters);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 int component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable) {
-    return component_set_bool(component, bus, "Enable", enable);
+    SAH_TRACEZ_IN(ME);
+    int rv = component_set_bool(component, bus, "Enable", enable);
+    SAH_TRACEZ_OUT(ME);
+    return rv;
 }
 
 /**
@@ -114,6 +119,7 @@ int component_set_enable(const char* component, amxb_bus_ctx_t* bus, bool enable
  */
 char* component_get_path_instance(amxb_bus_ctx_t* bus,
                                   const char* query) {
+    SAH_TRACEZ_IN(ME);
     amxc_var_t ret;
     const char* result = NULL;
     char* ret_str = NULL;
@@ -127,12 +133,14 @@ char* component_get_path_instance(amxb_bus_ctx_t* bus,
 
 exit:
     amxc_var_clean(&ret);
+    SAH_TRACEZ_OUT(ME);
     return ret_str;
 }
 
 char* component_add_instance(const char* object_path,
                              amxc_var_t* parameter,
                              amxb_bus_ctx_t* bus) {
+    SAH_TRACEZ_IN(ME);
     int rv = -1;
     const char* value = NULL;
     char* path = NULL;
@@ -151,10 +159,12 @@ char* component_add_instance(const char* object_path,
 
 exit:
     amxc_var_clean(&ret);
+    SAH_TRACEZ_OUT(ME);
     return path;
 }
 
 int component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const char* param, const char* value) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_var_t parameters;
 
@@ -173,10 +183,12 @@ int component_set_str_param(const char* component, amxb_bus_ctx_t* bus, const ch
 
 exit:
     amxc_var_clean(&parameters);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 int component_del_instance(const char* object_path, amxb_bus_ctx_t* bus) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_var_t ret;
     amxc_var_init(&ret);
@@ -189,10 +201,12 @@ int component_del_instance(const char* object_path, amxb_bus_ctx_t* bus) {
 
 exit:
     amxc_var_clean(&ret);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 int component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx_t* bus, const char* parameter) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_string_t param_path;
 
@@ -209,11 +223,13 @@ int component_get_param(amxc_var_t* ret_var, const char* component, amxb_bus_ctx
 
 exit:
     amxc_string_clean(&param_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 
 int component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_var_t orig_value;
     amxc_var_t new_value;
@@ -245,10 +261,12 @@ exit:
     amxc_var_clean(&new_value);
     amxc_var_clean(&orig_value);
     amxc_var_clean(&llist);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 int component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus, const char* parameter, const char* str) {
+    SAH_TRACEZ_IN(ME);
     int rc = -1;
     amxc_var_t orig_value;
     amxc_var_t new_value;
@@ -283,10 +301,12 @@ exit:
     amxc_var_clean(&new_value);
     amxc_var_clean(&orig_value);
     amxc_var_clean(&llist);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t* values) {
+    SAH_TRACEZ_IN(ME);
     amxc_var_t ret;
     int rc = -1;
 
@@ -301,5 +321,6 @@ int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t*
 
 exit:
     amxc_var_clean(&ret);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

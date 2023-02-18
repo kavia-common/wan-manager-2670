@@ -98,7 +98,6 @@ static int autosensing_set_wan_mode(UNUSED const char* function_name,
 
     rv = wan_mode_set(next_wan_mode_str, current_wan_mode_str);
     when_failed_trace(rv, exit, ERROR, "Failed to set wan mode '%s'", next_wan_mode_str);
-    nm_query_mode_active();
 
 exit:
     free(current_wan_mode_str);

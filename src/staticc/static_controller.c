@@ -82,6 +82,7 @@
 
 amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
@@ -119,11 +120,13 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
                               const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
 
@@ -151,11 +154,13 @@ amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
@@ -191,11 +196,13 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
 
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
                               const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
@@ -229,5 +236,6 @@ amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

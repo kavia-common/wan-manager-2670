@@ -136,6 +136,7 @@ static operation_mode_t startup_wan_autosensing(void);
 static char* get_physical_type_for_wan_mode(const char* wan_mode);
 
 static void update_sensing(void) {
+    SAH_TRACEZ_IN(ME);
     char* current_operation_mode = amxd_object_get_value(cstring_t, wan_manager, "OperationMode", NULL);
     char* sensing_policy = amxd_object_get_value(cstring_t, wan_manager, "SensingPolicy", NULL);
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
@@ -151,10 +152,12 @@ static void update_sensing(void) {
 exit:
     free(current_operation_mode);
     free(sensing_policy);
+    SAH_TRACEZ_OUT(ME);
     return;
 }
 
 void wan_mode_init(void) {
+    SAH_TRACEZ_IN(ME);
     const char* prefix = wan_get_prefix();
 
     when_null_trace(prefix, exit, ERROR, "Failed to find the prefix");
@@ -162,18 +165,24 @@ void wan_mode_init(void) {
     when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
     nm_query_ll_init();
 exit:
+    SAH_TRACEZ_OUT(ME);
     return;
 }
 
 amxd_object_t* get_wan_manager_obj(void) {
+    SAH_TRACEZ_IN(ME);
+    SAH_TRACEZ_OUT(ME);
     return wan_manager;
 }
 
 void wan_mode_cleanup(void) {
+    SAH_TRACEZ_IN(ME);
     wan_manager = NULL;
+    SAH_TRACEZ_OUT(ME);
 }
 
 void wan_manager_found_ll(const char* phys_type) {
+    SAH_TRACEZ_IN(ME);
     char* current_wan_mode_str = NULL;
     char* physical_type = NULL;
     operation_mode_t operation_mode = startup_wan_autosensing();
@@ -191,9 +200,11 @@ void wan_manager_found_ll(const char* phys_type) {
 exit:
     free(physical_type);
     free(current_wan_mode_str);
+    SAH_TRACEZ_OUT(ME);
 }
 
 static char* get_physical_type_for_wan_mode(const char* wan_mode) {
+    SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_inst = NULL;
     char* physical_type = NULL;
 
@@ -202,10 +213,12 @@ static char* get_physical_type_for_wan_mode(const char* wan_mode) {
     when_null_trace(wan_mode_inst, exit, ERROR, "%s is not a valid WAN mode", wan_mode);
     physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
 exit:
+    SAH_TRACEZ_OUT(ME);
     return physical_type;
 }
 
 static operation_mode_t startup_wan_autosensing(void) {
+    SAH_TRACEZ_IN(ME);
     operation_mode_t rv = OPERATION_MODE_UNKNOWN;
     const amxc_var_t* var_operation_mode = NULL;
 
@@ -217,10 +230,12 @@ static operation_mode_t startup_wan_autosensing(void) {
     rv = update_operation_mode(GET_CHAR(var_operation_mode, NULL));
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rv;
 }
 
 static operation_mode_t update_operation_mode(const char* new_operation_mode) {
+    SAH_TRACEZ_IN(ME);
     operation_mode_t rv = OPERATION_MODE_UNKNOWN;
     when_str_empty_trace(new_operation_mode, exit, ERROR, "Bad new operation mode value");
 
@@ -236,6 +251,7 @@ static operation_mode_t update_operation_mode(const char* new_operation_mode) {
         SAH_TRACEZ_ERROR(ME, "Unsupported operation mode[%s]", new_operation_mode);
     }
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rv;
 }
 
@@ -247,6 +263,7 @@ exit:
    error code and no changes in the data model are done.
  */
 amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxd_trans_t trans;
 
@@ -267,10 +284,12 @@ amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode) 
 
 exit:
     amxd_trans_clean(&trans);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxd_object_t* active_wan_mode_obj = NULL;
     amxd_object_t* new_wan_mode_obj = NULL;
@@ -297,12 +316,14 @@ exit:
     if(rc != amxd_status_ok) {
         wan_mode_set_status(new_wan_mode_obj, WAN_Mode_Error);
     }
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
                                           const char* lower_layer,
                                           bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
     amxc_var_t* ipv4_var = NULL;
@@ -340,6 +361,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
 
 exit:
     amxc_var_clean(&parameters);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
@@ -350,6 +372,7 @@ exit:
  * @return amxd_status_ok if the mode was enabled/disabled correctly, otherwise it returns an error
  */
 amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = NULL;
     char* physical_type = NULL;
@@ -374,8 +397,10 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
 
     if(enable) {
         rc = dns_mode_set(wan_mode, dns_mode);
+        nm_query_mode_active();
     } else {
         rc = dns_mode_unset(wan_mode, dns_mode);
+        nm_close_sensing_queries();
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
@@ -385,6 +410,7 @@ exit:
     if(enable) {
         wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
     }
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
@@ -394,12 +420,14 @@ exit:
  * @return A pointer to the amxd_object_t for the requested WANMode, NULL if no mode was found with this alias
  */
 amxd_object_t* get_wan_mode(const char* alias) {
+    SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_obj = NULL;
     when_str_empty_trace(alias, exit, ERROR, "Could not find wan mode, no Alias provided");
     wan_mode_obj = amxd_dm_findf(wan_get_dm(), "%sWANManager.WAN.[Alias=='%s'].",
                                  wan_get_prefix(), alias);
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return wan_mode_obj;
 }
 
@@ -408,12 +436,14 @@ exit:
  * @return A string is returned containing the current WANMode, the string must be freed when no longer needed
  */
 char* get_current_wan_mode_str(void) {
+    SAH_TRACEZ_IN(ME);
     char* current_wan_mode_str = NULL;
 
     when_null(wan_manager, exit);
     current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return current_wan_mode_str;
 }
 
@@ -422,6 +452,7 @@ exit:
  * @return The pointer to the amxd_object_t for the WANMode that is currently configured
  */
 amxd_object_t* get_current_wan_mode(void) {
+    SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_obj = NULL;
     char* current_wan_mode_str = get_current_wan_mode_str();
 
@@ -432,10 +463,12 @@ amxd_object_t* get_current_wan_mode(void) {
 
 exit:
     free(current_wan_mode_str);
+    SAH_TRACEZ_OUT(ME);
     return wan_mode_obj;
 }
 
 static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_object_t* const new_mode) {
+    SAH_TRACEZ_IN(ME);
     bool rc = true;
     amxc_var_t physical_type_current;
     amxc_var_t physical_type_new;
@@ -456,15 +489,20 @@ static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_
 exit:
     amxc_var_clean(&physical_type_new);
     amxc_var_clean(&physical_type_current);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 static const char* wan_mode_status_to_str(wan_mode_status_t status) {
-    return ((WAN_Mode_Enabled <= status) && (WAN_Mode_Nr_ > status))
-           ? wan_mode_status_str[status] : wan_mode_status_str[WAN_Mode_Error];
+    SAH_TRACEZ_IN(ME);
+    const char* rv = ((WAN_Mode_Enabled <= status) && (WAN_Mode_Nr_ > status))
+        ? wan_mode_status_str[status] : wan_mode_status_str[WAN_Mode_Error];
+    SAH_TRACEZ_OUT(ME);
+    return rv;
 }
 
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxd_trans_t trans;
     const char* str_status = wan_mode_status_to_str(status);
@@ -480,10 +518,12 @@ static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_s
 
 exit:
     amxd_trans_clean(&trans);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
+    SAH_TRACEZ_IN(ME);
     mode_cnv_t* lookup = mode_cnv;
     mode_ctrl_t rc = IP_None;
     while(lookup->str != NULL) {
@@ -497,11 +537,13 @@ mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
         }
         lookup++;
     }
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
                                      bool include_type) {
+    SAH_TRACEZ_IN(ME);
     const char* type = NULL;
     const char* ipv4mode = NULL;
     const char* ipv6mode = NULL;
@@ -531,28 +573,35 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
 
 exit:
     amxc_var_clean(&data);
+    SAH_TRACEZ_OUT(ME);
     return (mode_ctrl_t) mode;
 }
 
 void _update_autosensing(UNUSED const char* const event_name,
                          const amxc_var_t* const event_data,
                          UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
     SAH_TRACEZ_INFO(ME, "Toggling OperationMode from %s to %s",
                     GETP_CHAR(event_data, "parameters.OperationMode.from"),
                     GETP_CHAR(event_data, "parameters.OperationMode.to"));
     update_operation_mode(GETP_CHAR(event_data, "parameters.OperationMode.to"));
+    SAH_TRACEZ_OUT(ME);
 }
 
 void _update_sensing_policy(UNUSED const char* const event_name,
                             UNUSED const amxc_var_t* const event_data,
                             UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
     update_sensing();
+    SAH_TRACEZ_OUT(ME);
 }
 
 void _wan_sensing_toggled(UNUSED const char* const event_name,
                           UNUSED const amxc_var_t* const event_data,
                           UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
     update_sensing();
+    SAH_TRACEZ_OUT(ME);
 }
 
 amxd_status_t _mode_check_default_interface(amxd_object_t* object,
@@ -561,6 +610,7 @@ amxd_status_t _mode_check_default_interface(amxd_object_t* object,
                                             const amxc_var_t* const args,
                                             amxc_var_t* const retval,
                                             void* priv) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_unknown_error;
     bool default_interface_new;
     bool default_interface_old;
@@ -590,5 +640,6 @@ amxd_status_t _mode_check_default_interface(amxd_object_t* object,
     }
 
 exit:
+    SAH_TRACEZ_OUT(ME);
     return rv;
 }

@@ -94,6 +94,7 @@
 char* dhcpc_get_client(bool ipv4,
                        const char* intf_path,
                        const char* intf_alias) {
+    SAH_TRACEZ_IN(ME);
     amxc_string_t test_path;
     amxc_string_t upper_test_path;
     amxc_string_t param;
@@ -135,12 +136,14 @@ exit:
     amxc_string_clean(&upper_test_path);
     amxc_string_clean(&test_path);
     amxc_string_clean(&param);
+    SAH_TRACEZ_OUT(ME);
     return path;
 }
 
 
 amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
                             const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     char* dhcpv4_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
@@ -198,11 +201,13 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
 exit:
     free(dhcpv4_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     char* dhcpv4_path = NULL;
@@ -253,11 +258,13 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
 exit:
     free(dhcpv4_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
                             const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     char* dhcpv6_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
@@ -323,11 +330,13 @@ exit:
     free(route_path);
     free(dhcpv6_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
 amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     char* dhcpv6_path = NULL;
@@ -389,5 +398,6 @@ exit:
     free(route_path);
     free(dhcpv6_path);
     free(logical_path);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }

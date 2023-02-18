@@ -76,7 +76,11 @@
 #include "dm_wan-manager.h"
 #include "ctrl/restart.h"
 
+#define ME "wan-man"
+
 amxd_status_t restart(void) {
+    SAH_TRACEZ_IN(ME);
     //TODO: Decode - Delayed restart (HW reset) or all ctrl reload (NetDev, IPManager, GPON...)?
+    SAH_TRACEZ_OUT(ME);
     return amxd_status_ok;
 }

@@ -82,6 +82,7 @@
 #define ME "eth-ctrl"
 
 static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
+    SAH_TRACEZ_IN(ME);
     char* path = NULL;
     amxc_string_t name;
     amxc_var_t parameters;
@@ -105,11 +106,13 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
 exit:
     amxc_var_clean(&parameters);
     amxc_string_clean(&name);
+    SAH_TRACEZ_OUT(ME);
     return path;
 }
 
 
 amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool enable) {
+    SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t str_search;
     const char* lower_layer = NULL;
@@ -145,5 +148,6 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, bool 
 exit:
     free(vlan_path);
     amxc_string_clean(&str_search);
+    SAH_TRACEZ_OUT(ME);
     return rc;
 }
