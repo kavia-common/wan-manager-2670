@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.16.0 - 2023-02-18(07:25:54 +0000)
+
+### New
+
+- Implement a replacement for the LastWANMode from autosensing
+
 ## Release v0.15.0 - 2023-02-14(13:19:49 +0000)
 
 ### New
