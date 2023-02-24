@@ -57,11 +57,6 @@ changelog:
 
 doc:
 	$(eval ODLFILES += odl/$(COMPONENT).odl)
-	$(eval ODLFILES += odl/$(COMPONENT)_definition.odl)
-	$(eval ODLFILES += odl/$(COMPONENT)_WAN_definition.odl)
-	$(eval ODLFILES += odl/$(COMPONENT)_WAN_Intf_definition.odl)
-	# expand/substitute source wildcard instead of using destination directory: the destination directory can contain files from another artifact not intended for pcb_docgen use
-	$(eval ODLFILES += $(wildcard odl/defaults.d/*.odl))
 
 	mkdir -p output/xml
 	mkdir -p output/html
