@@ -17,4 +17,11 @@
             parameter IPv6Reference = "Device.IP.Interface.2.";
         }
     }
+
+    object '${prefix_}WANManager.WAN.Ethernet_DSLite.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DefaultRouter = "192.0.0.1";
+        }
+    }
+
 }

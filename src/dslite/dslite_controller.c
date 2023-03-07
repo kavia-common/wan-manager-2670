@@ -92,6 +92,8 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     char* logical_path = NULL;
     amxc_string_t pcp_enable;
     const char* prefix = wan_get_prefix();
+    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
     amxc_string_init(&pcp_enable, 0);
 
@@ -102,6 +104,12 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     logical_path = create_logical_path(name);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", ipv4_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
+
+    // Setting up the default route instance for static ipv4
+    if(default_interface) {
+        rc = routing_default_route_set_origin(ipv4_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
+        when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
+    }
 
     // Enable DSLite
     rc = component_set_enable(DSLITE_PATH, dslite_get_context(), true);
