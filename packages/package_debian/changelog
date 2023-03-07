@@ -1,3 +1,10 @@
+wan-manager (0.16.2) unstable; urgency=medium
+
+  * [wan-manager] DSLite static default route is incorrectly modified when switching WANModes
+  * Add missing runtime dependency on rpcd
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 07 Mar 2023 13:19:40 +0000
+
 wan-manager (0.16.1) unstable; urgency=medium
 
   * Documentation generation fails

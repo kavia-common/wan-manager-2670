@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.16.2 - 2023-03-07(13:19:40 +0000)
+
+### Fixes
+
+- [wan-manager] DSLite static default route is incorrectly modified when switching WANModes
+
+### Other
+
+- Add missing runtime dependency on rpcd
+
 ## Release v0.16.1 - 2023-02-24(08:52:56 +0000)
 
 ### Other
