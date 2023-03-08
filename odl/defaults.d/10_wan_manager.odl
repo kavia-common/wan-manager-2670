@@ -36,6 +36,12 @@
             parameter PhysicalType = "Ethernet";
             parameter DNSMode = "RouterAdvertisement";
         }
+
+        instance add ("Ethernet_PPP6"){
+            parameter Alias = "Ethernet_PPP6";
+            parameter PhysicalType = "Ethernet";
+            parameter DNSMode = "RouterAdvertisement";
+        }
     }
 
     object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
@@ -108,6 +114,27 @@
             parameter VlanPriority = 0;
             parameter IPv4Reference = "";
             parameter IPv6Reference = "Device.IP.Interface.2.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dslite";
+            parameter DefaultInterface = true;
+            parameter IPv6Mode = "ppp6";
+            parameter UserName = "prpl_ipv6";
+            parameter Password = "softathome";
+            parameter VlanID = 144;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.7.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DefaultRouter = "192.0.0.1";
         }
     }
 

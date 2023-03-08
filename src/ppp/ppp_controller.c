@@ -223,19 +223,15 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     when_str_empty_trace(ppp_path, exit, ERROR, "No PPP interface path found");
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
+    if(ip_version == 6) {
+        // Disable NeighborDiscovery for the wan
+        nd_interface_setting_toggle(nd_intf, false);
+    }
+
     //Remove the IPReference from the Logical Interface
     logical_path = create_logical_path(name);
     rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to remove IPv%dReference from '%s.LowerLayers'", ip_version, logical_path);
-
-    if(ip_version == 6) {
-        // Disable NeighborDiscovery for the wan
-        nd_interface_setting_toggle(nd_intf, false);
-
-        route_path = routing_get_interfacesetting(intf_path);
-        rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
-        when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
-    }
 
     // Disable the IP interface
     rc = component_set_enable(intf_path, ip_get_context(), false);

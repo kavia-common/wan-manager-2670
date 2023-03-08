@@ -91,13 +91,14 @@ controller_item_t controllers [] = {
     { TYPE_UNTAGGED, IPv4_DHCP, dhcpc4_enable, dhcpc4_disable },
     { TYPE_VLAN, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
     { TYPE_UNTAGGED, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
+    { TYPE_UNTAGGED, IPv4_DSLITE, dslite_enable, dslite_disable },
+    { TYPE_VLAN, IPv4_DSLITE, dslite_enable, dslite_disable },
     { TYPE_VLAN, IPv4_PPP | IPv6_PPP, ppp_enable, ppp_disable },
     { TYPE_UNTAGGED, IPv4_PPP | IPv6_PPP, ppp_enable, ppp_disable },
     { TYPE_VLAN, IPv4_STATIC, static4_enable, static4_disable},
     { TYPE_UNTAGGED, IPv4_STATIC, static4_enable, static4_disable},
     { TYPE_VLAN, IPv6_STATIC, static6_enable, static6_disable},
     { TYPE_UNTAGGED, IPv6_STATIC, static6_enable, static6_disable},
-    { TYPE_UNTAGGED, IPv4_DSLITE, dslite_enable, dslite_disable },
     { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
     // last item of array must be 0
     { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }

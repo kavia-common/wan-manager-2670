@@ -18,8 +18,21 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
+    object DHCPv6 {
+        object Client[] {
+            %unique %key string Alias;
+            bool Enable;
+            string Interface;
+        }
+    }
+
     object DSLite {
         bool Enable;
+        object InterfaceSetting[] {
+            %unique %key string Alias;
+            bool Enable;
+            string WANInterface;
+        }
     }
 
     object PCP {
@@ -191,6 +204,18 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
+    object 'DHCPv6.Client' {
+        instance add (1, "wan") {
+            parameter Interface = "Device.IP.Interface.2.";
+        }
+    }
+
+    object 'DSLite.InterfaceSetting' {
+        instance add(1, "dslite") {
+            parameter WANInterface = "Device.IP.Interface.2.";
+        }
+    }
+
     object '${prefix_}WANManager.WAN.demo_vlanmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DNSServers = "8.8.8.8,1.1.1.1";
@@ -217,5 +242,4 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter SubnetMask = "255.255.255.0";
         }
     }
-
 }
