@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.17.0 - 2023-03-08(09:50:55 +0000)
+
+### New
+
+- Implement DSLite + PPP6 WANMode
+
 ## Release v0.16.2 - 2023-03-07(13:19:40 +0000)
 
 ### Fixes
