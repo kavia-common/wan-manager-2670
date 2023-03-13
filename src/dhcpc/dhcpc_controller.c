@@ -106,28 +106,28 @@ char* dhcpc_get_client(bool ipv4,
     char* path = NULL;
 
     amxc_string_init(&test_path, 0);
-    amxc_string_setf(&test_path, "DHCPv%c.Client.[Interface=='%s'].", ip, intf_path);
+    amxc_string_setf(&test_path, "DHCPv%cClient.Client.[Interface=='%s'].", ip, intf_path);
     amxc_string_init(&upper_test_path, 0);
-    amxc_string_setf(&upper_test_path, "DHCPv%c.Client.", ip);
+    amxc_string_setf(&upper_test_path, "DHCPv%cClient.Client.", ip);
     amxc_string_init(&param, 0);
     amxc_var_init(&dhcp_data);
 
     path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
     if((NULL == path) && (NULL != intf_alias) && !ipv4) {
-        SAH_TRACEZ_WARNING(ME, "DHCPv%c.Client.[Interface=='%s']. instance does not exist, selecting the first one", ip, intf_path);
+        SAH_TRACEZ_WARNING(ME, "DHCPv%cClient.Client.[Interface=='%s']. instance does not exist, selecting the first one", ip, intf_path);
 
         amxb_get_instances(ctx, amxc_string_get(&upper_test_path, 0), 0, &dhcp_data, 10);
         instance = amxc_var_get_first(&dhcp_data);
-        when_null_trace(instance, exit, ERROR, "Getting the DHCPv%c clients timed out", ipv4);
+        when_null_trace(instance, exit, ERROR, "Getting the DHCPv%cClient clients timed out", ipv4);
 
         if(instance != NULL) {
-            amxc_string_setf(&param, "DHCPv%c.Client.%s.", ip, GETP_CHAR(instance, "0.Alias"));
+            amxc_string_setf(&param, "DHCPv%cClient.Client.%s.", ip, GETP_CHAR(instance, "0.Alias"));
             rv = component_set_str_param(amxc_string_get(&param, 0), ctx, "Interface", intf_path);
-            when_failed_trace(rv, exit, ERROR, "Could not change the DHCPv%c Client Interface parameter", ip);
+            when_failed_trace(rv, exit, ERROR, "Could not change the DHCPv%cClient Client Interface parameter", ip);
 
             path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
-            when_null_trace(path, exit, ERROR, "DHCPv%c Client interface change error", ip);
+            when_null_trace(path, exit, ERROR, "DHCPv%cClient Client interface change error", ip);
         }
     }
 

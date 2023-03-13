@@ -10,7 +10,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
     object Device;
-    object DHCPv4 {
+    object DHCPv4Client {
         object Client[] {
             %unique %key string Alias;
             bool Enable;
@@ -18,7 +18,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object DHCPv6 {
+    object DHCPv6Client {
         object Client[] {
             %unique %key string Alias;
             bool Enable;
@@ -198,13 +198,13 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object 'DHCPv4.Client' {
+    object 'DHCPv4Client.Client' {
         instance add (1, "wan") {
             parameter Interface = "Device.IP.Interface.2.";
         }
     }
 
-    object 'DHCPv6.Client' {
+    object 'DHCPv6Client.Client' {
         instance add (1, "wan") {
             parameter Interface = "Device.IP.Interface.2.";
         }

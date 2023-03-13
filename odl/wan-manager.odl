@@ -52,8 +52,8 @@ include "${wan_mode_definition_file}";
 include "${wan_mode_intf_definition_file}";
 
 requires "IP.";
-requires "DHCPv4.Client.";
-requires "DHCPv6.Client.";
+requires "DHCPv4Client.Client.";
+requires "DHCPv6Client.Client.";
 requires "PPP.";
 requires "Routing.";
 requires "DNS.";

@@ -86,11 +86,11 @@ amxb_bus_ctx_t* ip_get_context(void) {
 }
 
 amxb_bus_ctx_t* dhcpv4_get_context(void) {
-    return amxb_be_who_has("DHCPv4.");
+    return amxb_be_who_has("DHCPv4Client.");
 }
 
 amxb_bus_ctx_t* dhcpv6_get_context(void) {
-    return amxb_be_who_has("DHCPv6.");
+    return amxb_be_who_has("DHCPv6Client.");
 }
 
 amxb_bus_ctx_t* ppp_get_context(void) {
