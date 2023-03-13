@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.18.0 - 2023-03-13(15:54:59 +0000)
+
+### Fixes
+
+- [DHCPv4] Split client and server plugin
+
 ## Release v0.17.1 - 2023-03-09(12:01:04 +0000)
 
 ### Other

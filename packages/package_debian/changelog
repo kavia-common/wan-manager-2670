@@ -1,3 +1,9 @@
+wan-manager (0.18.0) unstable; urgency=medium
+
+  * [DHCPv4] Split client and server plugin
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 13 Mar 2023 15:55:00 +0000
+
 wan-manager (0.17.1) unstable; urgency=medium
 
   * [Config] enable configurable coredump generation
