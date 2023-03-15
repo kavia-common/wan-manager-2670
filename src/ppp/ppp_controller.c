@@ -96,6 +96,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
+    const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* username = GET_CHAR(parameters, "UserName");
@@ -153,6 +154,9 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", true);
         when_failed_trace(rc, exit, ERROR, "Failed to enable IPv4 on %s", intf_path);
     } else {
+        // Switch the parent prefix path to the correct IPv6Reference
+        ip_parent_prefix_toggle(GET_CHAR(parameters, "DeferredIPv6Instances"), old_intf_path, intf_path);
+
         // Enable PPPv6
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", true);
         when_failed(rc, exit);

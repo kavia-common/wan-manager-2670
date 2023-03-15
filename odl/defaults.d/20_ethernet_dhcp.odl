@@ -17,6 +17,7 @@
             parameter VlanPriority = 0;
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
         }
 
         instance add(0,"voip"){

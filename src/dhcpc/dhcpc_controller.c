@@ -269,6 +269,7 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     char* dhcpv6_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
+    const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     char* route_path = routing_get_interfacesetting(intf_path);
     const char* name = GET_CHAR(parameters, "Name");
@@ -298,6 +299,9 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv6Reference LowerLayers to '%s'", lower_layer);
+
+    // Switch the parent prefix path to the correct IPv6Reference
+    ip_parent_prefix_toggle(GET_CHAR(parameters, "DeferredIPv6Instances"), old_intf_path, intf_path);
 
     // Enable IPv6 on the IP interface
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);

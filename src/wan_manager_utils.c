@@ -249,6 +249,105 @@ exit:
     return rc;
 }
 
+static void get_prefixes_from_interfaces(const char* interfaces, const char* old_reference_path, amxc_var_t* prefixes) {
+    SAH_TRACEZ_IN(ME);
+    int rc = -1;
+    amxc_string_t interfaces_string;
+    amxc_string_t search_path;
+    amxc_llist_t interfaces_list;
+
+    amxc_string_init(&interfaces_string, 0);
+    amxc_string_init(&search_path, 0);
+    amxc_llist_init(&interfaces_list);
+
+    amxc_string_set(&interfaces_string, interfaces);
+    amxc_var_set_type(prefixes, AMXC_VAR_ID_LIST);
+
+    rc = amxc_string_split_to_llist(&interfaces_string, &interfaces_list, ',');
+    when_failed_trace(rc, exit, ERROR, "Failed to split comma separated list");
+
+    amxc_llist_for_each(it, &interfaces_list) {
+        int rv = -1;
+        amxc_string_t* interface_path = amxc_container_of(it, amxc_string_t, it);
+        amxc_var_t* tmp = NULL;
+        amxc_var_t ret;
+        amxc_var_init(&ret);
+
+        amxc_string_setf(&search_path, "%s.IPv6Prefix.[ParentPrefix starts with '%sIPv6Prefix.'].ParentPrefix", amxc_string_get(interface_path, 0), old_reference_path);
+        rv = amxb_get(ip_get_context(), amxc_string_get(&search_path, 0), 0, &ret, 5);
+        if(rv == AMXB_STATUS_OK) {
+            tmp = amxc_var_add_new(prefixes);
+            amxc_var_move(tmp, GETI_ARG(&ret, 0));
+        } else {
+            SAH_TRACEZ_ERROR(ME, "Failed to get the ParentPrefixes for %s, error '%d'", amxc_string_get(interface_path, 0), rv);
+        }
+
+        amxc_var_clean(&ret);
+    }
+
+exit:
+    amxc_string_clean(&interfaces_string);
+    amxc_string_clean(&search_path);
+    amxc_llist_clean(&interfaces_list, amxc_string_list_it_free);
+    SAH_TRACEZ_OUT(ME);
+    return;
+}
+
+static void convert_prefixes_data(const char* interfaces, const char* old_reference_path, const char* new_reference_path, amxc_var_t* data) {
+    SAH_TRACEZ_IN(ME);
+    amxc_var_t ret;
+    amxc_string_t new_path;
+
+    amxc_var_set_type(data, AMXC_VAR_ID_LIST);
+    amxc_var_init(&ret);
+    amxc_string_init(&new_path, 0);
+
+    get_prefixes_from_interfaces(interfaces, old_reference_path, &ret);
+
+    amxc_var_for_each(interface, &ret) {
+        amxc_var_for_each(instance, interface) {
+            amxc_var_t* new_instance_data = amxc_var_add(amxc_htable_t, data, NULL);
+            amxc_var_t* params = amxc_var_add_key(amxc_htable_t, new_instance_data, "parameters", NULL);
+            const char* prefix_path = GET_CHAR(instance, "ParentPrefix");
+
+            amxc_string_setf(&new_path, "%s", prefix_path);
+            amxc_string_replace(&new_path, old_reference_path, new_reference_path, 1);
+
+            amxc_var_add_key(cstring_t, new_instance_data, "path", amxc_var_key(instance));
+            amxc_var_add_key(cstring_t, params, "ParentPrefix", amxc_string_get(&new_path, 0));
+        }
+    }
+
+    amxc_string_clean(&new_path);
+    amxc_var_clean(&ret);
+    SAH_TRACEZ_OUT(ME);
+}
+
+int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_path, const char* new_reference_path) {
+    SAH_TRACEZ_IN(ME);
+    int rv = -1;
+
+    when_str_empty_trace(new_reference_path, exit, ERROR, "New IPv6Reference not provided");
+    rv = 0;
+    when_str_empty_trace(old_reference_path, exit, INFO, "No old IPv6Reference provided");
+    when_str_empty_trace(interfaces, exit, INFO, "No deferred interfaces");
+
+    if(strcmp(old_reference_path, new_reference_path) != 0) {
+        amxc_var_t req_paths;
+        amxc_var_init(&req_paths);
+
+        convert_prefixes_data(interfaces, old_reference_path, new_reference_path, &req_paths);
+        rv = amxb_set_multiple(ip_get_context(), 0, &req_paths, NULL, 5);
+
+        amxc_var_clean(&req_paths);
+        when_failed_trace(rv, exit, ERROR, "Failed to set new parent prefixes for the deferred IPv6 interfaces");
+    }
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return rv;
+}
+
 amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin, const char* ip_addr) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;

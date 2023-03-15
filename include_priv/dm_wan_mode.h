@@ -83,7 +83,7 @@ void wan_mode_cleanup(void);
 amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
 
 amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_mode);
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable);
+amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mode, bool enable);
 amxd_object_t* get_wan_mode(const char* alias);
 char* get_current_wan_mode_str(void);
 amxd_object_t* get_current_wan_mode(void);

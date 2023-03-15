@@ -300,12 +300,12 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_m
     when_null_trace(active_wan_mode_obj, exit, ERROR, "Current wanmode object could not be found");
     when_null_trace(new_wan_mode_obj, exit, ERROR, "%s is not a valid WAN mode", wan_mode_to_set);
 
-    rc = wan_mode_enable(active_wan_mode_obj, false);
+    rc = wan_mode_enable(active_wan_mode_obj, NULL, false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable the previous wan mode");
 
     rc = wan_mode_dm_set(wan_mode_to_set, NULL);
     when_failed_trace(rc, exit, ERROR, "Failed to set new WANMode '%s' in the datamodel", wan_mode_to_set);
-    rc = wan_mode_enable(new_wan_mode_obj, true);
+    rc = wan_mode_enable(new_wan_mode_obj, active_wan_mode_obj, true);
     when_failed_trace(rc, exit, WARNING, "Failed to enable '%s' as WANMode", wan_mode_to_set);
 
     if(wan_mode_different_physical_type(active_wan_mode_obj, new_wan_mode_obj)) {
@@ -322,10 +322,12 @@ exit:
 
 static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
                                           const char* lower_layer,
-                                          bool enable) {
+                                          bool enable,
+                                          amxd_object_t* old_interface) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
+    amxc_var_t* old_params = NULL;
     amxc_var_t* ipv4_var = NULL;
     amxc_var_t* ipv6_var = NULL;
     amxd_object_t* ipv4_addr = NULL;
@@ -353,6 +355,9 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     amxd_object_get_params(ipv4_addr, ipv4_var, amxd_dm_access_private);
     amxd_object_get_params(ipv6_addr, ipv6_var, amxd_dm_access_private);
 
+    old_params = amxc_var_add_key(amxc_htable_t, &parameters, "old_interface_parameters", NULL);
+    amxd_object_get_params(old_interface, old_params, amxd_dm_access_private);
+
     // Get mode for IPv4 & IPv6
     mode = get_wan_mode_type(interface, true);
     if(IP_None != mode) {
@@ -371,7 +376,7 @@ exit:
  * @param enable Enables the mode if set to true, otherwise it disables the mode
  * @return amxd_status_ok if the mode was enabled/disabled correctly, otherwise it returns an error
  */
-amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
+amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mode, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = NULL;
@@ -390,7 +395,14 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        rc = wan_mode_intf_enable(interface, lower_layer, enable);
+        amxd_object_t* old_interface = NULL;
+        if(old_wan_mode != NULL) {
+            char* intf_name = amxd_object_get_value(cstring_t, interface, "Name", NULL);
+
+            old_interface = amxd_object_findf(old_wan_mode, ".Intf.[Name == '%s'].", intf_name);
+            free(intf_name);
+        }
+        rc = wan_mode_intf_enable(interface, lower_layer, enable, old_interface);
         when_failed_trace(rc, exit, ERROR, "Failed to %s interface '%s' with code %d", enable ? "enable" : "disable",
                           amxd_object_get_name(interface, AMXD_OBJECT_NAMED), rc);
     }

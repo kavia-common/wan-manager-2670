@@ -85,6 +85,7 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
@@ -100,6 +101,9 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
+
+    // Switch the parent prefix path to the correct IPv6Reference
+    ip_parent_prefix_toggle(GET_CHAR(parameters, "DeferredIPv6Instances"), old_intf_path, intf_path);
 
     // Enable the IPv4 Address instance
     rc = ipv4_addr_toggle(intf_path, ipv4, STATIC_ADDRESSING_TYPE, true);

@@ -116,6 +116,13 @@
             }
 
             /**
+            * comma separated list of IP instances (typically lan interfaces)
+            * WAN-manager will manage the ParentPrefixes for the IPv6Prefixes in these interfaces
+            * @version 1.0
+            */
+            %persistent csv_string DeferredIPv6Instances;
+
+            /**
             * Static IPv4 network configuration
             * Only applicable if Mode4 is set to static
             * Only one instance is expected per wan_mode
