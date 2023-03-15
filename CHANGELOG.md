@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.18.1 - 2023-03-15(11:07:35 +0000)
+
+### Fixes
+
+- lan parent prefixes are not updated when switching wan-modes
+
 ## Release v0.18.0 - 2023-03-13(15:54:59 +0000)
 
 ### Fixes

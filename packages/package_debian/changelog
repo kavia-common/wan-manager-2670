@@ -1,3 +1,9 @@
+wan-manager (0.18.1) unstable; urgency=medium
+
+  * lan parent prefixes are not updated when switching wan-modes
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 15 Mar 2023 11:07:35 +0000
+
 wan-manager (0.18.0) unstable; urgency=medium
 
   * [DHCPv4] Split client and server plugin
