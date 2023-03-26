@@ -316,7 +316,7 @@ int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t*
 
     amxc_var_init(&ret);
 
-    rc = amxb_set(bus, component, values, &ret, 10);
+    rc = amxb_set(bus, component, values, &ret, 5);
     when_failed_trace(rc, exit, ERROR, "%s client set params failed with error code %d", component, rc);
 
 exit:

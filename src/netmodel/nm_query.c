@@ -144,9 +144,11 @@ static void nm_query_response_ll_cb(UNUSED const char* sig_name,
     SAH_TRACEZ_IN(ME);
     nm_query_ll_info_t* info = (nm_query_ll_info_t*) priv;
     const char* lower_layer = NULL;
+
     when_null_trace(info, exit, ERROR, "private data is null");
     when_true(((info->index < 0) || (info->index >= physical_type_last)), exit);
-    lower_layer = amxc_var_constcast(cstring_t, data);
+
+    lower_layer = GET_CHAR(data, NULL);
     SAH_TRACEZ_INFO(ME, "LowerLayer query for PhysicalType = %s -> %s",
                     phys_types[info->index], lower_layer);
     when_str_empty(lower_layer, exit);
@@ -213,7 +215,6 @@ static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_objec
         SAH_TRACEZ_INFO(ME, "Setting flag '%s' on interface '%s'", flag, intf_name);
         netmodel_setFlag(intf_name, flag, NULL, netmodel_traverse_this);
         if(stop_sensing) {
-            SAH_TRACEZ_INFO(ME, "Found an active mode, stop sensing");
             mod_autosensing_stop();
         }
     } else {

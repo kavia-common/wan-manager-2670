@@ -224,9 +224,6 @@ amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     if(ip_addr != NULL) {
         amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, "IPv4Address"));
         amxc_var_add_key(cstring_t, &params, "SubnetMask", GET_CHAR(ip_addr, "SubnetMask"));
-    } else {
-        amxc_var_add_key(cstring_t, &params, "IPAddress", "");
-        amxc_var_add_key(cstring_t, &params, "SubnetMask", "");
     }
 
     if(!enable) {

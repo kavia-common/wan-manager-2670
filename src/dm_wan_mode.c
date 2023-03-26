@@ -133,7 +133,6 @@ static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 static operation_mode_t update_operation_mode(const char* new_operation_mode);
 static operation_mode_t startup_wan_autosensing(void);
-static char* get_physical_type_for_wan_mode(const char* wan_mode);
 
 static void update_sensing(void) {
     SAH_TRACEZ_IN(ME);
@@ -154,6 +153,24 @@ exit:
     free(sensing_policy);
     SAH_TRACEZ_OUT(ME);
     return;
+}
+
+static amxd_status_t enable_current_wan_mode(void) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxd_object_t* current_wan_mode_obj = get_current_wan_mode();
+
+    when_null_trace(current_wan_mode_obj, exit, ERROR, "Current wan mode object could not be found");
+
+    rc = wan_mode_enable(current_wan_mode_obj, NULL, true);
+    if(rc != amxd_status_ok) {
+        wan_mode_set_status(current_wan_mode_obj, WAN_Mode_Error);
+        SAH_TRACEZ_WARNING(ME, "Failed to enable current WANMode '%s', error '%d'", current_wan_mode_obj->name, rc);
+    }
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return rc;
 }
 
 void wan_mode_init(void) {
@@ -181,40 +198,32 @@ void wan_mode_cleanup(void) {
     SAH_TRACEZ_OUT(ME);
 }
 
-void wan_manager_found_ll(const char* phys_type) {
+static char* get_physical_type_for_current_wan_mode(void) {
     SAH_TRACEZ_IN(ME);
-    char* current_wan_mode_str = NULL;
-    char* physical_type = NULL;
-    operation_mode_t operation_mode = startup_wan_autosensing();
-
-    when_null_trace(phys_type, exit, ERROR, "Bad physical type was given");
-    current_wan_mode_str = get_current_wan_mode_str();
-    when_null_trace(current_wan_mode_str, exit, ERROR, "Failed to get the current wan mode");
-
-    physical_type = get_physical_type_for_wan_mode(current_wan_mode_str);
-    when_null_trace(physical_type, exit, ERROR, "Failed to get the physical type for the current wan mode");
-
-    if((strcmp(phys_type, physical_type) == 0) && (operation_mode != OPERATION_MODE_AUTOMATIC)) {
-        wan_mode_set(current_wan_mode_str, current_wan_mode_str);
-    }
-exit:
-    free(physical_type);
-    free(current_wan_mode_str);
-    SAH_TRACEZ_OUT(ME);
-}
-
-static char* get_physical_type_for_wan_mode(const char* wan_mode) {
-    SAH_TRACEZ_IN(ME);
-    amxd_object_t* wan_mode_inst = NULL;
+    amxd_object_t* wan_mode_inst = get_current_wan_mode();
     char* physical_type = NULL;
 
-    when_null_trace(wan_mode, exit, ERROR, "Bad input parameter wan_mode given");
-    wan_mode_inst = get_wan_mode(wan_mode);
-    when_null_trace(wan_mode_inst, exit, ERROR, "%s is not a valid WAN mode", wan_mode);
+    when_null_trace(wan_mode_inst, exit, ERROR, "Could not find the current wan-mode");
     physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
 exit:
     SAH_TRACEZ_OUT(ME);
     return physical_type;
+}
+
+void wan_manager_found_ll(const char* found_phys_type) {
+    SAH_TRACEZ_IN(ME);
+    char* current_phys_type = NULL;
+    operation_mode_t operation_mode = startup_wan_autosensing();
+
+    current_phys_type = get_physical_type_for_current_wan_mode();
+    when_null_trace(current_phys_type, exit, ERROR, "Failed to get the physical type for the current wan mode");
+
+    if((strcmp(found_phys_type, current_phys_type) == 0) && (operation_mode != OPERATION_MODE_AUTOMATIC)) {
+        enable_current_wan_mode();
+    }
+exit:
+    free(current_phys_type);
+    SAH_TRACEZ_OUT(ME);
 }
 
 static operation_mode_t startup_wan_autosensing(void) {
@@ -296,8 +305,8 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_m
 
     SAH_TRACEZ_INFO(ME, "Change mode: [From = %s, To = %s]", active_wan_mode, wan_mode_to_set);
     active_wan_mode_obj = get_wan_mode(active_wan_mode);
-    new_wan_mode_obj = get_wan_mode(wan_mode_to_set);
     when_null_trace(active_wan_mode_obj, exit, ERROR, "Current wanmode object could not be found");
+    new_wan_mode_obj = get_wan_mode(wan_mode_to_set);
     when_null_trace(new_wan_mode_obj, exit, ERROR, "%s is not a valid WAN mode", wan_mode_to_set);
 
     rc = wan_mode_enable(active_wan_mode_obj, NULL, false);
