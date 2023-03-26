@@ -1,3 +1,9 @@
+wan-manager (0.18.2) unstable; urgency=medium
+
+  * Should not toggle wanmode at boot
+
+ -- SAH bot <sahbot@softathome.com>  Sun, 26 Mar 2023 07:56:09 +0000
+
 wan-manager (0.18.1) unstable; urgency=medium
 
   * lan parent prefixes are not updated when switching wan-modes

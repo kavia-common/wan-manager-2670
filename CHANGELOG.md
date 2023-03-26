@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.18.2 - 2023-03-26(07:56:09 +0000)
+
+### Fixes
+
+- Should not toggle wanmode at boot
+
 ## Release v0.18.1 - 2023-03-15(11:07:35 +0000)
 
 ### Fixes
