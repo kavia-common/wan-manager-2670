@@ -18,7 +18,7 @@
             * @version 1.0
             */
             %persistent string PhysicalType {
-                constraint enum ["Ethernet", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "Bridge", "WWAN"];
+                on action validate call check_enum ["Ethernet", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "Bridge", "WWAN"];
                 default "Ethernet";
             }
 
@@ -30,7 +30,7 @@
             * @version 1.0
             */
             %persistent string Origin {
-                constraint enum ["system", "user"];
+                on action validate call check_enum ["system", "user"];
                 default "user";
             }
 
@@ -47,7 +47,7 @@
             * @version 1.0
             */
             %read-only string Status {
-                constraint enum ["Enabled", "Disabled", "Error"];
+                on action validate call check_enum ["Enabled", "Disabled", "Error"];
                 default "Disabled";
             }
 
@@ -63,7 +63,7 @@
             * @version 1.0
             */
             %persistent string DNSMode {
-                constraint enum ["DHCPv4", "DHCPv6", "RouterAdvertisement", "IPCP", "Static", "Dynamic", ""];
+                on action validate call check_enum ["DHCPv4", "DHCPv6", "RouterAdvertisement", "IPCP", "Static", "Dynamic", ""];
                 default "Dynamic";
             }
         }

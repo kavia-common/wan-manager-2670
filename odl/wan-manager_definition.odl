@@ -59,7 +59,7 @@
          * @version 1.0
          */
         %persistent string OperationMode {
-            constraint enum ["Manual", "Automatic"];
+            on action validate call check_enum ["Manual", "Automatic"];
             default "Manual";
         }
 
@@ -71,7 +71,7 @@
          * @version 1.0
          */
          %persistent string SensingPolicy {
-            constraint enum ["AtBoot", "Continuous"];
+            on action validate call check_enum ["AtBoot", "Continuous"];
             default "AtBoot";
          }
 

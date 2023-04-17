@@ -21,7 +21,7 @@
             * @version 1.0
             */
             %persistent string Name {
-                constraint enum ["wan", "voip", "mgmt", "iptv"];
+                on action validate call check_enum ["wan", "voip", "mgmt", "iptv"];
                 on action validate call interface_already_configured;
                 default "wan";
             }
@@ -49,7 +49,7 @@
             * @version 1.0
             */
             %persistent string IPv4Mode{
-                constraint enum ["dhcp4", "ppp4", "none", "static", "dslite"];
+                on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite"];
                 default "dhcp4";
             }
 
@@ -58,7 +58,7 @@
             * @version 1.0
             */
             %persistent string IPv6Mode{
-                constraint enum ["dhcp6", "ppp6", "none", "static"];
+                on action validate call check_enum ["dhcp6", "ppp6", "none", "static"];
                 default "none";
             }
 
@@ -93,7 +93,7 @@
             * @version 1.0
             */
             %persistent string Type{
-                constraint enum ["untagged", "vlan", "atm"];
+                on action validate call check_enum ["untagged", "vlan", "atm"];
                 default "untagged";
             }
 
