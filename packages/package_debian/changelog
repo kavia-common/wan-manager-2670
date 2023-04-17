@@ -1,3 +1,9 @@
+wan-manager (0.18.3) unstable; urgency=medium
+
+  * Issu: HOP-3320 [odl]Remove deprecated odl keywords
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 17 Apr 2023 08:05:45 +0000
+
 wan-manager (0.18.2) unstable; urgency=medium
 
   * Should not toggle wanmode at boot
