@@ -1,3 +1,9 @@
+wan-manager (0.19.1) unstable; urgency=medium
+
+  * Fix component not starting on openwrt22
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 27 Apr 2023 14:16:29 +0000
+
 wan-manager (0.19.0) unstable; urgency=medium
 
   * [wan-manager] PPPv6 modes should send a DHCPv6 IA_PD solicit

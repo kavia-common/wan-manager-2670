@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.19.1 - 2023-04-27(14:16:28 +0000)
+
+### Fixes
+
+- Fix component not starting on openwrt22
+
 ## Release v0.19.0 - 2023-04-27(09:51:14 +0000)
 
 ### New
