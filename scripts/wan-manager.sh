@@ -2,30 +2,27 @@
 [ -f /etc/environment ] && source /etc/environment
 ulimit -c ${ULIMIT_CONFIGURATION:-0}
 name="wan-manager"
-name_pid="`pgrep ${name}`"
 
 case $1 in
     start|boot)
-        if [ -z "${name_pid}" ]; then
-            ${name} -D
-        fi
+        ${name} -D
         ;;
-    stop)
-        if [ -n "${name_pid}" ]; then
-            kill ${name_pid}
+    stop|shutdown)
+        if [ -f /var/run/${name}.pid ]; then
+            kill `cat /var/run/${name}.pid`
+        else
+            killall ${name}
         fi
         ;;
     debuginfo)
-	ubus-cli "X_PRPL-COM_WANManager.?"
+        ubus-cli "X_PRPL-COM_WANManager.?"
         ;;
     restart)
         $0 stop
+        sleep 1s
         $0 start
         ;;
-    log)
-	echo "TODO log wan-manager client"
-	;;
     *)
-        echo "Usage : $0 [start|boot|stop|debuginfo|log]"
+        echo "Usage : $0 [start|boot|stop|shutdown|debuginfo|restart]"
         ;;
 esac
