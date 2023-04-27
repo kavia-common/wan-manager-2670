@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.19.0 - 2023-04-27(09:51:14 +0000)
+
+### New
+
+- [wan-manager] PPPv6 modes should send a DHCPv6 IA_PD solicit
+
 ## Release v0.18.3 - 2023-04-17(08:05:44 +0000)
 
 ### Fixes
