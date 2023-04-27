@@ -397,3 +397,95 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
 
     amxc_var_clean(&value);
 }
+
+void test_wan_manager_set_ppp_mode(UNUSED void** state) {
+    amxc_var_t ppp_parameters;
+    amxc_var_t wan_manager_parameters;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "Device.PPP.");
+    amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
+    amxd_object_t* demo_pppmode_obj = NULL;
+    int reset_counter = 0;
+    amxc_var_init(&ppp_parameters);
+    amxc_var_init(&wan_manager_parameters);
+
+    reset_counter = get_reset_counter();
+
+    /* Initial state: wan_mode = demo_wanmode */
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_false(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Change wan_mode to demo_pppmode */
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_true(GET_BOOL(&ppp_parameters, "IPCPEnable"));
+    assert_false(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
+    assert_string_equal("ppp4", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Change wan_mode to demo_ppp6mode */
+    assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_false(GET_BOOL(&ppp_parameters, "IPCPEnable"));
+    assert_true(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("ppp6", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Remove UserName for demo_pppmode */
+    demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_pppmode.Intf.1");
+    assert_non_null(demo_pppmode_obj);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "UserName", ""), 0);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "Password", "softathome"), 0);
+    test_handle_events();
+
+    /* Change wan_mode to demo_pppmode again */
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_true(GET_BOOL(&ppp_parameters, "IPCPEnable"));
+    assert_false(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Remove Password for demo_ppp6mode */
+    demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_ppp6mode.Intf.1");
+    assert_non_null(demo_pppmode_obj);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "UserName", "softathome"), 0);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "Password", ""), 0);
+    test_handle_events();
+
+    /* Change wan_mode to demo_ppp6mode again */
+    assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_false(GET_BOOL(&ppp_parameters, "IPCPEnable"));
+    assert_true(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+
+    assert_int_equal(reset_counter, get_reset_counter());
+    amxc_var_clean(&wan_manager_parameters);
+    amxc_var_clean(&ppp_parameters);
+}

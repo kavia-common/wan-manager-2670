@@ -23,6 +23,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             %unique %key string Alias;
             bool Enable;
             string Interface;
+            bool RequestAddresses;
+            bool RequestPrefixes;
         }
     }
 
@@ -62,6 +64,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
+    object PPP{
+        object Interface {}
+    }
+
     object '${prefix_}WANAutoSensing'{}
 }
 
@@ -91,6 +97,12 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter Alias = "demo_staticmode";
             parameter PhysicalType = "Ethernet";
             parameter EnableSensing = false;
+        }
+
+        instance add ("demo_ppp6mode"){
+            parameter Alias = "demo_ppp6mode";
+            parameter PhysicalType = "Ethernet";
+            parameter DNSMode = "RouterAdvertisement";
         }
 
         instance add("demo_dslite"){
@@ -129,7 +141,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "ppp4";
+            parameter DefaultInterface = true;
             parameter IPv6Mode = "dhcp6";
+            parameter UserName = "ppp4";
+            parameter Password = "softathome";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.6.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
@@ -153,6 +168,21 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Mode = "static";
             parameter IPv6Mode = "static";
             parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_ppp6mode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "none";
+            parameter IPv6Mode = "ppp6";
+            parameter UserName = "softathome";
+            parameter Password = "ppp6";
+            parameter VlanID = 144;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
         }
@@ -213,6 +243,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
     object 'DHCPv6Client.Client' {
         instance add (1, "wan") {
             parameter Interface = "Device.IP.Interface.2.";
+            parameter RequestAddresses = false;
         }
     }
 

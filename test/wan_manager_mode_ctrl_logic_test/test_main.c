@@ -74,6 +74,7 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_wan_manager_set_invalid_mode),
         cmocka_unit_test(test_wan_manager_set_valid_mode),
+        cmocka_unit_test(test_wan_manager_set_ppp_mode),
         cmocka_unit_test(test_wan_manager_routing_interface_create),
         cmocka_unit_test(test_wan_manager_switch_to_invalid),
         cmocka_unit_test(test_wan_manager_switch_to_valid_different_intf),

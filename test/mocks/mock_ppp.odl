@@ -1,0 +1,32 @@
+%define {
+    select Device {
+        object PPP {
+            object Interface[] {
+
+                bool Enable;
+                string Status;
+                string Alias;
+                string Name;
+                string LowerLayers;
+                string Username;
+                string Password;
+                bool IPCPEnable;
+                bool IPv6CPEnable;
+            }
+        }
+    }
+}
+
+%populate {
+    object Device.PPP.Interface {
+        instance add(1, "wan") {
+            parameter Enable = false;
+            parameter Status = "Disabled";
+            parameter LowerLayers ="Device.Ethernet.Link.2.";
+            parameter Username = "softathome";
+            parameter Password = "softathome";
+            parameter IPCPEnable = true;
+            parameter IPv6CPEnable = false;
+        }
+    }
+}

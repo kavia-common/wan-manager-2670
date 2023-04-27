@@ -72,6 +72,7 @@
 #include <amxc/amxc_macros.h>
 
 #include "ctrl/mode_ctrl.h"
+#include "dhcpc/dhcpc.h"
 #include "ppp/ppp.h"
 #include "ethernet/ethernet.h"
 #include "component.h"
@@ -95,6 +96,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
+    char* dhcpv6_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
@@ -115,6 +117,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
 
     // Get the matching PPP client
     ppp_path = ppp_get_client(true, intf_path, intf_alias);
+    when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get PPP instance path");
 
     // VLANS
     if((mode & TYPE_VLAN) != 0) {
@@ -191,6 +194,15 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
 
         // Enable NeighborDiscovery for the wan
         nd_interface_setting_toggle(nd_intf, true);
+
+        // Enable the DHCPv6 Client
+        dhcpv6_path = dhcpc_get_client(false, intf_path, intf_alias);
+        when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
+        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
+        rc = component_set_bool(dhcpv6_path, dhcpv6_get_context(), "RequestPrefixes", true);
+        when_failed_trace(rc, exit, ERROR, "Failed to configure DHCPv6 IA_PD");
+        rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable the DHCPv6 Client");
     }
 
     // Add the IPReference to the Logical Interface
@@ -203,6 +215,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
 exit:
     free(route_path);
     free(logical_path);
+    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -217,6 +230,7 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
+    char* dhcpv6_path = NULL;
     const char* router_info = "Device.Routing.RouteInformation.";
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
@@ -288,11 +302,19 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
         route_path = routing_get_interfacesetting(intf_path);
         rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
         when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
+
+        // Disable the DHCPv6 Client
+        dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
+        when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
+        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
+        rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable the DHCPv6 Client");
     }
 
 exit:
     free(route_path);
     free(logical_path);
+    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

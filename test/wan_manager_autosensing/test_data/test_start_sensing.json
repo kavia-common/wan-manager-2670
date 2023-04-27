@@ -39,6 +39,14 @@
             "Status" : "Disabled"
         },
         {
+            "Alias" : "demo_ppp6mode",
+            "DNSMode" : "RouterAdvertisement",
+            "EnableSensing" : true,
+            "Origin" : "user",
+            "PhysicalType" : "Ethernet",
+            "Status" : "Disabled"
+        },
+        {
             "Alias" : "demo_dslite",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
