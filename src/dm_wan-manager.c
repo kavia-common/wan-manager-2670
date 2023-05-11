@@ -92,6 +92,7 @@ static wan_manager_app_t app;
 void _print_event(const char* const sig_name,
                   const amxc_var_t* const data,
                   UNUSED void* const priv) {
+    (void) sig_name; // this argument can not be set to unused as it is used when tracing is enabled
     SAH_TRACEZ_IN(ME);
     SAH_TRACE_INFO("event received - %s", sig_name);
     SAH_TRACE_INFO("Event data = ");
