@@ -1,3 +1,9 @@
+wan-manager (0.19.2) unstable; urgency=medium
+
+  * [Coverage] Remove SAHTRACE defines in order to increase branching coverage
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 11 May 2023 09:20:18 +0000
+
 wan-manager (0.19.1) unstable; urgency=medium
 
   * Fix component not starting on openwrt22

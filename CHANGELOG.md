@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.19.2 - 2023-05-11(09:20:17 +0000)
+
+### Other
+
+- [Coverage] Remove SAHTRACE defines in order to increase branching coverage
+
 ## Release v0.19.1 - 2023-04-27(14:16:28 +0000)
 
 ### Fixes
