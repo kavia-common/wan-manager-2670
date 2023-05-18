@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.20.0 - 2023-05-18(05:41:01 +0000)
+
+### New
+
+- Add support for GPON as physicalType in wan-manager
+
 ## Release v0.19.2 - 2023-05-11(09:20:17 +0000)
 
 ### Other
