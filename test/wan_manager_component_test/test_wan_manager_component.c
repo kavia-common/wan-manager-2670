@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
 ** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **

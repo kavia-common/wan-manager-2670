@@ -114,6 +114,20 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         handler("sig_name", &data, userdata);
         // 4. call with same data
         handler("sig_name", &data, userdata);
+    } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->index for "GPON" is 5 (index in array)
+        assert_int_equal(info->index, 5);
+        // 1. call function with no data
+        handler("sig_name", &data, userdata);
+        // 2. call function with empty string
+        amxc_var_set(cstring_t, &data, "");
+        handler("sig_name", &data, userdata);
+        // 3. call with usefull data
+        amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.6.");
+        handler("sig_name", &data, userdata);
+        // 4. call with same data
+        handler("sig_name", &data, userdata);
     } else {
         assert_string_equal(name, "NetModel.Intf.unknown.");
     }
@@ -161,6 +175,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
         // info->index for "Bridge" is 1 (index in array)
         assert_int_equal(info->index, 1);
         // 1. call function with no data
+        handler("sig_name", &data, userdata);
+    } else if(strcmp(flag, "xpon && upstream") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->index for "GPON" is 5 (index in array)
+        assert_int_equal(info->index, 5);
+        amxc_var_add(cstring_t, &data, "xpon-cpe-EthernetUNI-1");
         handler("sig_name", &data, userdata);
     } else {
         assert_string_equal(flag, "unknown");
@@ -243,4 +263,30 @@ bool __wrap_netmodel_isUp(const char* const interface,
 
     free(ip_reference);
     return isUp_result;
+}
+
+amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name, const char* flag, const char* traverse) {
+    amxc_var_t* data;
+    amxc_var_new(&data);
+    amxc_var_set_type(data, AMXC_VAR_ID_HTABLE);
+
+    assert_non_null(intf);
+    assert_non_null(name);
+    assert_non_null(flag);
+    assert_non_null(traverse);
+
+    assert_string_equal(name, "InterfacePath");
+    assert_string_equal(flag, "");
+    assert_string_equal(traverse, netmodel_traverse_this);
+
+    if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
+        amxc_var_add(cstring_t, data, "Device.Ethernet.Interface.1.");
+    } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
+        amxc_var_add(cstring_t, data, "Device.XPON.ONU.1.EthernetUNI.1.");
+    } else {
+        // If this error is triggered, add a case to handle the calling interface
+        assert_string_equal(flag, "unknown interface");
+    }
+
+    return data;
 }

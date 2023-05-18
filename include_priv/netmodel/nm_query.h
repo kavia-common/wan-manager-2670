@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -89,6 +89,7 @@ typedef struct _nm_query_ll_info {
     netmodel_query_t* q_intf_path;
     char* intf_name;
     char* lower_layer;
+    char* upstream_intf_path;
     int index;
     bool used;
 } nm_query_ll_info_t;
@@ -104,6 +105,7 @@ int nm_query_ll_add(const char* name);
 const char* nm_query_get_lower_layer(const char* name);
 int nm_query_mode_active(void);
 void nm_close_sensing_queries(void);
+nm_query_ll_info_t* get_nm_query_info(int index);
 
 #ifdef __cplusplus
 }

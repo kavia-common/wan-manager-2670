@@ -96,5 +96,6 @@ void set_isUp_result(bool result);
 bool __wrap_netmodel_isUp(const char* const interface,
                           const char* const flag,
                           const char* const traverse);
+amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name, const char* flag, const char* traverse);
 
 #endif // __MOCK_NETMODEL_H__

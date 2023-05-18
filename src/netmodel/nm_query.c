@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2022 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -78,6 +78,7 @@
 #include "dm_wan_mode.h"
 #include "netmodel/nm_query.h"
 #include "autosensing/autosensing.h"
+#include "upstream_intf.h"
 
 #define LOGICAL4_UP_FLAG "logical4-up"
 #define LOGICAL6_UP_FLAG "logical6-up"
@@ -85,20 +86,6 @@
 
 #define ME "netmod-ctrl"
 
-/**
- * phys_types are the names used in the datamodel:
- * ${prefix_}WANManager.WAN.{i}.PhysicalType
- * phys_types_flags are the names of the flags used in the netmodel query
- * NULL stands got 'not yet defined'
- *
- * Make sure their order of appearance match
- */
-const char* phys_types[physical_type_last] = {
-    "Ethernet", "Bridge", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "WWAN"
-};
-const char* phys_types_flags[physical_type_last] = {
-    "eth_intf", "bridge", NULL, NULL, NULL, NULL, NULL, NULL
-};
 nm_query_ll_info_t ll_info[physical_type_last];
 
 void nm_query_ll_init(void) {
@@ -116,26 +103,10 @@ void nm_query_ll_cleanup(void) {
             netmodel_closeQuery(info->q_intf_path);
             free(info->intf_name);
             free(info->lower_layer);
+            free(info->upstream_intf_path);
         }
     }
     SAH_TRACEZ_OUT(ME);
-}
-
-static int nm_query_ll_name_to_index(const char* name) {
-    SAH_TRACEZ_IN(ME);
-    int rv = -1;
-    int cnt = 0;
-    when_str_empty_trace(name, exit, WARNING, "PhysicalType name is empty");
-    while(cnt < (int) physical_type_last) {
-        if(strcmp(name, phys_types[cnt]) == 0) {
-            rv = cnt;
-            break;
-        }
-        cnt++;
-    }
-exit:
-    SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 static void nm_query_response_ll_cb(UNUSED const char* sig_name,
@@ -144,17 +115,19 @@ static void nm_query_response_ll_cb(UNUSED const char* sig_name,
     SAH_TRACEZ_IN(ME);
     nm_query_ll_info_t* info = (nm_query_ll_info_t*) priv;
     const char* lower_layer = NULL;
+    const char* phys_type = NULL;
 
     when_null_trace(info, exit, ERROR, "private data is null");
     when_true(((info->index < 0) || (info->index >= physical_type_last)), exit);
 
     lower_layer = GET_CHAR(data, NULL);
+    phys_type = index_to_phys_type(info->index);
     SAH_TRACEZ_INFO(ME, "LowerLayer query for PhysicalType = %s -> %s",
-                    phys_types[info->index], lower_layer);
+                    phys_type, lower_layer);
     when_str_empty(lower_layer, exit);
     free(info->lower_layer);
     info->lower_layer = strdup(lower_layer);
-    wan_manager_found_ll(phys_types[info->index]);
+    wan_manager_found_ll(phys_type);
 exit:
     SAH_TRACEZ_OUT(ME);
     return;
@@ -167,29 +140,37 @@ static void nm_query_response_name_cb(UNUSED const char* sig_name,
     amxc_string_t intf_path;
     nm_query_ll_info_t* info = (nm_query_ll_info_t*) priv;
     const char* name = GETI_CHAR(data, 0);
+    amxc_var_t* var_intf_path = NULL;
 
     amxc_string_init(&intf_path, 0);
     when_null_trace(info, exit, ERROR, "private data is null");
     when_true(((info->index < 0) || (info->index >= physical_type_last)), exit);
     when_str_empty(name, exit);
 
-    SAH_TRACEZ_INFO(ME, "Name query for PhysicalType = %s -> %s", phys_types[info->index], name);
+    SAH_TRACEZ_INFO(ME, "Name query for PhysicalType = %s -> %s", index_to_phys_type(info->index), name);
 
-    // If result has changed
-    if(info->intf_name != NULL) {
-        when_true((strcmp(info->intf_name, name) == 0), exit);
-        netmodel_closeQuery(info->q_intf_path);
-        free(info->intf_name);
+    if((info->intf_name != NULL) && (strcmp(info->intf_name, name) == 0)) {
+        goto exit;
     }
+    free(info->intf_name);
     info->intf_name = strdup(name);
 
     // create another query to get the LowerLayer
     amxc_string_setf(&intf_path, "NetModel.Intf.%s.", name);
+    var_intf_path = netmodel_getFirstParameter(amxc_string_get(&intf_path, 0), "InterfacePath", "", netmodel_traverse_this);
+    free(info->upstream_intf_path);
+    info->upstream_intf_path = NULL;
+    if(var_intf_path != NULL) {
+        info->upstream_intf_path = amxc_var_dyncast(cstring_t, var_intf_path);
+    }
+
+    netmodel_closeQuery(info->q_intf_path);
     info->q_intf_path = netmodel_openQuery_getFirstParameter(amxc_string_get(&intf_path, 0),
                                                              "wan-manager", "InterfacePath", "",
                                                              netmodel_traverse_one_level_up,
                                                              nm_query_response_ll_cb, priv);
 exit:
+    amxc_var_delete(&var_intf_path);
     amxc_string_clean(&intf_path);
     SAH_TRACEZ_OUT(ME);
     return;
@@ -274,18 +255,20 @@ int nm_query_ll_add(const char* name) {
     SAH_TRACEZ_IN(ME);
     nm_query_ll_info_t* info = NULL;
     int rv = -1;
-    int index = nm_query_ll_name_to_index(name);
+    int index = phys_type_to_index(name);
+    const char* phys_type_flag = NULL;
 
-    when_true(((index < 0) || (index >= physical_type_last)), exit);
+    when_true_trace(index < 0 || index >= physical_type_last, exit, ERROR, "'%d' is an invalid type index", index);
     info = &ll_info[index];
 
     when_true_status(info->used, exit, rv = 0);
-    when_null_trace(phys_types_flags[index], exit, WARNING,
+    phys_type_flag = index_to_phys_type_flag(index);
+    when_null_trace(phys_type_flag, exit, WARNING,
                     "Query flag for PhysicalType is not yet defined [index %d]", index);
     SAH_TRACEZ_INFO(ME, "Create query for PhysicalType '%s' [index %d]", name, index);
 
     info->index = index;
-    rv = nm_query_create_name_query(info, phys_types_flags[index]);
+    rv = nm_query_create_name_query(info, phys_type_flag);
     when_failed_trace(rv, exit, ERROR, "Query for %s failed", name);
     info->used = true;
 
@@ -297,8 +280,8 @@ exit:
 const char* nm_query_get_lower_layer(const char* name) {
     SAH_TRACEZ_IN(ME);
     const char* lower_layer = NULL;
-    int index = nm_query_ll_name_to_index(name);
-    when_true(index < 0, exit);
+    int index = phys_type_to_index(name);
+    when_true_trace(index < 0 || index >= physical_type_last, exit, ERROR, "'%d' is an invalid type index", index);
     lower_layer = ll_info[index].lower_layer;
 exit:
     SAH_TRACEZ_OUT(ME);
@@ -385,4 +368,12 @@ void nm_close_sensing_queries(void) {
 exit:
     SAH_TRACEZ_OUT(ME);
     return;
+}
+
+nm_query_ll_info_t* get_nm_query_info(int index) {
+    nm_query_ll_info_t* rv = NULL;
+    if((index >= 0) && (index < physical_type_last)) {
+        rv = &ll_info[index];
+    }
+    return rv;
 }

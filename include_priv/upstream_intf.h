@@ -62,46 +62,35 @@
 **
 ****************************************************************************/
 
-#if !defined(__MODE_CTRL_H__)
-#define __MODE_CTRL_H__
+#if !defined(__DM_UPSTREAM_INTF_H__)
+#define __DM_UPSTREAM_INTF_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdbool.h>
-
 #include <amxc/amxc.h>
+#include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
+#include <amxd/amxd_object_event.h>
+#include <amxd/amxd_transaction.h>
+#include <amxd/amxd_action.h>
 
-typedef enum {
-    IP_None       = 0x000000,
-    IPv4_DHCP     = 0x000001,
-    IPv4_PPP      = 0x000002,
-    IPv4_STATIC   = 0x000004,
-    IPv4_DSLITE   = 0x000008,
-    IPv6_DHCP     = 0x000100,
-    IPv6_PPP      = 0x000200,
-    IPv6_STATIC   = 0x000400,
-    MASK_DHCP     = 0x000101,
-    MASK_PPP      = 0x000202,
-    MASK_STATIC   = 0x000404,
-    TYPE_VLAN     = 0x010000,
-    TYPE_UNTAGGED = 0x020000,
-    TYPE_ATM      = 0x040000,
-    MASK_IPv4     = 0x0000FF,
-    MASK_IPv6     = 0x00FF00,
-    MASK_TYPE     = 0xFF0000
-} mode_ctrl_t;
+#include <amxb/amxb.h>
 
-typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
+#include <amxo/amxo.h>
+#include <amxo/amxo_save.h>
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);
+int phys_type_to_index(const char* phys_type);
+const char* index_to_phys_type(const int index);
+const char* index_to_phys_type_flag(const int index);
+int toggle_upstream_intf(const char* physical_type, bool enable);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __MODE_CTRL_H__
+#endif // __DM_UPSTREAM_INTF_H__

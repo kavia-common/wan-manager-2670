@@ -1,8 +1,8 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -123,6 +123,10 @@ amxb_bus_ctx_t* dslite_get_context(void) {
 
 amxb_bus_ctx_t* pcp_get_context(void) {
     return amxb_be_who_has("PCP.");
+}
+
+amxb_bus_ctx_t* xpon_get_context(void) {
+    return amxb_be_who_has("XPON.");
 }
 
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {

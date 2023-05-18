@@ -1,8 +1,8 @@
 /****************************************************************************
 **
-** SPDX-License-Identifier: <LICENSE_IDENTIFIER>
+** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) <CURRENT_YEAR> SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -82,6 +82,7 @@
 #include "wan_manager_utils.h"
 #include "component.h"
 #include "dns/dns.h"
+#include "upstream_intf.h"
 
 #define ME "wan-man"
 typedef enum {
@@ -393,14 +394,16 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
     char* dns_mode = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
-    if(!enable) {
-        wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
-    }
-
     physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
     lower_layer = nm_query_get_lower_layer(physical_type);
     dns_mode = amxd_object_get_value(cstring_t, wan_mode, "DNSMode", NULL);
     when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type);
+
+    if(!enable) {
+        wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
+    } else {
+        toggle_upstream_intf(physical_type, true);
+    }
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
@@ -422,6 +425,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
     } else {
         rc = dns_mode_unset(wan_mode, dns_mode);
         nm_close_sensing_queries();
+        toggle_upstream_intf(physical_type, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
