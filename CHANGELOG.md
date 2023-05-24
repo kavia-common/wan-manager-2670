@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.20.1 - 2023-05-24(06:59:12 +0000)
+
+### Other
+
+- - [HTTPManager][WebUI] Create plugin's ACLs permissions
+
 ## Release v0.20.0 - 2023-05-18(05:41:01 +0000)
 
 ### New
