@@ -1,0 +1,22 @@
+{
+    "Device.X_PRPL-COM_WANManager.": {
+        "Order": 1,
+        "Param": "r--n"
+    },
+    "Device.X_PRPL-COM_WANManager.WANMode": {
+        "Order": 2,
+        "Param": "rw-n"
+    },
+    "Device.X_PRPL-COM_WANManager.getWANMode": {
+        "Order": 2,
+        "CommandEvent": "--x-"
+    },
+    "Device.X_PRPL-COM_WANManager.setWANMode": {
+        "Order": 2,
+        "CommandEvent": "--x-"
+    },
+    "Device.X_PRPL-COM_WANManager.WAN.*.Intf.1.": {
+        "Order": 2,
+        "Param": "rw-n"
+    }
+}
