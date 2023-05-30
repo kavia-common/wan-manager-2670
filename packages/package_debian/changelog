@@ -1,3 +1,9 @@
+wan-manager (0.21.0) unstable; urgency=medium
+
+  * [wan-manager] PPPv6 unnumbered should be configurable and made the default option
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 30 May 2023 09:47:25 +0000
+
 wan-manager (0.20.1) unstable; urgency=medium
 
   * - [HTTPManager][WebUI] Create plugin's ACLs permissions
