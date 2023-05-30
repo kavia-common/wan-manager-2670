@@ -102,6 +102,7 @@ static const char* odl_dns_mock = "../mocks/mock_dns.odl";
 static const char* odl_ethernet_mock = "../mocks/mock_ethernet.odl";
 static const char* odl_logical_mock = "../mocks/mock_logical.odl";
 static const char* odl_ppp_mock = "../mocks/mock_ppp.odl";
+static const char* odl_neigbordiscovery_mock = "../mocks/mock_neighbordiscovery.odl";
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
@@ -139,6 +140,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ethernet_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_logical_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ppp_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_neigbordiscovery_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser, amxb_get_fd(bus_ctx), connection_read,

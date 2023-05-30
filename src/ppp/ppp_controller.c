@@ -80,6 +80,8 @@
 
 #define ME "ppp-ctrl"
 
+#define str_not_empty(x) (((x) != NULL) && ((x)[0] != 0))
+
 static const char* ppp_get_client(UNUSED bool ipv4,
                                   UNUSED const char* intf_path,
                                   UNUSED const char* intf_alias) {
@@ -96,19 +98,21 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ppp_path = NULL;
-    char* dhcpv6_path = NULL;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* username = GET_CHAR(parameters, "UserName");
     const char* password = GET_CHAR(parameters, "Password");
+    const char* ipv6_address_delegate = GET_CHAR(parameters, "IPv6AddressDelegate");
     const char* name = GET_CHAR(parameters, "Name");
-    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
-    char* logical_path = NULL;
     const char* router_info = "Device.Routing.RouteInformation.";
-    char* route_path = NULL;
     const char* nd_intf = "wan";
+    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    char* dhcpv6_path = NULL;
+    char* nd_path = NULL;
+    char* logical_path = NULL;
+    char* route_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Enabling PPP%d", ip_version);
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
@@ -131,11 +135,11 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     when_failed(rc, exit);
 
     // Only override default PPP credentials if they are set in our Datamodel
-    if((username != NULL) && (username[0] != 0)) {
+    if(str_not_empty(username)) {
         rc = component_set_str_param(ppp_path, ppp_get_context(), "Username", username);
         when_failed(rc, exit);
     }
-    if((password != NULL) && (password[0] != 0)) {
+    if(str_not_empty(password)) {
         rc = component_set_str_param(ppp_path, ppp_get_context(), "Password", password);
         when_failed(rc, exit);
     }
@@ -159,6 +163,17 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     } else {
         // Switch the parent prefix path to the correct IPv6Reference
         ip_parent_prefix_toggle(GET_CHAR(parameters, "DeferredIPv6Instances"), old_intf_path, intf_path);
+
+        if(str_not_empty(ipv6_address_delegate)) {
+            // Unnumbered mode
+            nd_path = create_neighbor_discovery_path(nd_intf);
+
+            rc = component_set_str_param(intf_path, ip_get_context(), "IPv6AddressDelegate", ipv6_address_delegate);
+            when_failed_trace(rc, exit, ERROR, "Failed to set IPv6AddressDelegate on %s", intf_path);
+
+            rc = component_set_bool(nd_path, neighbor_discovery_get_context(), "AutoConfEnable", false);
+            when_failed_trace(rc, exit, ERROR, "Failed to disable AutoConf on %s", nd_path);
+        }
 
         // Enable PPPv6
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", true);
@@ -193,7 +208,8 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to enable the Routing manager's RoutingInformation");
 
         // Enable NeighborDiscovery for the wan
-        nd_interface_setting_toggle(nd_intf, true);
+        rc = nd_interface_setting_toggle(nd_intf, true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable NeighborDiscovery");
 
         // Enable the DHCPv6 Client
         dhcpv6_path = dhcpc_get_client(false, intf_path, intf_alias);
@@ -215,6 +231,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
 exit:
     free(route_path);
     free(logical_path);
+    free(nd_path);
     free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -230,11 +247,12 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
-    char* dhcpv6_path = NULL;
     const char* router_info = "Device.Routing.RouteInformation.";
     const char* name = GET_CHAR(parameters, "Name");
+    char* dhcpv6_path = NULL;
     char* logical_path = NULL;
     char* route_path = NULL;
+    char* nd_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Disabling PPP%d", ip_version);
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
@@ -243,7 +261,12 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
 
     if(ip_version == 6) {
         // Disable NeighborDiscovery for the wan
-        nd_interface_setting_toggle(nd_intf, false);
+        rc = nd_interface_setting_toggle(nd_intf, false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable NeighborDiscovery");
+
+        nd_path = create_neighbor_discovery_path(nd_intf);
+        rc = component_set_bool(nd_path, neighbor_discovery_get_context(), "AutoConfEnable", true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable AutoConf on %s", nd_path);
     }
 
     //Remove the IPReference from the Logical Interface
@@ -279,6 +302,9 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
         // Disable PPPv6
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", false);
         when_failed(rc, exit);
+
+        rc = component_set_str_param(intf_path, ip_get_context(), "IPv6AddressDelegate", "");
+        when_failed_trace(rc, exit, ERROR, "Failed to clear %s.IPv6AddressDelegate", intf_path);
     }
 
     // Clear LowerLayer in IP-manager
@@ -312,6 +338,7 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     }
 
 exit:
+    free(nd_path);
     free(route_path);
     free(logical_path);
     free(dhcpv6_path);

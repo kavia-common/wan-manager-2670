@@ -40,7 +40,7 @@
         },
         {
             "Alias" : "demo_ppp6mode",
-            "DNSMode" : "RouterAdvertisement",
+            "DNSMode" : "Dynamic",
             "EnableSensing" : true,
             "Origin" : "user",
             "PhysicalType" : "Ethernet",

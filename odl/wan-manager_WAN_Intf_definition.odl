@@ -203,6 +203,18 @@
                     on action validate call check_maximum_length 180;
                 }
             }
+
+            /**
+            * If set the wan-manager will threat this interface as unnumbered.
+            * Contains the Device path to the LAN interface where the IPv6 address should be taken from.
+            * Currently only used for PPP modes.
+            *
+            * @version 1.0
+            */
+            %persistent string IPv6AddressDelegate{
+                on action validate call check_maximum_length 1024;
+                on action validate call matches_regexp "^Device\.IP\.Interface\.[0-9]+\.$";
+            }
         }
     }
 }

@@ -399,16 +399,24 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
 }
 
 void test_wan_manager_set_ppp_mode(UNUSED void** state) {
-    amxc_var_t ppp_parameters;
     amxc_var_t wan_manager_parameters;
+    amxc_var_t ppp_parameters;
+    amxc_var_t ip_parameters;
+    amxc_var_t neighbordiscovery_parameters;
     const char* prefix = test_get_prefix();
     amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
     amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "Device.PPP.");
+    amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "Device.IP.");
+    amxd_object_t* neighbordiscovery_dm = amxd_dm_findf(test_get_dm(), "Device.NeighborDiscovery.");
     amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
+    amxd_object_t* ip_inst = amxd_object_findf(ip_dm, "Interface.2");
+    amxd_object_t* neighbordiscovery_inst = amxd_object_findf(neighbordiscovery_dm, "InterfaceSetting.1");
     amxd_object_t* demo_pppmode_obj = NULL;
     int reset_counter = 0;
-    amxc_var_init(&ppp_parameters);
     amxc_var_init(&wan_manager_parameters);
+    amxc_var_init(&ppp_parameters);
+    amxc_var_init(&ip_parameters);
+    amxc_var_init(&neighbordiscovery_parameters);
 
     reset_counter = get_reset_counter();
 
@@ -434,6 +442,13 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_string_equal("ppp4", GET_CHAR(&ppp_parameters, "Username"));
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
 
+    assert_int_equal(amxd_object_get_params(ip_inst, &ip_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
+
+    assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
+
     /* Change wan_mode to demo_ppp6mode */
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
@@ -445,6 +460,13 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_true(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
     assert_string_equal("ppp6", GET_CHAR(&ppp_parameters, "Password"));
+
+    assert_int_equal(amxd_object_get_params(ip_inst, &ip_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("Device.IP.Interface.3.", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
+
+    assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
+    assert_false(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
 
     /* Remove UserName for demo_pppmode */
     demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_pppmode.Intf.1");
@@ -465,6 +487,13 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
 
+    assert_int_equal(amxd_object_get_params(ip_inst, &ip_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
+
+    assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
+
     /* Remove Password for demo_ppp6mode */
     demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_ppp6mode.Intf.1");
     assert_non_null(demo_pppmode_obj);
@@ -484,8 +513,17 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
 
+    assert_int_equal(amxd_object_get_params(ip_inst, &ip_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("Device.IP.Interface.3.", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
+
+    assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
+    assert_false(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
+
 
     assert_int_equal(reset_counter, get_reset_counter());
-    amxc_var_clean(&wan_manager_parameters);
+    amxc_var_clean(&neighbordiscovery_parameters);
+    amxc_var_clean(&ip_parameters);
     amxc_var_clean(&ppp_parameters);
+    amxc_var_clean(&wan_manager_parameters);
 }

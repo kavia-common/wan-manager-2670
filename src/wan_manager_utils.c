@@ -450,17 +450,16 @@ exit:
 
 amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
     SAH_TRACEZ_IN(ME);
-    amxc_string_t nd_path;
+    char* nd_path = NULL;
     amxd_status_t rc = amxd_status_ok;
 
-    amxc_string_init(&nd_path, 0);
-    amxc_string_setf(&nd_path, "Device.NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
+    nd_path = create_neighbor_discovery_path(intf_alias);
 
-    rc = component_set_enable(amxc_string_get(&nd_path, 0), neighbor_discovery_get_context(), enable);
+    rc = component_set_enable(nd_path, neighbor_discovery_get_context(), enable);
     when_failed_trace(rc, exit, ERROR, "Could not %s %s in Device.NeighborDiscovery.InterfaceSetting", enable ? "enable" : "disable", intf_alias);
 
 exit:
-    amxc_string_clean(&nd_path);
+    free(nd_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -569,6 +568,20 @@ char* create_logical_path(const char* intf_name) {
     amxc_string_setf(&logical_intf, "Device.Logical.Interface.%s.", intf_name);
     path = amxc_string_take_buffer(&logical_intf);
     amxc_string_clean(&logical_intf);
+
+    SAH_TRACEZ_OUT(ME);
+    return path;
+}
+
+char* create_neighbor_discovery_path(const char* intf_alias) {
+    SAH_TRACEZ_IN(ME);
+    char* path = NULL;
+    amxc_string_t nd_path;
+
+    amxc_string_init(&nd_path, 0);
+    amxc_string_setf(&nd_path, "Device.NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
+    path = amxc_string_take_buffer(&nd_path);
+    amxc_string_clean(&nd_path);
 
     SAH_TRACEZ_OUT(ME);
     return path;

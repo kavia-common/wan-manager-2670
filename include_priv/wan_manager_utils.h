@@ -106,6 +106,7 @@ char* routing_get_interfacesetting(const char* intf_path);
 void add_str_to_list(amxc_var_t* list, const char* str);
 void remove_str_from_list(amxc_var_t* list, const char* str);
 char* create_logical_path(const char* intf_name);
+char* create_neighbor_discovery_path(const char* intf_alias);
 amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable);
 
 #ifdef __cplusplus

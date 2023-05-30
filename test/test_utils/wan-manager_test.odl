@@ -68,6 +68,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         object Interface {}
     }
 
+    object NeighborDiscovery{
+        object InterfaceSetting {}
+    }
+
     object '${prefix_}WANAutoSensing'{}
 }
 
@@ -102,7 +106,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add ("demo_ppp6mode"){
             parameter Alias = "demo_ppp6mode";
             parameter PhysicalType = "Ethernet";
-            parameter DNSMode = "RouterAdvertisement";
+            parameter DNSMode = "Dynamic";
         }
 
         instance add("demo_dslite"){
@@ -184,6 +188,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter VlanPriority = 0;
             parameter IPv4Reference = "";
             parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter IPv6AddressDelegate="Device.IP.Interface.3.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
         }
     }

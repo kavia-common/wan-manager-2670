@@ -322,13 +322,14 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     if(dhcpv6_path != NULL) {
         SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable DHCPv6 Client for Interface '%s'", intf_path);
     } else {
         SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
-        rc = amxd_status_ok;
     }
 
     // Enable NeighborDiscovery for the wan
-    nd_interface_setting_toggle(nd_intf, true);
+    rc = nd_interface_setting_toggle(nd_intf, true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable NeighborDiscovery");
 
 exit:
     free(route_path);
@@ -355,7 +356,8 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
     // Disable NeighborDiscovery for the wan
-    nd_interface_setting_toggle(nd_intf, false);
+    rc = nd_interface_setting_toggle(nd_intf, false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable NeighborDiscovery");
 
     // Get the matching DHCPv6 client
     dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
