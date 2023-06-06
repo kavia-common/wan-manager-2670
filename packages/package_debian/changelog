@@ -1,3 +1,9 @@
+wan-manager (0.22.1) unstable; urgency=medium
+
+  * Add XPON wanmode and clean up existing modes
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 06 Jun 2023 14:17:45 +0000
+
 wan-manager (0.22.0) unstable; urgency=medium
 
   *  [Nokia][Airoha][WAN][VOIP] - LowerLayers not updated for Logical interface

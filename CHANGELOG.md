@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.22.1 - 2023-06-06(14:17:44 +0000)
+
+### Other
+
+- Add XPON wanmode and clean up existing modes
+
 ## Release v0.22.0 - 2023-06-06(09:28:23 +0000)
 
 ### New
