@@ -107,10 +107,12 @@ static mode_cnv_t mode_cnv[] = {
     { IPv4_DHCP, "dhcp4" },
     { IPv4_PPP, "ppp4" },
     { IPv4_STATIC, "static" },
+    { IPv4_LINK, "link" },
     { IPv6_DHCP, "dhcp6" },
     { IPv6_PPP, "ppp6" },
     { IPv6_STATIC, "static" },
     { IPv4_DSLITE, "dslite" },
+    { IPv6_LINK, "link"},
     { TYPE_VLAN, "vlan" },
     { TYPE_UNTAGGED, "untagged" },
     { TYPE_ATM, "atm" },
@@ -554,9 +556,11 @@ mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
     while(lookup->str != NULL) {
         if(0 == strcmp(mode, lookup->str)) {
             rc = lookup->mode;
-            // keyword static is used in both parameter IPv4Mode & IPv6Mode
+            // keywords static and link are used in both parameter IPv4Mode & IPv6Mode
             if((rc == IPv4_STATIC) && (ipv4 == false)) {
                 rc = IPv6_STATIC;
+            } else if((rc == IPv4_LINK) && (ipv4 == false)) {
+                rc = IPv6_LINK;
             }
             break;
         }

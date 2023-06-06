@@ -45,20 +45,24 @@
             }
 
             /**
-            * Interface IPv4 configured mode
+            * Interface IPv4 configured mode:
+            * - none: No IPv4 address at all on this interface
+            * - link: Instead of having your own IPv4 address, use the address set for the IPv4Reference interface.
             * @version 1.0
             */
             %persistent string IPv4Mode{
-                on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite"];
+                on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite", "link"];
                 default "dhcp4";
             }
 
             /**
-            * Interface IPv6 configured mode
+            * Interface IPv6 configured mode:
+            * - none: No IPv6 address at all on this interface
+            * - link: Instead of having your own IPv6 address, use the address set for the IPv6Reference interface.
             * @version 1.0
             */
             %persistent string IPv6Mode{
-                on action validate call check_enum ["dhcp6", "ppp6", "none", "static"];
+                on action validate call check_enum ["dhcp6", "ppp6", "none", "static", "link"];
                 default "none";
             }
 

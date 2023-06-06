@@ -527,3 +527,42 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     amxc_var_clean(&ppp_parameters);
     amxc_var_clean(&wan_manager_parameters);
 }
+
+void test_wan_manager_set_link_mode(UNUSED void** state) {
+    amxc_var_t wan_manager_parameters;
+    amxc_var_t logical_parameters;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* logical_dm = amxd_dm_findf(test_get_dm(), "Device.Logical.");
+    amxd_object_t* logical_inst_voip = amxd_object_findf(logical_dm, "Interface.2");
+    amxd_object_t* logical_inst_mgmt = amxd_object_findf(logical_dm, "Interface.3");
+    int reset_counter = 0;
+    amxc_var_init(&wan_manager_parameters);
+    amxc_var_init(&logical_parameters);
+
+    reset_counter = get_reset_counter();
+
+    /* Initial state: wan_mode = demo_wanmode */
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(logical_inst_voip, &logical_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("", GET_CHAR(&logical_parameters, "LowerLayers"));
+    assert_int_equal(amxd_object_get_params(logical_inst_mgmt, &logical_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("", GET_CHAR(&logical_parameters, "LowerLayers"));
+
+    /* Change wan_mode to demo_link */
+    assert_true(set_wan_mode("demo_link", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_link", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(logical_inst_voip, &logical_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("Device.IP.Interface.2.", GET_CHAR(&logical_parameters, "LowerLayers"));
+    assert_int_equal(amxd_object_get_params(logical_inst_mgmt, &logical_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("Device.IP.Interface.2.", GET_CHAR(&logical_parameters, "LowerLayers"));
+
+    assert_int_equal(reset_counter, get_reset_counter());
+    amxc_var_clean(&logical_parameters);
+    amxc_var_clean(&wan_manager_parameters);
+}

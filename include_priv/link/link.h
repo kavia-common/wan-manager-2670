@@ -6,8 +6,6 @@
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** conditions are met:
 **
 ** 1. Redistributions of source code must retain the above copyright
@@ -61,28 +59,22 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__LINK_H__)
+#define __LINK_H__
 
-#include <stdlib.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "test_wan_manager_mode_ctrl_logic.h"
-#include "test_utils.h"
+#include <amxc/amxc.h>
+#include <amxp/amxp.h>
+#include <amxd/amxd_types.h>
 
-int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wan_manager_set_invalid_mode),
-        cmocka_unit_test(test_wan_manager_set_valid_mode),
-        cmocka_unit_test(test_wan_manager_set_link_mode),
-        cmocka_unit_test(test_wan_manager_set_ppp_mode),
-        cmocka_unit_test(test_wan_manager_routing_interface_create),
-        cmocka_unit_test(test_wan_manager_switch_to_invalid),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_different_intf),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_same_intf),
-        cmocka_unit_test(test_wan_manager_routing_interface_switch),
-        cmocka_unit_test(test_wan_manager_logical_interface),
-        cmocka_unit_test(test_wan_manager_set_static_ip)
-    };
-    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
+amxd_status_t link_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t link_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif // __LINK_H__

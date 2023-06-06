@@ -113,6 +113,10 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter Alias = "demo_dslite";
             parameter PhysicalType = "Ethernet";
         }
+        instance add ("demo_link"){
+            parameter Alias = "demo_link";
+            parameter PhysicalType = "Ethernet";
+        }
      }
 
     object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
@@ -190,6 +194,36 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter IPv6AddressDelegate="Device.IP.Interface.3.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.demo_link.Intf'{
+        instance add(0,"wan"){
+            parameter Name = "wan";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "dhcp6";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+        }
+        instance add(0,"voip"){
+            parameter Name = "voip";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "link";
+            parameter IPv6Mode = "link";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DeferredIPv6Instances = "";
+        }
+        instance add(0,"mgmt"){
+            parameter Name = "mgmt";
+            parameter Type = "untagged";
+            parameter IPv4Mode = "link";
+            parameter IPv6Mode = "link";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DeferredIPv6Instances = "";
         }
     }
 

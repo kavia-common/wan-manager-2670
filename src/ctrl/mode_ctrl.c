@@ -76,6 +76,7 @@
 #include "ppp/ppp.h"
 #include "staticc/static_controller.h"
 #include "dslite/dslite.h"
+#include "link/link.h"
 
 #define ME "wan-man"
 
@@ -99,6 +100,8 @@ controller_item_t controllers [] = {
     { TYPE_UNTAGGED, IPv4_STATIC, static4_enable, static4_disable},
     { TYPE_VLAN, IPv6_STATIC, static6_enable, static6_disable},
     { TYPE_UNTAGGED, IPv6_STATIC, static6_enable, static6_disable},
+    { TYPE_VLAN, IPv4_LINK | IPv6_LINK, link_enable, link_disable},
+    { TYPE_UNTAGGED, IPv4_LINK | IPv6_LINK, link_enable, link_disable},
     { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
     // last item of array must be 0
     { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }

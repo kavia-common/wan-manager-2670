@@ -87,6 +87,7 @@ void test_wan_manager_routing_interface_switch(void** state);
 void test_wan_manager_routing_interface_create(void** state);
 void test_wan_manager_logical_interface(void** state);
 void test_wan_manager_set_ppp_mode(void** state);
+void test_wan_manager_set_link_mode(void** state);
 void test_wan_manager_set_static_ip(void** state);
 
 

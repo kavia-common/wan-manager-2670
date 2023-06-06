@@ -6,8 +6,6 @@
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
-** Redistribution and use in source and binary forms, with or
-** without modification, are permitted provided that the following
 ** conditions are met:
 **
 ** 1. Redistributions of source code must retain the above copyright
@@ -63,26 +61,62 @@
 ****************************************************************************/
 
 #include <stdlib.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
 
-#include "test_wan_manager_mode_ctrl_logic.h"
-#include "test_utils.h"
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
-int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_wan_manager_set_invalid_mode),
-        cmocka_unit_test(test_wan_manager_set_valid_mode),
-        cmocka_unit_test(test_wan_manager_set_link_mode),
-        cmocka_unit_test(test_wan_manager_set_ppp_mode),
-        cmocka_unit_test(test_wan_manager_routing_interface_create),
-        cmocka_unit_test(test_wan_manager_switch_to_invalid),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_different_intf),
-        cmocka_unit_test(test_wan_manager_switch_to_valid_same_intf),
-        cmocka_unit_test(test_wan_manager_routing_interface_switch),
-        cmocka_unit_test(test_wan_manager_logical_interface),
-        cmocka_unit_test(test_wan_manager_set_static_ip)
-    };
-    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
+#include "ctrl/mode_ctrl.h"
+#include "component.h"
+#include "wan_manager_utils.h"
+#include "link/link.h"
+
+#define ME "link-ctrl"
+
+amxd_status_t link_enable(mode_ctrl_t mode,
+                          const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
+    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_LINK;
+    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
+
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter for interface %s is empty", intf_path);
+
+    // Add the IPReference to the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv%dReference to '%s'", ip_version, logical_path);
+
+exit:
+    free(logical_path);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
+}
+
+amxd_status_t link_disable(mode_ctrl_t mode,
+                           const amxc_var_t* const parameters) {
+    SAH_TRACEZ_IN(ME);
+    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_LINK;
+    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+
+    amxd_status_t rc = amxd_status_unknown_error;
+    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
+
+    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+
+    //Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv%dReference from '%s.LowerLayers'", ip_version, logical_path);
+
+exit:
+    free(logical_path);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
 }
