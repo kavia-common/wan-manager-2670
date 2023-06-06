@@ -1,3 +1,9 @@
+wan-manager (0.22.0) unstable; urgency=medium
+
+  *  [Nokia][Airoha][WAN][VOIP] - LowerLayers not updated for Logical interface
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 06 Jun 2023 09:28:24 +0000
+
 wan-manager (0.21.0) unstable; urgency=medium
 
   * [wan-manager] PPPv6 unnumbered should be configurable and made the default option

@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.22.0 - 2023-06-06(09:28:23 +0000)
+
+### New
+
+-  [Nokia][Airoha][WAN][VOIP] - LowerLayers not updated for Logical interface
+
 ## Release v0.21.0 - 2023-05-30(09:47:25 +0000)
 
 ### New
