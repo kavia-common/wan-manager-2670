@@ -1,27 +1,24 @@
 %populate {
+    object '${prefix_}WANManager' {
+        parameter WANMode = "demo_wanmode";
+    }
+
     object '${prefix_}WANManager.WAN' {
-        instance add ("Ethernet_DSLite"){
-            parameter Alias = "Ethernet_DSLite";
+        instance add ("demo_wanmode"){
+            parameter Alias = "demo_wanmode";
             parameter PhysicalType = "Ethernet";
         }
     }
 
-    object '${prefix_}WANManager.WAN.Ethernet_DSLite.Intf'{
+    object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
-            parameter IPv4Mode = "dslite";
+            parameter IPv4Mode = "dhcp4";
             parameter DefaultInterface = true;
             parameter IPv6Mode = "dhcp6";
-            parameter Name = "wan";
-            parameter IPv4Reference = "Device.IP.Interface.7.";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
-        }
-    }
-
-    object '${prefix_}WANManager.WAN.Ethernet_DSLite.Intf.wan.IPv4Address'{
-        instance add("ipv4"){
-            parameter DefaultRouter = "192.0.0.1";
         }
     }
 }

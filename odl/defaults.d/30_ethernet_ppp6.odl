@@ -1,0 +1,65 @@
+%populate {
+    object '${prefix_}WANManager.WAN' {
+        instance add ("Ethernet_PPP6"){
+            parameter Alias = "Ethernet_PPP6";
+            parameter PhysicalType = "Ethernet";
+            parameter DNSMode = "Dynamic";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dslite";
+            parameter DefaultInterface = true;
+            parameter IPv6Mode = "ppp6";
+            parameter UserName = "prpl_ipv6";
+            parameter Password = "softathome";
+            parameter VlanID = 144;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.7.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter IPv6AddressDelegate="Device.IP.Interface.3.";
+            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+        }
+
+        instance add(0,"voip"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter Name = "voip";
+            parameter VlanID = 101;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.9.";
+            parameter IPv6Reference = "Device.IP.Interface.9.";
+        }
+
+        instance add(0,"iptv"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter Name = "iptv";
+            parameter VlanID = 102;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.10.";
+            parameter IPv6Reference = "Device.IP.Interface.10.";
+        }
+
+        instance add(0,"mgmt"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "dhcp4";
+            parameter IPv6Mode = "none";
+            parameter Name = "mgmt";
+            parameter VlanID = 103;
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.11.";
+            parameter IPv6Reference = "Device.IP.Interface.11.";
+        }
+    }
+
+    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DefaultRouter = "192.0.0.1";
+        }
+    }
+}

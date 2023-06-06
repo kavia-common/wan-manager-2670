@@ -1,22 +1,22 @@
 %populate {
     object '${prefix_}WANManager.WAN' {
-        instance add ("Ethernet_PPP"){
-            parameter Alias = "Ethernet_PPP";
-            parameter PhysicalType = "Ethernet";
+        instance add ("GPON_DHCP"){
+            parameter Alias = "GPON_DHCP";
+            parameter PhysicalType = "GPON";
         }
     }
 
-    object '${prefix_}WANManager.WAN.Ethernet_PPP.Intf'{
+    object '${prefix_}WANManager.WAN.GPON_DHCP.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
-            parameter IPv4Mode = "ppp4";
+            parameter IPv4Mode = "dhcp4";
             parameter DefaultInterface = true;
             parameter IPv6Mode = "dhcp6";
             parameter Name = "wan";
             parameter VlanID = 100;
             parameter VlanPriority = 0;
             parameter IPv4Reference = "Device.IP.Interface.2.";
-            parameter IPv6Reference = "Device.IP.Interface.6.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
         }
 
