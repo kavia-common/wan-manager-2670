@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.23.0 - 2023-06-15(09:28:34 +0000)
+
+### New
+
+- [WANManager] Add reset WANMode functionality
+
 ## Release v0.22.1 - 2023-06-06(14:17:44 +0000)
 
 ### Other
