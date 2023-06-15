@@ -106,6 +106,25 @@ static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status)
     return rc;
 }
 
+static void reset_wan_mode() {
+    amxc_var_t args;
+    amxc_var_t ret;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+
+    amxc_var_init(&args);
+    amxc_var_init(&ret);
+
+    assert_non_null(wan_mode);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxd_object_invoke_function(wan_mode, "Reset", &args, &ret);
+
+    test_handle_events();
+
+    amxc_var_clean(&args);
+    amxc_var_clean(&ret);
+}
+
 void test_wan_manager_set_invalid_mode(UNUSED void** state) {
     amxc_var_t status;
     const char* prefix = test_get_prefix();
@@ -564,5 +583,65 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
 
     assert_int_equal(reset_counter, get_reset_counter());
     amxc_var_clean(&logical_parameters);
+    amxc_var_clean(&wan_manager_parameters);
+}
+
+
+void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
+    amxc_var_t wan_manager_parameters;
+    amxc_var_t ppp_parameters;
+    const char* prefix = test_get_prefix();
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "Device.PPP.");
+    amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
+    amxd_object_t* demo_pppmode_obj = NULL;
+    int reset_counter = 0;
+    amxc_var_init(&wan_manager_parameters);
+    amxc_var_init(&ppp_parameters);
+
+    reset_counter = get_reset_counter();
+
+    /* Initial state: wan_mode = demo_wanmode */
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_false(GET_BOOL(&ppp_parameters, "Enable"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Change wan_mode to demo_pppmode */
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Change UserName and Password for demo_pppmode */
+    demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_pppmode.Intf.1");
+    assert_non_null(demo_pppmode_obj);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "UserName", "changed_user"), 0);
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "Password", "changed_pw"), 0);
+    test_handle_events();
+
+    /* PPP datamodel is not changed yet */
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
+
+    /* Reset wan mode */
+    reset_wan_mode();
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+
+    assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("changed_user", GET_CHAR(&ppp_parameters, "Username"));
+    assert_string_equal("changed_pw", GET_CHAR(&ppp_parameters, "Password"));
+
+    assert_int_equal(reset_counter, get_reset_counter());
+    amxc_var_clean(&ppp_parameters);
     amxc_var_clean(&wan_manager_parameters);
 }

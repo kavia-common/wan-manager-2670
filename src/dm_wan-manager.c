@@ -175,6 +175,22 @@ amxd_status_t _setWANMode(amxd_object_t* object,
     return status;
 }
 
+void _Reset(UNUSED amxd_object_t* object,
+            UNUSED amxd_function_t* func,
+            UNUSED amxc_var_t* args,
+            UNUSED amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    int rv = -1;
+    char* current_wan_mode_str = get_current_wan_mode_str();
+
+    rv = wan_mode_set(current_wan_mode_str, current_wan_mode_str);
+    when_failed_trace(rv, exit, ERROR, "Failed to reset wan mode '%s'", current_wan_mode_str);
+
+exit:
+    free(current_wan_mode_str);
+    SAH_TRACEZ_OUT(ME);
+}
+
 amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
                                        UNUSED amxd_function_t* func,
                                        UNUSED amxc_var_t* args,

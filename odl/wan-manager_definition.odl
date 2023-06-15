@@ -29,6 +29,13 @@
         bool setWANMode(%in %mandatory string WANMode, %in string Autosensing);
 
         /**
+         * On a reset the current WANMode MUST be teared down and established again.
+         * @version V1.0
+         * type command
+         */
+        void Reset();
+
+        /**
          * Get status of current WAN mode. Use by WANAutosensing
          * @return - true when WANMode status is Enabled and configured interface obtain IP address
          * @version 1.0

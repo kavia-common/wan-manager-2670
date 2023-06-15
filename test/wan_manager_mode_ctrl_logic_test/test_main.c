@@ -82,7 +82,8 @@ int main(void) {
         cmocka_unit_test(test_wan_manager_switch_to_valid_same_intf),
         cmocka_unit_test(test_wan_manager_routing_interface_switch),
         cmocka_unit_test(test_wan_manager_logical_interface),
-        cmocka_unit_test(test_wan_manager_set_static_ip)
+        cmocka_unit_test(test_wan_manager_set_static_ip),
+        cmocka_unit_test(test_wan_manager_reset_ppp_mode)
     };
     return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
 }
