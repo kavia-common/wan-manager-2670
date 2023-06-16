@@ -1,3 +1,9 @@
+wan-manager (0.24.0) unstable; urgency=medium
+
+  * [tr181-pcm] Set the usersetting parameters for each plugin
+
+ -- SAH bot <sahbot@softathome.com>  Fri, 16 Jun 2023 09:07:41 +0000
+
 wan-manager (0.23.1) unstable; urgency=medium
 
   * Add Ethernet_PPP back as a default wanmode

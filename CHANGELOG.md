@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.24.0 - 2023-06-16(09:07:40 +0000)
+
+### New
+
+- [tr181-pcm] Set the usersetting parameters for each plugin
+
 ## Release v0.23.1 - 2023-06-15(10:56:13 +0000)
 
 ### Fixes
