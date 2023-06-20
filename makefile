@@ -33,6 +33,7 @@ install: all
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/$(COMPONENT)/defaults.d
 	$(foreach odl,$(wildcard odl/defaults.d/*.odl), $(INSTALL) -D -p -m 0644 $(odl) $(DEST)/etc/amx/$(COMPONENT)/defaults.d/;)
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
+	$(INSTALL) -D -p -m 0660 acl/cwmp/$(COMPONENT).json $(DEST)$(ACLDIR)/cwmp/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
 	ln -sfr $(DEST)$(BINDIR)/amxrt $(DEST)$(BINDIR)/$(COMPONENT)
@@ -46,6 +47,7 @@ package: all
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/$(COMPONENT)/defaults.d
 	$(INSTALL) -D -p -m 0644 odl/defaults.d/*.odl $(PKGDIR)/etc/amx/$(COMPONENT)/defaults.d/
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
+	$(INSTALL) -D -p -m 0660 acl/cwmp/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/cwmp/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
 	ln -sfr $(PKGDIR)$(BINDIR)/amxrt $(PKGDIR)$(BINDIR)/$(COMPONENT)
