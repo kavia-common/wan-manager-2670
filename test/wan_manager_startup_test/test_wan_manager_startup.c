@@ -86,8 +86,7 @@
 static void test_wan_manager_set_operation_mode(const char* mode);
 
 void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.WAN.demo_SFP", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_SFP");
     amxd_trans_t transaction;
 
     assert_non_null(wan_mode);
@@ -112,8 +111,7 @@ void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
 }
 
 void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** state) {
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "WANManager.");
     char* operation_mode = NULL;
 
     assert_non_null(wan_manager);
@@ -159,8 +157,7 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
 static void test_wan_manager_set_operation_mode(const char* mode) {
     amxd_dm_t* dm = test_get_dm();
     amxd_trans_t transaction;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "WANManager.");
 
     assert_non_null(wan_manager);
 

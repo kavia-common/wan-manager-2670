@@ -1,5 +1,5 @@
 %define {
-    select '${prefix_}WANManager.WAN' {
+    select 'WANManager.WAN' {
         /**
          *
          * WAN mode definition
@@ -225,5 +225,5 @@
 
 %populate {
     on event "dm:object-changed" call wan_sensing_toggled
-        filter 'path matches "${prefix_}WANManager\.WAN\.[0-9]+\.$" and contains("parameters.EnableSensing")';
+        filter 'path matches "WANManager\.WAN\.[0-9]+\.$" and contains("parameters.EnableSensing")';
 }

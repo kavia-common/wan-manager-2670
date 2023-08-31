@@ -86,8 +86,7 @@ static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status)
     amxc_var_t args;
     amxc_var_t ret;
     bool rc = false;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
 
     amxc_var_init(&args);
     amxc_var_init(&ret);
@@ -109,8 +108,7 @@ static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status)
 static void reset_wan_mode() {
     amxc_var_t args;
     amxc_var_t ret;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
 
     amxc_var_init(&args);
     amxc_var_init(&ret);
@@ -127,8 +125,7 @@ static void reset_wan_mode() {
 
 void test_wan_manager_set_invalid_mode(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
 
     amxc_var_init(&status);
@@ -146,8 +143,7 @@ void test_wan_manager_set_invalid_mode(UNUSED void** state) {
 
 void test_wan_manager_set_valid_mode(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
 
     amxc_var_init(&status);
@@ -164,8 +160,7 @@ void test_wan_manager_set_valid_mode(UNUSED void** state) {
 
 void test_wan_manager_switch_to_invalid(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
 
     amxc_var_init(&status);
@@ -189,8 +184,7 @@ void test_wan_manager_switch_to_invalid(UNUSED void** state) {
 
 void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
     int reset_counter = get_reset_counter();
     amxc_var_init(&status);
@@ -216,8 +210,7 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
 
 void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
     int reset_counter = 0;
     amxc_var_init(&status);
@@ -255,8 +248,7 @@ void test_wan_manager_routing_interface_create(UNUSED void** state) {
 
 void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* routing_dm = amxd_dm_findf(test_get_dm(), "Device.Routing.RouteInformation.");
     amxd_object_t* routing_inst = NULL;
     const char* wan_mode_str = NULL;
@@ -299,9 +291,8 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
 
 void test_wan_manager_set_static_ip(UNUSED void** state) {
     amxc_var_t status;
-    const char* prefix = test_get_prefix();
     const char* wan_mode_str = NULL;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "Device.IP.Interface.2.");
     amxd_object_t* ip_addr = NULL;
     int reset_counter = 0;
@@ -362,8 +353,7 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
 
 void test_wan_manager_logical_interface(UNUSED void** state) {
     amxc_var_t value;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* logical_intf = amxd_dm_findf(test_get_dm(), "Device.Logical.Interface.wan.");
     const char* wan_mode_str = NULL;
     const char* logical_ll = NULL;
@@ -422,8 +412,7 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     amxc_var_t ppp_parameters;
     amxc_var_t ip_parameters;
     amxc_var_t neighbordiscovery_parameters;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "Device.PPP.");
     amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "Device.IP.");
     amxd_object_t* neighbordiscovery_dm = amxd_dm_findf(test_get_dm(), "Device.NeighborDiscovery.");
@@ -550,8 +539,7 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 void test_wan_manager_set_link_mode(UNUSED void** state) {
     amxc_var_t wan_manager_parameters;
     amxc_var_t logical_parameters;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* logical_dm = amxd_dm_findf(test_get_dm(), "Device.Logical.");
     amxd_object_t* logical_inst_voip = amxd_object_findf(logical_dm, "Interface.2");
     amxd_object_t* logical_inst_mgmt = amxd_object_findf(logical_dm, "Interface.3");
@@ -590,8 +578,7 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
 void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
     amxc_var_t wan_manager_parameters;
     amxc_var_t ppp_parameters;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "%sWANManager.", prefix);
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "Device.PPP.");
     amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
     amxd_object_t* demo_pppmode_obj = NULL;

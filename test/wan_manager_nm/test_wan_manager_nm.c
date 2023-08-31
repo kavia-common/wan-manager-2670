@@ -84,8 +84,7 @@
 
 void test_wm_nm_change_physical_type(UNUSED void** state) {
     amxd_trans_t trans;
-    const char* prefix = test_get_prefix();
-    amxd_object_t* wan = amxd_dm_findf(test_get_dm(), "%sWANManager.WAN.1.", prefix);
+    amxd_object_t* wan = amxd_dm_findf(test_get_dm(), "WANManager.WAN.1.");
     assert_non_null(wan);
 
     amxd_trans_init(&trans);

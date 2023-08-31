@@ -1,5 +1,5 @@
 %define{
-    %persistent object '${prefix_}WANManager' {
+    %persistent object 'WANManager' {
         /**
         * Only modules that are added to this comma separated list can be configured
         * in the Controller parameters.
@@ -16,7 +16,7 @@
         * @version 1.0
         */
         %persistent %protected string Controller = "mod-autosensing" {
-            on action validate call check_is_empty_or_in "${prefix_}WANManager.SupportedControllers";
+            on action validate call check_is_empty_or_in "WANManager.SupportedControllers";
         }
 
         /**
@@ -96,10 +96,10 @@
 
 %populate {
     on event "dm:object-changed" call set_wan_mode
-        filter 'path == "${prefix_}WANManager." && contains("parameters.WANMode")';
+        filter 'path == "WANManager." && contains("parameters.WANMode")';
     on event "dm:object-changed" call update_autosensing
-        filter 'path == "${prefix_}WANManager." && contains("parameters.OperationMode")';
+        filter 'path == "WANManager." && contains("parameters.OperationMode")';
     on event "dm:object-changed" call update_sensing_policy
-        filter 'path == "${prefix_}WANManager." && contains("parameters.SensingPolicy")';
+        filter 'path == "WANManager." && contains("parameters.SensingPolicy")';
 
 }

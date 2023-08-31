@@ -1,5 +1,5 @@
 %populate {
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("GPON_PPP6"){
             parameter Alias = "GPON_PPP6";
             parameter PhysicalType = "GPON";
@@ -7,7 +7,7 @@
         }
     }
 
-    object '${prefix_}WANManager.WAN.GPON_PPP6.Intf'{
+    object 'WANManager.WAN.GPON_PPP6.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dslite";
@@ -57,7 +57,7 @@
         }
     }
 
-    object '${prefix_}WANManager.WAN.GPON_PPP6.Intf.wan.IPv4Address'{
+    object 'WANManager.WAN.GPON_PPP6.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DefaultRouter = "192.0.0.1";
         }

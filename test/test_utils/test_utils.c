@@ -174,11 +174,6 @@ amxo_parser_t* test_get_parser(void) {
     return &parser;
 }
 
-const char* test_get_prefix(void) {
-    amxc_var_t* setting = amxo_parser_get_config(&parser, "prefix_");
-    return amxc_var_constcast(cstring_t, setting);
-}
-
 void test_handle_events(void) {
     while(amxp_signal_read() == 0) {
     }

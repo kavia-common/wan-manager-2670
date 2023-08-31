@@ -112,13 +112,6 @@ amxo_parser_t* PRIVATE wan_get_parser(void) {
     return app.parser;
 }
 
-const char* PRIVATE wan_get_prefix(void) {
-    SAH_TRACEZ_IN(ME);
-    amxc_var_t* setting = amxo_parser_get_config(wan_get_parser(), "prefix_");
-    SAH_TRACEZ_OUT(ME);
-    return amxc_var_constcast(cstring_t, setting);
-}
-
 int _wan_manager_main(int reason,
                       amxd_dm_t* dm,
                       amxo_parser_t* parser) {

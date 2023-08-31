@@ -1,12 +1,12 @@
 %populate {
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("Ethernet_PPP"){
             parameter Alias = "Ethernet_PPP";
             parameter PhysicalType = "Ethernet";
         }
     }
 
-    object '${prefix_}WANManager.WAN.Ethernet_PPP.Intf'{
+    object 'WANManager.WAN.Ethernet_PPP.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "ppp4";

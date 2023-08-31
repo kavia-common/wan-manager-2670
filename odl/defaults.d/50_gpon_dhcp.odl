@@ -1,12 +1,12 @@
 %populate {
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("GPON_DHCP"){
             parameter Alias = "GPON_DHCP";
             parameter PhysicalType = "GPON";
         }
     }
 
-    object '${prefix_}WANManager.WAN.GPON_DHCP.Intf'{
+    object 'WANManager.WAN.GPON_DHCP.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";

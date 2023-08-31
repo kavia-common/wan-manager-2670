@@ -1,7 +1,6 @@
 %config {
     name = "wan-manager";
     import-dbg = false;
-    prefix_ = "X_PRPL-COM_";
 }
 
 include "../../odl/${name}_definition.odl";
@@ -38,7 +37,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
     }
 
     object PCP {
-        string '${prefix_}Enable';
+        string 'Enable';
     }
 
     object IP{
@@ -72,15 +71,15 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         object InterfaceSetting {}
     }
 
-    object '${prefix_}WANAutoSensing'{}
+    object 'WANAutoSensing'{}
 }
 
 %populate {
-    object '${prefix_}WANManager' {
+    object 'WANManager' {
         parameter WANMode = "demo_wanmode";
     }
 
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("demo_wanmode"){
            parameter PhysicalType = "Ethernet";
         }
@@ -119,7 +118,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
      }
 
-    object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
+    object 'WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
             parameter Name = "wan";
             parameter Type = "untagged";
@@ -131,7 +130,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf'{
+    object 'WANManager.WAN.demo_vlanmode.Intf'{
         instance add(0,"wan"){
             parameter Name = "wan";
             parameter Type = "vlan";
@@ -145,7 +144,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_pppmode.Intf'{
+    object 'WANManager.WAN.demo_pppmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "ppp4";
@@ -159,7 +158,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_dslite.Intf'{
+    object 'WANManager.WAN.demo_dslite.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "dslite";
@@ -170,7 +169,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_staticmode.Intf'{
+    object 'WANManager.WAN.demo_staticmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "static";
@@ -181,7 +180,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_ppp6mode.Intf'{
+    object 'WANManager.WAN.demo_ppp6mode.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "none";
@@ -197,7 +196,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_link.Intf'{
+    object 'WANManager.WAN.demo_link.Intf'{
         instance add(0,"wan"){
             parameter Name = "wan";
             parameter Type = "untagged";
@@ -227,7 +226,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("demo_SFP"){
            parameter Alias = "demo_SFP";
            parameter PhysicalType = "SFP";
@@ -244,7 +243,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("demo_test"){
            parameter Alias = "demo_test";
            parameter PhysicalType = "Ethernet";
@@ -261,7 +260,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.test_mode.Intf'{
+    object 'WANManager.WAN.test_mode.Intf'{
         instance add(0,"wan"){
             parameter Name = "wan";
             parameter Type = "untagged";
@@ -292,26 +291,26 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf.wan.IPv4Address'{
+    object 'WANManager.WAN.demo_vlanmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DNSServers = "8.8.8.8,1.1.1.1";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_vlanmode.Intf.wan.IPv6Address'{
+    object 'WANManager.WAN.demo_vlanmode.Intf.wan.IPv6Address'{
         instance add("ipv6"){
             parameter DNSServers = "2620:119:35::35";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_staticmode.Intf.wan.IPv6Address'{
+    object 'WANManager.WAN.demo_staticmode.Intf.wan.IPv6Address'{
         instance add("ipv6"){
             parameter DefaultRouter = "fe80::5014:93ff:fe4d:7cf";
             parameter IPv6Address = "2a02:1802:94:3200:10:18ff:fe01:cc01";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_staticmode.Intf.wan.IPv4Address'{
+    object 'WANManager.WAN.demo_staticmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DefaultRouter = "172.16.110.10";
             parameter IPv4Address = "172.16.110.45";

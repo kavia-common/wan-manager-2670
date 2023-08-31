@@ -80,7 +80,6 @@ int test_wan_manager_teardown(void** state);
 
 amxd_dm_t* test_get_dm(void);
 amxo_parser_t* test_get_parser(void);
-const char* test_get_prefix(void);
 void test_handle_events(void);
 amxc_var_t* read_json_from_file(const char* fname);
 

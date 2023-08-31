@@ -178,10 +178,8 @@ exit:
 
 void wan_mode_init(void) {
     SAH_TRACEZ_IN(ME);
-    const char* prefix = wan_get_prefix();
 
-    when_null_trace(prefix, exit, ERROR, "Failed to find the prefix");
-    wan_manager = amxd_dm_findf(wan_get_dm(), "%sWANManager", prefix);
+    wan_manager = amxd_dm_findf(wan_get_dm(), "WANManager");
     when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
     nm_query_ll_init();
 exit:
@@ -450,8 +448,7 @@ amxd_object_t* get_wan_mode(const char* alias) {
     SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_obj = NULL;
     when_str_empty_trace(alias, exit, ERROR, "Could not find wan mode, no Alias provided");
-    wan_mode_obj = amxd_dm_findf(wan_get_dm(), "%sWANManager.WAN.[Alias=='%s'].",
-                                 wan_get_prefix(), alias);
+    wan_mode_obj = amxd_dm_findf(wan_get_dm(), "WANManager.WAN.[Alias=='%s'].", alias);
 
 exit:
     SAH_TRACEZ_OUT(ME);

@@ -1,5 +1,5 @@
 %populate {
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("Ethernet_PPP6"){
             parameter Alias = "Ethernet_PPP6";
             parameter PhysicalType = "Ethernet";
@@ -7,7 +7,7 @@
         }
     }
 
-    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf'{
+    object 'WANManager.WAN.Ethernet_PPP6.Intf'{
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dslite";
@@ -57,7 +57,7 @@
         }
     }
 
-    object '${prefix_}WANManager.WAN.Ethernet_PPP6.Intf.wan.IPv4Address'{
+    object 'WANManager.WAN.Ethernet_PPP6.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DefaultRouter = "192.0.0.1";
         }

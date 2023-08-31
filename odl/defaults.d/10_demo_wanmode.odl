@@ -1,16 +1,16 @@
 %populate {
-    object '${prefix_}WANManager' {
+    object 'WANManager' {
         parameter WANMode = "demo_wanmode";
     }
 
-    object '${prefix_}WANManager.WAN' {
+    object 'WANManager.WAN' {
         instance add ("demo_wanmode"){
             parameter Alias = "demo_wanmode";
             parameter PhysicalType = "Ethernet";
         }
     }
 
-    object '${prefix_}WANManager.WAN.demo_wanmode.Intf'{
+    object 'WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "dhcp4";
