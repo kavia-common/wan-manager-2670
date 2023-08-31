@@ -93,12 +93,10 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     char* dhcpv6_path = NULL;
     char* logical_path = NULL;
-    amxc_string_t pcp_enable;
     amxc_var_t wan_if;
     bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
-    amxc_string_init(&pcp_enable, 0);
     amxc_var_init(&wan_if);
 
     when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
@@ -119,8 +117,7 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_PATH);
 
     // Enable PCP
-    amxc_string_setf(&pcp_enable, "Enable");
-    rc = component_set_bool("PCP.", pcp_get_context(), amxc_string_get(&pcp_enable, 0), true);
+    rc = component_set_bool("PCP.", pcp_get_context(), "Enable", true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
 
     // Enable DHCPv6 Client
@@ -134,7 +131,6 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
 
 exit:
-    amxc_string_clean(&pcp_enable);
     amxc_var_clean(&wan_if);
     free(dhcpv6_path);
     free(logical_path);
@@ -151,10 +147,8 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     char* logical_path = NULL;
     char* dhcpv6_path = NULL;
-    amxc_string_t pcp_enable;
     amxc_var_t wan_if;
 
-    amxc_string_init(&pcp_enable, 0);
     amxc_var_init(&wan_if);
 
     // Disable DHCPv6 Client
@@ -177,12 +171,10 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_PATH);
 
     // Disable PCP
-    amxc_string_setf(&pcp_enable, "Enable");
-    rc = component_set_bool("PCP.", pcp_get_context(), amxc_string_get(&pcp_enable, 0), false);
+    rc = component_set_bool("PCP.", pcp_get_context(), "Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
 
 exit:
-    amxc_string_clean(&pcp_enable);
     amxc_var_clean(&wan_if);
     free(dhcpv6_path);
     free(logical_path);
