@@ -1,3 +1,9 @@
+wan-manager (0.26.0) unstable; urgency=medium
+
+  * Move datamodel prefixes to the device proxy
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 31 Aug 2023 09:57:07 +0000
+
 wan-manager (0.25.0) unstable; urgency=medium
 
   * add ACLs permissions for cwmp user

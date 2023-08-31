@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.26.0 - 2023-08-31(09:57:06 +0000)
+
+### New
+
+- Move datamodel prefixes to the device proxy
+
 ## Release v0.25.0 - 2023-06-20(06:41:38 +0000)
 
 ### New
