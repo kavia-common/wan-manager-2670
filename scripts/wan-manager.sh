@@ -15,7 +15,7 @@ case $1 in
         fi
         ;;
     debuginfo)
-        ubus-cli "X_PRPL-COM_WANManager.?"
+        ubus-cli "WANManager.?"
         ;;
     restart)
         $0 stop
