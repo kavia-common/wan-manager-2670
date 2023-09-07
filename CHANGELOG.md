@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.27.1 - 2023-09-07(10:19:30 +0000)
+
+### Fixes
+
+- [Wan-manager] remove the prefix in the debuginfo function in the init script
+
 ## Release v0.27.0 - 2023-08-31(13:53:01 +0000)
 
 ### New
