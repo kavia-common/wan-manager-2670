@@ -97,6 +97,12 @@ void _update_sensing_policy(const char* const event_name,
 void _wan_sensing_toggled(const char* const event_name,
                           const amxc_var_t* const event_data,
                           void* const priv);
+void _ipv4_mode_toggled(const char* const event_name,
+                        const amxc_var_t* const event_data,
+                        void* const priv);
+void _ipv6_mode_toggled(const char* const event_name,
+                        const amxc_var_t* const event_data,
+                        void* const priv);
 amxd_status_t _mode_check_default_interface(amxd_object_t* object,
                                             amxd_param_t* param,
                                             amxd_action_t reason,

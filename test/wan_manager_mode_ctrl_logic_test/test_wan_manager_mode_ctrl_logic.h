@@ -90,6 +90,8 @@ void test_wan_manager_set_ppp_mode(void** state);
 void test_wan_manager_set_link_mode(void** state);
 void test_wan_manager_reset_ppp_mode(void** state);
 void test_wan_manager_set_static_ip(void** state);
+void test_wan_manager_set_intf_ipv4_static_mode(void** state);
+void test_wan_manager_set_intf_ipv6_static_mode(void** state);
 
 
 #endif //__TEST_WAN_MANAGER_MODE_CTRL_LOGIC_H__

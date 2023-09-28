@@ -226,4 +226,8 @@
 %populate {
     on event "dm:object-changed" call wan_sensing_toggled
         filter 'path matches "WANManager\.WAN\.[0-9]+\.$" and contains("parameters.EnableSensing")';
+    on event "dm:object-changed" call ipv4_mode_toggled
+        filter 'path matches "WANManager\.WAN\.[0-9]+\.Intf\.[0-9]+\.$" and contains("parameters.IPv4Mode")';
+    on event "dm:object-changed" call ipv6_mode_toggled
+        filter 'path matches "WANManager\.WAN\.[0-9]+\.Intf\.[0-9]+\.$" and contains("parameters.IPv6Mode")';
 }

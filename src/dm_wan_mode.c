@@ -129,7 +129,9 @@ static amxd_object_t* wan_manager;
 static bool wan_autosensing_can_start = false;
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
-                                     bool include_type);
+                                     bool include_type,
+                                     const char* custom_ipv4_mode,
+                                     const char* custom_ipv6_mode);
 static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_object_t* const new_mode);
 static mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
@@ -330,10 +332,24 @@ exit:
     return rc;
 }
 
+/**
+ * @brief
+ * Function that enables or disables the interface of the wan-mode.
+ *
+ * @param interface Interface to be enabled/disabled
+ * @param lower_layer Lowerlayer of the Interface
+ * @param enable Enable parameter
+ * @param old_interface Old interface to disable, can be the same as the interface when using ipv4_mode_ovr/ipv6_mode_ovr
+ * @param ipv4_mode_ovr IPv4 mode that overrides the current one of the interface. No override done when NULL
+ * @param ipv6_mode_ovr IPv6 mode that overrides the current one of the interface. No override done when NULL
+ * @return amxd_status_t
+ */
 static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
                                           const char* lower_layer,
                                           bool enable,
-                                          amxd_object_t* old_interface) {
+                                          amxd_object_t* old_interface,
+                                          const char* ipv4_mode_ovr,
+                                          const char* ipv6_mode_ovr) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t parameters;
@@ -369,7 +385,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     amxd_object_get_params(old_interface, old_params, amxd_dm_access_private);
 
     // Get mode for IPv4 & IPv6
-    mode = get_wan_mode_type(interface, true);
+    mode = get_wan_mode_type(interface, true, ipv4_mode_ovr, ipv6_mode_ovr);
     if(IP_None != mode) {
         rc = mode_ctrl_action(mode, &parameters, enable);
     }
@@ -414,7 +430,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
             old_interface = amxd_object_findf(old_wan_mode, ".Intf.[Name == '%s'].", intf_name);
             free(intf_name);
         }
-        rc = wan_mode_intf_enable(interface, lower_layer, enable, old_interface);
+        rc = wan_mode_intf_enable(interface, lower_layer, enable, old_interface, NULL, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to %s interface '%s' with code %d", enable ? "enable" : "disable",
                           amxd_object_get_name(interface, AMXD_OBJECT_NAMED), rc);
     }
@@ -568,7 +584,9 @@ mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
 }
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
-                                     bool include_type) {
+                                     bool include_type,
+                                     const char* custom_ipv4_mode,
+                                     const char* custom_ipv6_mode) {
     SAH_TRACEZ_IN(ME);
     const char* type = NULL;
     const char* ipv4mode = NULL;
@@ -586,11 +604,11 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
         mode = (int) wan_mode_convert_from_str(type, false);
     }
 
-    ipv4mode = GET_CHAR(&data, "IPv4Mode");
+    ipv4mode = custom_ipv4_mode == NULL ? GET_CHAR(&data, "IPv4Mode") : custom_ipv4_mode;
     when_str_empty_trace(ipv4mode, exit, ERROR, "Empty 'IPv4Mode' parameter");
     mode |= (int) wan_mode_convert_from_str(ipv4mode, true);
 
-    ipv6mode = GET_CHAR(&data, "IPv6Mode");
+    ipv6mode = custom_ipv6_mode == NULL ? GET_CHAR(&data, "IPv6Mode") : custom_ipv6_mode;
     when_str_empty_trace(ipv6mode, exit, ERROR, "Empty 'IPv6Mode' parameter");
     mode |= (int) wan_mode_convert_from_str(ipv6mode, false);
 
@@ -668,4 +686,74 @@ amxd_status_t _mode_check_default_interface(amxd_object_t* object,
 exit:
     SAH_TRACEZ_OUT(ME);
     return rv;
+}
+
+static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
+    SAH_TRACEZ_IN(ME);
+    const char* ip_type = ipv4 ? "IPv4Mode" : "IPv6Mode";
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxd_object_t* wan_mode_obj = NULL;
+    amxd_object_t* intf_obj = NULL;
+    amxc_var_t* ip_mode_arg = GET_ARG(GET_ARG(event_data, "parameters"), ip_type);
+    const char* lower_layer = NULL;
+    const char* old_ip_mode = NULL;
+    const char* new_ip_mode = NULL;
+    char* wan_status = NULL;
+    char* physical_type = NULL;
+    char* current_operation_mode = amxd_object_get_value(cstring_t, get_wan_manager_obj(), "OperationMode", NULL);
+
+    new_ip_mode = GETP_CHAR(ip_mode_arg, "to");
+    old_ip_mode = GETP_CHAR(ip_mode_arg, "from");
+
+    when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
+    when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
+
+    intf_obj = amxd_dm_signal_get_object(wan_get_dm(), event_data);
+    when_null_trace(intf_obj, exit, ERROR, "Could not get the interface object");
+    wan_mode_obj = amxd_object_get_parent(amxd_object_get_parent(intf_obj));
+    when_null_trace(wan_mode_obj, exit, ERROR, "Could not get the wanmode object");
+
+    wan_status = amxd_object_get_value(cstring_t, wan_mode_obj, "Status", NULL);
+
+    // If the status of the wanmode is disabled, then do nothing
+    when_true_status(strcmp(wan_status, "Disabled") == 0, exit, rc = amxd_status_ok);
+    physical_type = amxd_object_get_value(cstring_t, wan_mode_obj, "PhysicalType", NULL);
+    lower_layer = nm_query_get_lower_layer(physical_type);
+
+    // Disable the previous ip mode of the interface
+    rc = !ipv4 ? wan_mode_intf_enable(intf_obj, lower_layer, false, intf_obj, NULL, old_ip_mode) : wan_mode_intf_enable(intf_obj, lower_layer, false, intf_obj, old_ip_mode, NULL);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable IPMode '%s' in the datamodel", old_ip_mode);
+    // Enable the current ip mode of the interface object
+    rc = wan_mode_intf_enable(intf_obj, lower_layer, true, intf_obj, NULL, NULL);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable '%s' as IPMode", new_ip_mode);
+
+    (void) new_ip_mode;
+
+exit:
+    if(rc != amxd_status_ok) {
+        wan_mode_set_status(wan_mode_obj, WAN_Mode_Error);
+    }
+    free(current_operation_mode);
+    free(physical_type);
+    free(wan_status);
+    SAH_TRACEZ_OUT(ME);
+    return;
+}
+
+void _ipv4_mode_toggled(UNUSED const char* const event_name,
+                        const amxc_var_t* const event_data,
+                        UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
+    ip_mode_toggled(event_data, true);
+    SAH_TRACEZ_OUT(ME);
+    return;
+}
+
+void _ipv6_mode_toggled(UNUSED const char* const event_name,
+                        const amxc_var_t* const event_data,
+                        UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
+    ip_mode_toggled(event_data, false);
+    SAH_TRACEZ_OUT(ME);
+    return;
 }

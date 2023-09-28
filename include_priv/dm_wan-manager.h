@@ -108,6 +108,16 @@ amxd_status_t _setWANMode(amxd_object_t* object,
                           amxc_var_t* args,
                           amxc_var_t* ret);
 
+amxd_status_t _setIPv4Mode(amxd_object_t* object,
+                           amxd_function_t* func,
+                           amxc_var_t* args,
+                           amxc_var_t* ret);
+
+amxd_status_t _setIPv6Mode(amxd_object_t* object,
+                           amxd_function_t* func,
+                           amxc_var_t* args,
+                           amxc_var_t* ret);
+
 void _Reset(amxd_object_t* object,
             amxd_function_t* func,
             amxc_var_t* args,

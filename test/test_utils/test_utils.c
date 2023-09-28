@@ -133,6 +133,11 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "SetMode", AMXO_FUNC(_setMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "DeleteForwardings", AMXO_FUNC(_deleteForwardings)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv4_mode_toggled", AMXO_FUNC(_ipv4_mode_toggled)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv6_mode_toggled", AMXO_FUNC(_ipv6_mode_toggled)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv4Mode", AMXO_FUNC(_setIPv4Mode)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv6Mode", AMXO_FUNC(_setIPv6Mode)), 0);
+
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);

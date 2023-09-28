@@ -29,6 +29,24 @@
         bool setWANMode(%in %mandatory string WANMode, %in string Autosensing);
 
         /**
+         * Set IPv4 mode for the given interface in the current WANMode
+         * @param IPv4 mode - Value to which to change the IPv4Mode
+         * @param InterfaceAlias - Alias of the wan mode interface to act on
+         * @return - true on success
+         * @version 1.0
+         */
+        bool setIPv4Mode(%in %mandatory string IPv4Mode, %in %mandatory string InterfaceAlias);
+
+        /**
+         * Set IPv6 mode for the given interface in the current WANMode
+         * @param IPv6 mode - Value to which to change the IPv6Mode
+         * @param InterfaceAlias - Alias of the wan mode interface to act on
+         * @return - true on success
+         * @version 1.0
+         */
+        bool setIPv6Mode(%in %mandatory string IPv6Mode, %in %mandatory string InterfaceAlias);
+        
+        /**
          * On a reset the current WANMode MUST be teared down and established again.
          * @version V1.0
          * type command

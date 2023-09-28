@@ -168,6 +168,76 @@ amxd_status_t _setWANMode(amxd_object_t* object,
     return status;
 }
 
+static amxd_status_t set_intf_ip_mode(amxd_object_t* interface, const char* ip_mode_value, bool ipv4) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+    when_null_trace(interface, exit, ERROR, "object should not be NULL, can not set ip mode in datamodel");
+
+    amxd_trans_set_attr(&trans, amxd_tattr_change_ro, true);
+    amxd_trans_select_object(&trans, interface);
+
+    amxd_trans_set_value(cstring_t, &trans, ipv4 ? "IPv4Mode" : "IPv6Mode", ip_mode_value);
+
+    rc = amxd_trans_apply(&trans, wan_get_dm());
+
+exit:
+    amxd_trans_clean(&trans);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
+}
+
+amxd_status_t _setIPv4Mode(amxd_object_t* object,
+                           UNUSED amxd_function_t* func,
+                           amxc_var_t* args,
+                           amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = amxd_status_invalid_attr;
+    const char* ip_mode_value = GET_CHAR(args, "IPv4Mode");
+    const char* intf_alias = GET_CHAR(args, "InterfaceAlias");
+    char* wan_mode = amxd_object_get_value(cstring_t, object, "WANMode", NULL);
+    amxd_object_t* wan_mode_obj = NULL;
+    amxd_object_t* interface = NULL;
+
+    wan_mode_obj = get_wan_mode(wan_mode);
+    when_null_trace(wan_mode_obj, exit, ERROR, "Failed to get the WANMode object");
+
+    interface = amxd_object_findf(wan_mode_obj, ".Intf.[Alias == '%s'].", intf_alias);
+    status = set_intf_ip_mode(interface, ip_mode_value, true);
+
+exit:
+    free(wan_mode);
+    amxc_var_add_key(bool, ret, "status", status == amxd_status_ok);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _setIPv6Mode(amxd_object_t* object,
+                           UNUSED amxd_function_t* func,
+                           amxc_var_t* args,
+                           amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = amxd_status_invalid_attr;
+    const char* ip_mode_value = GET_CHAR(args, "IPv6Mode");
+    const char* intf_alias = GET_CHAR(args, "InterfaceAlias");
+    char* wan_mode = amxd_object_get_value(cstring_t, object, "WANMode", NULL);
+    amxd_object_t* wan_mode_obj = NULL;
+    amxd_object_t* interface = NULL;
+
+    wan_mode_obj = get_wan_mode(wan_mode);
+    when_null_trace(wan_mode_obj, exit, ERROR, "Failed to get the WANMode object");
+
+    interface = amxd_object_findf(wan_mode_obj, ".Intf.[Alias == '%s'].", intf_alias);
+    status = set_intf_ip_mode(interface, ip_mode_value, false);
+
+exit:
+    free(wan_mode);
+    amxc_var_add_key(bool, ret, "status", status == amxd_status_ok);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
 void _Reset(UNUSED amxd_object_t* object,
             UNUSED amxd_function_t* func,
             UNUSED amxc_var_t* args,
@@ -199,7 +269,7 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
     amxd_object_for_each(instance, it, amxd_object_findf(current_mode_obj, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
         ip_reference = amxd_object_get_value(cstring_t, interface, "IPv4Reference", NULL);
-        when_str_empty(ip_reference, exit); // When the ip_reference is empty the mode is not active
+        when_str_empty(ip_reference, exit);     // When the ip_reference is empty the mode is not active
         mode_active = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
         break;
     }
