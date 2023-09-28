@@ -1,3 +1,9 @@
+wan-manager (0.27.2) unstable; urgency=medium
+
+  * must be possible to change current the IPv4(6) WANMode configuration
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 28 Sep 2023 07:07:09 +0000
+
 wan-manager (0.27.1) unstable; urgency=medium
 
   * [Wan-manager] remove the prefix in the debuginfo function in the init script

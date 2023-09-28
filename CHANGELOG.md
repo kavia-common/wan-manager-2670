@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.27.2 - 2023-09-28(07:07:09 +0000)
+
+### Other
+
+- must be possible to change current the IPv4(6) WANMode configuration
+
 ## Release v0.27.1 - 2023-09-07(10:19:30 +0000)
 
 ### Fixes
