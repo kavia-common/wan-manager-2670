@@ -1,3 +1,9 @@
+wan-manager (0.28.0) unstable; urgency=medium
+
+  * [IPv6][RouterAdvertisement] M O flag behaviour
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 09 Oct 2023 08:59:49 +0000
+
 wan-manager (0.27.2) unstable; urgency=medium
 
   * must be possible to change current the IPv4(6) WANMode configuration

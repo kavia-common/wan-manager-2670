@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.28.0 - 2023-10-09(08:59:48 +0000)
+
+### New
+
+- [IPv6][RouterAdvertisement] M O flag behaviour
+
 ## Release v0.27.2 - 2023-09-28(07:07:09 +0000)
 
 ### Other
