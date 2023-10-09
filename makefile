@@ -21,13 +21,16 @@ endef
 # targets
 all:
 	$(MAKE) -C src all
+	$(MAKE) -C odl all
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C odl clean
 
 install: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_caps.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_caps.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/$(COMPONENT)/defaults.d
@@ -42,6 +45,7 @@ install: all
 package: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_definition.odl
+	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_caps.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_caps.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_definition.odl
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_WAN_Intf_definition.odl $(PKGDIR)/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/$(COMPONENT)/defaults.d

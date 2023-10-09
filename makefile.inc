@@ -45,3 +45,5 @@ PROCMONDIR ?= $(PREFIX)lib/processmonitor/scripts
 
 # default config options
 CONFIG_SAH_AMX_WAN_MANAGER_ORDER ?= 80
+CONFIG_SAH_AMX_WAN_MANAGER_RUN_AS_USER ?= tr181_app
+CONFIG_SAH_AMX_WAN_MANAGER_RUN_AS_GROUP ?= tr181_app
