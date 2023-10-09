@@ -62,8 +62,8 @@
 **
 ****************************************************************************/
 
-#if !defined(__DM_WAN_MANAGER_H__)
-#define __DM_WAN_MANAGER_H__
+#if !defined(__INTERFACE_PRIV_H__)
+#define __INTERFACE_PRIV_H__
 
 #ifdef __cplusplus
 extern "C"
@@ -79,90 +79,19 @@ extern "C"
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
 
-#include <amxb/amxb.h>
+#include "netmodel/nm_query.h"
 
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
+typedef struct _intf_priv {
+    intf_sensing_queries_t* sensing_queries;
+    intf_ra_queries_t* ra_queries;
+    amxd_object_t* interface;
+} intf_priv_t;
 
-typedef struct  {
-    amxd_dm_t* dm;
-    amxo_parser_t* parser;
-    amxb_bus_ctx_t* context;
-} wan_manager_app_t;
-
-int _wan_manager_main(int reason,
-                      amxd_dm_t* dm,
-                      amxo_parser_t* parser);
-
-amxd_dm_t* PRIVATE wan_get_dm(void);
-
-amxo_parser_t* PRIVATE wan_get_parser(void);
-
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-amxd_status_t _setIPv4Mode(amxd_object_t* object,
-                           amxd_function_t* func,
-                           amxc_var_t* args,
-                           amxc_var_t* ret);
-
-amxd_status_t _setIPv6Mode(amxd_object_t* object,
-                           amxd_function_t* func,
-                           amxc_var_t* args,
-                           amxc_var_t* ret);
-
-void _Reset(amxd_object_t* object,
-            amxd_function_t* func,
-            amxc_var_t* args,
-            amxc_var_t* ret);
-
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
-amxd_status_t _getWANMode(amxd_object_t* object,
-                          amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret);
-
-
-void _set_wan_mode(const char* const event_name,
-                   const amxc_var_t* const event_data,
-                   void* const priv);
-
-amxd_status_t _interface_already_configured(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv);
-
-amxd_status_t is_valid_mode(const char* new_wan_mode);
-
-void _dm_wan_manager_physical_type_changed(const char* const event_name,
-                                           const amxc_var_t* const event_data,
-                                           void* const priv);
-
-void _dm_wan_manager_wan_added(const char* const event_name,
-                               const amxc_var_t* const event_data,
-                               void* const priv);
-
-amxd_status_t _interface_destroy(amxd_object_t* intf,
-                                 amxd_param_t* param,
-                                 amxd_action_t reason,
-                                 const amxc_var_t* const args,
-                                 amxc_var_t* const retval,
-                                 void* priv);
+void delete_private_intf_data(amxd_object_t* intf);
+int init_private_intf_data(amxd_object_t* intf);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __DM_WAN_MANAGER_H__
+#endif // __INTERFACE_PRIV_H__

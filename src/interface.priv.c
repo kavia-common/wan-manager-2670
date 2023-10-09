@@ -6,6 +6,8 @@
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
+** Redistribution and use in source and binary forms, with or
+** without modification, are permitted provided that the following
 ** conditions are met:
 **
 ** 1. Redistributions of source code must retain the above copyright
@@ -59,64 +61,48 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-#if !defined(__NM_QUERY_H__)
-#define __NM_QUERY_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_types.h>
+#include <debug/sahtrace.h>
+#include <debug/sahtrace_macros.h>
 
-#include <netmodel/client.h>
+#include "interface_priv.h"
 
-typedef enum _physical_type {
-    physical_type_ethernet,
-    physical_type_bridge,
-    physical_type_adsl,
-    physical_type_vdsl,
-    physical_type_sfp,
-    physical_type_gpon,
-    physical_type_gfast,
-    physical_type_wwan,
-    physical_type_last
-} physical_type_t;
+#define ME "wan-man"
 
-typedef struct _nm_query_ll_info {
-    netmodel_query_t* q_name;
-    netmodel_query_t* q_intf_path;
-    char* intf_name;
-    char* lower_layer;
-    char* upstream_intf_path;
-    int index;
-    bool used;
-} nm_query_ll_info_t;
+int init_private_intf_data(amxd_object_t* intf) {
+    intf_priv_t* priv = NULL;
+    int rv = -1;
 
-typedef struct _intf_sensing_queries {
-    netmodel_query_t* nm_ipv4_up_query;                 // pointer to a netmodel ipv4-up query
-    netmodel_query_t* nm_ipv6_up_query;                 // pointer to a netmodel ipv6-up query
-} intf_sensing_queries_t;
+    when_null_trace(intf, exit, ERROR, "Interface object is NULL");
+    when_false_trace(intf->priv == NULL, exit, WARNING, "Interface object already has private data allocated");
 
-typedef struct _intf_ra_queries {
-    netmodel_query_t* nm_managed_flag_query;
-} intf_ra_queries_t;
+    priv = calloc(1, sizeof(intf_priv_t));
+    when_null_trace(priv, exit, ERROR, "Failed to allocated memory for interface private data");
 
-void nm_query_ll_init(void);
-void nm_query_ll_cleanup(void);
-int nm_query_ll_add(const char* name);
-const char* nm_query_get_lower_layer(const char* name);
-int nm_query_mode_active(void);
-int nm_query_ra_params(void);
-void stop_sensing_queries(void);
-void stop_ra_queries(void);
-nm_query_ll_info_t* get_nm_query_info(int index);
-void intf_sensing_queries_clean(intf_sensing_queries_t** nm_queries);
-void intf_ra_queries_clean(intf_ra_queries_t** nm_queries);
+    intf->priv = priv;
+    priv->interface = intf;
 
-#ifdef __cplusplus
+    rv = 0;
+exit:
+    return rv;
 }
-#endif
 
-#endif // __NM_QUERY_H__
+void delete_private_intf_data(amxd_object_t* intf) {
+    intf_priv_t* priv = NULL;
+
+    when_null_trace(intf, exit, WARNING, "Interface object is NULL");
+    priv = intf->priv;
+    when_null_trace(priv, exit, WARNING, "Interface private data is already NULL");
+
+    intf_ra_queries_clean(&(priv->ra_queries));
+    intf_sensing_queries_clean(&(priv->sensing_queries));
+
+    free(intf->priv);
+    intf->priv = NULL;
+exit:
+    return;
+}

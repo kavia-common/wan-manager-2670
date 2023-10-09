@@ -90,40 +90,41 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
     assert_non_null(handler);
     assert_non_null(name);
     assert_string_equal(subscriber, "wan-manager");
-    assert_string_equal(name, "InterfacePath");
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
-    if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
-        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "Ethernet" is 0 (index in array)
-        assert_int_equal(info->index, 0);
-        // 1. call function with no data
-        handler("sig_name", &data, userdata);
-        // 2. call function with empty string
-        amxc_var_set(cstring_t, &data, "");
-        handler("sig_name", &data, userdata);
-        // 3. call with usefull data
-        amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.2.");
-        handler("sig_name", &data, userdata);
-        // 4. call with same data
-        handler("sig_name", &data, userdata);
-    } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
-        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "GPON" is 5 (index in array)
-        assert_int_equal(info->index, 5);
-        // 1. call function with no data
-        handler("sig_name", &data, userdata);
-        // 2. call function with empty string
-        amxc_var_set(cstring_t, &data, "");
-        handler("sig_name", &data, userdata);
-        // 3. call with usefull data
-        amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.6.");
-        handler("sig_name", &data, userdata);
-        // 4. call with same data
-        handler("sig_name", &data, userdata);
-    } else {
-        assert_string_equal(name, "NetModel.Intf.unknown.");
+    if(strcmp(name, "InterfacePath") == 0) {
+        if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
+            nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+            // info->index for "Ethernet" is 0 (index in array)
+            assert_int_equal(info->index, 0);
+            // 1. call function with no data
+            handler("sig_name", &data, userdata);
+            // 2. call function with empty string
+            amxc_var_set(cstring_t, &data, "");
+            handler("sig_name", &data, userdata);
+            // 3. call with usefull data
+            amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.2.");
+            handler("sig_name", &data, userdata);
+            // 4. call with same data
+            handler("sig_name", &data, userdata);
+        } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
+            nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+            // info->index for "GPON" is 5 (index in array)
+            assert_int_equal(info->index, 5);
+            // 1. call function with no data
+            handler("sig_name", &data, userdata);
+            // 2. call function with empty string
+            amxc_var_set(cstring_t, &data, "");
+            handler("sig_name", &data, userdata);
+            // 3. call with usefull data
+            amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.6.");
+            handler("sig_name", &data, userdata);
+            // 4. call with same data
+            handler("sig_name", &data, userdata);
+        } else {
+            assert_string_equal(name, "NetModel.Intf.unknown.");
+        }
     }
     amxc_var_clean(&data);
     return q;

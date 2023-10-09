@@ -75,6 +75,7 @@
 #include <debug/sahtrace.h>
 
 #include "dm_wan_mode.h"
+#include "interface_priv.h"
 #include "test_wan_manager_autosensing.h"
 #include "test_utils.h"
 #include "reset_mock.h"
@@ -159,6 +160,7 @@ void test_wan_manager_autosensing_set_mode(UNUSED void** state) {
 void test_wan_manager_sensing_query(UNUSED void** state) {
     amxc_var_t* data = NULL;
     amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
+    intf_priv_t* intf_priv = NULL;
 
     amxc_var_new(&data);
 
@@ -167,15 +169,16 @@ void test_wan_manager_sensing_query(UNUSED void** state) {
 
     assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
     assert_non_null(intf_obj);
-    assert_non_null(intf_obj->priv);
+    intf_priv = intf_obj->priv;
+    assert_non_null(intf_priv->sensing_queries);
 
     assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-stop", data, data), 0);
     assert_non_null(intf_obj);
-    assert_null(intf_obj->priv);
+    assert_null(intf_priv->sensing_queries);
 
     assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
     assert_non_null(intf_obj);
-    assert_non_null(intf_obj->priv);
+    assert_non_null(intf_priv->sensing_queries);
 
     amxc_var_delete(&data);
 }
