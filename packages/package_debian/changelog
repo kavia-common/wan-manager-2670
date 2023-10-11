@@ -1,3 +1,9 @@
+wan-manager (0.29.0) unstable; urgency=medium
+
+  * [amxrt][no-root-user][capability drop]wan-manager must be adapted to run as non-root and lmited capabilities
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 11 Oct 2023 06:42:48 +0000
+
 wan-manager (0.28.0) unstable; urgency=medium
 
   * [IPv6][RouterAdvertisement] M O flag behaviour
