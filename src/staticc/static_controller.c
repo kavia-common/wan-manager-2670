@@ -89,8 +89,11 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "No IP interface name found");
 
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
@@ -117,7 +120,13 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 
+    // Add the IPReference to the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv4Reference to '%s'", logical_path);
+
 exit:
+    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -127,8 +136,16 @@ amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+
+    //Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s.LowerLayers'", logical_path);
 
     // Disable the IP interface
     rc = component_set_enable(intf_path, ip_get_context(), false);
@@ -147,6 +164,7 @@ amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
     when_failed(rc, exit);
 
 exit:
+    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -158,8 +176,11 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
@@ -177,12 +198,17 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
     rc = component_set_enable(intf_path, ip_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
+    // Add the IPReference to the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
+
     // Setting up the default route instance
     rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GET_CHAR(ipv6, "DefaultRouter"), intf_path, true);
     when_failed_trace(rc, exit, ERROR, "Failed to set the static default IPv6 route");
 
-
 exit:
+    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -194,8 +220,16 @@ amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
     const char* default_router = GET_CHAR(ipv6, "DefaultRouter");
+    const char* name = GET_CHAR(parameters, "Name");
+    char* logical_path = NULL;
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+
+    // Remove the IPReference from the Logical Interface
+    logical_path = create_logical_path(name);
+    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv6Reference from '%s'", logical_path);
 
     // Disable the default route instance
     rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, default_router, intf_path, false);
@@ -218,6 +252,7 @@ amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to unset the lower layer in interface %s", intf_path);
 
 exit:
+    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
