@@ -1,3 +1,5 @@
+#include "mod_sahtrace.odl";
+
 %config {
     name = "wan-manager";
     import-dbg = false;
@@ -5,21 +7,21 @@
     // SAHTRACE
     sahtrace = {
         type = "syslog",
-        level = 200
+        level = "${default_log_level}"
     };
 
     trace-zones = {
-        "wan-man" = 200,
-        "uci-ctrl" = 200,
-        "dhcpc-ctrl" = 200,
-        "ppp-ctrl" = 200,
-        "as-ctrl" = 200,
-        "com-ctrl" = 200,
-        "eth-ctrl" = 200,
-        "netmod-ctrl" = 200,
-        "dslite-ctrl" = 200,
-        "static-ctrl" = 200,
-        "mod-autosensing" = 200
+        "wan-man" = "${default_trace_zone_level}",
+        "uci-ctrl" = "${default_trace_zone_level}",
+        "dhcpc-ctrl" = "${default_trace_zone_level}",
+        "ppp-ctrl" = "${default_trace_zone_level}",
+        "as-ctrl" = "${default_trace_zone_level}",
+        "com-ctrl" = "${default_trace_zone_level}",
+        "eth-ctrl" = "${default_trace_zone_level}",
+        "netmod-ctrl" = "${default_trace_zone_level}",
+        "dslite-ctrl" = "${default_trace_zone_level}",
+        "static-ctrl" = "${default_trace_zone_level}",
+        "mod-autosensing" = "${default_trace_zone_level}"
     };
 
     // main files
@@ -44,7 +46,6 @@
 
 import "${name}.so" as "${name}";
 import "mod-dmext.so";
-#include "mod_sahtrace.odl";
 #include "wan-manager_caps.odl";
 
 include "${wan_manager_definition_file}";
