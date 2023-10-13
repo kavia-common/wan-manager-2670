@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.29.1 - 2023-10-13(13:28:28 +0000)
+
+### Changes
+
+-  All applications using sahtrace logs should use default log levels
+
 ## Release v0.29.0 - 2023-10-11(06:42:48 +0000)
 
 ### New

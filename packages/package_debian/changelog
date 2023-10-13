@@ -1,3 +1,9 @@
+wan-manager (0.29.1) unstable; urgency=medium
+
+  *  All applications using sahtrace logs should use default log levels
+
+ -- SAH bot <sahbot@softathome.com>  Fri, 13 Oct 2023 13:28:28 +0000
+
 wan-manager (0.29.0) unstable; urgency=medium
 
   * [amxrt][no-root-user][capability drop]wan-manager must be adapted to run as non-root and lmited capabilities
