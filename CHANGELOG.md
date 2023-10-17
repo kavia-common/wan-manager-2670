@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.29.2 - 2023-10-17(13:10:01 +0000)
+
+### Fixes
+
+-  [IPv6 Enable][UserSetting] It must be possible to Enable Ipv6 on the HGW
+
 ## Release v0.29.1 - 2023-10-13(13:28:28 +0000)
 
 ### Changes

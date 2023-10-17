@@ -1,3 +1,9 @@
+wan-manager (0.29.2) unstable; urgency=medium
+
+  *  [IPv6 Enable][UserSetting] It must be possible to Enable Ipv6 on the HGW
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 17 Oct 2023 13:10:01 +0000
+
 wan-manager (0.29.1) unstable; urgency=medium
 
   *  All applications using sahtrace logs should use default log levels
