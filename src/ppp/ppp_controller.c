@@ -153,6 +153,10 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", true);
         when_failed(rc, exit);
 
+        // Disable PPPv6
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", false);
+        when_failed(rc, exit);
+
         // Enable the IPv4 Address instance
         rc = ipv4_addr_toggle(intf_path, NULL, PPP_ADDRESSING_TYPE, true);
         when_failed_trace(rc, exit, ERROR, "Failed to enable the IPv4 Address instance");
@@ -174,6 +178,10 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
             rc = component_set_bool(nd_path, neighbor_discovery_get_context(), "AutoConfEnable", false);
             when_failed_trace(rc, exit, ERROR, "Failed to disable AutoConf on %s", nd_path);
         }
+
+        // Disable PPPv4
+        rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", false);
+        when_failed(rc, exit);
 
         // Enable PPPv6
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", true);
