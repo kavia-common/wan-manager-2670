@@ -1,3 +1,9 @@
+wan-manager (0.30.0) unstable; urgency=medium
+
+  * add a bridge WANMode in the WANManager
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 23 Oct 2023 13:49:07 +0000
+
 wan-manager (0.29.2) unstable; urgency=medium
 
   *  [IPv6 Enable][UserSetting] It must be possible to Enable Ipv6 on the HGW
