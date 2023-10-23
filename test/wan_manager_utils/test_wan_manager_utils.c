@@ -97,19 +97,19 @@ void test_ethernet_vlan_set_enable(UNUSED void** state) {
     vlan_obj = amxd_dm_get_object(test_get_dm(), "Device.Ethernet.VLANTermination.vlan400.");
     assert_null(vlan_obj);
 
-    assert_int_equal(ethernet_vlan_set_enable(parameters, true), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, true), amxd_status_ok);
     amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
-    assert_int_equal(ethernet_vlan_set_enable(parameters, false), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, false), amxd_status_ok);
     amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_false(GETP_BOOL(&ret, "0.0.Enable"));
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
-    assert_int_equal(ethernet_vlan_set_enable(parameters, true), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, true), amxd_status_ok);
     amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     amxc_var_clean(&ret);

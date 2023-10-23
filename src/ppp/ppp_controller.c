@@ -123,13 +123,6 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     ppp_path = ppp_get_client(true, intf_path, intf_alias);
     when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get PPP instance path");
 
-    // VLANS
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-        lower_layer = GET_CHAR(parameters, "VLANTermination");
-    }
-
     // Set LowerLayer in PPP-manager
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", lower_layer);
     when_failed(rc, exit);
@@ -322,11 +315,6 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     // Clear LowerLayer in PPP-manager
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear '%s.LowerLayers'", ppp_path);
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
 
     if(ip_version == 6) {
         // Disable the RouteInformation instance

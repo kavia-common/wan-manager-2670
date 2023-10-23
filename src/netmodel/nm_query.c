@@ -526,8 +526,10 @@ void stop_ra_queries(void) {
     return;
 }
 
-nm_query_ll_info_t* get_nm_query_info(int index) {
+nm_query_ll_info_t* get_nm_query_info(const char* physical_type) {
     nm_query_ll_info_t* rv = NULL;
+    int index = phys_type_to_index(physical_type);
+
     if((index >= 0) && (index < physical_type_last)) {
         rv = &ll_info[index];
     }

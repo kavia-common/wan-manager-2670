@@ -5,7 +5,7 @@
     "IPv4Reference" : "Device.IP.Interface.2.",
     "IPv6Mode" : "dhcp6",
     "IPv6Reference" : "Device.IP.Interface.2.",
-    "LowerLayer" : "Device.Ethernet.Link.1.",
+    "LowerLayer" : "",
     "Name" : "wan",
     "Password" : "",
     "Type" : "vlan",

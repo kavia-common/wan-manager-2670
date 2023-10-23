@@ -127,6 +127,14 @@
             %persistent csv_string DeferredIPv6Instances;
 
             /**
+            * Reference to the bridge, if filled in the bridge mode will be enabled
+            * @version 1.0
+            */
+            %persistent string BridgeReference{
+                default "";
+            }
+
+            /**
             * Static IPv4 network configuration
             * Only applicable if Mode4 is set to static
             * Only one instance is expected per wan_mode

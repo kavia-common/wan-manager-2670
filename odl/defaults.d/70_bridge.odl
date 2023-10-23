@@ -1,0 +1,21 @@
+%populate {
+    object 'WANManager.WAN' {
+        instance add ("Bridge_mode"){
+            parameter Alias = "Bridge_mode";
+            parameter PhysicalType = "Ethernet";
+        }
+    }
+
+    object 'WANManager.WAN.Bridge_mode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "none";
+            parameter DefaultInterface = false;
+            parameter IPv6Mode = "none";
+            parameter Name = "wan";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter BridgeReference = "Device.Bridging.Bridge.1.";
+        }
+    }
+}

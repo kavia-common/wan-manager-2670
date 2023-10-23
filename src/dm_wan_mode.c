@@ -73,6 +73,7 @@
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
+#include <amxb/amxb.h>
 
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
@@ -84,6 +85,8 @@
 #include "dns/dns.h"
 #include "upstream_intf.h"
 #include "interface_priv.h"
+#include "ethernet/ethernet.h"
+#include "bridge_mode.h"
 
 #define ME "wan-man"
 typedef enum {
@@ -338,7 +341,7 @@ exit:
  * Function that enables or disables the interface of the wan-mode.
  *
  * @param interface Interface to be enabled/disabled
- * @param lower_layer Lowerlayer of the Interface
+ * @param ll_info struct containing lowerlayer info
  * @param enable Enable parameter
  * @param old_interface Old interface to disable, can be the same as the interface when using ipv4_mode_ovr/ipv6_mode_ovr
  * @param ipv4_mode_ovr IPv4 mode that overrides the current one of the interface. No override done when NULL
@@ -346,7 +349,7 @@ exit:
  * @return amxd_status_t
  */
 static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
-                                          const char* lower_layer,
+                                          nm_query_ll_info_t* ll_info,
                                           bool enable,
                                           amxd_object_t* old_interface,
                                           const char* ipv4_mode_ovr,
@@ -361,6 +364,8 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     amxd_object_t* ipv6_addr = NULL;
     mode_ctrl_t mode = IP_None;
     amxc_llist_it_t* it = NULL;
+    const char* bridge_reference = NULL;
+    bool bridge = false;
 
     amxc_var_init(&parameters);
 
@@ -375,7 +380,6 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     it = amxd_object_first_instance(amxd_object_findf(interface, ".IPv6Address."));
     ipv6_addr = amxc_container_of(it, amxd_object_t, it);
 
-    amxc_var_add_key(cstring_t, &parameters, "LowerLayer", lower_layer);
     ipv4_var = amxc_var_add_key(amxc_htable_t, &parameters, "ipv4", NULL);
     ipv6_var = amxc_var_add_key(amxc_htable_t, &parameters, "ipv6", NULL);
 
@@ -387,8 +391,37 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
 
     // Get mode for IPv4 & IPv6
     mode = get_wan_mode_type(interface, true, ipv4_mode_ovr, ipv6_mode_ovr);
-    if(IP_None != mode) {
+
+    bridge_reference = GET_CHAR(&parameters, "BridgeReference");
+    bridge = !STRING_EMPTY(bridge_reference);
+    if(enable && bridge) {
+        amxc_var_t* var_intf_path = netmodel_getFirstParameter(bridge_reference, "InterfacePath", NULL, netmodel_traverse_one_level_up);
+        when_true_trace(amxc_var_is_null(var_intf_path), exit, ERROR, "Failed to find link layer path for '%s'", bridge_reference);
+        amxc_var_add_key(cstring_t, &parameters, "LowerLayer", GET_CHAR(var_intf_path, NULL));
+        rc = manage_bridge(bridge_reference, ll_info->upstream_intf_path, enable, mode, GET_UINT32(&parameters, "VlanID"), GET_UINT32(&parameters, "VlanPriority"));
+
+        amxc_var_delete(&var_intf_path);
+        when_failed_trace(rc, exit, ERROR, "Failed to add port to bridge, return '%d'", rc);
+    } else if(enable && ((mode & TYPE_VLAN) != 0)) {
+        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
+        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), true);
+        amxc_var_add_key(cstring_t, &parameters, "LowerLayer", GET_CHAR(&parameters, "VLANTermination"));
+    } else {
+        amxc_var_add_key(cstring_t, &parameters, "LowerLayer", ll_info->lower_layer);
+    }
+
+    if((mode & (MASK_IPv4 | MASK_IPv6)) != IP_None) {
         rc = mode_ctrl_action(mode, &parameters, enable);
+    } else if(bridge) {
+        rc = bridge_mode_ctrl_action(&parameters, enable);
+    }
+
+    if(!enable && bridge) {
+        rc = manage_bridge(bridge_reference, ll_info->upstream_intf_path, enable, mode, GET_UINT32(&parameters, "VlanID"), GET_UINT32(&parameters, "VlanPriority"));
+        when_failed_trace(rc, exit, ERROR, "Failed to disable port from bridge, return '%d'", rc);
+    } else if(!enable && ((mode & TYPE_VLAN) != 0)) {
+        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
+        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), false);
     }
 
 exit:
@@ -406,15 +439,18 @@ exit:
 amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mode, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* lower_layer = NULL;
+    nm_query_ll_info_t* info = NULL;
     char* physical_type = NULL;
     char* dns_mode = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
     physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
-    lower_layer = nm_query_get_lower_layer(physical_type);
+
+    info = get_nm_query_info(physical_type);
+    when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type);
+
     dns_mode = amxd_object_get_value(cstring_t, wan_mode, "DNSMode", NULL);
-    when_str_empty_trace(lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type);
+    when_str_empty_trace(info->lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type);
 
     if(!enable) {
         wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
@@ -431,7 +467,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
             old_interface = amxd_object_findf(old_wan_mode, ".Intf.[Name == '%s'].", intf_name);
             free(intf_name);
         }
-        rc = wan_mode_intf_enable(interface, lower_layer, enable, old_interface, NULL, NULL);
+        rc = wan_mode_intf_enable(interface, info, enable, old_interface, NULL, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to %s interface '%s' with code %d", enable ? "enable" : "disable",
                           amxd_object_get_name(interface, AMXD_OBJECT_NAMED), rc);
 
@@ -699,18 +735,23 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     SAH_TRACEZ_IN(ME);
     const char* ip_type = ipv4 ? "IPv4Mode" : "IPv6Mode";
     amxd_status_t rc = amxd_status_unknown_error;
+    nm_query_ll_info_t* info = NULL;
     amxd_object_t* wan_mode_obj = NULL;
     amxd_object_t* intf_obj = NULL;
     amxc_var_t* ip_mode_arg = GET_ARG(GET_ARG(event_data, "parameters"), ip_type);
-    const char* lower_layer = NULL;
-    const char* old_ip_mode = NULL;
     const char* new_ip_mode = NULL;
+    const char* ipv4_mode_ovr = NULL;
+    const char* ipv6_mode_ovr = NULL;
     char* wan_status = NULL;
     char* physical_type = NULL;
     char* current_operation_mode = amxd_object_get_value(cstring_t, get_wan_manager_obj(), "OperationMode", NULL);
 
-    new_ip_mode = GETP_CHAR(ip_mode_arg, "to");
-    old_ip_mode = GETP_CHAR(ip_mode_arg, "from");
+    new_ip_mode = GET_CHAR(ip_mode_arg, "to");
+    if(ipv4) {
+        ipv4_mode_ovr = GET_CHAR(ip_mode_arg, "from");
+    } else {
+        ipv6_mode_ovr = GET_CHAR(ip_mode_arg, "from");
+    }
 
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
@@ -725,13 +766,15 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     // If the status of the wanmode is disabled, then do nothing
     when_true_status(strcmp(wan_status, "Disabled") == 0, exit, rc = amxd_status_ok);
     physical_type = amxd_object_get_value(cstring_t, wan_mode_obj, "PhysicalType", NULL);
-    lower_layer = nm_query_get_lower_layer(physical_type);
+
+    info = get_nm_query_info(physical_type);
+    when_null_trace(info, exit, ERROR, "No info structure found for PhysicalType '%s'", physical_type);
 
     // Disable the previous ip mode of the interface
-    rc = !ipv4 ? wan_mode_intf_enable(intf_obj, lower_layer, false, intf_obj, NULL, old_ip_mode) : wan_mode_intf_enable(intf_obj, lower_layer, false, intf_obj, old_ip_mode, NULL);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable IPMode '%s' in the datamodel", old_ip_mode);
+    rc = wan_mode_intf_enable(intf_obj, info, false, intf_obj, ipv4_mode_ovr, ipv6_mode_ovr);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable IPMode '%s' in the datamodel", GET_CHAR(ip_mode_arg, "from"));
     // Enable the current ip mode of the interface object
-    rc = wan_mode_intf_enable(intf_obj, lower_layer, true, intf_obj, NULL, NULL);
+    rc = wan_mode_intf_enable(intf_obj, info, true, intf_obj, NULL, NULL);
     when_failed_trace(rc, exit, ERROR, "Failed to enable '%s' as IPMode", new_ip_mode);
 
     (void) new_ip_mode;

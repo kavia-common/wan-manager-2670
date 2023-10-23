@@ -141,7 +141,7 @@ exit:
 }
 
 
-amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
+amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
                             const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
@@ -157,12 +157,6 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode,
     when_str_empty_trace(intf_alias, exit, ERROR, "No IP interface alias found");
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
     when_str_empty_trace(name, exit, ERROR, "No IP interface name found");
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-        lower_layer = GET_CHAR(parameters, "VLANTermination");
-    }
 
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
@@ -205,7 +199,7 @@ exit:
     return rc;
 }
 
-amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
+amxd_status_t dhcpc4_disable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
@@ -250,11 +244,6 @@ amxd_status_t dhcpc4_disable(mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
 
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
-
 exit:
     free(dhcpv4_path);
     free(logical_path);
@@ -262,7 +251,7 @@ exit:
     return rc;
 }
 
-amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
+amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
                             const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
@@ -289,12 +278,6 @@ amxd_status_t dhcpc6_enable(mode_ctrl_t mode,
     // Enable the RouteInformation instance
     rc = component_set_enable(router_info, routing_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to disable the Routing manager's RoutingInformation");
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-        lower_layer = GET_CHAR(parameters, "VLANTermination");
-    }
 
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
@@ -339,7 +322,7 @@ exit:
     return rc;
 }
 
-amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
+amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
                              const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
@@ -387,14 +370,9 @@ amxd_status_t dhcpc6_disable(mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
 
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
-
     // Disable the RouteInformation instance
     rc = component_set_enable(router_info, routing_get_context(), false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disble the Routing manager's RoutingInformation");
+    when_failed_trace(rc, exit, ERROR, "Failed to disable the Routing manager's RoutingInformation");
 
     // Empty the interface reference of the RouteInformation
     rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");

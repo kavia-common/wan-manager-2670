@@ -111,9 +111,9 @@ int nm_query_mode_active(void);
 int nm_query_ra_params(void);
 void stop_sensing_queries(void);
 void stop_ra_queries(void);
-nm_query_ll_info_t* get_nm_query_info(int index);
 void intf_sensing_queries_clean(intf_sensing_queries_t** nm_queries);
 void intf_ra_queries_clean(intf_ra_queries_t** nm_queries);
+nm_query_ll_info_t* get_nm_query_info(const char* physical_type);
 
 #ifdef __cplusplus
 }

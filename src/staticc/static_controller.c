@@ -92,12 +92,6 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-        lower_layer = GET_CHAR(parameters, "VLANTermination");
-    }
-
     // Set IP-manager LowerLayers parameter for the interface in the IPv4Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set IPv4Reference LowerLayers to '%s'", lower_layer);
@@ -152,11 +146,6 @@ amxd_status_t static4_disable(UNUSED mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed(rc, exit);
 
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
-
 exit:
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -171,12 +160,6 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
     amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(parameters, true);
-        lower_layer = GET_CHAR(parameters, "VLANTermination");
-    }
 
     // Set IP-manager LowerLayers parameter for the interface in the IPv6Reference parameter
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
@@ -233,11 +216,6 @@ amxd_status_t static6_disable(UNUSED mode_ctrl_t mode,
     // Emptying the LowerLayer parameter of the IP-manager's interface
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to unset the lower layer in interface %s", intf_path);
-
-    if((mode & TYPE_VLAN) != 0) {
-        SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(parameters, false);
-    }
 
 exit:
     SAH_TRACEZ_OUT(ME);

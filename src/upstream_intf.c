@@ -229,15 +229,13 @@ const char* index_to_phys_type_flag(const int index) {
 int toggle_upstream_intf(const char* physical_type, bool enable) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
-    int index = phys_type_to_index(physical_type);
     nm_query_ll_info_t* info = NULL;
 
-    when_true_trace(index < 0 || index >= physical_type_last, exit, ERROR, "'%d' is an invalid type index", index);
-    info = get_nm_query_info(index);
-    when_null_trace(info, exit, ERROR, "No info structure found for index '%d'", index);
+    info = get_nm_query_info(physical_type);
+    when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type);
 
-    if(upstream_toggle[index] != NULL) {
-        rv = upstream_toggle[index](info, enable);
+    if(upstream_toggle[info->index] != NULL) {
+        rv = upstream_toggle[info->index](info, enable);
     } else {
         rv = toggle_dummy(info, enable);
     }
