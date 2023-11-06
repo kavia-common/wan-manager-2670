@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.31.0 - 2023-11-06(11:37:07 +0000)
+
+### New
+
+- Configure VLANPriority when creating VLANs
+
 ## Release v0.30.0 - 2023-10-23(13:49:07 +0000)
 
 ### New

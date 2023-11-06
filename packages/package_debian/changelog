@@ -1,3 +1,9 @@
+wan-manager (0.31.0) unstable; urgency=medium
+
+  * Configure VLANPriority when creating VLANs
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 06 Nov 2023 11:37:08 +0000
+
 wan-manager (0.30.0) unstable; urgency=medium
 
   * add a bridge WANMode in the WANManager
