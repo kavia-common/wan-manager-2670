@@ -11,6 +11,7 @@
                 string LowerLayers = "";
                 uint32 VLANID = 1;
                 uint32 TPID = 33024;
+                uint32 VLANPriority = 0;
             }
         }
     }
@@ -21,6 +22,7 @@
         instance add (0, "vlan201", Name = "vlan201") {
             parameter LowerLayers = "Device.Ethernet.Link.2.";
             parameter VLANID = 201;
+            parameter VLANPriority = 0;
         }
     }
 }

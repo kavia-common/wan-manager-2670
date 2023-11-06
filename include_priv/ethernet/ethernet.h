@@ -70,7 +70,7 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, bool enable);
+amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, int32_t vlan_prio, bool enable);
 
 #ifdef __cplusplus
 }

@@ -81,7 +81,7 @@
 
 #define ME "eth-ctrl"
 
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
+static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, int32_t vlan_prio) {
     SAH_TRACEZ_IN(ME);
     char* path = NULL;
     amxc_string_t name;
@@ -100,7 +100,9 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id) {
     amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
     amxc_var_add_key(bool, &parameters, "Enable", false);
     amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
-
+    if(vlan_prio > -1) {
+        amxc_var_add_key(uint32_t, &parameters, "VLANPriority", vlan_prio);
+    }
     path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, ethernet_get_context());
 
 exit:
@@ -110,12 +112,14 @@ exit:
     return path;
 }
 
-amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, bool enable) {
+amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, int32_t vlan_prio, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t str_search;
+    amxc_var_t set_params;
     char* vlan_path = NULL;
 
+    amxc_var_init(&set_params);
     amxc_string_init(&str_search, 0);
     when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
 
@@ -127,20 +131,27 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const
         SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",
                         vlan_id, lower_layer);
 
-        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id);
+        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id, vlan_prio);
         when_null_trace(vlan_path, exit, ERROR,
                         "Cannot create VLAN configuration for id %d with lowerlayer %s",
                         vlan_id, lower_layer);
     }
     SAH_TRACEZ_INFO(ME, "vlan_path %s, lower_layer %s", vlan_path, lower_layer);
 
-    rc = component_set_enable(vlan_path, ethernet_get_context(), enable);
+    amxc_var_set_type(&set_params, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(bool, &set_params, "Enable", enable);
+    if(vlan_prio > -1) {
+        amxc_var_add_key(uint32_t, &set_params, "VLANPriority", vlan_prio);
+    }
+    rc = component_set_params(vlan_path, ethernet_get_context(), &set_params);
+
     if(enable) {
         amxc_var_add_key(cstring_t, (amxc_var_t*) parameters, "VLANTermination", vlan_path);
     }
 
 exit:
     free(vlan_path);
+    amxc_var_clean(&set_params);
     amxc_string_clean(&str_search);
     SAH_TRACEZ_OUT(ME);
     return rc;
