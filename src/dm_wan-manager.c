@@ -126,8 +126,7 @@ int _wan_manager_main(int reason,
         break;
     case 1:
         nm_query_ll_cleanup();
-        stop_sensing_queries();
-        stop_ra_queries();
+        nm_close_sensing_queries();
         netmodel_cleanup();
         amxm_close_all();
         wan_mode_cleanup();

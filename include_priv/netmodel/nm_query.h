@@ -94,25 +94,17 @@ typedef struct _nm_query_ll_info {
     bool used;
 } nm_query_ll_info_t;
 
-typedef struct _intf_sensing_queries {
+typedef struct _intf_isup_queries {
     netmodel_query_t* nm_ipv4_up_query;                 // pointer to a netmodel ipv4-up query
     netmodel_query_t* nm_ipv6_up_query;                 // pointer to a netmodel ipv6-up query
-} intf_sensing_queries_t;
-
-typedef struct _intf_ra_queries {
-    netmodel_query_t* nm_managed_flag_query;
-} intf_ra_queries_t;
+} intf_isup_queries_t;
 
 void nm_query_ll_init(void);
 void nm_query_ll_cleanup(void);
 int nm_query_ll_add(const char* name);
 const char* nm_query_get_lower_layer(const char* name);
 int nm_query_mode_active(void);
-int nm_query_ra_params(void);
-void stop_sensing_queries(void);
-void stop_ra_queries(void);
-void intf_sensing_queries_clean(intf_sensing_queries_t** nm_queries);
-void intf_ra_queries_clean(intf_ra_queries_t** nm_queries);
+void nm_close_sensing_queries(void);
 nm_query_ll_info_t* get_nm_query_info(const char* physical_type);
 
 #ifdef __cplusplus

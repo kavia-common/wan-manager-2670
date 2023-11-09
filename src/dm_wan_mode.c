@@ -84,7 +84,6 @@
 #include "component.h"
 #include "dns/dns.h"
 #include "upstream_intf.h"
-#include "interface_priv.h"
 #include "ethernet/ethernet.h"
 #include "bridge_mode.h"
 
@@ -470,20 +469,14 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
         rc = wan_mode_intf_enable(interface, info, enable, old_interface, NULL, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to %s interface '%s' with code %d", enable ? "enable" : "disable",
                           amxd_object_get_name(interface, AMXD_OBJECT_NAMED), rc);
-
-        if(enable) {
-            init_private_intf_data(interface);
-        } else {
-            delete_private_intf_data(interface);
-        }
     }
 
     if(enable) {
         rc = dns_mode_set(wan_mode, dns_mode);
         nm_query_mode_active();
-        nm_query_ra_params();
     } else {
         rc = dns_mode_unset(wan_mode, dns_mode);
+        nm_close_sensing_queries();
         toggle_upstream_intf(physical_type, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");

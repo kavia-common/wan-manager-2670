@@ -124,7 +124,7 @@ static int autosensing_is_up_query_stop(UNUSED const char* function_name,
     SAH_TRACEZ_IN(ME);
 
     SAH_TRACEZ_INFO(ME, "Autosensing, stop sensing query");
-    stop_sensing_queries();
+    nm_close_sensing_queries();
 
     SAH_TRACEZ_OUT(ME);
     return 0;
