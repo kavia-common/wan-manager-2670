@@ -1,3 +1,9 @@
+wan-manager (1.0.0) unstable; urgency=medium
+
+  * [IPv6][RouterAdvertisement] M O flag behaviour
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 09 Nov 2023 15:48:52 +0000
+
 wan-manager (0.31.0) unstable; urgency=medium
 
   * Configure VLANPriority when creating VLANs
