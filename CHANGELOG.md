@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.0.1 - 2023-11-14(08:15:43 +0000)
+
+### Other
+
+- add unit tests for bridge mode
+
 ## Release v1.0.0 - 2023-11-09(15:48:51 +0000)
 
 ### Removed
