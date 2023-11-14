@@ -79,6 +79,7 @@
 #include <amxb/amxb.h>
 #include <amxb/amxb_register.h>
 #include <amxj/amxj_variant.h>
+#include <amxd/amxd_transaction.h>
 
 #include "ctrl/mode_ctrl.h"
 #include "dm_wan-manager.h"
@@ -103,6 +104,50 @@ static const char* odl_ethernet_mock = "../mocks/mock_ethernet.odl";
 static const char* odl_logical_mock = "../mocks/mock_logical.odl";
 static const char* odl_ppp_mock = "../mocks/mock_ppp.odl";
 static const char* odl_neigbordiscovery_mock = "../mocks/mock_neighbordiscovery.odl";
+static const char* odl_bridging_mock = "../mocks/mock_bridging.odl";
+
+static amxd_status_t _AddPort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_function_t* func, amxc_var_t* args, UNUSED amxc_var_t* ret) {
+    amxd_status_t status = amxd_status_unknown_error;
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+
+    amxd_trans_select_pathf(&trans, "Device.Bridging.LastAddParameters.Test.");
+    amxd_trans_set_value(cstring_t, &trans, "LowerLayers", GET_CHAR(args, "LowerLayers"));
+    if(GET_ARG(args, "Alias") != NULL) {
+        amxd_trans_set_value(cstring_t, &trans, "Alias", GET_CHAR(args, "Alias"));
+    }
+    amxd_trans_set_value(bool, &trans, "Enable", GET_BOOL(args, "Enable"));
+    if(GET_ARG(args, "VlanId") != NULL) {
+        amxd_trans_set_value(uint32_t, &trans, "VlanId", GET_UINT32(args, "VlanId"));
+    }
+    if(GET_ARG(args, "VlanName") != NULL) {
+        amxd_trans_set_value(cstring_t, &trans, "VlanName", GET_CHAR(args, "VlanName"));
+    }
+    if(GET_ARG(args, "VlanPriority") != NULL) {
+        amxd_trans_set_value(uint32_t, &trans, "VlanPriority", GET_UINT32(args, "VlanPriority"));
+    }
+
+    status = amxd_trans_apply(&trans, &dm);
+    amxd_trans_clean(&trans);
+    return status;
+}
+
+static amxd_status_t _DisablePort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_function_t* func, amxc_var_t* args, UNUSED amxc_var_t* ret) {
+    amxd_status_t status = amxd_status_unknown_error;
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
+
+    amxd_trans_select_pathf(&trans, "Device.Bridging.LastDisableParameters.Test.");
+    amxd_trans_set_value(cstring_t, &trans, "LowerLayers", GET_CHAR(args, "LowerLayers"));
+    if(GET_ARG(args, "VlanId") != NULL) {
+        amxd_trans_set_value(uint32_t, &trans, "VlanId", GET_UINT32(args, "VlanId"));
+    }
+
+    status = amxd_trans_apply(&trans, &dm);
+
+    amxd_trans_clean(&trans);
+    return status;
+}
 
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
@@ -147,6 +192,10 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_logical_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ppp_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_neigbordiscovery_mock, root_obj), 0);
+    // Bridging rpc mocks
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "AddPort", AMXO_FUNC(_AddPort)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "DisablePort", AMXO_FUNC(_DisablePort)), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_bridging_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser, amxb_get_fd(bus_ctx), connection_read,

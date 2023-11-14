@@ -182,7 +182,7 @@ void test_mode_ctrl_dhcpc4_enable_mode(UNUSED void** state) {
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &parameters, "IPv4Reference", "Device.IP.Interface.2.");
 
-    // Type = "untagged", IPv4Mode = "dhcp4",  IPv6Mode = "none"
+    // Type = "untagged", IPv4Mode = "dhcp4", IPv6Mode = "none"
     test_mode_ctrl(TYPE_UNTAGGED | IPv4_DHCP, &parameters, true, amxd_status_ok, FNC_DHCPC_ENABLE);
 
     // Type = "untagged", IPv4Mode = "none", IPv6Mode = "dhcp6"

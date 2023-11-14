@@ -794,3 +794,79 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     amxc_var_clean(&status);
     amxc_var_clean(&status_ip);
 }
+
+void test_wan_manager_set_bridge_mode(UNUSED void** state) {
+    amxd_object_t* obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastAddParameters.Test.");
+    amxc_var_t params;
+
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    assert_true(set_wan_mode("Bridge_mode", amxd_status_ok));
+    test_handle_events();
+
+    amxd_object_get_params(obj, &params, amxd_dm_access_protected);
+
+    assert_string_equal(GET_CHAR(&params, "Alias"), "INITIAL_VALUE");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "VlanName"), "INITIAL_VALUE");
+    assert_true(GET_BOOL(&params, "Enable"));
+    assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
+    assert_int_equal(GET_UINT32(&params, "VlanPriority"), 999);
+
+    amxc_var_dump(&params, 1);
+    amxc_var_clean(&params);
+
+    obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastDisableParameters.Test.");
+
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    test_handle_events();
+
+    amxd_object_get_params(obj, &params, amxd_dm_access_protected);
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
+
+    amxc_var_dump(&params, 1);
+    amxc_var_clean(&params);
+}
+
+void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
+    amxd_object_t* obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastAddParameters.Test.");
+    amxc_var_t params;
+
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    assert_true(set_wan_mode("Bridge_vlanmode", amxd_status_ok));
+    test_handle_events();
+
+    amxd_object_get_params(obj, &params, amxd_dm_access_protected);
+
+    assert_string_equal(GET_CHAR(&params, "Alias"), "INITIAL_VALUE");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "VlanName"), "INITIAL_VALUE");
+    assert_true(GET_BOOL(&params, "Enable"));
+    assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
+    assert_int_equal(GET_UINT32(&params, "VlanPriority"), 3);
+
+    amxc_var_dump(&params, 1);
+    amxc_var_clean(&params);
+
+    obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastDisableParameters.Test.");
+
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    test_handle_events();
+
+    amxd_object_get_params(obj, &params, amxd_dm_access_protected);
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
+
+    amxc_var_dump(&params, 1);
+    amxc_var_clean(&params);
+}

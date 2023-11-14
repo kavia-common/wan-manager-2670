@@ -90,24 +90,20 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         instance add ("test_mode"){
            parameter PhysicalType = "Ethernet";
         }
-
         instance add ("demo_pppmode"){
            parameter Alias = "demo_pppmode";
            parameter PhysicalType = "Ethernet";
         }
-
         instance add ("demo_staticmode"){
             parameter Alias = "demo_staticmode";
             parameter PhysicalType = "Ethernet";
             parameter EnableSensing = false;
         }
-
         instance add ("demo_ppp6mode"){
             parameter Alias = "demo_ppp6mode";
             parameter PhysicalType = "Ethernet";
             parameter DNSMode = "Dynamic";
         }
-
         instance add("demo_dslite"){
             parameter Alias = "demo_dslite";
             parameter PhysicalType = "Ethernet";
@@ -116,7 +112,17 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter Alias = "demo_link";
             parameter PhysicalType = "Ethernet";
         }
-     }
+        instance add ("Bridge_mode"){
+            parameter Alias = "Bridge_mode";
+            parameter PhysicalType = "Ethernet";
+            parameter EnableSensing = false;
+        }
+        instance add ("Bridge_vlanmode"){
+            parameter Alias = "Bridge_vlanmode";
+            parameter PhysicalType = "Ethernet";
+            parameter EnableSensing = false;
+        }
+    }
 
     object 'WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
@@ -315,6 +321,34 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter DefaultRouter = "172.16.110.10";
             parameter IPv4Address = "172.16.110.45";
             parameter SubnetMask = "255.255.255.0";
+        }
+    }
+
+    object 'WANManager.WAN.Bridge_mode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "none";
+            parameter DefaultInterface = false;
+            parameter IPv6Mode = "none";
+            parameter Name = "wan";
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter BridgeReference = "Device.Bridging.Bridge.1.";
+        }
+    }
+
+    object 'WANManager.WAN.Bridge_vlanmode.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "vlan";
+            parameter IPv4Mode = "none";
+            parameter DefaultInterface = false;
+            parameter IPv6Mode = "none";
+            parameter Name = "wan";
+            parameter VlanID = 100;
+            parameter VlanPriority = 3;
+            parameter IPv4Reference = "Device.IP.Interface.2.";
+            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter BridgeReference = "Device.Bridging.Bridge.1.";
         }
     }
 }

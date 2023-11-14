@@ -3,6 +3,7 @@
         instance add ("Bridge_mode"){
             parameter Alias = "Bridge_mode";
             parameter PhysicalType = "Ethernet";
+            parameter EnableSensing = false;
         }
     }
 
