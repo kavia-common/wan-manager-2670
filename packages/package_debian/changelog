@@ -1,3 +1,9 @@
+wan-manager (1.0.2) unstable; urgency=medium
+
+  * Issue: HOP-4960 In bridge mode, getCurrentWANModeStatus always returns false
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 15 Nov 2023 16:45:00 +0000
+
 wan-manager (1.0.1) unstable; urgency=medium
 
   * Issue: HOP-4825 add unit tests for bridge mode

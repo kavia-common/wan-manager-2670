@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.0.2 - 2023-11-15(16:44:59 +0000)
+
+### Fixes
+
+- In bridge mode, getCurrentWANModeStatus always returns false
+
 ## Release v1.0.1 - 2023-11-14(08:15:43 +0000)
 
 ### Other
