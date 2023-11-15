@@ -84,6 +84,7 @@
 
 #include "autosensing/autosensing.h"
 #include "netmodel/nm_query.h"
+#include "wan_manager_utils.h"
 
 #define ME "wan-man"
 
@@ -261,17 +262,20 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_unknown_error;
     amxd_object_t* current_mode_obj = get_current_wan_mode();
+    amxd_object_t* wan_intf_obj = amxd_object_findf(current_mode_obj, ".Intf.wan.");
     bool mode_active = false;
+    char* bridge_reference = NULL;
     char* ip_reference = NULL;
 
-    when_null_trace(current_mode_obj, exit, ERROR, " Failed to get the current wan mode object");
+    when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
 
-    amxd_object_for_each(instance, it, amxd_object_findf(current_mode_obj, ".Intf.")) {
-        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        ip_reference = amxd_object_get_value(cstring_t, interface, "IPv4Reference", NULL);
+    bridge_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "BridgeReference", NULL);
+    if(!STRING_EMPTY(bridge_reference)) {
+        mode_active = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
+    } else {
+        ip_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "IPv4Reference", NULL);
         when_str_empty(ip_reference, exit);     // When the ip_reference is empty the mode is not active
         mode_active = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
-        break;
     }
 
     rv = amxd_status_ok;
@@ -280,6 +284,7 @@ exit:
     amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(bool, ret, "active", mode_active);
     free(ip_reference);
+    free(bridge_reference);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
