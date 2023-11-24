@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.0.3 - 2023-11-24(14:39:48 +0000)
+
+### Changes
+
+- add a bridge WANMode in the WANManager
+
 ## Release v1.0.2 - 2023-11-15(16:44:59 +0000)
 
 ### Fixes
