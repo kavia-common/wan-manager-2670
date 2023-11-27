@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.0.4 - 2023-11-27(14:17:52 +0000)
+
+### Fixes
+
+- GetWANStatus not working after updating data using WANManager
+
 ## Release v1.0.3 - 2023-11-24(14:39:48 +0000)
 
 ### Changes
