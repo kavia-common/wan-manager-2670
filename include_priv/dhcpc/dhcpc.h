@@ -74,7 +74,6 @@ amxd_status_t dhcpc4_enable(mode_ctrl_t mode, const amxc_var_t* const parameters
 amxd_status_t dhcpc4_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 amxd_status_t dhcpc6_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
 amxd_status_t dhcpc6_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-char* dhcpc_get_client(bool ipv4, const char* intf_path, const char* intf_alias);
 
 #ifdef __cplusplus
 }

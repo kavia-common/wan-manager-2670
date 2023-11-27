@@ -18,6 +18,8 @@
             parameter IPv6Mode = "dhcp6";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
         }
     }

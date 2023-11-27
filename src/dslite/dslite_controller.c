@@ -90,15 +90,14 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
     const char* name = GET_CHAR(parameters, "Name");
-    const char* intf_alias = GET_CHAR(parameters, "Alias");
-    char* dhcpv6_path = NULL;
+    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
+    const char* dslite_wan_if = NULL;
     char* logical_path = NULL;
     amxc_var_t wan_if;
     bool default_interface = GET_BOOL(parameters, "DefaultInterface");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
     amxc_var_init(&wan_if);
-
     when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
 
     //Add the IPReference to the Logical Interface
@@ -121,18 +120,18 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
 
     // Enable DHCPv6 Client
-    component_get_param(&wan_if, DSLITE_IF_PATH, dslite_get_context(), "WANInterface");
-    when_str_empty_trace(GETP_CHAR(&wan_if, "0.0.WANInterface"), exit, ERROR, "Failed to get DSLite WANInterface parameter");
-
-    dhcpv6_path = dhcpc_get_client(false, GETP_CHAR(&wan_if, "0.0.WANInterface"), intf_alias);
-
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
 
+    component_get_param(&wan_if, DSLITE_IF_PATH, dslite_get_context(), "WANInterface");
+    dslite_wan_if = GETP_CHAR(&wan_if, "0.0.WANInterface");
+    when_str_empty_trace(dslite_wan_if, exit, ERROR, "Failed to get DSLite WANInterface parameter");
+
+    rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", dslite_wan_if);
+    when_failed_trace(rc, exit, ERROR, "Failed to set DHCPv6Reference Interface to '%s'", dslite_wan_if);
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
 
 exit:
     amxc_var_clean(&wan_if);
-    free(dhcpv6_path);
     free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -144,22 +143,14 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
     const char* name = GET_CHAR(parameters, "Name");
-    const char* intf_alias = GET_CHAR(parameters, "Alias");
+    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     char* logical_path = NULL;
-    char* dhcpv6_path = NULL;
-    amxc_var_t wan_if;
-
-    amxc_var_init(&wan_if);
 
     // Disable DHCPv6 Client
-    component_get_param(&wan_if, DSLITE_IF_PATH, dslite_get_context(), "WANInterface");
-    when_str_empty_trace(GETP_CHAR(&wan_if, "0.0.WANInterface"), exit, ERROR, "Failed to get DSLite WANInterface parameter");
-
-    dhcpv6_path = dhcpc_get_client(false, GETP_CHAR(&wan_if, "0.0.WANInterface"), intf_alias);
-
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
-
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
+    rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
+    when_failed_trace(rc, exit, ERROR, "Failed to clear DHCPv6Reference Interface");
 
     //Remove the IPReference from the Logical Interface
     logical_path = create_logical_path(name);
@@ -175,8 +166,6 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
 
 exit:
-    amxc_var_clean(&wan_if);
-    free(dhcpv6_path);
     free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;

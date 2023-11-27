@@ -6,3 +6,4 @@ compile_commands.json
 .clangd/
 run_test
 *_caps.odl
+*.d

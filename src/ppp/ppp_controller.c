@@ -108,8 +108,8 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* name = GET_CHAR(parameters, "Name");
     const char* router_info = "Device.Routing.RouteInformation.";
     const char* nd_intf = "wan";
+    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     bool default_interface = GET_BOOL(parameters, "DefaultInterface");
-    char* dhcpv6_path = NULL;
     char* nd_path = NULL;
     char* logical_path = NULL;
     char* route_path = NULL;
@@ -213,9 +213,9 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to enable NeighborDiscovery");
 
         // Enable the DHCPv6 Client
-        dhcpv6_path = dhcpc_get_client(false, intf_path, intf_alias);
         when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
-        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
+        rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", intf_path);
+        when_failed_trace(rc, exit, ERROR, "Failed to set DHCPv6Reference Interface to '%s'", intf_path);
         rc = component_set_bool(dhcpv6_path, dhcpv6_get_context(), "RequestPrefixes", true);
         when_failed_trace(rc, exit, ERROR, "Failed to configure DHCPv6 IA_PD");
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
@@ -233,7 +233,6 @@ exit:
     free(route_path);
     free(logical_path);
     free(nd_path);
-    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -250,7 +249,7 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
     const char* router_info = "Device.Routing.RouteInformation.";
     const char* name = GET_CHAR(parameters, "Name");
-    char* dhcpv6_path = NULL;
+    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     char* logical_path = NULL;
     char* route_path = NULL;
     char* nd_path = NULL;
@@ -326,18 +325,18 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
 
         // Disable the DHCPv6 Client
-        dhcpv6_path = dhcpc_get_client(false, intf_path, NULL);
         when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
         SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
         when_failed_trace(rc, exit, ERROR, "Failed to disable the DHCPv6 Client");
+        rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
+        when_failed_trace(rc, exit, ERROR, "Failed to clear DHCPv6Reference Interface");
     }
 
 exit:
     free(nd_path);
     free(route_path);
     free(logical_path);
-    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

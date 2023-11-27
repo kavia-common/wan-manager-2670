@@ -135,6 +135,22 @@
             }
 
             /**
+            * Reference to the DHCPv4 Client instance, required if IPv4Mode is set to dhcp
+            * @version 1.0
+            */
+            %persistent string DHCPv4Reference{
+                default "";
+            }
+
+            /**
+            * Reference to the DHCPv6 Client instance, required if IPv4Mode is set to dhcp
+            * @version 1.0
+            */
+            %persistent string DHCPv6Reference{
+                default "";
+            }
+
+            /**
             * Static IPv4 network configuration
             * Only applicable if Mode4 is set to static
             * Only one instance is expected per wan_mode

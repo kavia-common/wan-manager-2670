@@ -8,22 +8,23 @@ include "../../odl/${name}_WAN_definition.odl";
 include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
-    object Device;
-    object DHCPv4Client {
-        object Client[] {
-            %unique %key string Alias;
-            bool Enable;
-            string Interface;
+    object Device {
+        object DHCPv4 {
+            object Client[] {
+                %unique %key string Alias;
+                bool Enable;
+                string Interface;
+            }
         }
-    }
 
-    object DHCPv6Client {
-        object Client[] {
-            %unique %key string Alias;
-            bool Enable;
-            string Interface;
-            bool RequestAddresses;
-            bool RequestPrefixes;
+        object DHCPv6 {
+            object Client[] {
+                %unique %key string Alias;
+                bool Enable;
+                string Interface;
+                bool RequestAddresses;
+                bool RequestPrefixes;
+            }
         }
     }
 
@@ -133,6 +134,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -147,6 +150,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -161,6 +166,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.6.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -172,6 +179,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.7.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -183,6 +192,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -199,6 +210,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter IPv6AddressDelegate="Device.IP.Interface.3.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -211,6 +224,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
         instance add(0,"voip"){
             parameter Name = "voip";
@@ -220,6 +235,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.2.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.2.";
         }
         instance add(0,"mgmt"){
             parameter Name = "mgmt";
@@ -229,6 +246,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.3.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.3.";
         }
     }
 
@@ -244,6 +263,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
                     parameter IPv6Mode= "dhcp6";
                     parameter IPv4Reference = "Device.IP.Interface.2.";
                     parameter IPv6Reference = "Device.IP.Interface.2.";
+                    parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+                    parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
                 }
             }
         }
@@ -261,6 +282,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
                     parameter IPv6Mode= "dhcp6";
                     parameter IPv4Reference = "Device.IP.Interface.2.";
                     parameter IPv6Reference = "Device.IP.Interface.2.";
+                    parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+                    parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
                 }
             }
         }
@@ -275,18 +298,29 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
-    object 'DHCPv4Client.Client' {
-        instance add (1, "wan") {
-            parameter Interface = "Device.IP.Interface.2.";
-        }
+    object 'Device.DHCPv4.Client' {
+        instance add (1, "wan");
+        instance add (2, "voip");
+        instance add (3, "iptv");
+        instance add (4, "mgmt");
     }
 
-    object 'DHCPv6Client.Client' {
+    object 'Device.DHCPv6.Client' {
         instance add (1, "wan") {
-            parameter Interface = "Device.IP.Interface.2.";
+            parameter RequestAddresses = false;
+        }
+        instance add (2, "voip") {
+            parameter RequestAddresses = false;
+        }
+        instance add (3, "iptv") {
+            parameter RequestAddresses = false;
+        }
+        instance add (4, "mgmt") {
             parameter RequestAddresses = false;
         }
     }
@@ -334,6 +368,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter BridgeReference = "Device.Bridging.Bridge.1.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 
@@ -349,6 +385,8 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter IPv4Reference = "Device.IP.Interface.2.";
             parameter IPv6Reference = "Device.IP.Interface.2.";
             parameter BridgeReference = "Device.Bridging.Bridge.1.";
+            parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
+            parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
     }
 }

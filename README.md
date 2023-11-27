@@ -35,30 +35,26 @@ All changes will be applied to the IP interface instances referenced by the IPvX
 * Toggle the referenced IP interface
 
 ### DHCPv4
-When switching to or from a mode that has "dhcpv4" set as IPv4Mode, the wan-manager will make configuration changes to the DHCPv4 client.
+When switching to or from a mode that has "dhcp4" set as IPv4Mode, the wan-manager will make configuration changes to the DHCPv4 client.
 
 #### Requirements
-
-* A wan-mode interface with IPv4Mode set to "dhcpv4" should have a matching DHCPv4.Client instance
-  * The instances "Interface" parameter should match the IPv4Reference
-  * The instance should be correctly configured
+* A wan-mode interface with IPv4Mode set to "dhcp4" should have its DHCPv4Reference parameter filled in to point to the associated DHCPv4 client instance.
 
 #### Changes made
-The wan-manager will only enable or disable the DHCPv4.Client instance
+* The DHCP client instance referred to by DHCPv4Reference:
+  * will be enabled
+  * will have its Interface parameter set
 
 ### DHCPv6
-When switching to or from a mode that has "dhcpv6" set as IPv6Mode, the wan-manager will make configuration changes to the DHCPv6 client.
+When switching to or from a mode that has "dhcp6" or "ppp6" set as IPv6Mode or "dslite" as IPv4Mode, the wan-manager will make configuration changes to the DHCPv6 client.
 
 #### Requirements
-* No requirements
+* A wan-mode interface with IPv6Mode set to "dhcp6" should have its DHCPv6Reference parameter filled in to point to the associated DHCPv6 client instance.
 
 #### Changes made
-* The wan-manager will look for a matching DHCPv6.Client (Interface == IPv6Reference)
-  * If no match is found it will take the first client
-  * If there is no client a new client will be created, this client will have the default configurations
-  * If multiple interfaces in the same mode use dhcpv6 as IPv6Mode:
-    * There should be multiple clients preconfigured for the interfaces
-    * If not the same client will be reconfigured multiple times and only the last interface will have an active dhcpv6 client
+* The DHCP client instance referred to by DHCPv6Reference:
+  * will be enabled
+  * will have its Interface parameter set
 
 ### PPP
 When switching to or from a mode that has "ppp4" as IPv4Mode or "ppp6" as IPv6Mode, the wan-manager will make configuration changes to the PPP plugin.
@@ -69,9 +65,9 @@ When switching to or from a mode that has "ppp4" as IPv4Mode or "ppp6" as IPv6Mo
 
 #### Changes made
 * Set LowerLayers in PPP-manager
-* Overrides the default PPP credentials, only if they are set in wan-manager datamodel
+* Overrides the default PPP credentials, only if they are set in wan-manager data model
 * Toggle IPCPEnable, if the IPv4Mode is ppp4
-* Togle IPCP6Enable, if the IPv6Mode is ppp6
+* Toggle IPCP6Enable, if the IPv6Mode is ppp6
 * Toggle the PPP interface "Device.PPP.Interface.1."
 
 ### Ethernet
@@ -136,4 +132,4 @@ There are a few cases that will stop the sensing:
 * If it fails to set the next mode, sensing will be stopped and the status for the mode will go to 'Error'
 
 ### NOTICES
-* When using autosensing, changes made to the WANMode parameter directly will be ignored. This will result in the configured WANMode not matching with the mode set in the datamodel. If the user want to change the mode, they need to use the setWANMode function or manually switch back to manual mode.
+* When using autosensing, changes made to the WANMode parameter directly will be ignored. This will result in the configured WANMode not matching with the mode set in the data model. If the user want to change the mode, they need to use the setWANMode function or manually switch back to manual mode.
