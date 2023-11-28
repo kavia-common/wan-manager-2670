@@ -42,6 +42,10 @@
     };
 
     external-mod-dir = "/usr/lib/amx/modules";
+
+    pcm_svc_config = {
+        "Objects" = "WANManager"
+    };
 }
 
 import "${name}.so" as "${name}";
@@ -64,3 +68,5 @@ requires "Logical.";
 %define {
     entry-point "${name}".wan_manager_main;
 }
+
+#include "mod_pcm_svc.odl";

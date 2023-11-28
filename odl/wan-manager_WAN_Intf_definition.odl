@@ -33,6 +33,7 @@
             */
             %persistent string UserName{
                 on action validate call check_maximum_length 64;
+                userflags %usersetting;
             }
 
             /**
@@ -42,6 +43,7 @@
             */
             %persistent string Password {
                 on action validate call check_maximum_length 64;
+                userflags %usersetting;
             }
 
             /**
@@ -107,6 +109,7 @@
             */
             %persistent uint32 VlanID{
                 default 100;
+                userflags %upc;
             }
 
             /**
