@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.0 - 2023-11-28(09:20:22 +0000)
+
+### New
+
+- [WANManager][BackupRestore] Different Parameters must be marked as upgrade persistent
+
 ## Release v1.0.4 - 2023-11-27(14:17:52 +0000)
 
 ### Fixes

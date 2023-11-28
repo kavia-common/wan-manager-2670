@@ -1,3 +1,9 @@
+wan-manager (1.1.0) unstable; urgency=medium
+
+  * Issue: HOP-4769 [WANManager][BackupRestore] Different Parameters must be marked as upgrade persistent
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 28 Nov 2023 09:20:22 +0000
+
 wan-manager (1.0.4) unstable; urgency=medium
 
   * Issue: HOP-5005 GetWANStatus not working after updating data using WANManager
