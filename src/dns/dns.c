@@ -74,6 +74,7 @@
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxb/amxb_types.h>
+#include <netmodel/client.h>
 
 #include "ctrl/mode_ctrl.h"
 #include "wan_manager_utils.h"
@@ -125,43 +126,40 @@ static dns_mode_t string_to_dns_mode(const char* dns_mode) {
 
 static void dns_server_build_args(amxc_var_t* dns_servers, amxd_object_t* interface, bool ipv4) {
     SAH_TRACEZ_IN(ME);
-    amxc_llist_it_t* ip_it = NULL;
-    amxc_llist_t* ip_var_list = NULL;
-    amxc_var_t ip_dns_servers_var;
-    amxc_llist_t* ip_dns_servers_list = NULL;
-    amxc_var_t* ip_var = NULL;
-    amxd_object_t* ip_addr = NULL;
-    const char* dns_server_ip = NULL;
-    const char* ip_ref_param = ipv4 ? "IPv4Reference" : "IPv6Reference";
-    const char* ip_addr_param = ipv4 ? ".IPv4Address." : ".IPv6Address.";
-    char* ip_ref = NULL;
+    amxc_var_t* logical_dns_list = NULL;
+    amxc_var_t dns_servers_to_add;
+    amxd_object_t* ip_addr_inst = NULL;
+    char* name = NULL;
+    char* logical_intf_named = NULL;
+    char* logical_intf = NULL;
 
-    ip_ref = amxd_object_get_value(cstring_t, interface, ip_ref_param, NULL);
+    amxc_var_init(&dns_servers_to_add);
 
-    amxc_var_init(&ip_dns_servers_var);
+    ip_addr_inst = amxd_object_findf(interface, "IPv%uAddress.[DNSServers!='']", ipv4 ? 4 : 6);
+    when_null_trace(ip_addr_inst, exit, ERROR, "Couldn't find IPv%uAddress instance with non empty DNS server list", ipv4 ? 4 : 6);
+    amxc_var_convert(&dns_servers_to_add, amxd_object_get_param_value(ip_addr_inst, "DNSServers"), AMXC_VAR_ID_LIST);
 
-    ip_it = amxd_object_first_instance(amxd_object_findf(interface, "%s", ip_addr_param));
-    ip_addr = amxc_container_of(ip_it, amxd_object_t, it);
+    name = amxd_object_get_value(cstring_t, interface, "Name", NULL);
+    when_str_empty_trace(name, exit, ERROR, "Failed to get name of interface %s", amxd_object_get_name(interface, AMXD_OBJECT_INDEXED));
+    logical_intf_named = create_logical_path(name);
+    logical_intf = component_get_path_instance(logical_get_context(), logical_intf_named);
+    when_str_empty_trace(logical_intf, exit, ERROR, "Failed to get Logical interface belonging to %s", name);
 
-    dns_server_ip = GET_CHAR(amxd_object_get_param_value(ip_addr, "DNSServers"), NULL);
-    amxc_var_set(cstring_t, &ip_dns_servers_var, dns_server_ip);
-    ip_dns_servers_list = amxc_var_dyncast(amxc_llist_t, &ip_dns_servers_var);
-
-    ip_var = amxc_var_add_key(amxc_llist_t, dns_servers, ip_ref, NULL);
-    if(ip_var == NULL) {
-        ip_var = amxc_var_get_key(dns_servers, ip_ref, AMXC_VAR_FLAG_DEFAULT);
+    logical_dns_list = GET_ARG(dns_servers, logical_intf);
+    if(logical_dns_list == NULL) {
+        logical_dns_list = amxc_var_add_key(amxc_llist_t, dns_servers, logical_intf, NULL);
+        amxc_var_copy(logical_dns_list, &dns_servers_to_add);
+    } else {
+        amxc_var_for_each(var, &dns_servers_to_add) {
+            amxc_var_add(cstring_t, logical_dns_list, GET_CHAR(var, NULL));
+        }
     }
 
-    ip_var_list = (amxc_llist_t*) amxc_var_constcast(amxc_llist_t, ip_var);
-
-    amxc_llist_for_each(it, ip_dns_servers_list) {
-        amxc_llist_it_take(it);
-        amxc_llist_append(ip_var_list, it);
-    }
-
-    amxc_llist_delete(&ip_dns_servers_list, NULL);
-    amxc_var_clean(&ip_dns_servers_var);
-    free(ip_ref);
+exit:
+    amxc_var_clean(&dns_servers_to_add);
+    free(name);
+    free(logical_intf_named);
+    free(logical_intf);
     SAH_TRACEZ_OUT(ME);
 }
 

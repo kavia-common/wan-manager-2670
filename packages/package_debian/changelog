@@ -1,168 +1,168 @@
 wan-manager (1.1.0) unstable; urgency=medium
 
-  * Issue: HOP-4769 [WANManager][BackupRestore] Different Parameters must be marked as upgrade persistent
+  * [WANManager][BackupRestore] Different Parameters must be marked as upgrade persistent
 
  -- SAH bot <sahbot@softathome.com>  Tue, 28 Nov 2023 09:20:22 +0000
 
 wan-manager (1.0.4) unstable; urgency=medium
 
-  * Issue: HOP-5005 GetWANStatus not working after updating data using WANManager
+  * GetWANStatus not working after updating data using WANManager
 
  -- SAH bot <sahbot@softathome.com>  Mon, 27 Nov 2023 14:17:52 +0000
 
 wan-manager (1.0.3) unstable; urgency=medium
 
-  * Issue: HOP-4574 add a bridge WANMode in the WANManager
+  * add a bridge WANMode in the WANManager
 
  -- SAH bot <sahbot@softathome.com>  Fri, 24 Nov 2023 14:39:48 +0000
 
 wan-manager (1.0.2) unstable; urgency=medium
 
-  * Issue: HOP-4960 In bridge mode, getCurrentWANModeStatus always returns false
+  * In bridge mode, getCurrentWANModeStatus always returns false
 
  -- SAH bot <sahbot@softathome.com>  Wed, 15 Nov 2023 16:45:00 +0000
 
 wan-manager (1.0.1) unstable; urgency=medium
 
-  * Issue: HOP-4825 add unit tests for bridge mode
+  * add unit tests for bridge mode
 
  -- SAH bot <sahbot@softathome.com>  Tue, 14 Nov 2023 08:15:43 +0000
 
 wan-manager (1.0.0) unstable; urgency=medium
 
-  * Issue: HOP-3961 [IPv6][RouterAdvertisement] M O flag behaviour
+  * [IPv6][RouterAdvertisement] M O flag behaviour
 
  -- SAH bot <sahbot@softathome.com>  Thu, 09 Nov 2023 15:48:52 +0000
 
 wan-manager (0.31.0) unstable; urgency=medium
 
-  * Issue: HOP-4667 Configure VLANPriority when creating VLANs
+  * Configure VLANPriority when creating VLANs
 
  -- SAH bot <sahbot@softathome.com>  Mon, 06 Nov 2023 11:37:08 +0000
 
 wan-manager (0.30.0) unstable; urgency=medium
 
-  * Issue: HOP-4574 add a bridge WANMode in the WANManager
+  * add a bridge WANMode in the WANManager
 
  -- SAH bot <sahbot@softathome.com>  Mon, 23 Oct 2023 13:49:07 +0000
 
 wan-manager (0.29.2) unstable; urgency=medium
 
-  * Issue: HOP-3934  [IPv6 Enable][UserSetting] It must be possible to Enable Ipv6 on the HGW
+  *  [IPv6 Enable][UserSetting] It must be possible to Enable Ipv6 on the HGW
 
  -- SAH bot <sahbot@softathome.com>  Tue, 17 Oct 2023 13:10:01 +0000
 
 wan-manager (0.29.1) unstable; urgency=medium
 
-  * Issue: HOP-4560  All applications using sahtrace logs should use default log levels
+  *  All applications using sahtrace logs should use default log levels
 
  -- SAH bot <sahbot@softathome.com>  Fri, 13 Oct 2023 13:28:28 +0000
 
 wan-manager (0.29.0) unstable; urgency=medium
 
-  * Issue: HOP-4584 [amxrt][no-root-user][capability drop]wan-manager must be adapted to run as non-root and lmited capabilities
+  * [amxrt][no-root-user][capability drop]wan-manager must be adapted to run as non-root and lmited capabilities
 
  -- SAH bot <sahbot@softathome.com>  Wed, 11 Oct 2023 06:42:48 +0000
 
 wan-manager (0.28.0) unstable; urgency=medium
 
-  * Issue: HOP-3961 [IPv6][RouterAdvertisement] M O flag behaviour
+  * [IPv6][RouterAdvertisement] M O flag behaviour
 
  -- SAH bot <sahbot@softathome.com>  Mon, 09 Oct 2023 08:59:49 +0000
 
 wan-manager (0.27.2) unstable; urgency=medium
 
-  * Issue: HOP-3964 must be possible to change current the IPv4(6) WANMode configuration
+  * must be possible to change current the IPv4(6) WANMode configuration
 
  -- SAH bot <sahbot@softathome.com>  Thu, 28 Sep 2023 07:07:09 +0000
 
 wan-manager (0.27.1) unstable; urgency=medium
 
-  * Issue: HOP-4291 [Wan-manager] remove the prefix in the debuginfo function in the init script
+  * [Wan-manager] remove the prefix in the debuginfo function in the init script
 
  -- SAH bot <sahbot@softathome.com>  Thu, 07 Sep 2023 10:19:31 +0000
 
 wan-manager (0.27.0) unstable; urgency=medium
 
-  * Issue: HOP-3924 Move datamodel prefixes to the device proxy
+  * Move datamodel prefixes to the device proxy
 
  -- SAH bot <sahbot@softathome.com>  Thu, 31 Aug 2023 13:53:01 +0000
 
 wan-manager (0.26.0) unstable; urgency=medium
 
-  * Issue: HOP-3924 Move datamodel prefixes to the device proxy
+  * Move datamodel prefixes to the device proxy
 
  -- SAH bot <sahbot@softathome.com>  Thu, 31 Aug 2023 09:57:07 +0000
 
 wan-manager (0.25.0) unstable; urgency=medium
 
-  * Issue: HOP-3577 add ACLs permissions for cwmp user
+  * add ACLs permissions for cwmp user
 
  -- SAH bot <sahbot@softathome.com>  Tue, 20 Jun 2023 06:41:39 +0000
 
 wan-manager (0.24.0) unstable; urgency=medium
 
-  * Issue: HOP-3675 [tr181-pcm] Set the usersetting parameters for each plugin
+  * [tr181-pcm] Set the usersetting parameters for each plugin
 
  -- SAH bot <sahbot@softathome.com>  Fri, 16 Jun 2023 09:07:41 +0000
 
 wan-manager (0.23.1) unstable; urgency=medium
 
-  * Issue: HOP-3623 Add Ethernet_PPP back as a default wanmode
+  * Add Ethernet_PPP back as a default wanmode
 
  -- SAH bot <sahbot@softathome.com>  Thu, 15 Jun 2023 10:56:14 +0000
 
 wan-manager (0.23.0) unstable; urgency=medium
 
-  * Issue: HOP-3642 [WANManager] Add reset WANMode functionality
+  * [WANManager] Add reset WANMode functionality
 
  -- SAH bot <sahbot@softathome.com>  Thu, 15 Jun 2023 09:28:35 +0000
 
 wan-manager (0.22.1) unstable; urgency=medium
 
-  * Issue: HOP-3623 Add XPON wanmode and clean up existing modes
+  * Add XPON wanmode and clean up existing modes
 
  -- SAH bot <sahbot@softathome.com>  Tue, 06 Jun 2023 14:17:45 +0000
 
 wan-manager (0.22.0) unstable; urgency=medium
 
-  * Issue: HOP-3532  [Nokia][Airoha][WAN][VOIP] - LowerLayers not updated for Logical interface
+  *  [Nokia][Airoha][WAN][VOIP] - LowerLayers not updated for Logical interface
 
  -- SAH bot <sahbot@softathome.com>  Tue, 06 Jun 2023 09:28:24 +0000
 
 wan-manager (0.21.0) unstable; urgency=medium
 
-  * Issue: HOP-3428 [wan-manager] PPPv6 unnumbered should be configurable and made the default option
+  * [wan-manager] PPPv6 unnumbered should be configurable and made the default option
 
  -- SAH bot <sahbot@softathome.com>  Tue, 30 May 2023 09:47:25 +0000
 
 wan-manager (0.20.1) unstable; urgency=medium
 
-  * Issue: HOP-3501 - [HTTPManager][WebUI] Create plugin's ACLs permissions
+  * - [HTTPManager][WebUI] Create plugin's ACLs permissions
 
  -- SAH bot <sahbot@softathome.com>  Wed, 24 May 2023 06:59:13 +0000
 
 wan-manager (0.20.0) unstable; urgency=medium
 
-  * Issue: HOP-3452 Add support for GPON as physicalType in wan-manager
+  * Add support for GPON as physicalType in wan-manager
 
  -- SAH bot <sahbot@softathome.com>  Thu, 18 May 2023 05:41:01 +0000
 
 wan-manager (0.19.2) unstable; urgency=medium
 
-  * Issue: HOP-3543 [Coverage] Remove SAHTRACE defines in order to increase branching coverage
+  * [Coverage] Remove SAHTRACE defines in order to increase branching coverage
 
  -- SAH bot <sahbot@softathome.com>  Thu, 11 May 2023 09:20:18 +0000
 
 wan-manager (0.19.1) unstable; urgency=medium
 
-  * Issue: HOP-3378 Fix component not starting on openwrt22
+  * Fix component not starting on openwrt22
 
  -- SAH bot <sahbot@softathome.com>  Thu, 27 Apr 2023 14:16:29 +0000
 
 wan-manager (0.19.0) unstable; urgency=medium
 
-  * Issue: HOP-3318 [wan-manager] PPPv6 modes should send a DHCPv6 IA_PD solicit
+  * [wan-manager] PPPv6 modes should send a DHCPv6 IA_PD solicit
 
  -- SAH bot <sahbot@softathome.com>  Thu, 27 Apr 2023 09:51:15 +0000
 
@@ -174,110 +174,110 @@ wan-manager (0.18.3) unstable; urgency=medium
 
 wan-manager (0.18.2) unstable; urgency=medium
 
-  * Issue: HOP-2906 Should not toggle wanmode at boot
+  * Should not toggle wanmode at boot
 
  -- SAH bot <sahbot@softathome.com>  Sun, 26 Mar 2023 07:56:09 +0000
 
 wan-manager (0.18.1) unstable; urgency=medium
 
-  * Issue: HOP-2934 lan parent prefixes are not updated when switching wan-modes
+  * lan parent prefixes are not updated when switching wan-modes
 
  -- SAH bot <sahbot@softathome.com>  Wed, 15 Mar 2023 11:07:35 +0000
 
 wan-manager (0.18.0) unstable; urgency=medium
 
-  * Issue: HOP-2087 [DHCPv4] Split client and server plugin
+  * [DHCPv4] Split client and server plugin
 
  -- SAH bot <sahbot@softathome.com>  Mon, 13 Mar 2023 15:55:00 +0000
 
 wan-manager (0.17.1) unstable; urgency=medium
 
-  * Issue: HOP-3072 [Config] enable configurable coredump generation
+  * [Config] enable configurable coredump generation
 
  -- SAH bot <sahbot@softathome.com>  Thu, 09 Mar 2023 12:01:05 +0000
 
 wan-manager (0.17.0) unstable; urgency=medium
 
-  * Issue: HOP-3022 Implement DSLite + PPP6 WANMode
+  * Implement DSLite + PPP6 WANMode
 
  -- SAH bot <sahbot@softathome.com>  Wed, 08 Mar 2023 09:50:56 +0000
 
 wan-manager (0.16.2) unstable; urgency=medium
 
-  * Issue: HOP-2925 [wan-manager] DSLite static default route is incorrectly modified when switching WANModes
-  * Issue: HOP-3021 Add missing runtime dependency on rpcd
+  * [wan-manager] DSLite static default route is incorrectly modified when switching WANModes
+  * Add missing runtime dependency on rpcd
 
  -- SAH bot <sahbot@softathome.com>  Tue, 07 Mar 2023 13:19:40 +0000
 
 wan-manager (0.16.1) unstable; urgency=medium
 
-  * Issue: PCF-757 Documentation generation fails
+  * Documentation generation fails
 
  -- SAH bot <sahbot@softathome.com>  Fri, 24 Feb 2023 08:52:57 +0000
 
 wan-manager (0.16.0) unstable; urgency=medium
 
-  * Issue: HOP-2680 Implement a replacement for the LastWANMode from autosensing
+  * Implement a replacement for the LastWANMode from autosensing
 
  -- SAH bot <sahbot@softathome.com>  Sat, 18 Feb 2023 07:25:54 +0000
 
 wan-manager (0.15.0) unstable; urgency=medium
 
-  * Issue: HOP-2681 implement the getWANMode function
+  * implement the getWANMode function
 
  -- SAH bot <sahbot@softathome.com>  Tue, 14 Feb 2023 13:19:49 +0000
 
 wan-manager (0.14.3) unstable; urgency=medium
 
-  * Issue: HOP-2761 [tr181-ppp] Sometimes there is no default route for ppp6
+  * [tr181-ppp] Sometimes there is no default route for ppp6
 
  -- SAH bot <sahbot@softathome.com>  Tue, 14 Feb 2023 12:17:00 +0000
 
 wan-manager (0.14.2) unstable; urgency=medium
 
-  * Issue: HOP-2770 Improve stability
+  * Improve stability
 
  -- SAH bot <sahbot@softathome.com>  Fri, 10 Feb 2023 10:48:23 +0000
 
 wan-manager (0.14.1) unstable; urgency=medium
 
-  * Issue: HOP-2658 Adapt the Wan-Manager to use DNS management functions of the TR181-DNS plugin
+  * Adapt the Wan-Manager to use DNS management functions of the TR181-DNS plugin
 
  -- SAH bot <sahbot@softathome.com>  Thu, 02 Feb 2023 14:55:24 +0000
 
 wan-manager (0.14.0) unstable; urgency=medium
 
-  * Issue: HOP-2623 Enable PCP when WANMode == DSLite
+  * Enable PCP when WANMode == DSLite
 
  -- SAH bot <sahbot@softathome.com>  Thu, 02 Feb 2023 08:59:20 +0000
 
 wan-manager (0.13.1) unstable; urgency=medium
 
-  * Issue: HOP-2486 Configure static IPv4 and IPv6 addresses trough the wan-manager
+  * Configure static IPv4 and IPv6 addresses trough the wan-manager
 
  -- SAH bot <sahbot@softathome.com>  Fri, 27 Jan 2023 09:50:38 +0000
 
 wan-manager (0.13.0) unstable; urgency=medium
 
-  * Issue: HOP-2407 [ppp][ipv6] It must be possible to support pppv6 (ip6cp) with the ppp plugin
+  * [ppp][ipv6] It must be possible to support pppv6 (ip6cp) with the ppp plugin
 
  -- SAH bot <sahbot@softathome.com>  Thu, 26 Jan 2023 12:44:30 +0000
 
 wan-manager (0.12.0) unstable; urgency=medium
 
-  * Issue: HOP-1820 [ipv6][dslite][wanmanager] Add support for dslite in the WANManager
+  * [ipv6][dslite][wanmanager] Add support for dslite in the WANManager
 
  -- SAH bot <sahbot@softathome.com>  Mon, 23 Jan 2023 08:37:00 +0000
 
 wan-manager (0.11.0) unstable; urgency=medium
 
-  * Issue: HOP-325 Prepare debian package + changelog
+  * Prepare debian package + changelog
 
  -- SAH bot <sahbot@softathome.com>  Sat, 21 Jan 2023 08:27:09 +0000
 
 wan-manager (0.10.0) unstable; urgency=medium
 
-  * Issue: HOP-2506 Set/clear Logical.Interface.X in WANManager
+  * Set/clear Logical.Interface.X in WANManager
 
  -- SAH bot <sahbot@softathome.com>  Mon, 16 Jan 2023 13:56:28 +0000
 

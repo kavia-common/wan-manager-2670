@@ -110,7 +110,7 @@ amxb_bus_ctx_t* ethernet_get_context(void) {
 }
 
 amxb_bus_ctx_t* logical_get_context(void) {
-    return amxb_be_who_has("Logical.");
+    return amxb_be_who_has("Device.Logical.");
 }
 
 amxb_bus_ctx_t* neighbor_discovery_get_context(void) {
