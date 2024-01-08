@@ -1,4 +1,5 @@
 {
+    "ApplyAtNextBoot" : false,
     "Controller" : "mod-autosensing",
     "OperationMode" : "Manual",
     "SensingPolicy" : "AtBoot",

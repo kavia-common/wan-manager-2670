@@ -149,10 +149,21 @@ static amxd_status_t _DisablePort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_
     return status;
 }
 
+static amxd_status_t _dummy(UNUSED amxd_object_t* object,
+                            UNUSED amxd_param_t* param,
+                            UNUSED amxd_action_t reason,
+                            UNUSED const amxc_var_t* const args,
+                            UNUSED amxc_var_t* const retval,
+                            UNUSED void* priv) {
+    return amxd_status_ok;
+}
+
 int test_wan_manager_setup(UNUSED void** state) {
     amxd_object_t* root_obj = NULL;
     amxp_signal_t* signal = NULL;
     amxb_bus_ctx_t* bus_ctx = NULL;
+    amxd_object_t* wanm_obj = NULL;
+    bool apply = false;
 
     assert_int_equal(amxd_dm_init(&dm), amxd_status_ok);
     assert_int_equal(amxo_parser_init(&parser), 0);
@@ -163,7 +174,6 @@ int test_wan_manager_setup(UNUSED void** state) {
     root_obj = amxd_dm_get_root(&dm);
     assert_non_null(root_obj);
 
-    assert_int_equal(amxo_resolver_ftab_add(&parser, "print_event", AMXO_FUNC(_print_event)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setWANMode", AMXO_FUNC(_setWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getWANMode", AMXO_FUNC(_getWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "Reset", AMXO_FUNC(_Reset)), 0);
@@ -182,7 +192,11 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv6_mode_toggled", AMXO_FUNC(_ipv6_mode_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv4Mode", AMXO_FUNC(_setIPv4Mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv6Mode", AMXO_FUNC(_setIPv6Mode)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "mode_check_default_interface", AMXO_FUNC(_mode_check_default_interface)), 0);
 
+    // Dummy functions
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "check_is_empty_or_in", AMXO_FUNC(_dummy)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "matches_regexp", AMXO_FUNC(_dummy)), 0);
 
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
@@ -202,9 +216,17 @@ int test_wan_manager_setup(UNUSED void** state) {
                                          "dummy:/tmp/dummy.sock", AMXO_BUS, bus_ctx), 0);
     assert_int_equal(amxb_register(bus_ctx, &dm), 0);
 
-    _wan_manager_main(0, &dm, &parser);
+    // Before startup, ApplyAtNextBoot should be true
+    wanm_obj = amxd_dm_findf(&dm, "WANManager.");
+    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+    assert_true(apply);
 
+    _wan_manager_main(0, &dm, &parser);
     test_handle_events();
+
+    // After startup ApplyAtNextBoot should be disabled
+    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+    assert_false(apply);
 
     return 0;
 }
@@ -232,7 +254,6 @@ void test_handle_events(void) {
     while(amxp_signal_read() == 0) {
     }
 }
-
 
 amxc_var_t* read_json_from_file(const char* fname) {
     int fd = -1;
@@ -267,4 +288,27 @@ amxc_var_t* read_json_from_file(const char* fname) {
 exit:
     amxj_reader_delete(&reader);
     return data;
+}
+
+bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status) {
+    amxc_var_t args;
+    amxc_var_t ret;
+    bool rc = false;
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
+
+    amxc_var_init(&args);
+    amxc_var_init(&ret);
+
+    assert_non_null(wan_mode);
+    assert_non_null(mode_to_set);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_set);
+    assert_int_equal(amxd_object_invoke_function(wan_mode, "setWANMode", &args, &ret), expected_status);
+    rc = GET_BOOL(&ret, "status");
+
+    test_handle_events();
+
+    amxc_var_clean(&args);
+    amxc_var_clean(&ret);
+    return rc;
 }

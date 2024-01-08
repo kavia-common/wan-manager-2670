@@ -81,9 +81,25 @@
 #include "mock_netmodel.h"
 #include "test_wan_manager_startup.h"
 #include "dm_wan-manager.h"
+#include "dm_wan_mode.h"
 #include "test_utils.h"
 
-static void test_wan_manager_set_operation_mode(const char* mode);
+static void test_wan_manager_set_operation_mode(const char* mode) {
+    amxd_dm_t* dm = test_get_dm();
+    amxd_trans_t transaction;
+    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "WANManager.");
+
+    assert_non_null(wan_manager);
+
+    amxd_trans_init(&transaction);
+    amxd_trans_select_object(&transaction, wan_manager);
+    amxd_trans_set_value(cstring_t, &transaction, "OperationMode", mode);
+    amxd_trans_apply(&transaction, dm);
+
+    test_handle_events();
+
+    amxd_trans_clean(&transaction);
+}
 
 void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
     amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_SFP");
@@ -154,19 +170,36 @@ void test_getCurrentWANModeStatus(UNUSED void** state) {
     amxc_var_clean(&ret);
 }
 
-static void test_wan_manager_set_operation_mode(const char* mode) {
-    amxd_dm_t* dm = test_get_dm();
-    amxd_trans_t transaction;
-    amxd_object_t* wan_manager = amxd_dm_findf(test_get_dm(), "WANManager.");
+static void reset_apply_at_next_boot(amxd_object_t* wanm_obj) {
+    amxd_trans_t trans;
+    amxd_trans_init(&trans);
 
-    assert_non_null(wan_manager);
+    amxd_trans_select_object(&trans, wanm_obj);
+    amxd_trans_set_value(bool, &trans, "ApplyAtNextBoot", true);
+    amxd_trans_apply(&trans, wan_get_dm());
 
-    amxd_trans_init(&transaction);
-    amxd_trans_select_object(&transaction, wan_manager);
-    amxd_trans_set_value(cstring_t, &transaction, "OperationMode", mode);
-    amxd_trans_apply(&transaction, dm);
+    amxd_trans_clean(&trans);
+}
 
-    test_handle_events();
+void test_apply_at_next_boot(UNUSED void** state) {
+    amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
+    bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+    assert_false(apply);
 
-    amxd_trans_clean(&transaction);
+    reset_apply_at_next_boot(wanm_obj);
+    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+    assert_true(apply);
+
+    amxd_object_t* wan_mode_inst = get_current_wan_mode();
+    char* physical_type = NULL;
+
+    assert_non_null(wan_mode_inst);
+    physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
+    assert_non_null(physical_type);
+
+    wan_manager_found_ll(physical_type);
+
+    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+    assert_false(apply);
+    free(physical_type);
 }

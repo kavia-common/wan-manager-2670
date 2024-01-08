@@ -220,12 +220,26 @@ void wan_manager_found_ll(const char* found_phys_type) {
     SAH_TRACEZ_IN(ME);
     char* current_phys_type = NULL;
     operation_mode_t operation_mode = startup_wan_autosensing();
+    amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
+    bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
 
+    when_false(apply, exit);
     current_phys_type = get_physical_type_for_current_wan_mode();
     when_null_trace(current_phys_type, exit, ERROR, "Failed to get the physical type for the current wan mode");
 
     if((strcmp(found_phys_type, current_phys_type) == 0) && (operation_mode != OPERATION_MODE_AUTOMATIC)) {
+        amxd_status_t rv = amxd_status_unknown_error;
+        amxd_trans_t trans;
+        amxd_trans_init(&trans);
+
         enable_current_wan_mode();
+
+        amxd_trans_select_object(&trans, wanm_obj);
+        amxd_trans_set_value(bool, &trans, "ApplyAtNextBoot", false);
+        rv = amxd_trans_apply(&trans, wan_get_dm());
+
+        amxd_trans_clean(&trans);
+        when_failed_trace(rv, exit, ERROR, "Failed to disable 'ApplyAtNextBoot'");
     }
 exit:
     free(current_phys_type);

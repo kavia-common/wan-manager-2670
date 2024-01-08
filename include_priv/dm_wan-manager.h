@@ -99,10 +99,6 @@ amxd_dm_t* PRIVATE wan_get_dm(void);
 
 amxo_parser_t* PRIVATE wan_get_parser(void);
 
-void _print_event(const char* const sig_name,
-                  const amxc_var_t* const data,
-                  void* const priv);
-
 amxd_status_t _setWANMode(amxd_object_t* object,
                           amxd_function_t* func,
                           amxc_var_t* args,

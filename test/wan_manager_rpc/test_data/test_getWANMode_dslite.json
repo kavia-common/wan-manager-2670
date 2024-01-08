@@ -1,0 +1,40 @@
+{
+    "ApplyAtNextBoot" : false,
+    "OperationMode" : "Manual",
+    "SensingPolicy" : "AtBoot",
+    "SensingTimeout" : 8,
+    "WANMode" : "demo_dslite",
+    "WANModeConfig" : {
+        "Alias" : "demo_dslite",
+        "DNSMode" : "Dynamic",
+        "EnableSensing" : true,
+        "Interfaces" : {
+            "wan" : {
+                "Alias" : "wan",
+                "BridgeReference" : "",
+                "DHCPv4Reference" : "Device.DHCPv4.Client.1.",
+                "DHCPv6Reference" : "Device.DHCPv6.Client.1.",
+                "DefaultInterface" : false,
+                "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
+                "IPv4Addresses" : {
+                },
+                "IPv4Mode" : "dslite",
+                "IPv4Reference" : "Device.IP.Interface.7.",
+                "IPv6AddressDelegate" : "",
+                "IPv6Addresses" : {
+                },
+                "IPv6Mode" : "dhcp6",
+                "IPv6Reference" : "Device.IP.Interface.2.",
+                "Name" : "wan",
+                "Password" : "",
+                "Type" : "untagged",
+                "UserName" : "",
+                "VlanID" : 100,
+                "VlanPriority" : 0
+            }
+        },
+        "Origin" : "user",
+        "PhysicalType" : "Ethernet",
+        "Status" : "Enabled"
+    }
+}

@@ -62,8 +62,8 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_WAN_MANAGER_STARTUP_H__
-#define __TEST_WAN_MANAGER_STARTUP_H__
+#ifndef __TEST_WAN_MANAGER_RPC_H__
+#define __TEST_WAN_MANAGER_RPC_H__
 
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
@@ -78,9 +78,7 @@
 #include <amxo/amxo.h>
 #include <amxo/amxo_save.h>
 
-void test_wan_manager_change_wan_mode_intf_type(void** state);
-void test_wan_manager_automatic_mode_enable_autosensing_module(void** state);
-void test_getCurrentWANModeStatus(void** state);
-void test_apply_at_next_boot(void** state);
+void test_get_wanmode(void** state);
+void test_get_wanmode_new_mode(void** state);
 
-#endif //__TEST_WAN_MANAGER_STARTUP_H__
+#endif //__TEST_WAN_MANAGER_RPC_H__

@@ -80,5 +80,4 @@
 
 void test_wm_nm_change_physical_type(void** state);
 
-
 #endif //__TEST_WAN_MANAGER_NM_H__

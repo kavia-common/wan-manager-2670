@@ -237,9 +237,6 @@ bool __wrap_netmodel_isUp(const char* const interface,
     amxd_object_t* current_mode_obj = get_current_wan_mode();
     char* ip_reference = NULL;
 
-    printf("%s, %s, %s\n", interface, flag, traverse);
-    fflush(stdout);
-
     assert_non_null(current_mode_obj);
     assert_non_null(interface);
     assert_non_null(flag);

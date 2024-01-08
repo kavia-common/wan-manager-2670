@@ -20,6 +20,16 @@
         }
 
         /**
+        * When this parameter is set to true, the wan mode will be applied at boot.
+        * After applying the config, this parameter will be set to false.
+        *
+        * @version 1.0
+        */
+        %persistent bool ApplyAtNextBoot = true {
+            userflags %usersetting;
+        }
+
+        /**
          * Set WAN mode
          * @param WANMode - value to which to change WANMode
          * @param Autosensing - Change requested by WANAutosensing

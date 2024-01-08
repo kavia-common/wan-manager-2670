@@ -62,25 +62,18 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_WAN_MANAGER_STARTUP_H__
-#define __TEST_WAN_MANAGER_STARTUP_H__
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxd/amxd_object_event.h>
-#include <amxd/amxd_transaction.h>
-#include <amxd/amxd_action.h>
+#include "test_wan_manager_rpc.h"
+#include "test_utils.h"
 
-#include <amxb/amxb.h>
-
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-
-void test_wan_manager_change_wan_mode_intf_type(void** state);
-void test_wan_manager_automatic_mode_enable_autosensing_module(void** state);
-void test_getCurrentWANModeStatus(void** state);
-void test_apply_at_next_boot(void** state);
-
-#endif //__TEST_WAN_MANAGER_STARTUP_H__
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_get_wanmode),
+        cmocka_unit_test(test_get_wanmode_new_mode)
+    };
+    return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
+}

@@ -82,29 +82,6 @@
 #include "test_utils.h"
 #include "reset_mock.h"
 
-static bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status) {
-    amxc_var_t args;
-    amxc_var_t ret;
-    bool rc = false;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-
-    amxc_var_init(&args);
-    amxc_var_init(&ret);
-
-    assert_non_null(wan_mode);
-    assert_non_null(mode_to_set);
-    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_set);
-    assert_int_equal(amxd_object_invoke_function(wan_mode, "setWANMode", &args, &ret), expected_status);
-    rc = GET_BOOL(&ret, "status");
-
-    test_handle_events();
-
-    amxc_var_clean(&args);
-    amxc_var_clean(&ret);
-    return rc;
-}
-
 static bool set_ipv4_mode(const char* ip_mode, const char* intf_alias, amxd_status_t expected_status) {
     amxc_var_t args;
     amxc_var_t ret;
@@ -814,7 +791,6 @@ void test_wan_manager_set_bridge_mode(UNUSED void** state) {
     assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
     assert_int_equal(GET_UINT32(&params, "VlanPriority"), 999);
 
-    amxc_var_dump(&params, 1);
     amxc_var_clean(&params);
 
     obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastDisableParameters.Test.");
@@ -829,7 +805,6 @@ void test_wan_manager_set_bridge_mode(UNUSED void** state) {
     assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
     assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
 
-    amxc_var_dump(&params, 1);
     amxc_var_clean(&params);
 }
 
@@ -852,7 +827,6 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
     assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
     assert_int_equal(GET_UINT32(&params, "VlanPriority"), 3);
 
-    amxc_var_dump(&params, 1);
     amxc_var_clean(&params);
 
     obj = amxd_dm_findf(test_get_dm(), "Device.Bridging.LastDisableParameters.Test.");
@@ -867,6 +841,5 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
     assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
     assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
 
-    amxc_var_dump(&params, 1);
     amxc_var_clean(&params);
 }
