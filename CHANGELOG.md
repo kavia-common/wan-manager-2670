@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.3 - 2024-01-08(15:15:41 +0000)
+
+### Fixes
+
+- ApplyAtNextBoot should be upc instead of usersetting
+
 ## Release v1.1.2 - 2024-01-08(10:34:24 +0000)
 
 ### Other
