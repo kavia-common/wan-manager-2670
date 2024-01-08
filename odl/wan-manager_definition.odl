@@ -25,8 +25,8 @@
         *
         * @version 1.0
         */
-        %persistent bool ApplyAtNextBoot = true {
-            userflags %usersetting;
+        %persistent %protected bool ApplyAtNextBoot = true {
+            userflags %upc;
         }
 
         /**

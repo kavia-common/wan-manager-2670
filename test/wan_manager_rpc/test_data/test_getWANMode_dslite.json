@@ -1,5 +1,4 @@
 {
-    "ApplyAtNextBoot" : false,
     "OperationMode" : "Manual",
     "SensingPolicy" : "AtBoot",
     "SensingTimeout" : 8,
