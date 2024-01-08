@@ -1,3 +1,9 @@
+wan-manager (1.1.2) unstable; urgency=medium
+
+  * (Device.)IP.Interface.{i}.IPv6Enable is not persistent
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 08 Jan 2024 10:34:25 +0000
+
 wan-manager (1.1.1) unstable; urgency=medium
 
   * [WAN]GetWANStatus not working after updating data using WANManager Static Mode

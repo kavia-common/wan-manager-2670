@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.2 - 2024-01-08(10:34:24 +0000)
+
+### Other
+
+- (Device.)IP.Interface.{i}.IPv6Enable is not persistent
+
 ## Release v1.1.1 - 2023-12-07(10:40:51 +0000)
 
 ### Fixes
