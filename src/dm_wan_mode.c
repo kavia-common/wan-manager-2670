@@ -323,6 +323,7 @@ amxd_status_t wan_mode_set(const char* wan_mode_to_set, const char* active_wan_m
     amxd_object_t* active_wan_mode_obj = NULL;
     amxd_object_t* new_wan_mode_obj = NULL;
 
+    when_str_empty_status(active_wan_mode, exit, rc = amxd_status_ok);
     SAH_TRACEZ_INFO(ME, "Change mode: [From = %s, To = %s]", active_wan_mode, wan_mode_to_set);
     active_wan_mode_obj = get_wan_mode(active_wan_mode);
     when_null_trace(active_wan_mode_obj, exit, ERROR, "Current wanmode object could not be found");
