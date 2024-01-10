@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.5 - 2024-01-10(16:36:41 +0000)
+
+### Fixes
+
+- [WAN_Manager] All default route instances are overwritten when changing WANMode
+
 ## Release v1.1.4 - 2024-01-10(16:15:29 +0000)
 
 ### Fixes

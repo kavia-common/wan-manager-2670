@@ -1,3 +1,9 @@
+wan-manager (1.1.5) unstable; urgency=medium
+
+  * [WAN_Manager] All default route instances are overwritten when changing WANMode
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 10 Jan 2024 16:36:41 +0000
+
 wan-manager (1.1.4) unstable; urgency=medium
 
   * Error message during startup
