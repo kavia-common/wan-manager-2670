@@ -407,7 +407,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     mode = get_wan_mode_type(interface, true, ipv4_mode_ovr, ipv6_mode_ovr);
 
     bridge_reference = GET_CHAR(&parameters, "BridgeReference");
-    bridge = !STRING_EMPTY(bridge_reference);
+    bridge = !str_empty(bridge_reference);
     if(enable && bridge) {
         amxc_var_t* var_intf_path = netmodel_getFirstParameter(bridge_reference, "InterfacePath", NULL, netmodel_traverse_one_level_up);
         when_true_trace(amxc_var_is_null(var_intf_path), exit, ERROR, "Failed to find link layer path for '%s'", bridge_reference);
@@ -697,46 +697,6 @@ void _wan_sensing_toggled(UNUSED const char* const event_name,
     SAH_TRACEZ_IN(ME);
     update_sensing();
     SAH_TRACEZ_OUT(ME);
-}
-
-amxd_status_t _mode_check_default_interface(amxd_object_t* object,
-                                            amxd_param_t* param,
-                                            amxd_action_t reason,
-                                            const amxc_var_t* const args,
-                                            amxc_var_t* const retval,
-                                            void* priv) {
-    SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_unknown_error;
-    bool default_interface_new;
-    bool default_interface_old;
-
-    if(reason != action_param_validate) {
-        rv = amxd_status_invalid_action;
-        goto exit;
-    }
-
-    // checks if value can be converted to parameter type.
-    rv = amxd_action_param_validate(object, param, reason, args, retval, priv);
-    when_failed(rv, exit);
-
-    default_interface_new = GET_BOOL(args, NULL);
-    default_interface_old = GET_BOOL(&param->value, NULL);
-
-    // Verify that there is no other interface already configured as the default
-    if(default_interface_new && !default_interface_old) {
-        amxd_object_t* intf_obj = amxd_object_findf(object, "^.[DefaultInterface == true]");
-        if(intf_obj != NULL) {
-            SAH_TRACEZ_WARNING(ME, "This mode already has a default interface");
-            rv = amxd_status_invalid_value;
-            goto exit;
-        }
-        SAH_TRACEZ_INFO(ME, "%s will be used as the default interface", object->name);
-        rv = amxd_status_ok;
-    }
-
-exit:
-    SAH_TRACEZ_OUT(ME);
-    return rv;
 }
 
 static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {

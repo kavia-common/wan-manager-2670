@@ -349,14 +349,14 @@ exit:
     return rv;
 }
 
-amxd_status_t routing_default_route_set_origin(const char* ip_path, const char* routing_origin, const char* ip_addr) {
+amxd_status_t routing_default_route_set_origin(const char* route_path, const char* ip_path, const char* routing_origin, const char* ip_addr) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t params;
-    const char* route_path = "Device.Routing.Router.1.IPv4Forwarding.[DestIPAddress=='0.0.0.0' && DestSubnetMask=='0.0.0.0'].";
 
     amxc_var_init(&params);
 
+    when_str_empty_trace(route_path, exit, ERROR, "No forwarding instance specified for default route");
     when_str_empty_trace(routing_origin, exit, ERROR, "Routing Origin parameter empty");
 
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);

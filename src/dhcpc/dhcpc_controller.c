@@ -88,7 +88,7 @@ amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* name = GET_CHAR(parameters, "Name");
-    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     char* logical_path = NULL;
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv4");
@@ -113,8 +113,8 @@ amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
     // Set the default route origin
-    if(default_interface) {
-        rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_DHCPV4, NULL);
+    if(!str_empty(default_route_reference)) {
+        rc = routing_default_route_set_origin(default_route_reference, intf_path, ROUTING_ORIGIN_DHCPV4, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 

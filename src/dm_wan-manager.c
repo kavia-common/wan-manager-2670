@@ -259,7 +259,7 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
     when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
 
     bridge_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "BridgeReference", NULL);
-    if(!STRING_EMPTY(bridge_reference)) {
+    if(!str_empty(bridge_reference)) {
         mode_active = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
     } else {
         ip_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "IPv4Reference", NULL);

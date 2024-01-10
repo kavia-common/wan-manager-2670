@@ -247,7 +247,7 @@ int component_add_string_to_csv(const char* component, amxb_bus_ctx_t* bus, cons
 
     when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
 
-    if(!STRING_EMPTY(GETP_CHAR(&orig_value, "0.0.0"))) {
+    if(!str_empty(GETP_CHAR(&orig_value, "0.0.0"))) {
         when_failed_trace(amxc_var_convert(&llist, GETP_ARG(&orig_value, "0.0.0"), AMXC_VAR_ID_LIST), exit, ERROR, "Failed to cast %s.%s to list variant", component, parameter);
     }
 
@@ -284,7 +284,7 @@ int component_remove_string_from_csv(const char* component, amxb_bus_ctx_t* bus,
 
     when_failed_trace(component_get_param(&orig_value, component, bus, parameter), exit, ERROR, "Failed to get %s.%s", component, parameter);
 
-    if(STRING_EMPTY(GETP_CHAR(&orig_value, "0.0.0"))) {
+    if(str_empty(GETP_CHAR(&orig_value, "0.0.0"))) {
         SAH_TRACEZ_INFO(ME, "CSV is empty, can't remove %s from this", str);
         rc = 0;
         goto exit;

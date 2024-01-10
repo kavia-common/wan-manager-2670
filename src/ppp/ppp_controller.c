@@ -109,7 +109,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* router_info = "Device.Routing.RouteInformation.";
     const char* nd_intf = "wan";
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
-    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     char* nd_path = NULL;
     char* logical_path = NULL;
     char* route_path = NULL;
@@ -194,8 +194,8 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
     // Set the default route origin
-    if((ip_version == 4) && default_interface) {
-        rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_IPCP, NULL);
+    if((ip_version == 4) && !str_empty(default_route_reference)) {
+        rc = routing_default_route_set_origin(default_route_reference, intf_path, ROUTING_ORIGIN_IPCP, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 

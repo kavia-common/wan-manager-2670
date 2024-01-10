@@ -10,7 +10,7 @@
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dhcp4";
-            parameter DefaultInterface = true;
+            parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter IPv6Mode = "dhcp6";
             parameter Name = "wan";
             parameter VlanID = 100;

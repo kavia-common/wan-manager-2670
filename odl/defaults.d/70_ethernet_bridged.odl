@@ -11,7 +11,6 @@
         instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "none";
-            parameter DefaultInterface = false;
             parameter IPv6Mode = "none";
             parameter Name = "wan";
             parameter IPv4Reference = "Device.IP.Interface.2.";

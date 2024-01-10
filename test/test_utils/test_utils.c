@@ -192,7 +192,6 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv6_mode_toggled", AMXO_FUNC(_ipv6_mode_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv4Mode", AMXO_FUNC(_setIPv4Mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv6Mode", AMXO_FUNC(_setIPv6Mode)), 0);
-    assert_int_equal(amxo_resolver_ftab_add(&parser, "mode_check_default_interface", AMXO_FUNC(_mode_check_default_interface)), 0);
 
     // Dummy functions
     assert_int_equal(amxo_resolver_ftab_add(&parser, "check_is_empty_or_in", AMXO_FUNC(_dummy)), 0);

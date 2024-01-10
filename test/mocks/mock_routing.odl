@@ -69,8 +69,17 @@
                     parameter Interface = "Device.IP.Interface.2.";
                     parameter Origin = "DHCPv4";
                 }
+                instance add("wwan-default"){
+
+                    parameter Alias = "wwan-default";
+                    parameter DestIPAddress = "0.0.0.0";
+                    parameter DestSubnetMask = "0.0.0.0";
+                    parameter Enable = 1;
+                    parameter GatewayIPAddress = "172.16.220.10";
+                    parameter Interface = "Device.IP.Interface.12.";
+                    parameter Origin = "Static";
+                }
             }
         }
     }
-
 }

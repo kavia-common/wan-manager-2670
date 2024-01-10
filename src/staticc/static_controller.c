@@ -87,7 +87,7 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
     const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters.IPv6Reference");
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
-    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
@@ -112,8 +112,8 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable the whole IP interface %s", intf_path);
 
     // Setting up the default route instance for static ipv4
-    if(default_interface) {
-        rc = routing_default_route_set_origin(intf_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
+    if(!str_empty(default_route_reference)) {
+        rc = routing_default_route_set_origin(default_route_reference, intf_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 

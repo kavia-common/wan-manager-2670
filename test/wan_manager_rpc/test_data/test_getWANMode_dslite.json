@@ -13,7 +13,7 @@
                 "BridgeReference" : "",
                 "DHCPv4Reference" : "Device.DHCPv4.Client.1.",
                 "DHCPv6Reference" : "Device.DHCPv6.Client.1.",
-                "DefaultInterface" : false,
+                "DefaultRouteReference" : "Device.Routing.Router.1.IPv4Forwarding.1.",
                 "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
                 "IPv4Addresses" : {
                 },

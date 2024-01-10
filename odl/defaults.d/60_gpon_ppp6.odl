@@ -11,7 +11,7 @@
         instance add(0,"wan"){
             parameter Type = "vlan";
             parameter IPv4Mode = "dslite";
-            parameter DefaultInterface = true;
+            parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter IPv6Mode = "ppp6";
             parameter UserName = "prpl_ipv6";
             parameter Password = "softathome";

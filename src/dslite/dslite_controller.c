@@ -94,7 +94,7 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     const char* dslite_wan_if = NULL;
     char* logical_path = NULL;
     amxc_var_t wan_if;
-    bool default_interface = GET_BOOL(parameters, "DefaultInterface");
+    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
     amxc_var_init(&wan_if);
@@ -106,8 +106,8 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
 
     // Setting up the default route instance for static ipv4
-    if(default_interface) {
-        rc = routing_default_route_set_origin(ipv4_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
+    if(!str_empty(default_route_reference)) {
+        rc = routing_default_route_set_origin(default_route_reference, ipv4_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 
