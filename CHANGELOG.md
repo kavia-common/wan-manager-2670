@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.4 - 2024-01-10(16:15:29 +0000)
+
+### Fixes
+
+- Error message during startup
+
 ## Release v1.1.3 - 2024-01-08(15:15:41 +0000)
 
 ### Fixes
