@@ -1,3 +1,9 @@
+wan-manager (1.2.0) unstable; urgency=medium
+
+  * Add tr181-device proxy odl files to components
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 17 Jan 2024 09:30:20 +0000
+
 wan-manager (1.1.5) unstable; urgency=medium
 
   * [WAN_Manager] All default route instances are overwritten when changing WANMode
