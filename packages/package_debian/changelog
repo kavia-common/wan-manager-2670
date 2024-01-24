@@ -1,3 +1,9 @@
+wan-manager (1.2.1) unstable; urgency=medium
+
+  * Validate the reason a validation function is called
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 24 Jan 2024 09:21:44 +0000
+
 wan-manager (1.2.0) unstable; urgency=medium
 
   * Add tr181-device proxy odl files to components

@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.1 - 2024-01-24(09:21:43 +0000)
+
+### Fixes
+
+- Validate the reason a validation function is called
+
 ## Release v1.2.0 - 2024-01-17(09:30:19 +0000)
 
 ### New
