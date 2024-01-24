@@ -362,7 +362,7 @@ exit:
 
 amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             UNUSED amxd_param_t* param,
-                                            UNUSED amxd_action_t reason,
+                                            amxd_action_t reason,
                                             const amxc_var_t* const args,
                                             UNUSED amxc_var_t* const retval,
                                             UNUSED void* priv) {
@@ -371,6 +371,8 @@ amxd_status_t _interface_already_configured(amxd_object_t* object,
     amxd_object_t* root = amxd_object_get_parent(object);
     const char* value = GET_CHAR(args, NULL);
 
+    when_true_status(reason != action_param_validate, exit,
+                     rc = amxd_status_function_not_implemented);
     when_null(root, exit);
     when_null(value, exit);
 
