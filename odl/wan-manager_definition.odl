@@ -85,7 +85,7 @@
         %persistent string WANMode {
             on action validate call check_maximum_length 64;
             default "";
-            userflags %upc;
+            userflags %usersetting;
         }
 
         /**
