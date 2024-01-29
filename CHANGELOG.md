@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.2 - 2024-01-29(11:12:44 +0000)
+
+### Fixes
+
+- [WANManager] WAN Connection not backup and restore as usersetting
+
 ## Release v1.2.1 - 2024-01-24(09:21:43 +0000)
 
 ### Fixes

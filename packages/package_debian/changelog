@@ -1,3 +1,9 @@
+wan-manager (1.2.2) unstable; urgency=medium
+
+  * [WANManager] WAN Connection not backup and restore as usersetting
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 29 Jan 2024 11:12:44 +0000
+
 wan-manager (1.2.1) unstable; urgency=medium
 
   * Validate the reason a validation function is called
