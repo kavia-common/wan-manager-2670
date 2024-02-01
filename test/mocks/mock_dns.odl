@@ -2,6 +2,10 @@
     select Device {
         object DNS {
             object Relay{
+                object Config[] {
+                    string DNSMode;
+                    string IPv6DNSMode;
+                }
                 object Forwarding[]{
 
                     string Alias;
@@ -15,13 +19,18 @@
                 }
             }
 
-            void SetMode(%in %mandatory string Mode, %in htable DNSServers);
-            void DeleteForwardings(%in %mandatory htable DNSServers, %in string Type);
+            string SetForwarding(%in string Alias, %in string DNSServers, %in string Type, %in bool Enable);
+            void DeleteForwarding(%in string Alias);
         }
     }
 }
 
 %populate{
+    object Device.DNS.Relay.Config {
+        instance add(0,"config-1") {
+        }
+    }
+
     object Device.DNS.Relay.Forwarding {
         instance add(2,"recovery-1") {
             parameter DNSServer = "8.8.8.8";

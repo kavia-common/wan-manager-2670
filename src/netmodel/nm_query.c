@@ -79,6 +79,7 @@
 #include "netmodel/nm_query.h"
 #include "autosensing/autosensing.h"
 #include "upstream_intf.h"
+#include "wan_manager_utils.h"
 
 #define LOGICAL4_UP_FLAG "logical4-up"
 #define LOGICAL6_UP_FLAG "logical6-up"
@@ -187,7 +188,7 @@ exit:
 static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_object_t* intf_obj, const char* flag, bool stop_sensing) {
     SAH_TRACEZ_IN(ME);
     bool active = GET_BOOL(data, NULL);
-    char* intf_name = amxd_object_get_value(cstring_t, intf_obj, "Name", NULL);
+    const char* intf_name = object_const_string(intf_obj, "Name");
 
     when_null_trace(intf_obj, exit, ERROR, "Failed to get interface object");
 
@@ -204,7 +205,6 @@ static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_objec
     }
 
 exit:
-    free(intf_name);
     SAH_TRACEZ_OUT(ME);
     return;
 }
@@ -354,15 +354,13 @@ void nm_close_sensing_queries(void) {
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        char* intf_name = amxd_object_get_value(cstring_t, interface, "Name", NULL);
+        const char* intf_name = object_const_string(interface, "Name");
         intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) interface->priv;
 
         interface->priv = NULL;
         SAH_TRACEZ_INFO(ME, "Clearing queries from '%s'", interface->name);
         netmodel_clearFlag(intf_name, LOGICAL_UP_FLAGS, NULL, netmodel_traverse_this);
         intf_isup_queries_clean(&nm_queries);
-
-        free(intf_name);
     }
 
 exit:

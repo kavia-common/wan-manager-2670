@@ -144,8 +144,8 @@ static operation_mode_t startup_wan_autosensing(void);
 
 static void update_sensing(void) {
     SAH_TRACEZ_IN(ME);
-    char* current_operation_mode = amxd_object_get_value(cstring_t, wan_manager, "OperationMode", NULL);
-    char* sensing_policy = amxd_object_get_value(cstring_t, wan_manager, "SensingPolicy", NULL);
+    const char* current_operation_mode = object_const_string(wan_manager, "OperationMode");
+    const char* sensing_policy = object_const_string(wan_manager, "SensingPolicy");
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_str_empty_trace(sensing_policy, exit, ERROR, "Could not get current sensing policy");
 
@@ -157,8 +157,6 @@ static void update_sensing(void) {
     }
 
 exit:
-    free(current_operation_mode);
-    free(sensing_policy);
     SAH_TRACEZ_OUT(ME);
     return;
 }
@@ -204,13 +202,13 @@ void wan_mode_cleanup(void) {
     SAH_TRACEZ_OUT(ME);
 }
 
-static char* get_physical_type_for_current_wan_mode(void) {
+static const char* get_physical_type_for_current_wan_mode(void) {
     SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_inst = get_current_wan_mode();
-    char* physical_type = NULL;
+    const char* physical_type = NULL;
 
     when_null_trace(wan_mode_inst, exit, ERROR, "Could not find the current wan-mode");
-    physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
+    physical_type = object_const_string(wan_mode_inst, "PhysicalType");
 exit:
     SAH_TRACEZ_OUT(ME);
     return physical_type;
@@ -218,7 +216,7 @@ exit:
 
 void wan_manager_found_ll(const char* found_phys_type) {
     SAH_TRACEZ_IN(ME);
-    char* current_phys_type = NULL;
+    const char* current_phys_type = NULL;
     operation_mode_t operation_mode = startup_wan_autosensing();
     amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
     bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
@@ -242,7 +240,6 @@ void wan_manager_found_ll(const char* found_phys_type) {
         when_failed_trace(rv, exit, ERROR, "Failed to disable 'ApplyAtNextBoot'");
     }
 exit:
-    free(current_phys_type);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -454,16 +451,13 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     nm_query_ll_info_t* info = NULL;
-    char* physical_type = NULL;
-    char* dns_mode = NULL;
+    const char* physical_type = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
-    physical_type = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);
+    physical_type = object_const_string(wan_mode, "PhysicalType");
 
     info = get_nm_query_info(physical_type);
     when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type);
-
-    dns_mode = amxd_object_get_value(cstring_t, wan_mode, "DNSMode", NULL);
     when_str_empty_trace(info->lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type);
 
     if(!enable) {
@@ -476,10 +470,8 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
         amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
         amxd_object_t* old_interface = NULL;
         if(old_wan_mode != NULL) {
-            char* intf_name = amxd_object_get_value(cstring_t, interface, "Name", NULL);
-
+            const char* intf_name = object_const_string(interface, "Name");
             old_interface = amxd_object_findf(old_wan_mode, ".Intf.[Name == '%s'].", intf_name);
-            free(intf_name);
         }
         rc = wan_mode_intf_enable(interface, info, enable, old_interface, NULL, NULL);
         when_failed_trace(rc, exit, ERROR, "Failed to %s interface '%s' with code %d", enable ? "enable" : "disable",
@@ -487,18 +479,16 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, amxd_object_t* old_wan_mo
     }
 
     if(enable) {
-        rc = dns_mode_set(wan_mode, dns_mode);
+        rc = dns_mode_set(wan_mode);
         nm_query_mode_active();
     } else {
-        rc = dns_mode_unset(wan_mode, dns_mode);
+        rc = dns_mode_unset();
         nm_close_sensing_queries();
         toggle_upstream_intf(physical_type, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
 exit:
-    free(physical_type);
-    free(dns_mode);
     if(enable) {
         wan_mode_set_status(wan_mode, (amxd_status_ok == rc ? WAN_Mode_Enabled : WAN_Mode_Error));
     }
@@ -524,14 +514,14 @@ exit:
 
 /**
  * @brief This function can be used to get the string value contained in the WANMode object
- * @return A string is returned containing the current WANMode, the string must be freed when no longer needed
+ * @return A string is returned containing the current WANMode
  */
-char* get_current_wan_mode_str(void) {
+const char* get_current_wan_mode_str(void) {
     SAH_TRACEZ_IN(ME);
-    char* current_wan_mode_str = NULL;
+    const char* current_wan_mode_str = NULL;
 
     when_null(wan_manager, exit);
-    current_wan_mode_str = amxd_object_get_value(cstring_t, wan_manager, "WANMode", NULL);
+    current_wan_mode_str = object_const_string(wan_manager, "WANMode");
 
 exit:
     SAH_TRACEZ_OUT(ME);
@@ -545,7 +535,7 @@ exit:
 amxd_object_t* get_current_wan_mode(void) {
     SAH_TRACEZ_IN(ME);
     amxd_object_t* wan_mode_obj = NULL;
-    char* current_wan_mode_str = get_current_wan_mode_str();
+    const char* current_wan_mode_str = get_current_wan_mode_str();
 
     when_str_empty_trace(current_wan_mode_str, exit, ERROR, "Failed to get the current wanmode");
 
@@ -553,7 +543,6 @@ amxd_object_t* get_current_wan_mode(void) {
     when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get current WANMode object");
 
 exit:
-    free(current_wan_mode_str);
     SAH_TRACEZ_OUT(ME);
     return wan_mode_obj;
 }
@@ -710,9 +699,9 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     const char* new_ip_mode = NULL;
     const char* ipv4_mode_ovr = NULL;
     const char* ipv6_mode_ovr = NULL;
-    char* wan_status = NULL;
-    char* physical_type = NULL;
-    char* current_operation_mode = amxd_object_get_value(cstring_t, get_wan_manager_obj(), "OperationMode", NULL);
+    const char* wan_status = NULL;
+    const char* physical_type = NULL;
+    const char* current_operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
 
     new_ip_mode = GET_CHAR(ip_mode_arg, "to");
     if(ipv4) {
@@ -729,11 +718,11 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     wan_mode_obj = amxd_object_get_parent(amxd_object_get_parent(intf_obj));
     when_null_trace(wan_mode_obj, exit, ERROR, "Could not get the wanmode object");
 
-    wan_status = amxd_object_get_value(cstring_t, wan_mode_obj, "Status", NULL);
+    wan_status = object_const_string(wan_mode_obj, "Status");
 
     // If the status of the wanmode is disabled, then do nothing
     when_true_status(strcmp(wan_status, "Disabled") == 0, exit, rc = amxd_status_ok);
-    physical_type = amxd_object_get_value(cstring_t, wan_mode_obj, "PhysicalType", NULL);
+    physical_type = object_const_string(wan_mode_obj, "PhysicalType");
 
     info = get_nm_query_info(physical_type);
     when_null_trace(info, exit, ERROR, "No info structure found for PhysicalType '%s'", physical_type);
@@ -751,9 +740,6 @@ exit:
     if(rc != amxd_status_ok) {
         wan_mode_set_status(wan_mode_obj, WAN_Mode_Error);
     }
-    free(current_operation_mode);
-    free(physical_type);
-    free(wan_status);
     SAH_TRACEZ_OUT(ME);
     return;
 }

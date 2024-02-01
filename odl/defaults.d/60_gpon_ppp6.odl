@@ -4,6 +4,7 @@
             parameter Alias = "GPON_PPP6";
             parameter PhysicalType = "GPON";
             parameter DNSMode = "Dynamic";
+            parameter IPv6DNSMode = "Dynamic";
         }
     }
 

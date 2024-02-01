@@ -65,14 +65,14 @@
 #include <amxd/amxd_action.h>
 #include <amxo/amxo.h>
 
-amxd_status_t _setMode(amxd_object_t* object,
-                       amxd_function_t* func,
-                       amxc_var_t* args,
-                       amxc_var_t* ret);
+amxd_status_t _setForwarding(amxd_object_t* object,
+                             amxd_function_t* func,
+                             amxc_var_t* args,
+                             amxc_var_t* ret);
 
-amxd_status_t _deleteForwardings(amxd_object_t* object,
-                                 amxd_function_t* func,
-                                 amxc_var_t* args,
-                                 amxc_var_t* ret);
+amxd_status_t _deleteForwarding(amxd_object_t* object,
+                                amxd_function_t* func,
+                                amxc_var_t* args,
+                                amxc_var_t* ret);
 
 #endif // __MOCK_DNS_H__

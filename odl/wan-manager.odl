@@ -4,6 +4,10 @@
     name = "wan-manager";
     import-dbg = false;
 
+    vendor_prefix = {
+        "dns" = "X_PRPL-COM_"
+    };
+
     // SAHTRACE
     sahtrace = {
         type = "syslog",

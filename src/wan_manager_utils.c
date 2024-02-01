@@ -586,3 +586,8 @@ char* create_neighbor_discovery_path(const char* intf_alias) {
     SAH_TRACEZ_OUT(ME);
     return path;
 }
+
+const char* object_const_string(amxd_object_t* object, const char* name) {
+    const char* value = GET_CHAR(amxd_object_get_param_value(object, name), NULL);
+    return value != NULL ? value : "";
+}

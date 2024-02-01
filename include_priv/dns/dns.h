@@ -75,8 +75,8 @@ extern "C"
 #include <amxd/amxd_dm.h>
 #include <amxd/amxd_object.h>
 
-amxd_status_t dns_mode_set(amxd_object_t* wan_mode, const char* dns_mode);
-amxd_status_t dns_mode_unset(amxd_object_t* wan_mode, const char* dns_mode);
+amxd_status_t dns_mode_set(amxd_object_t* wan_mode);
+amxd_status_t dns_mode_unset(void);
 
 #ifdef __cplusplus
 }

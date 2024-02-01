@@ -139,12 +139,11 @@ amxd_status_t _setWANMode(amxd_object_t* object,
     bool autosensing_req = GET_BOOL(args, "Autosensing");
 
     if(!autosensing_req) {
-        char* current_mode = amxd_object_get_value(cstring_t, object, "OperationMode", NULL);
-        if((NULL != current_mode) && (strcmp("Automatic", current_mode) == 0)) {
+        const char* current_mode = object_const_string(object, "OperationMode");
+        if(strcmp("Automatic", current_mode) == 0) {
             mod_autosensing_stop();
         }
         SAH_TRACEZ_INFO(ME, "Configure %s as WANMode and set OperationMode to Manual", wan_mode_value);
-        free(current_mode);
     } else {
         SAH_TRACEZ_INFO(ME, "Setting OperationMode to Automatic, requested WANMode will be ignored");
         wan_mode_value = NULL;
@@ -186,7 +185,7 @@ amxd_status_t _setIPv4Mode(amxd_object_t* object,
     amxd_status_t status = amxd_status_invalid_attr;
     const char* ip_mode_value = GET_CHAR(args, "IPv4Mode");
     const char* intf_alias = GET_CHAR(args, "InterfaceAlias");
-    char* wan_mode = amxd_object_get_value(cstring_t, object, "WANMode", NULL);
+    const char* wan_mode = object_const_string(object, "WANMode");
     amxd_object_t* wan_mode_obj = NULL;
     amxd_object_t* interface = NULL;
 
@@ -197,7 +196,6 @@ amxd_status_t _setIPv4Mode(amxd_object_t* object,
     status = set_intf_ip_mode(interface, ip_mode_value, true);
 
 exit:
-    free(wan_mode);
     amxc_var_add_key(bool, ret, "status", status == amxd_status_ok);
     SAH_TRACEZ_OUT(ME);
     return status;
@@ -211,7 +209,7 @@ amxd_status_t _setIPv6Mode(amxd_object_t* object,
     amxd_status_t status = amxd_status_invalid_attr;
     const char* ip_mode_value = GET_CHAR(args, "IPv6Mode");
     const char* intf_alias = GET_CHAR(args, "InterfaceAlias");
-    char* wan_mode = amxd_object_get_value(cstring_t, object, "WANMode", NULL);
+    const char* wan_mode = object_const_string(object, "WANMode");
     amxd_object_t* wan_mode_obj = NULL;
     amxd_object_t* interface = NULL;
 
@@ -222,7 +220,6 @@ amxd_status_t _setIPv6Mode(amxd_object_t* object,
     status = set_intf_ip_mode(interface, ip_mode_value, false);
 
 exit:
-    free(wan_mode);
     amxc_var_add_key(bool, ret, "status", status == amxd_status_ok);
     SAH_TRACEZ_OUT(ME);
     return status;
@@ -234,13 +231,12 @@ void _Reset(UNUSED amxd_object_t* object,
             UNUSED amxc_var_t* ret) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
-    char* current_wan_mode_str = get_current_wan_mode_str();
+    const char* current_wan_mode_str = get_current_wan_mode_str();
 
     rv = wan_mode_set(current_wan_mode_str, current_wan_mode_str);
     when_failed_trace(rv, exit, ERROR, "Failed to reset wan mode '%s'", current_wan_mode_str);
 
 exit:
-    free(current_wan_mode_str);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -253,16 +249,16 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
     amxd_object_t* current_mode_obj = get_current_wan_mode();
     amxd_object_t* wan_intf_obj = amxd_object_findf(current_mode_obj, ".Intf.wan.");
     bool mode_active = false;
-    char* bridge_reference = NULL;
-    char* ip_reference = NULL;
+    const char* bridge_reference = NULL;
+    const char* ip_reference = NULL;
 
     when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
 
-    bridge_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "BridgeReference", NULL);
+    bridge_reference = object_const_string(wan_intf_obj, "BridgeReference");
     if(!str_empty(bridge_reference)) {
         mode_active = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
     } else {
-        ip_reference = amxd_object_get_value(cstring_t, wan_intf_obj, "IPv4Reference", NULL);
+        ip_reference = object_const_string(wan_intf_obj, "IPv4Reference");
         when_str_empty(ip_reference, exit);     // When the ip_reference is empty the mode is not active
         mode_active = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
     }
@@ -272,8 +268,6 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
 exit:
     amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(bool, ret, "active", mode_active);
-    free(ip_reference);
-    free(bridge_reference);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
@@ -343,7 +337,7 @@ void _set_wan_mode(UNUSED const char* const event_name,
     SAH_TRACEZ_IN(ME);
     const char* new_wan_mode = GETP_CHAR(event_data, "parameters.WANMode.to");
     const char* old_wan_mode = GETP_CHAR(event_data, "parameters.WANMode.from");
-    char* current_operation_mode = amxd_object_get_value(cstring_t, get_wan_manager_obj(), "OperationMode", NULL);
+    const char* current_operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
 
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
@@ -355,7 +349,6 @@ void _set_wan_mode(UNUSED const char* const event_name,
     }
 
 exit:
-    free(current_operation_mode);
     SAH_TRACEZ_OUT(ME);
     return;
 }

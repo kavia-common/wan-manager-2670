@@ -123,9 +123,11 @@ char* component_get_path_instance(amxb_bus_ctx_t* bus,
     amxc_var_t ret;
     const char* result = NULL;
     char* ret_str = NULL;
+    int amxb_rv = 0;
 
     amxc_var_init(&ret);
-    amxb_get(bus, query, 0, &ret, 5);
+    amxb_rv = amxb_get(bus, query, 0, &ret, 5);
+    when_failed_trace(amxb_rv, exit, ERROR, "amxb_get(%s) failed: %d", query, amxb_rv);
     result = amxc_var_key(GETP_ARG(&ret, "0.0"));
     when_str_empty_trace(result, exit, INFO, "No results for '%s'", query);
     SAH_TRACEZ_INFO(ME, "%s returned %s", query, result);

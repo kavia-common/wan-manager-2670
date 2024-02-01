@@ -96,18 +96,6 @@ static int amxb_dummy_register(UNUSED void* const ctx,
     return 0;
 }
 
-UNUSED static int amxb_dummy_subscribe(UNUSED void* const ctx,
-                                       UNUSED const char* object) {
-    //assert(false && "Subscribe called");
-    return 0;
-}
-
-UNUSED static int amxb_dummy_unsubscribe(UNUSED void* const ctx,
-                                         UNUSED const char* object) {
-    assert(false && "Actually called unsubscribe");
-    return 0;
-}
-
 static amxb_be_funcs_t amxb_dummy_impl = {
     .connect = amxb_dummy_connect,
     .disconnect = amxb_dummy_disconnect,
@@ -117,8 +105,8 @@ static amxb_be_funcs_t amxb_dummy_impl = {
     .async_invoke = NULL,
     .wait_request = NULL,
     .close_request = NULL,
-    .subscribe = NULL,       //amxb_dummy_subscribe,
-    .unsubscribe = NULL,     //amxb_dummy_unsubscribe,
+    .subscribe = NULL,
+    .unsubscribe = NULL,
     .free = amxb_dummy_free,
     .register_dm = amxb_dummy_register,
     .name = "dummy",

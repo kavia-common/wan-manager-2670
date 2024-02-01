@@ -87,7 +87,7 @@ static int autosensing_set_wan_mode(UNUSED const char* function_name,
     SAH_TRACEZ_IN(ME);
     int rv = -1;
     const char* next_wan_mode_str = GET_CHAR(args, "Alias");
-    char* current_wan_mode_str = get_current_wan_mode_str();
+    const char* current_wan_mode_str = get_current_wan_mode_str();
 
     if(((next_wan_mode_str) == NULL) || (*(next_wan_mode_str) == 0)) {
         SAH_TRACEZ_ERROR(ME, "Invalid mode provided, stop sensing");
@@ -100,7 +100,6 @@ static int autosensing_set_wan_mode(UNUSED const char* function_name,
     when_failed_trace(rv, exit, ERROR, "Failed to set wan mode '%s'", next_wan_mode_str);
 
 exit:
-    free(current_wan_mode_str);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }

@@ -109,6 +109,8 @@ char* create_logical_path(const char* intf_name);
 char* create_neighbor_discovery_path(const char* intf_alias);
 amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable);
 
+const char* object_const_string(amxd_object_t* object, const char* name);
+
 #ifdef __cplusplus
 }
 #endif

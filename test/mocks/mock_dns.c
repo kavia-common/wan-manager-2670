@@ -63,30 +63,16 @@
 
 #include "dm_wan_mode.h"
 
-amxd_status_t _setMode(UNUSED amxd_object_t* object,
-                       UNUSED amxd_function_t* func,
-                       amxc_var_t* args,
-                       UNUSED amxc_var_t* ret) {
-
-    if(strcmp(GET_CHAR(args, "Mode"), "Static") == 0) {
-        amxc_var_t* dns_servers = NULL;
-        amxc_var_t* dns_list = NULL;
-
-        dns_servers = GET_ARG(args, "DNSServers");
-        assert_non_null(dns_servers);
-        dns_list = GET_ARG(dns_servers, "Device.Logical.Interface.1.");
-        assert_non_null(dns_list);
-
-        assert_string_equal(GETI_CHAR(dns_list, 0), "8.8.8.8");
-        assert_string_equal(GETI_CHAR(dns_list, 1), "1.1.1.1");
-        assert_string_equal(GETI_CHAR(dns_list, 2), "2620:119:35::35");
-    }
+amxd_status_t _setForwarding(UNUSED amxd_object_t* object,
+                             UNUSED amxd_function_t* func,
+                             UNUSED amxc_var_t* args,
+                             UNUSED amxc_var_t* ret) {
     return amxd_status_ok;
 }
 
-amxd_status_t _deleteForwardings(UNUSED amxd_object_t* object,
-                                 UNUSED amxd_function_t* func,
-                                 UNUSED amxc_var_t* args,
-                                 UNUSED amxc_var_t* ret) {
+amxd_status_t _deleteForwarding(UNUSED amxd_object_t* object,
+                                UNUSED amxd_function_t* func,
+                                UNUSED amxc_var_t* args,
+                                UNUSED amxc_var_t* ret) {
     return amxd_status_ok;
 }

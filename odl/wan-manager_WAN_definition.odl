@@ -53,17 +53,23 @@
 
             /**
             * Parameter that define the way how to configure the DNS servers. Enumeration of:
-            * - DHCPv4
-            * - DHCPv6
-            * - RouterAdvertisement
-            * - IPCP
             * - Static
             * - Dynamic
-            *
             * @version 1.0
             */
             %persistent string DNSMode {
-                on action validate call check_enum ["DHCPv4", "DHCPv6", "RouterAdvertisement", "IPCP", "Static", "Dynamic", ""];
+                on action validate call check_enum ["Static", "Dynamic", ""];
+                default "Dynamic";
+            }
+
+            /**
+            * Parameter that define the way how to configure the DNS servers. Enumeration of:
+            * - Static
+            * - Dynamic
+            * @version 1.0
+            */
+            %persistent string IPv6DNSMode {
+                on action validate call check_enum ["Static", "Dynamic", ""];
                 default "Dynamic";
             }
         }
