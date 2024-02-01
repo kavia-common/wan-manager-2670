@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.3.0 - 2024-02-01(15:46:48 +0000)
+
+### New
+
+- Unable to set static DNS Mode for WAN IPv4 and IPv6 separately
+
 ## Release v1.2.2 - 2024-01-29(11:12:44 +0000)
 
 ### Fixes
