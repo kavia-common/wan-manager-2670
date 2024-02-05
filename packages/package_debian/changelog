@@ -1,3 +1,9 @@
+wan-manager (1.4.0) unstable; urgency=medium
+
+  * Add tr181-device proxy odl files to components
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 05 Feb 2024 16:19:04 +0000
+
 wan-manager (1.3.0) unstable; urgency=medium
 
   * Unable to set static DNS Mode for WAN IPv4 and IPv6 separately

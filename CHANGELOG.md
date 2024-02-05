@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.0 - 2024-02-05(16:19:02 +0000)
+
+### New
+
+- Add tr181-device proxy odl files to components
+
 ## Release v1.3.0 - 2024-02-01(15:46:48 +0000)
 
 ### New
