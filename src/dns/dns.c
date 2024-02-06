@@ -175,6 +175,8 @@ static amxd_status_t set_forwarding(amxd_object_t* address_obj, amxb_bus_ctx_t* 
 
     amxc_var_convert(&list, amxd_object_get_param_value(address_obj, "DNSServers"), AMXC_VAR_ID_LIST);
 
+    when_null_status(amxc_var_get_first(&list), exit, rc = amxd_status_ok);
+
     amxc_var_for_each(dnsserver, &list) {
         amxc_var_t values;
         amxc_var_t ret;
