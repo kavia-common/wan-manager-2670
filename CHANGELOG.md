@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.1 - 2024-02-08(09:12:47 +0000)
+
+### Fixes
+
+- DNSMode and IPv6DNSMode should be upgrade persistent
+- Status in Error after setting DNSMode
+
 ## Release v1.4.0 - 2024-02-05(16:19:02 +0000)
 
 ### New
