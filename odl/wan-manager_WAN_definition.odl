@@ -60,6 +60,7 @@
             %persistent string DNSMode {
                 on action validate call check_enum ["Static", "Dynamic", ""];
                 default "Dynamic";
+                userflags %upc;
             }
 
             /**
@@ -71,6 +72,7 @@
             %persistent string IPv6DNSMode {
                 on action validate call check_enum ["Static", "Dynamic", ""];
                 default "Dynamic";
+                userflags %upc;
             }
         }
     }
