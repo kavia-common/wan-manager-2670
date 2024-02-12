@@ -17,7 +17,15 @@ MOCK_WRAP = netmodel_initialize		\
             netmodel_openQuery_getFirstParameter \
             netmodel_openQuery_getIntfs \
             netmodel_openQuery_isUp \
-            netmodel_closeQuery
+            netmodel_getFirstParameter \
+            netmodel_closeQuery \
+            netmodel_clearFlag \
+            amxb_set \
+            amxb_set_multiple \
+            amxb_get \
+            amxb_add \
+            amxb_del \
+            amxb_call
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

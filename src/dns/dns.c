@@ -117,7 +117,7 @@ static char* get_config_path(void) {
         prefix = "";
     }
 
-    amxc_string_setf(&search_path, "Device.DNS.Relay.%sConfig.*.", prefix); // terminate with . to only return instances and not the template
+    amxc_string_setf(&search_path, DEVICE_PATH DNS_PATH "Relay.%sConfig.*.", prefix); // terminate with . to only return instances and not the template
 
     config_path = component_get_path_instance(dns_get_context(), amxc_string_get(&search_path, 0));
 
@@ -147,12 +147,12 @@ static amxd_status_t remove_static_dnsservers(void) {
         amxc_var_add_key(cstring_t, &values, "Alias", amxc_string_get(&alias, 0));
         amxc_var_init(&ret);
 
-        rc = amxb_call(bus_ctx, "DNS.", "DeleteForwarding", &values, &ret, 5);
+        rc = amxb_call(bus_ctx, DNS_PATH, "DeleteForwarding", &values, &ret, 5);
 
         amxc_var_clean(&values);
         amxc_var_clean(&ret);
 
-        when_failed_trace(rc, exit, INFO, "Failed to remove DNS.Relay.Forwarding.%s.: %d", amxc_string_get(&alias, 0), rc); // don't continue, otherwise those instances will never be removed
+        when_failed_trace(rc, exit, INFO, "Failed to remove %sRelay.Forwarding.%s.: %d", DNS_PATH, amxc_string_get(&alias, 0), rc); // don't continue, otherwise those instances will never be removed
 
         dns_relay_forwarding_index--;
     }
@@ -196,12 +196,12 @@ static amxd_status_t set_forwarding(amxd_object_t* address_obj, amxb_bus_ctx_t* 
         amxc_var_add_key(bool, &values, "AddInstance", true);
         amxc_var_init(&ret);
 
-        rc = amxb_call(bus_ctx, "DNS.", "SetForwarding", &values, &ret, 5);
+        rc = amxb_call(bus_ctx, DNS_PATH, "SetForwarding", &values, &ret, 5);
 
         amxc_var_clean(&values);
         amxc_var_clean(&ret);
 
-        when_failed_trace(rc, exit, ERROR, "Failed to set DNS.Relay.Forwarding.%s.: %d", amxc_string_get(&alias, 0), rc);
+        when_failed_trace(rc, exit, ERROR, "Failed to set %sRelay.Forwarding.%s.: %d", DNS_PATH, amxc_string_get(&alias, 0), rc);
 
         dns_relay_forwarding_index = next_index;
     }
@@ -294,7 +294,7 @@ amxd_status_t dns_mode_set(amxd_object_t* wan_mode) {
     amxd_status_t rc = amxd_status_unknown_error;
     SAH_TRACEZ_IN(ME);
 
-    when_null_trace(dns_get_context(), exit, ERROR, "Bus ctx for DNS. not found");
+    when_null_trace(dns_get_context(), exit, ERROR, "Bus ctx for %s not found", DNS_PATH);
 
     rc = set_dnsmode(wan_mode);
     when_failed(rc, exit);
@@ -314,7 +314,7 @@ amxd_status_t dns_mode_unset(void) {
     amxd_status_t rc = amxd_status_unknown_error;
     SAH_TRACEZ_IN(ME);
 
-    when_null_trace(dns_get_context(), exit, ERROR, "Bus ctx for DNS. not found");
+    when_null_trace(dns_get_context(), exit, ERROR, "Bus ctx for %s not found", DNS_PATH);
 
     rc = remove_static_dnsservers();
 

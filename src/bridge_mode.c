@@ -154,7 +154,7 @@ amxd_status_t bridge_mode_ctrl_action(const amxc_var_t* const parameters,
 int manage_bridge(const char* bridge_reference, const char* lower_layer, bool enable, mode_ctrl_t mode, uint32_t vlan_id, uint32_t vlan_prio) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
-    amxb_bus_ctx_t* bus_ctx = amxb_be_who_has("Device.Bridging.");
+    amxb_bus_ctx_t* bus_ctx = amxb_be_who_has("Bridging.");
     amxc_var_t params;
     amxc_var_t ret;
     const char* method = enable ? "AddPort" : "DisablePort";

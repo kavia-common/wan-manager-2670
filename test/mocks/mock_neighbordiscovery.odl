@@ -1,27 +1,25 @@
 %define {
-    select Device {
-        object NeighborDiscovery {
-            object InterfaceSetting[] {
+    object NeighborDiscovery {
+        object InterfaceSetting[] {
 
-                bool AcceptDefaultRoute;
-                string Alias;
-                bool AutoConfEnable;
-                uint32 DADTransmits;
-                bool Enable;
-                string Interface;
-                uint32 MaxRtrSolicitations;
-                bool NUDEnable;
-                bool RSEnable;
-                uint32 RetransTimer;
-                uint32 RtrSolicitationInterval;
-                string Status;
-            }
+            bool AcceptDefaultRoute;
+            string Alias;
+            bool AutoConfEnable;
+            uint32 DADTransmits;
+            bool Enable;
+            string Interface;
+            uint32 MaxRtrSolicitations;
+            bool NUDEnable;
+            bool RSEnable;
+            uint32 RetransTimer;
+            uint32 RtrSolicitationInterval;
+            string Status;
         }
     }
 }
 
 %populate {
-    object Device.NeighborDiscovery.InterfaceSetting {
+    object NeighborDiscovery.InterfaceSetting {
         instance add(1, "cpe-wan") {
             parameter AcceptDefaultRoute = true;
             parameter Alias = "cpe-wan";

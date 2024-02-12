@@ -1,39 +1,38 @@
 %define {
-    select Device {
-        object Routing {
-            object RouteInformation {
+    object Routing {
+        object RouteInformation {
 
-                bool Enable;
-                object InterfaceSetting[] {
-
-                    string Alias;
-                    string Interface;
-                }
-            }
-
-            object Router[]{
+            bool Enable;
+            object InterfaceSetting[] {
 
                 string Alias;
+                string Interface;
+                string PreferredRouteFlag;
+            }
+        }
+
+        object Router[]{
+
+            string Alias;
+            bool Enable;
+            object IPv4Forwarding[]{
+
+                string Alias;
+                string DestIPAddress;
+                string DestSubnetMask;
                 bool Enable;
-                object IPv4Forwarding[]{
+                string GatewayIPAddress;
+                string Interface;
+                string Origin;
+            }
+            object IPv6Forwarding[]{
 
-                    string Alias;
-                    string DestIPAddress;
-                    string DestSubnetMask;
-                    bool Enable;
-                    string GatewayIPAddress;
-                    string Interface;
-                    string Origin;
-                }
-                object IPv6Forwarding[]{
-
-                    string Alias;
-                    string DestIPPrefix;
-                    bool Enable;
-                    string Interface;
-                    string NextHop;
-                    string Origin;
-                }
+                string Alias;
+                string DestIPPrefix;
+                bool Enable;
+                string Interface;
+                string NextHop;
+                string Origin;
             }
         }
     }
@@ -41,7 +40,7 @@
 
 
 %populate {
-    object Device.Routing.RouteInformation {
+    object Routing.RouteInformation {
 
         parameter Enable = 1;
         object InterfaceSetting{
@@ -53,14 +52,13 @@
         }
     }
 
-    object Device.Routing.Router {
+    object Routing.Router {
         instance add("main"){
 
             parameter Alias = "main";
             parameter Enable = 1;
             object IPv4Forwarding {
                 instance add("cpe-default"){
-
                     parameter Alias = "cpe-default";
                     parameter DestIPAddress = "0.0.0.0";
                     parameter DestSubnetMask = "0.0.0.0";
@@ -70,13 +68,19 @@
                     parameter Origin = "DHCPv4";
                 }
                 instance add("wwan-default"){
-
                     parameter Alias = "wwan-default";
                     parameter DestIPAddress = "0.0.0.0";
                     parameter DestSubnetMask = "0.0.0.0";
                     parameter Enable = 1;
                     parameter GatewayIPAddress = "172.16.220.10";
                     parameter Interface = "Device.IP.Interface.12.";
+                    parameter Origin = "Static";
+                }
+            }
+
+            object IPv6Forwarding {
+                instance add("wan-mngr") {
+                    parameter Alias = "wan-mngr";
                     parameter Origin = "Static";
                 }
             }

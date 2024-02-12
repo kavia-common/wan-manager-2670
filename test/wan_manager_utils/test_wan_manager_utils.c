@@ -84,8 +84,6 @@
 #include "ethernet/ethernet.h"
 #include "test_wan_manager_utils.h"
 
-#include "debug/sahtrace.h"
-
 void test_ethernet_vlan_set_enable(UNUSED void** state) {
     amxd_object_t* vlan_obj = NULL;
     amxc_var_t* parameters = NULL;
@@ -98,20 +96,20 @@ void test_ethernet_vlan_set_enable(UNUSED void** state) {
     assert_null(vlan_obj);
 
     assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, true), amxd_status_ok);
-    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     assert_int_equal(GETP_UINT32(&ret, "0.0.VLANPriority"), 0);
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
     assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, false), amxd_status_ok);
-    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_false(GETP_BOOL(&ret, "0.0.Enable"));
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
     assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 4, true), amxd_status_ok);
-    amxb_get(amxb_be_who_has("Device.Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
+    amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     assert_int_equal(GETP_UINT32(&ret, "0.0.VLANPriority"), 4);
     amxc_var_clean(&ret);

@@ -1,37 +1,33 @@
 %define {
-    select Device {
-        object DNS {
-            object Relay{
-                object Config[] {
-                    string DNSMode;
-                    string IPv6DNSMode;
-                }
-                object Forwarding[]{
-
-                    string Alias;
-                    string DNSServer;
-                    bool Enable;
-                    string Interface;
-                    string Status;
-                    string Type;
-                    string Tag;
-                    string State;
-                }
+    object DNS {
+        object Relay{
+            object Config[] {
+                string DNSMode;
+                string IPv6DNSMode;
             }
-
-            string SetForwarding(%in string Alias, %in string DNSServers, %in string Type, %in bool Enable);
-            void DeleteForwarding(%in string Alias);
+            object Forwarding[]{
+            string Alias;
+            string DNSServer;
+            bool Enable;
+            string Interface;
+            string Status;
+            string Type;
+            string Tag;
+            string State;
+            }
         }
+        string SetForwarding(%in string Alias, %in string DNSServers, %in string Type, %in bool Enable);
+        void DeleteForwarding(%in string Alias);
     }
 }
 
 %populate{
-    object Device.DNS.Relay.Config {
+    object DNS.Relay.Config {
         instance add(0,"config-1") {
         }
     }
 
-    object Device.DNS.Relay.Forwarding {
+    object DNS.Relay.Forwarding {
         instance add(2,"recovery-1") {
             parameter DNSServer = "8.8.8.8";
             parameter Enable = true;
@@ -43,7 +39,7 @@
         }
     }
 
-    object Device.DNS.Relay.Forwarding {
+    object DNS.Relay.Forwarding {
         instance add(3,"ppp-2") {
             parameter DNSServer = "";
             parameter Enable = true;
@@ -55,7 +51,7 @@
         }
     }
 
-    object Device.DNS.Relay.Forwarding {
+    object DNS.Relay.Forwarding {
         instance add(4,"dhcpv4-1") {
             parameter DNSServer = "172.16.110.10";
             parameter Enable = true;
@@ -67,7 +63,7 @@
         }
     }
 
-    object Device.DNS.Relay.Forwarding {
+    object DNS.Relay.Forwarding {
         instance add(5,"dhcpv6-1") {
             parameter DNSServer = "2a02:1802:94:3200::10";
             parameter Enable = true;
@@ -79,7 +75,7 @@
         }
     }
 
-    object Device.DNS.Relay.Forwarding {
+    object DNS.Relay.Forwarding {
         instance add(6,"ra-1") {
             parameter DNSServer = "";
             parameter Enable = true;

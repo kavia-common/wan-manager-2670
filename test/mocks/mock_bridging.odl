@@ -1,30 +1,28 @@
 %define {
-    select Device {
-        object Bridging {
-            object Bridge[] {
-                void AddPort(%mandatory string LowerLayers, string Alias, bool Enable, uint32 VlanId, string VlanName, uint32 VlanPriority);
-                void DisablePort(%mandatory string LowerLayers, uint32 VlanId);
-            }
+    object Bridging {
+        object Bridge[] {
+            void AddPort(%mandatory string LowerLayers, string Alias, bool Enable, uint32 VlanId, string VlanName, uint32 VlanPriority);
+            void DisablePort(%mandatory string LowerLayers, uint32 VlanId);
+        }
 
-            object LastAddParameters[] {
-                string LowerLayers;
-                string Alias;
-                bool Enable;
-                uint32 VlanId;
-                string VlanName;
-                uint32 VlanPriority;
-            }
+        object LastAddParameters[] {
+            string LowerLayers;
+            string Alias;
+            bool Enable;
+            uint32 VlanId;
+            string VlanName;
+            uint32 VlanPriority;
+        }
 
-            object LastDisableParameters[] {
-                string LowerLayers;
-                uint32 VlanId;
-            }
+        object LastDisableParameters[] {
+            string LowerLayers;
+            uint32 VlanId;
         }
     }
 }
 
 %populate {
-    object Device.Bridging {
+    object Bridging {
         object Bridge {
             instance add("lan") {}
         }

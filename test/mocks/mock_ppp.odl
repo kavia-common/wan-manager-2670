@@ -1,24 +1,22 @@
 %define {
-    select Device {
-        object PPP {
-            object Interface[] {
+    object PPP {
+        object Interface[] {
 
-                bool Enable;
-                string Status;
-                string Alias;
-                string Name;
-                string LowerLayers;
-                string Username;
-                string Password;
-                bool IPCPEnable;
-                bool IPv6CPEnable;
-            }
+            bool Enable;
+            string Status;
+            string Alias;
+            string Name;
+            string LowerLayers;
+            string Username;
+            string Password;
+            bool IPCPEnable;
+            bool IPv6CPEnable;
         }
     }
 }
 
 %populate {
-    object Device.PPP.Interface {
+    object PPP.Interface {
         instance add(1, "wan") {
             parameter Enable = false;
             parameter Status = "Disabled";

@@ -198,7 +198,7 @@ amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     char* route_path = routing_get_interfacesetting(intf_path);
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
-    const char* router_info = "Device.Routing.RouteInformation.";
+    const char* router_info = DEVICE_PATH "Routing.RouteInformation.";
     const char* nd_intf = "wan";
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv6");
@@ -262,7 +262,7 @@ amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
     const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     char* route_path = routing_get_interfacesetting(intf_path);
-    const char* router_info = "Device.Routing.RouteInformation.";
+    const char* router_info = DEVICE_PATH "Routing.RouteInformation.";
     const char* nd_intf = "wan";
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;

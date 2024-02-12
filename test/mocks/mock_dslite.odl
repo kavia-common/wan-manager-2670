@@ -1,0 +1,36 @@
+%define {
+    object DSLite {
+        bool Enable = false;
+        object InterfaceSetting[] {
+            bool Enable;
+            string Status;
+            string Alias;
+            string EndpointAssignmentPrecedence;
+            string EndpointAddressTypePrecedence;
+            string EndpointAddressInUse = "";
+            string EndpointName;
+            string EndpointAddress;
+            string Origin = "DHCPv6";
+            string TunnelInterface = "Device.IP.Interface.7.";
+            string TunneledInterface = "Device.IP.Interface.8.";
+            string WANInterface = "Device.IP.Interface.2.";
+        }
+    }
+}
+
+%populate {
+    object DSLite {
+        parameter Enable = false;
+    }
+
+    object DSLite.InterfaceSetting {
+        instance add("dslite0") {
+            parameter Enable = true;
+            parameter EndpointAssignmentPrecedence = "DHCPv6";
+            parameter EndpointAddressTypePrecedence = "IPv6Address";
+            parameter EndpointName = "";
+            parameter EndpointAddress = "";
+            parameter Origin = "DHCPv6";
+        }
+    }
+}

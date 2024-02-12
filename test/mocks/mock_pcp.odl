@@ -1,0 +1,80 @@
+%define {
+    object PCP {
+        csv_string SupportedVersions = "0";
+        uint32 PreferredVersion = 2;
+        csv_string OptionList = "";
+        bool Enable = false;
+    }
+}
+
+%define {
+    select PCP {
+        object Client[] {
+            string Alias;
+            bool Enable = true;
+            string WANInterface = "";
+            string Status = "Disabled";
+            bool MAPEnable = true;
+            bool PEEREnable = false;
+            bool ANNOUNCEEnable = false;
+            bool THIRDPARTYEnable = true;
+            string THIRDPARTYStatus = "Enabled";
+            bool FILTEREnable = true;
+            object PCPProxy {
+                bool Enable = false;
+                uint32 HighestVersion = 0;
+                string Status = "Disabled";
+            }
+            object UPnPIWF {
+                bool Enable = false;
+                string Status = "Disabled";
+            }
+        }
+    }
+}
+
+%define {
+    select PCP.Client {
+        object Server[] {
+            string Alias;
+            bool Enable = true;
+            string Status = "Disabled";
+            string Origin = "Static";
+            string ServerNameOrAddress = "";
+            string ServerAddressInUse = "";
+            csv_string AdditionalServerAddresses = "";
+            string ExternalIPAddress = "";
+            uint32 CurrentVersion = 0;
+            uint32 MaximumFilters = 0;
+            uint32 PortQuota = 0;
+            uint32 PreferredLifetime = 0;
+            string Capabilities = "";
+        }
+    }
+}
+
+
+
+%populate {
+    object 'PCP' {
+        object 'Client' {
+            instance add(1) {
+                parameter 'WANInterface' = "Device.Logical.Interface.1.";
+                parameter 'Enable' = false;
+                object 'PCPProxy' {
+                }
+                object 'UPnPIWF' {
+                }
+                object 'Server' {
+                    instance add(1) {
+                        parameter 'Origin' = "DHCPv6";
+                        // object 'InboundMapping' {
+                        // }
+                        // object 'OutboundMapping' {
+                        // }
+                    }
+                }
+            }
+        }
+    }
+}

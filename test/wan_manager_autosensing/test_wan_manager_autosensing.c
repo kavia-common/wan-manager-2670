@@ -72,8 +72,6 @@
 #include <amxc/amxc_macros.h>
 #include <amxm/amxm.h>
 
-#include <debug/sahtrace.h>
-
 #include "dm_wan_mode.h"
 #include "test_wan_manager_autosensing.h"
 #include "test_utils.h"

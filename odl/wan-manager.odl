@@ -54,7 +54,7 @@
 
 import "${name}.so" as "${name}";
 import "mod-dmext.so";
-#include "wan-manager_caps.odl";
+#include "${name}_caps.odl";
 
 include "${wan_manager_definition_file}";
 include "${wan_mode_definition_file}";
@@ -63,10 +63,8 @@ include "${wan_mode_intf_definition_file}";
 requires "IP.";
 requires "DHCPv4Client.Client.";
 requires "DHCPv6Client.Client.";
-requires "PPP.";
 requires "Routing.";
 requires "DNS.";
-requires "DSLite.";
 requires "Logical.";
 
 %define {

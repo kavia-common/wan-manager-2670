@@ -1,28 +1,39 @@
 %define {
-    object Ethernet;
-    select Device {
-        object Ethernet {
-            object VLANTermination[] {
-                bool Enable;
-                string Status = "Down";
-                %unique %key string Alias;
-                %unique %key string Name;
-                %read-only uint32 LastChange;
-                string LowerLayers = "";
-                uint32 VLANID = 1;
-                uint32 TPID = 33024;
-                uint32 VLANPriority = 0;
-            }
+    object Ethernet {
+        object Interface[] {
+            bool Enable;
+            string Status = "Down";
+            string Alias;
+            string Name;
+            string LowerLayers;
+        }
+
+        object VLANTermination[] {
+            bool Enable;
+            string Status = "Down";
+            %unique %key string Alias;
+            %unique %key string Name;
+            %read-only uint32 LastChange;
+            string LowerLayers = "";
+            uint32 VLANID = 1;
+            uint32 TPID = 33024;
+            uint32 VLANPriority = 0;
         }
     }
 }
 
+
 %populate {
-    object 'Device.Ethernet.VLANTermination' {
+    object 'Ethernet.VLANTermination' {
         instance add (0, "vlan201", Name = "vlan201") {
             parameter LowerLayers = "Device.Ethernet.Link.2.";
             parameter VLANID = 201;
             parameter VLANPriority = 0;
+        }
+    }
+    object 'Ethernet.Interface' {
+        instance add (0, "ETH1", Name = "eth1") {
+            parameter Enable = 1;
         }
     }
 }

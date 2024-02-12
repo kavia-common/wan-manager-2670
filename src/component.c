@@ -312,11 +312,11 @@ int component_set_params(const char* component, amxb_bus_ctx_t* bus, amxc_var_t*
     amxc_var_t ret;
     int rc = -1;
 
+    amxc_var_init(&ret);
+
     when_null_trace(bus, exit, ERROR, "No bus context provided");
     when_null_trace(values, exit, WARNING, "No data provided to set");
     when_str_empty_trace(component, exit, WARNING, "No component provided to set parameters");
-
-    amxc_var_init(&ret);
 
     rc = amxb_set(bus, component, values, &ret, 5);
     when_failed_trace(rc, exit, ERROR, "%s client set params failed with error code %d", component, rc);

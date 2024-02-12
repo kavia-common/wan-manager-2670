@@ -82,6 +82,13 @@ extern "C" {
 #define ROUTING_ORIGIN_STATIC "Static"
 #define ROUTING_ORIGIN_AUTOMATIC "Automatic"
 
+#define DEVICE_PATH "Device."
+#define DHCPV4_PATH "DHCPv4Client."
+#define DHCPV6_PATH "DHCPv6Client."
+#define DNS_PATH "DNS."
+#define PPP_PATH "PPP."
+#define DSLITE_PATH "DSLite."
+
 #define str_empty(txt) ((txt == NULL) || (*txt == 0))
 
 amxb_bus_ctx_t* ip_get_context(void);

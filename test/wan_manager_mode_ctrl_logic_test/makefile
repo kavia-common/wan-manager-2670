@@ -17,11 +17,18 @@ MOCK_WRAP = netmodel_initialize		\
             netmodel_openQuery_getIntfs \
             netmodel_closeQuery \
             netmodel_getFirstParameter \
+            netmodel_clearFlag \
             amxp_proc_ctrl_new 		\
             amxp_proc_ctrl_start 	\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
-            restart
+            restart \
+            amxb_set \
+            amxb_set_multiple \
+            amxb_get \
+            amxb_add \
+            amxb_del \
+            amxb_call
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

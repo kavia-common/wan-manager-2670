@@ -88,7 +88,7 @@ static const char* ppp_get_client(UNUSED bool ipv4,
     SAH_TRACEZ_IN(ME);
     // For now a fixed path to the first instance is used, in the future it should be possible to get a specific instance
     SAH_TRACEZ_OUT(ME);
-    return "Device.PPP.Interface.1.";
+    return DEVICE_PATH PPP_PATH "Interface.1.";
 }
 
 amxd_status_t ppp_enable(mode_ctrl_t mode,
@@ -106,7 +106,7 @@ amxd_status_t ppp_enable(mode_ctrl_t mode,
     const char* password = GET_CHAR(parameters, "Password");
     const char* ipv6_address_delegate = GET_CHAR(parameters, "IPv6AddressDelegate");
     const char* name = GET_CHAR(parameters, "Name");
-    const char* router_info = "Device.Routing.RouteInformation.";
+    const char* router_info = DEVICE_PATH "Routing.RouteInformation.";
     const char* nd_intf = "wan";
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
@@ -247,7 +247,7 @@ amxd_status_t ppp_disable(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* ppp_path = ppp_get_client(true, intf_path, NULL);
-    const char* router_info = "Device.Routing.RouteInformation.";
+    const char* router_info = DEVICE_PATH "Routing.RouteInformation.";
     const char* name = GET_CHAR(parameters, "Name");
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     char* logical_path = NULL;

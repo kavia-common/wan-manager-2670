@@ -286,3 +286,10 @@ amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name
 
     return data;
 }
+
+
+void __wrap_netmodel_clearFlag(const char* const intf, UNUSED const char* const flag, UNUSED const char* const condition, const char* const traverse) {
+    assert_non_null(intf);
+    assert_non_null(traverse);
+    assert_string_equal(traverse, netmodel_traverse_this);
+}

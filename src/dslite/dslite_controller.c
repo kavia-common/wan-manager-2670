@@ -80,8 +80,8 @@
 
 #define ME "dslite-ctrl"
 
-#define DSLITE_PATH "DSLite."
-#define DSLITE_IF_PATH "DSLite.InterfaceSetting.1"
+#define DSLITE_DEVICE_PATH DEVICE_PATH DSLITE_PATH
+#define DSLITE_IF_PATH DSLITE_DEVICE_PATH "InterfaceSetting.1"
 #define LOGICAL_PATH "Logical.Interface.1."
 
 amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
@@ -112,8 +112,8 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     }
 
     // Enable DSLite
-    rc = component_set_enable(DSLITE_PATH, dslite_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_PATH);
+    rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_DEVICE_PATH);
 
     // Enable PCP
     rc = component_set_bool("PCP.", pcp_get_context(), "Enable", true);
@@ -158,8 +158,8 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s'", logical_path);
 
     // Disable DSLite
-    rc = component_set_enable(DSLITE_PATH, dslite_get_context(), false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_PATH);
+    rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_DEVICE_PATH);
 
     // Disable PCP
     rc = component_set_bool("PCP.", pcp_get_context(), "Enable", false);

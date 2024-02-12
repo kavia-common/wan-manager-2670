@@ -15,15 +15,22 @@ MOCK_WRAP = netmodel_initialize \
             netmodel_cleanup 	\
             netmodel_openQuery_getFirstParameter 	\
             netmodel_openQuery_getIntfs 	\
+            netmodel_openQuery_isUp \
             netmodel_closeQuery 	\
             netmodel_isUp 	\
             netmodel_getFirstParameter 	\
+            netmodel_clearFlag \
             amxp_proc_ctrl_new 	\
             amxp_proc_ctrl_start 	\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
-            restart
-            # uses the real implementation for amxb_get
+            restart \
+            amxb_set \
+            amxb_set_multiple \
+            amxb_get \
+            amxb_add \
+            amxb_del \
+            amxb_call
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

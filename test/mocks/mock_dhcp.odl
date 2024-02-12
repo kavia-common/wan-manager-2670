@@ -1,0 +1,45 @@
+%define {
+    object DHCPv4Client {
+        object Client[] {
+            bool Enable = false;
+            string Alias;
+            string Interface = "";
+        }
+    }
+}
+
+%define {
+    object DHCPv6Client {
+        object Client[] {
+            bool Enable = false;
+            string Alias;
+            string Interface = "";
+            bool RequestAddresses = true;
+            bool RequestPrefixes = false;
+        }
+    }
+}
+
+%populate {
+    object DHCPv4Client {
+        object Client {
+            instance add('wan') {
+                parameter 'Enable' = true;
+                parameter 'Interface' = "Device.IP.Interface.2.";
+            }
+        }
+    }
+}
+
+%populate {
+    object DHCPv6Client {
+        object 'Client' {
+            instance add('wan') {
+                parameter 'Enable' = true;
+                parameter 'Interface' = "Device.IP.Interface.2.";
+                parameter 'RequestAddresses' = false;
+                parameter 'RequestPrefixes' = true;
+            }
+        }
+    }
+}

@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -51,47 +51,40 @@
 ** USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#ifndef __MOCK_AMX_H__
+#define __MOCK_AMX_H__
 
-#if !defined(__MOCK_NETMODEL_H__)
-#define __MOCK_NETMODEL_H__
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 #include <amxc/amxc.h>
-#include <amxc/amxc_macros.h>
-#include "netmodel/client.h"
+#include <amxp/amxp.h>
+#include <amxd/amxd_types.h>
+#include <amxb/amxb.h>
 
-bool __wrap_netmodel_initialize(void);
+int __real_amxb_set(amxb_bus_ctx_t* const bus_ctx, const char* object, amxc_var_t* values, amxc_var_t* ret, int timeout);
+int __wrap_amxb_set(amxb_bus_ctx_t* const bus_ctx, const char* object, amxc_var_t* values, amxc_var_t* ret, int timeout);
 
-void __wrap_netmodel_cleanup(void);
+int __wrap_amxb_get(amxb_bus_ctx_t* const bus_ctx, const char* object, int32_t depth, amxc_var_t* ret, int timeout);
+int __real_amxb_get(amxb_bus_ctx_t* const bus_ctx, const char* object, int32_t depth, amxc_var_t* ret, int timeout);
 
-netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
-                                                              const char* subscriber,
-                                                              const char* name,
-                                                              const char* flag,
-                                                              const char* traverse,
-                                                              amxp_slot_fn_t handler,
-                                                              void* userdata);
-netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
-                                                     const char* subscriber,
-                                                     const char* flag,
-                                                     const char* traverse,
-                                                     netmodel_callback_t handler,
-                                                     void* userdata);
+int __wrap_amxb_add(amxb_bus_ctx_t* const bus_ctx, const char* object, uint32_t index, const char* name, amxc_var_t* values, amxc_var_t* ret, int timeout);
+int __real_amxb_add(amxb_bus_ctx_t* const bus_ctx, const char* object, uint32_t index, const char* name, amxc_var_t* values, amxc_var_t* ret, int timeout);
 
-netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
-                                                 const char* subscriber,
-                                                 const char* flag,
-                                                 const char* traverse,
-                                                 netmodel_callback_t handler,
-                                                 void* userdata);
+int __wrap_amxb_del(amxb_bus_ctx_t* const bus_ctx, const char* object, uint32_t index, const char* name, amxc_var_t* ret, int timeout);
+int __real_amxb_del(amxb_bus_ctx_t* const bus_ctx, const char* object, uint32_t index, const char* name, amxc_var_t* ret, int timeout);
 
-void __wrap_netmodel_closeQuery(netmodel_query_t* query);
+int __wrap_amxb_call(amxb_bus_ctx_t* const bus_ctx, const char* object, const char* method, amxc_var_t* args, amxc_var_t* ret, int timeout);
+int __real_amxb_call(amxb_bus_ctx_t* const bus_ctx, const char* object, const char* method, amxc_var_t* args, amxc_var_t* ret, int timeout);
 
-void set_isUp_result(bool result);
-bool __wrap_netmodel_isUp(const char* const interface,
-                          const char* const flag,
-                          const char* const traverse);
-amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name, const char* flag, const char* traverse);
+int __wrap_amxb_set_multiple(amxb_bus_ctx_t* const bus_ctx, uint32_t flags, amxc_var_t* req_paths, amxc_var_t* ret, int timeout);
+int __real_amxb_set_multiple(amxb_bus_ctx_t* const bus_ctx, uint32_t flags, amxc_var_t* req_paths, amxc_var_t* ret, int timeout);
 
-void __wrap_netmodel_clearFlag(const char* const intf, const char* const flag, const char* const condition, const char* const traverse);
+#ifdef __cplusplus
+}
+#endif
 
-#endif // __MOCK_NETMODEL_H__
+#endif // __MOCK_AMX_H__

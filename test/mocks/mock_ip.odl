@@ -1,38 +1,42 @@
 %define {
-    select Device {
-        object IP {
-            object Interface[] {
+    object IP {
+        object Interface[] {
 
+            bool Enable;
+            bool IPv6Enable;
+            bool IPv4Enable;
+            string LowerLayers;
+
+            object IPv4Address[] {
+                string Alias;
+                string Status = "Disabled";
+                string IPAddress;
+                string SubnetMask;
+                string AddressingType;
                 bool Enable;
-                bool IPv6Enable;
-                bool IPv4Enable;
-                string LowerLayers;
-
-                object IPv4Address[] {
-                    string Alias;
-                    string Status = "Disabled";
-                    string IPAddress;
-                    string SubnetMask;
-                    string AddressingType;
-                    bool Enable;
-                }
-
-                object IPv6Address[]{
-                    string Alias;
-                    bool Enable = 1;
-                    string IPAddress;
-                    string IPAddressStatus;
-                    string Origin;
-                }
-
-                string IPv6AddressDelegate;
             }
+
+            object IPv6Address[]{
+                string Alias;
+                bool Enable = 1;
+                string IPAddress;
+                string IPAddressStatus;
+                string Origin;
+            }
+
+            object IPv6Prefix[]{
+                bool Enable = 0;
+                string Alias;
+                string ParentPrefix = "";
+            }
+
+            string IPv6AddressDelegate;
         }
     }
 }
 
 %populate {
-    object Device.IP.Interface {
+    object IP.Interface {
         instance add(2, "wan") {
             object IPv4Address {
                 instance add(0,"primary") {
@@ -47,10 +51,17 @@
                     parameter Enable = 1;
                 }
             }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                }
+            }
         }
     }
 
-    object Device.IP.Interface {
+    object IP.Interface {
         instance add(3, "lan") {
             object IPv4Address {
                 instance add(0,"primary") {
@@ -65,14 +76,82 @@
                     parameter Enable = 1;
                 }
             }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                    parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
+                }
+            }
         }
     }
 
-    object Device.IP.Interface {
+    object IP.Interface {
+        instance add(4, "guest") {
+            object IPv4Address {
+                instance add(0,"primary") {
+                    parameter Alias = "primary";
+                    parameter AddressingType = "DHCP";
+                }
+            }
+
+            object IPv6Address {
+                instance add(0,"GUA_RA"){
+                    parameter Alias = "GUA_RA";
+                    parameter Enable = 1;
+                }
+            }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                    parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
+                }
+            }
+        }
+    }
+
+    object IP.Interface {
+        instance add(5, "lcm") {
+            object IPv4Address {
+                instance add(0,"primary") {
+                    parameter Alias = "primary";
+                    parameter AddressingType = "DHCP";
+                }
+            }
+
+            object IPv6Address {
+                instance add(0,"GUA_RA"){
+                    parameter Alias = "GUA_RA";
+                    parameter Enable = 1;
+                }
+            }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                    parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
+                }
+            }
+        }
+    }
+
+    object IP.Interface {
         instance add(6, "wan6") {
             object IPv4Address {
                 instance add(0,"wan6") {
                     parameter AddressingType = "DHCP";
+                }
+            }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                    parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
                 }
             }
         }

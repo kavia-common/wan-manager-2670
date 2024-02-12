@@ -86,7 +86,7 @@
 
 void test_wan_manager_component_add_str_to_csv(UNUSED void** state) {
     amxc_var_t value;
-    const char* logical = "Device.Logical.Interface.wan.";
+    const char* logical = "Logical.Interface.wan.";
     amxd_object_t* logical_intf = amxd_dm_findf(test_get_dm(), logical);
     const char* logical_ll = NULL;
 
@@ -126,7 +126,7 @@ void test_wan_manager_component_add_str_to_csv(UNUSED void** state) {
 
 void test_wan_manager_component_remove_str_from_csv(UNUSED void** state) {
     amxc_var_t value;
-    const char* logical = "Device.Logical.Interface.wan.";
+    const char* logical = "Logical.Interface.wan.";
     amxd_object_t* logical_intf = amxd_dm_findf(test_get_dm(), logical);
     const char* logical_ll = NULL;
 

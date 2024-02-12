@@ -8,70 +8,6 @@ include "../../odl/${name}_WAN_definition.odl";
 include "../../odl/${name}_WAN_Intf_definition.odl";
 
 %define{
-    object Device {
-        object DHCPv4 {
-            object Client[] {
-                %unique %key string Alias;
-                bool Enable;
-                string Interface;
-            }
-        }
-
-        object DHCPv6 {
-            object Client[] {
-                %unique %key string Alias;
-                bool Enable;
-                string Interface;
-                bool RequestAddresses;
-                bool RequestPrefixes;
-            }
-        }
-    }
-
-    object DSLite {
-        bool Enable;
-        object InterfaceSetting[] {
-            %unique %key string Alias;
-            bool Enable;
-            string WANInterface;
-        }
-    }
-
-    object PCP {
-        string 'Enable';
-    }
-
-    object IP{
-        object Interface {}
-    }
-
-    object DNS{
-        object Relay {
-            object Forwarding{}
-        }
-    }
-
-    object NetDev{
-        object Link {}
-    }
-
-    object Logical {
-        object Interface {}
-    }
-
-    object Routing{
-        object RouteInformation{
-        }
-    }
-
-    object PPP{
-        object Interface {}
-    }
-
-    object NeighborDiscovery{
-        object InterfaceSetting {}
-    }
-
     object 'WANAutoSensing'{}
 }
 
@@ -304,34 +240,6 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
-        }
-    }
-
-    object 'Device.DHCPv4.Client' {
-        instance add (1, "wan");
-        instance add (2, "voip");
-        instance add (3, "iptv");
-        instance add (4, "mgmt");
-    }
-
-    object 'Device.DHCPv6.Client' {
-        instance add (1, "wan") {
-            parameter RequestAddresses = false;
-        }
-        instance add (2, "voip") {
-            parameter RequestAddresses = false;
-        }
-        instance add (3, "iptv") {
-            parameter RequestAddresses = false;
-        }
-        instance add (4, "mgmt") {
-            parameter RequestAddresses = false;
-        }
-    }
-
-    object 'DSLite.InterfaceSetting' {
-        instance add(1, "dslite") {
-            parameter WANInterface = "Device.IP.Interface.2.";
         }
     }
 

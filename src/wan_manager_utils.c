@@ -86,15 +86,15 @@ amxb_bus_ctx_t* ip_get_context(void) {
 }
 
 amxb_bus_ctx_t* dhcpv4_get_context(void) {
-    return amxb_be_who_has("Device.DHCPv4.");
+    return amxb_be_who_has(DHCPV4_PATH);
 }
 
 amxb_bus_ctx_t* dhcpv6_get_context(void) {
-    return amxb_be_who_has("Device.DHCPv6.");
+    return amxb_be_who_has(DHCPV6_PATH);
 }
 
 amxb_bus_ctx_t* ppp_get_context(void) {
-    return amxb_be_who_has("PPP.");
+    return amxb_be_who_has(PPP_PATH);
 }
 
 amxb_bus_ctx_t* routing_get_context(void) {
@@ -102,7 +102,7 @@ amxb_bus_ctx_t* routing_get_context(void) {
 }
 
 amxb_bus_ctx_t* dns_get_context(void) {
-    return amxb_be_who_has("DNS.");
+    return amxb_be_who_has(DNS_PATH);
 }
 
 amxb_bus_ctx_t* ethernet_get_context(void) {
@@ -110,7 +110,7 @@ amxb_bus_ctx_t* ethernet_get_context(void) {
 }
 
 amxb_bus_ctx_t* logical_get_context(void) {
-    return amxb_be_who_has("Device.Logical.");
+    return amxb_be_who_has("Logical.");
 }
 
 amxb_bus_ctx_t* neighbor_discovery_get_context(void) {
@@ -118,7 +118,7 @@ amxb_bus_ctx_t* neighbor_discovery_get_context(void) {
 }
 
 amxb_bus_ctx_t* dslite_get_context(void) {
-    return amxb_be_who_has("DSLite.");
+    return amxb_be_who_has(DSLITE_PATH);
 }
 
 amxb_bus_ctx_t* pcp_get_context(void) {
@@ -326,7 +326,9 @@ static void convert_prefixes_data(const char* interfaces, const char* old_refere
 
 int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_path, const char* new_reference_path) {
     SAH_TRACEZ_IN(ME);
+    amxc_var_t ret;
     int rv = -1;
+    amxc_var_init(&ret);
 
     when_str_empty_trace(new_reference_path, exit, ERROR, "New IPv6Reference not provided");
     rv = 0;
@@ -338,13 +340,14 @@ int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_pa
         amxc_var_init(&req_paths);
 
         convert_prefixes_data(interfaces, old_reference_path, new_reference_path, &req_paths);
-        rv = amxb_set_multiple(ip_get_context(), 0, &req_paths, NULL, 5);
+        rv = amxb_set_multiple(ip_get_context(), 0, &req_paths, &ret, 5);
 
         amxc_var_clean(&req_paths);
         when_failed_trace(rv, exit, ERROR, "Failed to set new parent prefixes for the deferred IPv6 interfaces");
     }
 
 exit:
+    amxc_var_clean(&ret);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
@@ -402,11 +405,11 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
         amxc_var_add_key(cstring_t, &params, "Origin", routing_origin);
         amxc_var_add_key(cstring_t, &params, "Interface", ip_intf);
 
-        amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", id);
+        amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", id);
         path = component_get_path_instance(routing_get_context(), amxc_string_get(&route_path, 0));
         while(path != NULL) {
             my_index++;
-            amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv6Forwarding.[Alias=='%s-%d'].", id, my_index);
+            amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s-%d'].", id, my_index);
             free(path);
             path = component_get_path_instance(routing_get_context(), amxc_string_get(&route_path, 0));
         }
@@ -420,7 +423,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
         tmp = amxc_var_add_new_key(&params, "Alias");
         amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&alias));
         free(path);
-        path = component_add_instance("Device.Routing.Router.1.IPv6Forwarding.", &params, routing_get_context());
+        path = component_add_instance(DEVICE_PATH "Routing.Router.1.IPv6Forwarding.", &params, routing_get_context());
 
         if(path == NULL) {
             rc = amxd_status_unknown_error;
@@ -433,7 +436,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
             amxc_string_setf(&alias, "%s-%d", id, my_index);
         }
 
-        amxc_string_setf(&route_path, "Device.Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", amxc_string_get(&alias, 0));
+        amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", amxc_string_get(&alias, 0));
         component_del_instance(amxc_string_get(&route_path, 0), routing_get_context());
 
         my_index = 0;
@@ -456,7 +459,7 @@ amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
     nd_path = create_neighbor_discovery_path(intf_alias);
 
     rc = component_set_enable(nd_path, neighbor_discovery_get_context(), enable);
-    when_failed_trace(rc, exit, ERROR, "Could not %s %s in Device.NeighborDiscovery.InterfaceSetting", enable ? "enable" : "disable", intf_alias);
+    when_failed_trace(rc, exit, ERROR, "Could not %s %s in %sNeighborDiscovery.InterfaceSetting", enable ? "enable" : "disable", intf_alias, DEVICE_PATH);
 
 exit:
     free(nd_path);
@@ -489,12 +492,12 @@ char* routing_get_interfacesetting(const char* intf_path) {
 
     when_null_trace(intf_path, exit, ERROR, "Null interface path provided for the Routing mananger");
 
-    amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
+    amxc_string_setf(&test_path, DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
 
     path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
     if(path == NULL) {
-        amxc_string_setf(&test_path, "Device.Routing.RouteInformation.InterfaceSetting.[Interface == '']");
+        amxc_string_setf(&test_path, DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.[Interface == '']");
         path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
         // Create the instance if none are found in the routing manager
@@ -509,7 +512,7 @@ char* routing_get_interfacesetting(const char* intf_path) {
             amxc_var_add_key(cstring_t, &parameter, "PreferredRouteFlag", "High");
 
             //Add the instance to the datamodel
-            path = component_add_instance("Device.Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
+            path = component_add_instance(DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
             when_null_trace(path, exit, ERROR, "Could not add a blank InterfaceSetting to the Routing plugin");
         }
     }
@@ -565,7 +568,7 @@ char* create_logical_path(const char* intf_name) {
     amxc_string_t logical_intf;
 
     amxc_string_init(&logical_intf, 0);
-    amxc_string_setf(&logical_intf, "Device.Logical.Interface.%s.", intf_name);
+    amxc_string_setf(&logical_intf, DEVICE_PATH "Logical.Interface.%s.", intf_name);
     path = amxc_string_take_buffer(&logical_intf);
     amxc_string_clean(&logical_intf);
 
@@ -579,7 +582,7 @@ char* create_neighbor_discovery_path(const char* intf_alias) {
     amxc_string_t nd_path;
 
     amxc_string_init(&nd_path, 0);
-    amxc_string_setf(&nd_path, "Device.NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
+    amxc_string_setf(&nd_path, DEVICE_PATH "NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
     path = amxc_string_take_buffer(&nd_path);
     amxc_string_clean(&nd_path);
 

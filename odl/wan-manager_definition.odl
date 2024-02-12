@@ -55,7 +55,7 @@
          * @version 1.0
          */
         bool setIPv6Mode(%in %mandatory string IPv6Mode, %in %mandatory string InterfaceAlias);
-        
+
         /**
          * On a reset the current WANMode MUST be teared down and established again.
          * @version V1.0

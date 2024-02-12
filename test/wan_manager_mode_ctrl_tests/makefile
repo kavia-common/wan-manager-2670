@@ -16,7 +16,13 @@ MOCK_WRAP = dhcpc4_enable \
             dhcpc6_enable \
             dhcpc6_disable \
             ppp_enable \
-            ppp_disable
+            ppp_disable \
+            amxb_set \
+            amxb_set_multiple \
+            amxb_get \
+            amxb_add \
+            amxb_del \
+            amxb_call
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

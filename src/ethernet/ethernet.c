@@ -103,7 +103,7 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, in
     if(vlan_prio > -1) {
         amxc_var_add_key(uint32_t, &parameters, "VLANPriority", vlan_prio);
     }
-    path = component_add_instance("Device.Ethernet.VLANTermination.", &parameters, ethernet_get_context());
+    path = component_add_instance(DEVICE_PATH "Ethernet.VLANTermination.", &parameters, ethernet_get_context());
 
 exit:
     amxc_var_clean(&parameters);
@@ -123,7 +123,7 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const
     amxc_string_init(&str_search, 0);
     when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
 
-    amxc_string_setf(&str_search, "Device.Ethernet.VLANTermination." \
+    amxc_string_setf(&str_search, DEVICE_PATH "Ethernet.VLANTermination." \
                      "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);
     vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_search, 0));
 

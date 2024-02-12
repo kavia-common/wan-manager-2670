@@ -105,13 +105,16 @@ static const char* odl_logical_mock = "../mocks/mock_logical.odl";
 static const char* odl_ppp_mock = "../mocks/mock_ppp.odl";
 static const char* odl_neigbordiscovery_mock = "../mocks/mock_neighbordiscovery.odl";
 static const char* odl_bridging_mock = "../mocks/mock_bridging.odl";
+static const char* odl_dhcp_mock = "../mocks/mock_dhcp.odl";
+static const char* odl_dslite_mock = "../mocks/mock_dslite.odl";
+static const char* odl_pcp_mock = "../mocks/mock_pcp.odl";
 
 static amxd_status_t _AddPort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_function_t* func, amxc_var_t* args, UNUSED amxc_var_t* ret) {
     amxd_status_t status = amxd_status_unknown_error;
     amxd_trans_t trans;
     amxd_trans_init(&trans);
 
-    amxd_trans_select_pathf(&trans, "Device.Bridging.LastAddParameters.Test.");
+    amxd_trans_select_pathf(&trans, "Bridging.LastAddParameters.Test.");
     amxd_trans_set_value(cstring_t, &trans, "LowerLayers", GET_CHAR(args, "LowerLayers"));
     if(GET_ARG(args, "Alias") != NULL) {
         amxd_trans_set_value(cstring_t, &trans, "Alias", GET_CHAR(args, "Alias"));
@@ -137,7 +140,7 @@ static amxd_status_t _DisablePort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_
     amxd_trans_t trans;
     amxd_trans_init(&trans);
 
-    amxd_trans_select_pathf(&trans, "Device.Bridging.LastDisableParameters.Test.");
+    amxd_trans_select_pathf(&trans, "Bridging.LastDisableParameters.Test.");
     amxd_trans_set_value(cstring_t, &trans, "LowerLayers", GET_CHAR(args, "LowerLayers"));
     if(GET_ARG(args, "VlanId") != NULL) {
         amxd_trans_set_value(uint32_t, &trans, "VlanId", GET_UINT32(args, "VlanId"));
@@ -186,8 +189,6 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
-    assert_int_equal(amxo_resolver_ftab_add(&parser, "SetForwarding", AMXO_FUNC(_setForwarding)), 0);
-    assert_int_equal(amxo_resolver_ftab_add(&parser, "DeleteForwarding", AMXO_FUNC(_deleteForwarding)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv4_mode_toggled", AMXO_FUNC(_ipv4_mode_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv6_mode_toggled", AMXO_FUNC(_ipv6_mode_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setIPv4Mode", AMXO_FUNC(_setIPv4Mode)), 0);
@@ -200,15 +201,21 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_defs, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_routing_mock, root_obj), 0);
-    assert_int_equal(amxo_parser_parse_file(&parser, odl_dns_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ethernet_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_logical_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ppp_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_neigbordiscovery_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_dhcp_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_dslite_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_pcp_mock, root_obj), 0);
     // Bridging rpc mocks
     assert_int_equal(amxo_resolver_ftab_add(&parser, "AddPort", AMXO_FUNC(_AddPort)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "DisablePort", AMXO_FUNC(_DisablePort)), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_bridging_mock, root_obj), 0);
+    // DNS rpc mocks
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "SetForwarding", AMXO_FUNC(_setForwarding)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "DeleteForwarding", AMXO_FUNC(_deleteForwarding)), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_dns_mock, root_obj), 0);
 
     assert_int_equal(amxb_connect(&bus_ctx, "dummy:/tmp/dummy.sock"), 0);
     assert_int_equal(amxo_connection_add(&parser, amxb_get_fd(bus_ctx), connection_read,
