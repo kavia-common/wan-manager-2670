@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.2 - 2024-02-12(11:42:56 +0000)
+
+### Changes
+
+-  [WANManager] Avoid Hard dependency with DSLite, PPP when no (ppp/dslite) are configured
+
 ## Release v1.4.1 - 2024-02-08(09:12:47 +0000)
 
 ### Fixes
