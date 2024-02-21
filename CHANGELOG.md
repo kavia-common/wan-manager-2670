@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.3 - 2024-02-21(10:59:32 +0000)
+
+### Fixes
+
+- fix DMZ issue in static wan
+
 ## Release v1.4.2 - 2024-02-12(11:42:56 +0000)
 
 ### Changes
