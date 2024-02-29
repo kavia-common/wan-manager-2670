@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.4.4 - 2024-02-29(13:49:54 +0000)
+
+### Fixes
+
+- [DNS]Missing DNSServers parameter in GetWANStatus when using static IP even after calling Reset() API
+
 ## Release v1.4.3 - 2024-02-21(10:59:32 +0000)
 
 ### Fixes

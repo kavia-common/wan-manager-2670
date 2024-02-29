@@ -1,3 +1,9 @@
+wan-manager (1.4.4) unstable; urgency=medium
+
+  * [DNS]Missing DNSServers parameter in GetWANStatus when using static IP even after calling Reset() API
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 29 Feb 2024 13:49:55 +0000
+
 wan-manager (1.4.3) unstable; urgency=medium
 
   * fix DMZ issue in static wan
