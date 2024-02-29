@@ -52,6 +52,7 @@
 **
 ****************************************************************************/
 #include <string.h>
+#include <stdlib.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>

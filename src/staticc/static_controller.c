@@ -70,12 +70,14 @@
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxc/amxc_macros.h>
+#include <amxd/amxd_object.h>
 
 #include "ctrl/mode_ctrl.h"
 #include "staticc/static_controller.h"
 #include "ethernet/ethernet.h"
 #include "component.h"
 #include "wan_manager_utils.h"
+#include "dm_wan-manager.h"
 #include "dhcpc/dhcpc.h"
 
 #define ME "static-ctrl"
@@ -124,6 +126,15 @@ amxd_status_t static4_enable(UNUSED mode_ctrl_t mode,
     logical_path = create_logical_path(name);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add IPv4Reference to '%s'", logical_path);
+
+    if((strcmp(name, "wan") == 0)) {
+        amxd_object_t* interface = amxd_dm_findf(wan_get_dm(), "%s", GET_CHAR(parameters, "intf_obj_path"));
+        amxd_object_t* wan_mode_obj = amxd_object_findf(interface, "^.^.");
+
+        if(amxd_object_set_value(cstring_t, wan_mode_obj, "DNSMode", "Static")) {
+            SAH_TRACEZ_ERROR(ME, "Failed to set DNSMode to 'Static'");
+        }
+    }
 
 exit:
     free(logical_path);
@@ -206,6 +217,15 @@ amxd_status_t static6_enable(UNUSED mode_ctrl_t mode,
     // Setting up the default route instance
     rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GET_CHAR(ipv6, "DefaultRouter"), intf_path, true);
     when_failed_trace(rc, exit, ERROR, "Failed to set the static default IPv6 route");
+
+    if((strcmp(name, "wan") == 0)) {
+        amxd_object_t* interface = amxd_dm_findf(wan_get_dm(), "%s", GET_CHAR(parameters, "intf_obj_path"));
+        amxd_object_t* wan_mode_obj = amxd_object_findf(interface, "^.^.");
+
+        if(amxd_object_set_value(cstring_t, wan_mode_obj, "IPv6DNSMode", "Static")) {
+            SAH_TRACEZ_ERROR(ME, "Failed to set IPv6DNSMode to 'Static'");
+        }
+    }
 
 exit:
     free(logical_path);

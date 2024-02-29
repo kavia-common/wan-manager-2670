@@ -81,6 +81,7 @@
 #include "test_wan_manager_mode_ctrl_logic.h"
 #include "test_utils.h"
 #include "reset_mock.h"
+#include "wan_manager_utils.h"
 
 static bool set_ipv4_mode(const char* ip_mode, const char* intf_alias, amxd_status_t expected_status) {
     amxc_var_t args;
@@ -698,15 +699,12 @@ void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
 }
 
 void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
-    amxc_var_t status;
-    amxc_var_t status_ip;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
+    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
+    amxd_object_t* wan_mode = amxd_object_findf(wan_mgr, "WAN.1.");
     amxd_object_t* intf = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_wanmode.Intf.1.");
     const char* wan_mode_str = NULL;
     const char* ip_mode_str = NULL;
-
-    amxc_var_init(&status);
-    amxc_var_init(&status_ip);
+    const char* dns_mode_str = NULL;
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
@@ -715,11 +713,9 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
 
     assert_false(set_ipv4_mode("test", "wan", amxd_status_invalid_value));
 
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    amxd_object_get_param(intf, "IPv4Mode", &status_ip);
-    ip_mode_str = amxc_var_constcast(cstring_t, &status_ip);
+    wan_mode_str = object_const_string(wan_mgr, "WANMode");
+    ip_mode_str = object_const_string(intf, "IPv4Mode");
+    dns_mode_str = object_const_string(wan_mode, "DNSMode");
 
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
@@ -727,21 +723,16 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     assert_non_null(ip_mode_str);
     assert_string_equal("dhcp4", ip_mode_str);
 
+    assert_non_null(dns_mode_str);
+    assert_string_equal("Dynamic", dns_mode_str);
+
     test_handle_events();
-
-    amxc_var_clean(&status);
-    amxc_var_clean(&status_ip);
-
-    amxc_var_init(&status);
-    amxc_var_init(&status_ip);
 
     assert_false(set_ipv4_mode("static", "wan", amxd_status_ok));
 
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    amxd_object_get_param(intf, "IPv4Mode", &status_ip);
-    ip_mode_str = amxc_var_constcast(cstring_t, &status_ip);
+    wan_mode_str = object_const_string(wan_mgr, "WANMode");
+    ip_mode_str = object_const_string(intf, "IPv4Mode");
+    dns_mode_str = object_const_string(wan_mode, "DNSMode");
 
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
@@ -749,20 +740,17 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     assert_non_null(ip_mode_str);
     assert_string_equal("static", ip_mode_str);
 
-    amxc_var_clean(&status);
-    amxc_var_clean(&status_ip);
+    assert_non_null(dns_mode_str);
+    assert_string_equal("Static", dns_mode_str);
 }
 
 void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
-    amxc_var_t status;
-    amxc_var_t status_ip;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
+    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
+    amxd_object_t* wan_mode = amxd_object_findf(wan_mgr, "WAN.1.");
     amxd_object_t* intf = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_wanmode.Intf.1.");
     const char* wan_mode_str = NULL;
     const char* ip_mode_str = NULL;
-
-    amxc_var_init(&status);
-    amxc_var_init(&status_ip);
+    const char* dns_mode_str = NULL;
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
@@ -771,11 +759,9 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
 
     assert_false(set_ipv6_mode("test", "wan", amxd_status_invalid_value));
 
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    amxd_object_get_param(intf, "IPv6Mode", &status_ip);
-    ip_mode_str = amxc_var_constcast(cstring_t, &status_ip);
+    wan_mode_str = object_const_string(wan_mgr, "WANMode");
+    ip_mode_str = object_const_string(intf, "IPv6Mode");
+    dns_mode_str = object_const_string(wan_mode, "IPv6DNSMode");
 
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
@@ -783,21 +769,16 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     assert_non_null(ip_mode_str);
     assert_string_equal("dhcp6", ip_mode_str);
 
+    assert_non_null(dns_mode_str);
+    assert_string_equal("Dynamic", dns_mode_str);
+
     test_handle_events();
-
-    amxc_var_clean(&status);
-    amxc_var_clean(&status_ip);
-
-    amxc_var_init(&status);
-    amxc_var_init(&status_ip);
 
     assert_false(set_ipv6_mode("static", "wan", amxd_status_ok));
 
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    amxd_object_get_param(intf, "IPv6Mode", &status_ip);
-    ip_mode_str = amxc_var_constcast(cstring_t, &status_ip);
+    wan_mode_str = object_const_string(wan_mgr, "WANMode");
+    ip_mode_str = object_const_string(intf, "IPv6Mode");
+    dns_mode_str = object_const_string(wan_mode, "IPv6DNSMode");
 
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_wanmode", wan_mode_str);
@@ -805,8 +786,8 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     assert_non_null(ip_mode_str);
     assert_string_equal("static", ip_mode_str);
 
-    amxc_var_clean(&status);
-    amxc_var_clean(&status_ip);
+    assert_non_null(dns_mode_str);
+    assert_string_equal("Static", dns_mode_str);
 }
 
 void test_wan_manager_set_bridge_mode(UNUSED void** state) {

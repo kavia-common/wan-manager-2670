@@ -376,6 +376,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     mode_ctrl_t mode = IP_None;
     amxc_llist_it_t* it = NULL;
     const char* bridge_reference = NULL;
+    char* interface_path = NULL;
     bool bridge = false;
 
     amxc_var_init(&parameters);
@@ -384,6 +385,9 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     SAH_TRACEZ_INFO(ME, "interface %d (%s)", interface->index, interface->name);
 
     when_failed(amxd_object_get_params(interface, &parameters, amxd_dm_access_private), exit);
+
+    interface_path = amxd_object_get_path(interface, AMXD_OBJECT_INDEXED | AMXD_OBJECT_TERMINATE);
+    amxc_var_add_key(cstring_t, &parameters, "intf_obj_path", interface_path);
 
     it = amxd_object_first_instance(amxd_object_findf(interface, ".IPv4Address."));
     ipv4_addr = amxc_container_of(it, amxd_object_t, it);
@@ -436,6 +440,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     }
 
 exit:
+    free(interface_path);
     amxc_var_clean(&parameters);
     SAH_TRACEZ_OUT(ME);
     return rc;
