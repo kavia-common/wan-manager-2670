@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.5.0 - 2024-03-07(19:18:54 +0000)
+
+### New
+
+- [Static IPv4/IPv6 Configuration] It must be possible to set static IPv4 and IPv6 configuration using tr181
+
 ## Release v1.4.4 - 2024-02-29(13:49:54 +0000)
 
 ### Fixes

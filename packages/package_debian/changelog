@@ -1,3 +1,9 @@
+wan-manager (1.5.0) unstable; urgency=medium
+
+  * [Static IPv4/IPv6 Configuration] It must be possible to set static IPv4 and IPv6 configuration using tr181
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 07 Mar 2024 19:18:54 +0000
+
 wan-manager (1.4.4) unstable; urgency=medium
 
   * [DNS]Missing DNSServers parameter in GetWANStatus when using static IP even after calling Reset() API
