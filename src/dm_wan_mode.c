@@ -704,9 +704,9 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     const char* new_ip_mode = NULL;
     const char* ipv4_mode_ovr = NULL;
     const char* ipv6_mode_ovr = NULL;
-    const char* wan_status = NULL;
     const char* physical_type = NULL;
     const char* current_operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
+    const char* wan_mode_name = NULL;
 
     new_ip_mode = GET_CHAR(ip_mode_arg, "to");
     if(ipv4) {
@@ -723,10 +723,16 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     wan_mode_obj = amxd_object_get_parent(amxd_object_get_parent(intf_obj));
     when_null_trace(wan_mode_obj, exit, ERROR, "Could not get the wanmode object");
 
-    wan_status = object_const_string(wan_mode_obj, "Status");
+    wan_mode_name = amxd_object_get_name(wan_mode_obj, AMXD_OBJECT_NAMED);
+    when_str_empty_trace(wan_mode_name, exit, ERROR, "The event WANMode is null or empty");
 
-    // If the status of the wanmode is disabled, then do nothing
-    when_true_status(strcmp(wan_status, "Disabled") == 0, exit, rc = amxd_status_ok);
+    // If the event WANMode is different than the current WANMode, then do nothing
+    if(strcmp(wan_mode_name, get_current_wan_mode_str()) != 0) {
+        SAH_TRACEZ_WARNING(ME, "The event WANMode {%s} is different than current: %s ", wan_mode_name, get_current_wan_mode_str());
+        rc = amxd_status_ok;
+        goto exit;
+    }
+
     physical_type = object_const_string(wan_mode_obj, "PhysicalType");
 
     info = get_nm_query_info(physical_type);

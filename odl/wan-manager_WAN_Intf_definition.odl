@@ -55,6 +55,7 @@
             %persistent string IPv4Mode{
                 on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite", "link"];
                 default "dhcp4";
+                userflags %usersetting;
             }
 
             /**
@@ -66,6 +67,7 @@
             %persistent string IPv6Mode{
                 on action validate call check_enum ["dhcp6", "ppp6", "none", "static", "link"];
                 default "none";
+                userflags %usersetting;
             }
 
             /**
@@ -159,11 +161,20 @@
             %persistent object IPv4Address[1]{
 
                 /**
+                * A non-volatile unique key used to reference this instance (as defined in TR181)
+                * @version 1.0
+                */
+                %persistent %unique %key string Alias {
+                    on action validate call check_maximum_length 64;
+                }
+
+                /**
                 * Static IPv4 Address
                 * @version 1.0
                 */
                 %persistent string IPv4Address{
                     on action validate call check_maximum_length 15;
+                    userflags %usersetting;
                 }
 
                 /**
@@ -172,6 +183,7 @@
                 */
                 %persistent string SubnetMask{
                     on action validate call check_maximum_length 15;
+                    userflags %usersetting;
                 }
 
                 /**
@@ -180,6 +192,7 @@
                 */
                 %persistent string DefaultRouter{
                     on action validate call check_maximum_length 15;
+                    userflags %usersetting;
                 }
 
                 /**
@@ -189,6 +202,7 @@
                 */
                 %persistent csv_string DNSServers{
                     on action validate call check_maximum_length 64;
+                    userflags %usersetting;
                 }
             }
 
@@ -201,18 +215,29 @@
             %persistent object IPv6Address[1]{
 
                 /**
+                * A non-volatile unique key used to reference this instance (as defined in TR181)
+                * @version 1.0
+                */
+                %persistent %unique %key string Alias {
+                    on action validate call check_maximum_length 64;
+                }
+
+                /**
                 * Static IPv6 Address
                 * @version 1.0
                 */
                 %persistent string IPv6Address{
                     on action validate call check_maximum_length 45;
+                    userflags %usersetting;
                 }
 
                 /**
                 * Static IPv6 PrefixLength, typically a number between 0 and 128
                 * @version 1.0
                 */
-                %persistent uint32 PrefixLength = 64;
+                %persistent uint32 PrefixLength = 64 {
+                    userflags %usersetting;
+                }
 
                 /**
                 * Static IPv6 default router address
@@ -220,6 +245,7 @@
                 */
                 %persistent string DefaultRouter{
                     on action validate call check_maximum_length 45;
+                    userflags %usersetting;
                 }
 
                 /**
@@ -229,6 +255,7 @@
                 */
                 %persistent csv_string DNSServers{
                     on action validate call check_maximum_length 180;
+                    userflags %usersetting;
                 }
             }
 
