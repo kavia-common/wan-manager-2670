@@ -1,26 +1,29 @@
 #!/bin/sh
-[ -f /etc/environment ] && source /etc/environment
-ulimit -c ${ULIMIT_CONFIGURATION:-0}
+
+. /usr/lib/amx/scripts/amx_init_functions.sh
+
 name="wan-manager"
+datamodel_root="WANManager"
 
 case $1 in
-    start|boot)
-        ${name} -D
+    boot)
+        process_boot ${name} -D
         ;;
-    stop|shutdown)
-        if [ -f /var/run/${name}.pid ]; then
-            kill `cat /var/run/${name}.pid`
-        else
-            killall ${name}
-        fi
+    start)
+        process_start ${name} -D
         ;;
-    debuginfo)
-        ubus-cli "WANManager.?"
+    stop)
+        process_stop ${name}
+        ;;
+    shutdown)
+        process_shutdown ${name}
         ;;
     restart)
         $0 stop
-        sleep 1s
         $0 start
+        ;;
+    debuginfo)
+        process_debug_info ${datamodel_root}
         ;;
     *)
         echo "Usage : $0 [start|boot|stop|shutdown|debuginfo|restart]"
