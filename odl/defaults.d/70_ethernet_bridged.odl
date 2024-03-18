@@ -13,8 +13,8 @@
             parameter IPv4Mode = "none";
             parameter IPv6Mode = "none";
             parameter Name = "wan";
-            parameter IPv4Reference = "Device.IP.Interface.2.";
-            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter IPv4Reference = "${ip_intf_wan}";
+            parameter IPv6Reference = "${ip_intf_wan}";
             parameter BridgeReference = "Device.Bridging.Bridge.1.";
         }
     }

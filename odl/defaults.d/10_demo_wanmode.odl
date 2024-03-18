@@ -16,11 +16,11 @@
             parameter IPv4Mode = "dhcp4";
             parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter IPv6Mode = "dhcp6";
-            parameter IPv4Reference = "Device.IP.Interface.2.";
-            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter IPv4Reference = "${ip_intf_wan}";
+            parameter IPv6Reference = "${ip_intf_wan}";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
-            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DeferredIPv6Instances = "${ip_intf_lan},${ip_intf_guest},${ip_intf_lcm}";
         }
     }
 }

@@ -50,7 +50,21 @@
     pcm_svc_config = {
         "Objects" = "WANManager"
     };
+
+    // default value(s) for Device.IP.Interface reference
+    %global ip_intf_lo = "Device.IP.Interface.1.";
+    %global ip_intf_wan = "Device.IP.Interface.2.";
+    %global ip_intf_lan = "Device.IP.Interface.3.";
+    %global ip_intf_guest = "Device.IP.Interface.4.";
+    %global ip_intf_lcm = "Device.IP.Interface.5.";
+    %global ip_intf_wan6 = "Device.IP.Interface.6.";
+    %global ip_intf_dslite-entry = "Device.IP.Interface.7.";
+    %global ip_intf_dslite-exit = "Device.IP.Interface.8.";
+    %global ip_intf_voip = "Device.IP.Interface.9.";
+    %global ip_intf_iptv = "Device.IP.Interface.10.";
+    %global ip_intf_mgmt = "Device.IP.Interface.11.";
 }
+#include "global_ip_interfaces.odl";
 
 import "${name}.so" as "${name}";
 import "mod-dmext.so";

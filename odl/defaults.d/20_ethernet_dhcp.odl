@@ -15,11 +15,11 @@
             parameter Name = "wan";
             parameter VlanID = 100;
             parameter VlanPriority = 0;
-            parameter IPv4Reference = "Device.IP.Interface.2.";
-            parameter IPv6Reference = "Device.IP.Interface.2.";
+            parameter IPv4Reference = "${ip_intf_wan}";
+            parameter IPv6Reference = "${ip_intf_wan}";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
-            parameter DeferredIPv6Instances = "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.";
+            parameter DeferredIPv6Instances = "${ip_intf_lan},${ip_intf_guest},${ip_intf_lcm}";
         }
 
         instance add(0,"voip"){
@@ -29,8 +29,8 @@
             parameter Name = "voip";
             parameter VlanID = 101;
             parameter VlanPriority = 0;
-            parameter IPv4Reference = "Device.IP.Interface.9.";
-            parameter IPv6Reference = "Device.IP.Interface.9.";
+            parameter IPv4Reference = "${ip_intf_voip}";
+            parameter IPv6Reference = "${ip_intf_voip}";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.2.";
         }
 
@@ -41,8 +41,8 @@
             parameter Name = "iptv";
             parameter VlanID = 102;
             parameter VlanPriority = 0;
-            parameter IPv4Reference = "Device.IP.Interface.10.";
-            parameter IPv6Reference = "Device.IP.Interface.10.";
+            parameter IPv4Reference = "${ip_intf_iptv}";
+            parameter IPv6Reference = "${ip_intf_iptv}";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.3.";
         }
 
@@ -53,8 +53,8 @@
             parameter Name = "mgmt";
             parameter VlanID = 103;
             parameter VlanPriority = 0;
-            parameter IPv4Reference = "Device.IP.Interface.11.";
-            parameter IPv6Reference = "Device.IP.Interface.11.";
+            parameter IPv4Reference = "${ip_intf_mgmt}";
+            parameter IPv6Reference = "${ip_intf_mgmt}";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.4.";
         }
     }
