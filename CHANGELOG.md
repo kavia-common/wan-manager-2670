@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.0 - 2024-03-29(09:34:16 +0000)
+
+### New
+
+- [PCM][WANManager] The Wanmanager backs up all 'upc' marked values, not only the 'upc_chanded' values.
+
 ## Release v1.5.1 - 2024-03-18(09:40:23 +0000)
 
 ### Other

@@ -1,3 +1,9 @@
+wan-manager (1.6.0) unstable; urgency=medium
+
+  * [PCM][WANManager] The Wanmanager backs up all 'upc' marked values, not only the 'upc_chanded' values.
+
+ -- SAH bot <sahbot@softathome.com>  Fri, 29 Mar 2024 09:34:16 +0000
+
 wan-manager (1.5.1) unstable; urgency=medium
 
   * Rework TR-181 interface stacks indexing number
