@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.1 - 2024-04-10(07:16:59 +0000)
+
+### Changes
+
+- Make amxb timeouts configurable
+
 ## Release v1.6.0 - 2024-03-29(09:34:16 +0000)
 
 ### New

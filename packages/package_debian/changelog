@@ -1,3 +1,9 @@
+wan-manager (1.6.1) unstable; urgency=medium
+
+  * Make amxb timeouts configurable
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 10 Apr 2024 07:16:59 +0000
+
 wan-manager (1.6.0) unstable; urgency=medium
 
   * [PCM][WANManager] The Wanmanager backs up all 'upc' marked values, not only the 'upc_chanded' values.
