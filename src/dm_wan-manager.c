@@ -225,19 +225,20 @@ exit:
     return status;
 }
 
-void _Reset(UNUSED amxd_object_t* object,
-            UNUSED amxd_function_t* func,
-            UNUSED amxc_var_t* args,
-            UNUSED amxc_var_t* ret) {
+amxd_status_t _Reset(UNUSED amxd_object_t* object,
+                     UNUSED amxd_function_t* func,
+                     UNUSED amxc_var_t* args,
+                     UNUSED amxc_var_t* ret) {
     SAH_TRACEZ_IN(ME);
-    int rv = -1;
+    amxd_status_t status = amxd_status_unknown_error;
     const char* current_wan_mode_str = get_current_wan_mode_str();
 
-    rv = wan_mode_set(current_wan_mode_str, current_wan_mode_str);
-    when_failed_trace(rv, exit, ERROR, "Failed to reset wan mode '%s'", current_wan_mode_str);
+    status = wan_mode_set(current_wan_mode_str, current_wan_mode_str);
+    when_failed_trace(status, exit, ERROR, "Failed to reset wan mode '%s'", current_wan_mode_str);
 
 exit:
     SAH_TRACEZ_OUT(ME);
+    return status;
 }
 
 amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
