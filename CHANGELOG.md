@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.2 - 2024-04-10(07:35:25 +0000)
+
+### Fixes
+
+- [WANManager] WANManager.Reset() fails with error 500
+
 ## Release v1.6.1 - 2024-04-10(07:16:59 +0000)
 
 ### Changes

@@ -1,3 +1,9 @@
+wan-manager (1.6.2) unstable; urgency=medium
+
+  * [WANManager] WANManager.Reset() fails with error 500
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 10 Apr 2024 07:35:25 +0000
+
 wan-manager (1.6.1) unstable; urgency=medium
 
   * Make amxb timeouts configurable
