@@ -403,8 +403,8 @@ amxd_status_t is_valid_mode(const char* new_wan_mode) {
     return rc;
 }
 
-static void dm_wan_manager_change_physical(const amxc_var_t* const event_data,
-                                           const char* query) {
+static void dm_wan_manager_register_physical(const amxc_var_t* const event_data,
+                                             const char* query) {
     SAH_TRACEZ_IN(ME);
     const char* type = NULL;
     when_null_trace(event_data, exit, ERROR, "No data");
@@ -422,7 +422,7 @@ void _dm_wan_manager_physical_type_changed(UNUSED const char* const event_name,
                                            UNUSED void* const priv) {
 
     SAH_TRACEZ_IN(ME);
-    dm_wan_manager_change_physical(event_data, "parameters.PhysicalType.to");
+    dm_wan_manager_register_physical(event_data, "parameters.PhysicalType.to");
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -430,7 +430,7 @@ void _dm_wan_manager_wan_added(UNUSED const char* const event_name,
                                const amxc_var_t* const event_data,
                                UNUSED void* const priv) {
     SAH_TRACEZ_IN(ME);
-    dm_wan_manager_change_physical(event_data, "parameters.PhysicalType");
+    dm_wan_manager_register_physical(event_data, "parameters.PhysicalType");
     SAH_TRACEZ_OUT(ME);
 }
 
