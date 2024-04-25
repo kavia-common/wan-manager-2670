@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.3 - 2024-04-25(11:04:05 +0000)
+
+### Other
+
+- wan-manager seemingly toggles between PON and Eth several times
+
 ## Release v1.6.2 - 2024-04-10(07:35:25 +0000)
 
 ### Fixes
