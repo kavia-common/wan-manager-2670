@@ -1,3 +1,9 @@
+wan-manager (1.6.4) unstable; urgency=medium
+
+  * [wan-manager] - VLAN not created after reset or mode switch
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 13 May 2024 06:32:12 +0000
+
 wan-manager (1.6.3) unstable; urgency=medium
 
   * wan-manager seemingly toggles between PON and Eth several times

@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.4 - 2024-05-13(06:32:12 +0000)
+
+### Fixes
+
+- [wan-manager] - VLAN not created after reset or mode switch
+
 ## Release v1.6.3 - 2024-04-25(11:04:05 +0000)
 
 ### Other
