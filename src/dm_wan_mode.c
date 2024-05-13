@@ -378,6 +378,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     const char* bridge_reference = NULL;
     char* interface_path = NULL;
     bool bridge = false;
+    const char* wan_mode_alias = get_current_wan_mode_str();
 
     amxc_var_init(&parameters);
 
@@ -419,7 +420,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
         when_failed_trace(rc, exit, ERROR, "Failed to add port to bridge, return '%d'", rc);
     } else if(enable && ((mode & TYPE_VLAN) != 0)) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
-        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), GET_INT32(&parameters, "VlanPriority"), true);
+        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), GET_INT32(&parameters, "VlanPriority"), true, wan_mode_alias);
         amxc_var_add_key(cstring_t, &parameters, "LowerLayer", GET_CHAR(&parameters, "VLANTermination"));
     } else {
         amxc_var_add_key(cstring_t, &parameters, "LowerLayer", ll_info->lower_layer);
@@ -436,7 +437,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
         when_failed_trace(rc, exit, ERROR, "Failed to disable port from bridge, return '%d'", rc);
     } else if(!enable && ((mode & TYPE_VLAN) != 0)) {
         SAH_TRACEZ_INFO(ME, "Disable VLAN interface");
-        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), GET_INT32(&parameters, "VlanPriority"), false);
+        ethernet_vlan_set_enable(&parameters, ll_info->lower_layer, GET_UINT32(&parameters, "VlanID"), GET_INT32(&parameters, "VlanPriority"), false, wan_mode_alias);
     }
 
 exit:

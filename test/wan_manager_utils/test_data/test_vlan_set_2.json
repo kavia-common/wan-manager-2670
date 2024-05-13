@@ -1,0 +1,15 @@
+{
+    "Alias" : "wan",
+    "DNSMode" : "",
+    "IPv4Mode" : "dhcp4",
+    "IPv4Reference" : "Device.IP.Interface.2.",
+    "IPv6Mode" : "dhcp6",
+    "IPv6Reference" : "Device.IP.Interface.2.",
+    "LowerLayer" : "",
+    "Name" : "wan",
+    "Password" : "",
+    "Type" : "vlan",
+    "UserName" : "",
+    "VlanID" : 300,
+    "VlanPriority" : 0
+}

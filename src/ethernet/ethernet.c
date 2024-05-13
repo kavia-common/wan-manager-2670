@@ -81,22 +81,29 @@
 
 #define ME "eth-ctrl"
 
-static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, int32_t vlan_prio) {
+static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, int32_t vlan_prio, const char* wan_mode_alias) {
     SAH_TRACEZ_IN(ME);
     char* path = NULL;
     amxc_string_t name;
+    amxc_string_t alias;
     amxc_var_t parameters;
     amxc_var_t* tmp = NULL;
 
     amxc_string_init(&name, 0);
+    amxc_string_init(&alias, 0);
     amxc_string_setf(&name, "vlan%d", id);
+    if(str_empty(wan_mode_alias)) {
+        amxc_string_setf(&alias, "vlan%d", id);
+    } else {
+        amxc_string_setf(&alias, "%s_vlan%d", wan_mode_alias, id);
+    }
     amxc_var_init(&parameters);
     when_str_empty(lower_layer, exit);
 
     amxc_var_set_type(&parameters, AMXC_VAR_ID_HTABLE);
     tmp = amxc_var_add_new_key(&parameters, "Name");
     amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&name));
-    amxc_var_add_key(cstring_t, &parameters, "Alias", GET_CHAR(tmp, NULL));
+    amxc_var_add_key(cstring_t, &parameters, "Alias", amxc_string_get(&alias, 0));
     amxc_var_add_key(cstring_t, &parameters, "LowerLayers", lower_layer);
     amxc_var_add_key(bool, &parameters, "Enable", false);
     amxc_var_add_key(uint32_t, &parameters, "VLANID", id);
@@ -108,11 +115,12 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, in
 exit:
     amxc_var_clean(&parameters);
     amxc_string_clean(&name);
+    amxc_string_clean(&alias);
     SAH_TRACEZ_OUT(ME);
     return path;
 }
 
-amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, int32_t vlan_prio, bool enable) {
+amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, int32_t vlan_prio, bool enable, const char* wan_mode_alias) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_string_t str_search;
@@ -131,7 +139,7 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const
         SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",
                         vlan_id, lower_layer);
 
-        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id, vlan_prio);
+        vlan_path = ethernet_add_vlan_instance(lower_layer, vlan_id, vlan_prio, wan_mode_alias);
         when_null_trace(vlan_path, exit, ERROR,
                         "Cannot create VLAN configuration for id %d with lowerlayer %s",
                         vlan_id, lower_layer);

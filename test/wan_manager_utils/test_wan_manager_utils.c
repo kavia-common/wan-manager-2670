@@ -95,23 +95,34 @@ void test_ethernet_vlan_set_enable(UNUSED void** state) {
     vlan_obj = amxd_dm_get_object(test_get_dm(), "Device.Ethernet.VLANTermination.vlan400.");
     assert_null(vlan_obj);
 
-    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, true), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, true, NULL), amxd_status_ok);
     amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     assert_int_equal(GETP_UINT32(&ret, "0.0.VLANPriority"), 0);
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
-    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, false), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 0, false, NULL), amxd_status_ok);
     amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_false(GETP_BOOL(&ret, "0.0.Enable"));
     amxc_var_clean(&ret);
 
     amxc_var_init(&ret);
-    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 4, true), amxd_status_ok);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 400, 4, true, NULL), amxd_status_ok);
     amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.2.", 5, &ret, 5);
     assert_true(GETP_BOOL(&ret, "0.0.Enable"));
     assert_int_equal(GETP_UINT32(&ret, "0.0.VLANPriority"), 4);
+    amxc_var_clean(&ret);
+    amxc_var_delete(&parameters);
+
+    parameters = read_json_from_file("test_data/test_vlan_set_2.json");
+
+    amxc_var_init(&ret);
+    assert_int_equal(ethernet_vlan_set_enable(parameters, "Device.Ethernet.Link.1.", 300, 4, true, "TestMode"), amxd_status_ok);
+    amxb_get(amxb_be_who_has("Ethernet."), "Device.Ethernet.VLANTermination.3.", 5, &ret, 5);
+    assert_true(GETP_BOOL(&ret, "0.0.Enable"));
+    assert_int_equal(GETP_UINT32(&ret, "0.0.VLANPriority"), 4);
+    assert_string_equal(GETP_CHAR(&ret, "0.0.Alias"), "TestMode_vlan300");
     amxc_var_clean(&ret);
     amxc_var_delete(&parameters);
 }
