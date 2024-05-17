@@ -71,81 +71,87 @@
 #include "staticc/static_controller.h"
 #include "dslite/dslite.h"
 #include "link/link.h"
+#include "common_layers.h"
 
+#define NR_OF_LAYERS 5
 #define ME "wan-man"
-
 typedef struct {
-    mode_ctrl_t type;
     mode_ctrl_t mode;
-    ctrl_fn enable;
-    ctrl_fn disable;
+    ctrl_fn layers[NR_OF_LAYERS];
 } controller_item_t;
 
 controller_item_t controllers [] = {
-    { TYPE_VLAN, IPv4_DHCP, dhcpc4_enable, dhcpc4_disable },
-    { TYPE_UNTAGGED, IPv4_DHCP, dhcpc4_enable, dhcpc4_disable },
-    { TYPE_VLAN, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_UNTAGGED, IPv6_DHCP, dhcpc6_enable, dhcpc6_disable },
-    { TYPE_UNTAGGED, IPv4_DSLITE, dslite_enable, dslite_disable },
-    { TYPE_VLAN, IPv4_DSLITE, dslite_enable, dslite_disable },
-    { TYPE_VLAN, IPv4_PPP | IPv6_PPP, ppp_enable, ppp_disable },
-    { TYPE_UNTAGGED, IPv4_PPP | IPv6_PPP, ppp_enable, ppp_disable },
-    { TYPE_VLAN, IPv4_STATIC, static4_enable, static4_disable},
-    { TYPE_UNTAGGED, IPv4_STATIC, static4_enable, static4_disable},
-    { TYPE_VLAN, IPv6_STATIC, static6_enable, static6_disable},
-    { TYPE_UNTAGGED, IPv6_STATIC, static6_enable, static6_disable},
-    { TYPE_VLAN, IPv4_LINK | IPv6_LINK, link_enable, link_disable},
-    { TYPE_UNTAGGED, IPv4_LINK | IPv6_LINK, link_enable, link_disable},
-    { (mode_ctrl_t) (TYPE_UNTAGGED | TYPE_VLAN | TYPE_ATM), IP_None, NULL, NULL },
+    { IPv4_DHCP, {NULL, ipv4_layer, ip_enable, dhcp4_layer, logical_layer}},
+    { IPv6_DHCP, {NULL, ipv6_layer, ip_enable, dhcp6_layer, logical_layer}},
+    { IPv4_DSLITE, {NULL, NULL, NULL, dslite_layer, logical_layer}},
+    { IPv4_PPP, {ppp_lower_layer, ipv4_layer, ip_enable, ppp_upper_layer, logical_layer}},
+    { IPv6_PPP, {ppp_lower_layer, ipv6_layer, ip_enable, ppp_upper_layer, logical_layer}},
+    { IPv4_STATIC, {NULL, ipv4_layer, ip_enable, static_layer, logical_layer}},
+    { IPv6_STATIC, {NULL, ipv6_layer, ip_enable, static_layer, logical_layer}},
+    { IPv4_LINK | IPv6_LINK, {NULL, NULL, NULL, NULL, logical_layer}},
+    { IP_None, {NULL, NULL, NULL, NULL, NULL}},
     // last item of array must be 0
-    { (mode_ctrl_t) 0, (mode_ctrl_t) 0, NULL, NULL }
+    { (mode_ctrl_t) 0, {NULL, NULL, NULL, NULL, NULL}}
 };
 
-static amxd_status_t mode_ctrl_call_fnc(controller_item_t* ctrl,
-                                        mode_ctrl_t mode,
-                                        const amxc_var_t* const parameters,
-                                        bool enable) {
+static controller_item_t* get_mode_ctrl_action(mode_ctrl_t mode, bool ipv4) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rc = amxd_status_unknown_error;
-    ctrl_fn call_fnc = enable ? ctrl->enable : ctrl->disable;
+    controller_item_t* ctrll = controllers;
+    int ipmode = mode & (ipv4 ? MASK_IPv4 : MASK_IPv6);
 
-    // if NULL, no action is needed -> OK
-    when_null_status(call_fnc, exit, rc = amxd_status_ok);
-    rc = call_fnc(mode, parameters);
+    if(ipmode != 0) {
+        for(int cnt = 0; (ipmode != 0); ctrll++, cnt++) {
+            SAH_TRACEZ_INFO(ME, "%d: ipmode 0x%X", cnt, ctrll->mode);
+            if((ipmode & ctrll->mode) != 0) {
+                goto exit;
+            }
+        }
+    } else {
+        SAH_TRACEZ_INFO(ME, "Nothing to do, %s is 'none'", ipv4 ? "IPv4Mode" : "IPv6Mode");
+        // Make sure not to exit without setting the ctrll to NULL
+    }
+
+    ctrll = NULL;
+
 exit:
     SAH_TRACEZ_OUT(ME);
-    return rc;
+    return ctrll;
 }
 
 amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
-                               const amxc_var_t* const parameters,
+                               amxc_var_t* const parameters,
                                bool enable) {
     SAH_TRACEZ_IN(ME);
-    amxd_status_t rc = amxd_status_ok;
-    controller_item_t* ctrll = controllers;
-    int type = mode & MASK_TYPE;
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6);
+    amxd_status_t rc = amxd_status_unknown_error;
+    controller_item_t* ctrll_v4 = get_mode_ctrl_action(mode, true);
+    controller_item_t* ctrll_v6 = get_mode_ctrl_action(mode, false);
 
-    SAH_TRACEZ_INFO(ME, "Type 0x%X ipmode 0x%X", type, ipmode);
-
-    when_false_trace((ipmode != 0), exit, INFO,
-                     "Nothing to do, IPv4Mode & IPv6Mode are 'none'");
-
-    rc = amxd_status_unknown_error;
     when_null_trace(parameters, exit, ERROR, "Missing parameters");
-    when_false_trace((type != 0), exit, ERROR, "Type is 0");
 
-    for(int cnt = 0; (ctrll->type != 0) && (ipmode != 0); ctrll++, cnt++) {
-        SAH_TRACEZ_INFO(ME, "%d: Type 0x%X ipmode 0x%X", cnt, ctrll->type, ctrll->mode);
-        if(type != (type & (int) ctrll->type)) {
-            continue;
+    if(enable) {
+        int layer = 0;
+        for(layer = 0; layer < NR_OF_LAYERS; layer++) {
+            if((ctrll_v4 != NULL) && (ctrll_v4->layers[layer] != NULL)) {
+                ctrll_v4->layers[layer](mode & MASK_IPv4, parameters, true);
+            }
+            if((ctrll_v6 != NULL) && (ctrll_v6->layers[layer] != NULL)) {
+                ctrll_v6->layers[layer](mode & MASK_IPv6, parameters, true);
+            }
         }
-        if((ipmode & ctrll->mode) != 0) {
-            rc = mode_ctrl_call_fnc(ctrll, mode, parameters, enable);
-            // Clear bits of IPv4Mode and / or IPv6Mode
-            ipmode &= ~ctrll->mode;
+    } else {
+        int layer = 0;
+        for(layer = NR_OF_LAYERS - 1; layer >= 0; layer--) {
+            if((ctrll_v4 != NULL) && (ctrll_v4->layers[layer] != NULL)) {
+                ctrll_v4->layers[layer](mode & MASK_IPv4, parameters, false);
+            }
+            if((ctrll_v6 != NULL) && (ctrll_v6->layers[layer] != NULL)) {
+                ctrll_v6->layers[layer](mode & MASK_IPv6, parameters, false);
+            }
         }
     }
+
+    rc = 0;
+
 exit:
     SAH_TRACEZ_OUT(ME);
     return rc;

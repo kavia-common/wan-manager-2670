@@ -89,6 +89,8 @@ extern "C" {
 #define PPP_PATH "PPP."
 #define DSLITE_PATH "DSLite."
 
+#define NEIGH_DISCOVERY_INTF "wan"
+
 #define str_empty(txt) ((txt == NULL) || (*txt == 0))
 
 amxb_bus_ctx_t* ip_get_context(void);
@@ -114,7 +116,7 @@ void add_str_to_list(amxc_var_t* list, const char* str);
 void remove_str_from_list(amxc_var_t* list, const char* str);
 char* create_logical_path(const char* intf_name);
 char* create_neighbor_discovery_path(const char* intf_alias);
-amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable);
+amxd_status_t nd_interface_setting_toggle(const char* intf_alias, const char* param, bool enable);
 
 const char* object_const_string(amxd_object_t* object, const char* name);
 

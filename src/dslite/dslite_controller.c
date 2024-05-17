@@ -82,34 +82,18 @@
 
 #define DSLITE_DEVICE_PATH DEVICE_PATH DSLITE_PATH
 #define DSLITE_IF_PATH DSLITE_DEVICE_PATH "InterfaceSetting.1"
-#define LOGICAL_PATH "Logical.Interface.1."
 
-amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
-                            const amxc_var_t* const parameters) {
+static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
+                                   amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
-    const char* name = GET_CHAR(parameters, "Name");
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
     const char* dslite_wan_if = NULL;
-    char* logical_path = NULL;
     amxc_var_t wan_if;
-    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
-    amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
 
     amxc_var_init(&wan_if);
     when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
-
-    //Add the IPReference to the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", ipv4_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to add IPv6Reference to '%s'", logical_path);
-
-    // Setting up the default route instance for static ipv4
-    if(!str_empty(default_route_reference)) {
-        rc = routing_default_route_set_origin(default_route_reference, ipv4_path, ROUTING_ORIGIN_STATIC, GET_CHAR(ipv4, "DefaultRouter"));
-        when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
-    }
 
     // Enable DSLite
     rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), true);
@@ -132,30 +116,21 @@ amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
 
 exit:
     amxc_var_clean(&wan_if);
-    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
 
-amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
-                             const amxc_var_t* const parameters) {
+static amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
+                                    amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
-    const char* name = GET_CHAR(parameters, "Name");
     const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
-    char* logical_path = NULL;
 
     // Disable DHCPv6 Client
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
     rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear DHCPv6Reference Interface");
-
-    //Remove the IPReference from the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", ipv4_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv4Reference from '%s'", logical_path);
 
     // Disable DSLite
     rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), false);
@@ -166,7 +141,20 @@ amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
 
 exit:
-    free(logical_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
+
+amxd_status_t dslite_layer(mode_ctrl_t mode,
+                           amxc_var_t* const parameters,
+                           bool enable) {
+    amxd_status_t rc = amxd_status_unknown_error;
+    if(enable) {
+        rc = dslite_enable(mode, parameters);
+    } else {
+        rc = dslite_disable(mode, parameters);
+    }
+
+    return rc;
+}
+

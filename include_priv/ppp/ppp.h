@@ -70,8 +70,12 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t ppp_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t ppp_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t ppp_lower_layer(mode_ctrl_t mode,
+                              amxc_var_t* const parameters,
+                              bool enable);
+amxd_status_t ppp_upper_layer(mode_ctrl_t mode,
+                              amxc_var_t* const parameters,
+                              bool enable);
 
 #ifdef __cplusplus
 }

@@ -70,10 +70,9 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t static4_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t static4_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t static6_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t static6_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t static_layer(mode_ctrl_t mode,
+                           amxc_var_t* const parameters,
+                           bool enable);
 
 #ifdef __cplusplus
 }

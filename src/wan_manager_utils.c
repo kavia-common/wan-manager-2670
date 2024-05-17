@@ -225,7 +225,7 @@ amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &params, "AddressingType", addr_type);
 
-    if(ip_addr != NULL) {
+    if((ip_addr != NULL) && (strcmp(addr_type, STATIC_ADDRESSING_TYPE) == 0)) {
         amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, "IPv4Address"));
         amxc_var_add_key(cstring_t, &params, "SubnetMask", GET_CHAR(ip_addr, "SubnetMask"));
     }
@@ -324,6 +324,13 @@ static void convert_prefixes_data(const char* interfaces, const char* old_refere
     SAH_TRACEZ_OUT(ME);
 }
 
+/**
+ * @brief Switches the parent prefix path to the correct IPv6Reference
+ * @param interfaces comma separated list of IP instances (typically lan interfaces)
+ * @param old_reference_path the reference path that will be replaced
+ * @param new_reference_path the reference path which will be set
+ * @return 0 when applied correctly, an error value otherwise
+ */
 int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_path, const char* new_reference_path) {
     SAH_TRACEZ_IN(ME);
     amxc_var_t ret;
@@ -451,15 +458,15 @@ exit:
     return rc;
 }
 
-amxd_status_t nd_interface_setting_toggle(const char* intf_alias, bool enable) {
+amxd_status_t nd_interface_setting_toggle(const char* intf_alias, const char* param, bool enable) {
     SAH_TRACEZ_IN(ME);
     char* nd_path = NULL;
     amxd_status_t rc = amxd_status_ok;
 
     nd_path = create_neighbor_discovery_path(intf_alias);
 
-    rc = component_set_enable(nd_path, neighbor_discovery_get_context(), enable);
-    when_failed_trace(rc, exit, ERROR, "Could not %s %s in %sNeighborDiscovery.InterfaceSetting", enable ? "enable" : "disable", intf_alias, DEVICE_PATH);
+    rc = component_set_bool(nd_path, neighbor_discovery_get_context(), param, enable);
+    when_failed_trace(rc, exit, ERROR, "Could not %s '%s' in '%s'", enable ? "enable" : "disable", param, nd_path);
 
 exit:
     free(nd_path);

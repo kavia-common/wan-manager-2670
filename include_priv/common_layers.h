@@ -2,7 +2,7 @@
 **
 ** SPDX-License-Identifier: BSD-2-Clause-Patent
 **
-** SPDX-FileCopyrightText: Copyright (c) 2023 SoftAtHome
+** SPDX-FileCopyrightText: Copyright (c) 2024 SoftAtHome
 **
 ** Redistribution and use in source and binary forms, with or
 ** without modification, are permitted provided that the following
@@ -59,64 +59,28 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
+#if !defined(__COMMON_LAYERS_H__)
+#define __COMMON_LAYERS_H__
 
-#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <debug/sahtrace.h>
-#include <debug/sahtrace_macros.h>
+amxd_status_t ipv4_layer(mode_ctrl_t mode,
+                         amxc_var_t* const parameters,
+                         bool enable);
+amxd_status_t ipv6_layer(mode_ctrl_t mode,
+                         amxc_var_t* const parameters,
+                         bool enable);
+amxd_status_t ip_enable(mode_ctrl_t mode,
+                        amxc_var_t* const parameters,
+                        bool enable);
+amxd_status_t logical_layer(mode_ctrl_t mode,
+                            amxc_var_t* const parameters,
+                            bool enable);
 
-#include "ctrl/mode_ctrl.h"
-#include "component.h"
-#include "wan_manager_utils.h"
-#include "link/link.h"
-
-#define ME "link-ctrl"
-
-amxd_status_t link_enable(mode_ctrl_t mode,
-                          const amxc_var_t* const parameters) {
-    SAH_TRACEZ_IN(ME);
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_LINK;
-    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
-    amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
-    const char* name = GET_CHAR(parameters, "Name");
-    char* logical_path = NULL;
-
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
-    when_str_empty_trace(name, exit, ERROR, "Name parameter for interface %s is empty", intf_path);
-
-    // Add the IPReference to the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to add IPv%dReference to '%s'", ip_version, logical_path);
-
-exit:
-    free(logical_path);
-    SAH_TRACEZ_OUT(ME);
-    return rc;
+#ifdef __cplusplus
 }
+#endif
 
-amxd_status_t link_disable(mode_ctrl_t mode,
-                           const amxc_var_t* const parameters) {
-    SAH_TRACEZ_IN(ME);
-    int ipmode = mode & (MASK_IPv4 | MASK_IPv6) & MASK_LINK;
-    int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
-
-    amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
-    const char* name = GET_CHAR(parameters, "Name");
-    char* logical_path = NULL;
-
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
-    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
-
-    //Remove the IPReference from the Logical Interface
-    logical_path = create_logical_path(name);
-    rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to remove IPv%dReference from '%s.LowerLayers'", ip_version, logical_path);
-
-exit:
-    free(logical_path);
-    SAH_TRACEZ_OUT(ME);
-    return rc;
-}
+#endif // __COMMON_LAYERS_H__

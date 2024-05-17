@@ -99,9 +99,9 @@ typedef enum {
     MASK_TYPE     = 0xFF0000
 } mode_ctrl_t;
 
-typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, const amxc_var_t* const);
+typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, amxc_var_t* const, bool enable);
 
-amxd_status_t mode_ctrl_action(mode_ctrl_t mode, const amxc_var_t* const parameters, bool enable);
+amxd_status_t mode_ctrl_action(mode_ctrl_t mode, amxc_var_t* const parameters, bool enable);
 
 #ifdef __cplusplus
 }

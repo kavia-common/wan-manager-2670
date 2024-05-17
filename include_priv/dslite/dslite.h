@@ -70,8 +70,9 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
 
-amxd_status_t dslite_enable(mode_ctrl_t mode, const amxc_var_t* const parameters);
-amxd_status_t dslite_disable(mode_ctrl_t mode, const amxc_var_t* const parameters);
+amxd_status_t dslite_layer(mode_ctrl_t mode,
+                           amxc_var_t* const parameters,
+                           bool enable);
 
 #ifdef __cplusplus
 }
