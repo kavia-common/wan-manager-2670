@@ -4,7 +4,6 @@
 %config {
     name = "wan-manager";
     import-dbg = false;
-    dm-events-before-start = true;
 
     vendor_prefix = {
         "dns" = "X_PRPL-COM_"
@@ -38,7 +37,6 @@
     // Use ODL persistent storage
     storage-path = "${rw_data_path}/${name}";
     odl = {
-        load-dm-events = true,
         dm-load = true,
         dm-save = true,
         dm-save-on-changed = true,
