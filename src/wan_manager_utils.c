@@ -65,6 +65,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
@@ -136,41 +137,34 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     amxc_string_t addr_path;
     char* path = NULL;
     const char* ip_param = "IPv6Address";
-    const char* gua_ra = "GUA_RA";
-    const char* alias = "wan-mngr";
+    const char* gua = "GUA_RA";
+    const char* alias = "GUA_STATIC";
 
     amxc_string_init(&addr_path, 0);
     amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
 
     when_str_empty_trace(intf_path, exit, ERROR, "Interface path for the ipv6 address is empty");
     when_str_empty_trace(addr_type, exit, ERROR, "Addressing type of the ipv6 address is empty");
 
+    amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, alias);
+    path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
+
+    if(path == NULL) {
+        rc = amxd_status_unknown_error;
+        SAH_TRACEZ_ERROR(ME, "Could not update the static IPv6 instance %s to IP-Manager", alias);
+        goto exit;
+    }
+
     if(enable) {
-        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, alias);
-        path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
 
         //Setting up the new ipv6 address
-        amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
         amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, ip_param));
-        amxc_var_add_key(cstring_t, &params, "Origin", addr_type);
         amxc_var_add_key(bool, &params, "Enable", false);
 
-        if(path == NULL) {
-            //Creating an ipv6 instance
-            amxc_var_add_key(cstring_t, &params, "Alias", alias);
-            amxc_string_setf(&addr_path, "%sIPv6Address.", intf_path);
-            path = component_add_instance(amxc_string_get(&addr_path, 0), &params, ip_get_context());
-
-            if(path == NULL) {
-                rc = amxd_status_unknown_error;
-                SAH_TRACEZ_ERROR(ME, "Could not add a static IPv6 instance to IP-Manager");
-                goto exit;
-            }
-        } else {
-            //Setting the parameters in the right ipv6 instance
-            rc = component_set_params(path, ip_get_context(), &params);
-            when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 instance to %s", path);
-        }
+        //Setting the parameters in the right ipv6 instance
+        rc = component_set_params(path, ip_get_context(), &params);
+        when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 instance to %s", path);
 
         //Activating the custom IPv6 address
         rc = component_set_enable(path, ip_get_context(), true);
@@ -178,28 +172,148 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
         free(path);
 
         //Deactivating the GUA_RA
-        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua_ra);
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua);
         path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
         rc = component_set_enable(path, ip_get_context(), !enable);
-        when_failed_trace(rc, exit, ERROR, "Could not disable the %s IPv6 address.", gua_ra);
+        when_failed_trace(rc, exit, ERROR, "Could not disable the %s IPv6 address.", gua);
     } else {
-        //Deleting the ipv6 instance
-        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s' && Origin == 'Static']", intf_path, alias);
-        rc = component_del_instance(amxc_string_get(&addr_path, 0), ip_get_context());
-        when_failed_trace(rc, exit, ERROR, "Could not delete instance %s", amxc_string_get(&addr_path, 0));
+
+        //Setting up the empty ipv6 address
+        amxc_var_add_key(cstring_t, &params, "IPAddress", "");
+        amxc_var_add_key(bool, &params, "Enable", false);
+
+        //Setting the parameters in the right ipv6 instance
+        rc = component_set_params(path, ip_get_context(), &params);
+        when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 instance to %s", path);
+        free(path);
 
         //Activating the GUA_RA
-        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua_ra);
+        amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, gua);
         path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
 
         rc = component_set_enable(path, ip_get_context(), !enable);
-        when_failed_trace(rc, exit, ERROR, "Could not enable the %s IPv6 address.", gua_ra);
+        when_failed_trace(rc, exit, ERROR, "Could not enable the %s IPv6 address.", gua);
     }
 
 exit:
     free(path);
     amxc_var_clean(&params);
     amxc_string_clean(&addr_path);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
+}
+
+amxd_status_t ipv6_prefix_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rc = amxd_status_ok;
+    amxc_var_t params;
+    amxc_string_t addr_path;
+    amxc_string_t prefix_string;
+    amxc_string_t child_prefix_bit_string;
+    uint32_t prefix_len = 0;
+    struct in6_addr my_parsed_ip;
+    char* path = NULL;
+    const char* ip_param = "IPv6Address";
+    const char* ip_addr_str = NULL;
+    const char* prefix_len_param = "PrefixLength";
+    const char* alias = "GUA_STATIC";
+
+    amxc_string_init(&addr_path, 0);
+    amxc_string_init(&prefix_string, 0);
+    amxc_string_init(&child_prefix_bit_string, 0);
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    when_str_empty_trace(intf_path, exit, ERROR, "Interface path for the ipv6 address is empty");
+    when_str_empty_trace(addr_type, exit, ERROR, "Addressing type of the ipv6 address is empty");
+
+    if(enable) {
+        amxc_string_setf(&addr_path, "%sIPv6Prefix.[Alias == '%s']", intf_path, alias);
+        path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
+
+        //Setting up the new ipv6 prefix
+        ip_addr_str = GET_CHAR(ip_addr, ip_param);
+        if(str_empty(ip_addr_str) || (inet_pton(AF_INET6, ip_addr_str, &my_parsed_ip) != 1)) {
+            SAH_TRACEZ_ERROR(ME, "Could not parse a static IPv6 address for prefix creation");
+            goto skip_prefix;
+        }
+
+        //Getting the prefix bits and parsing it again in string format
+        prefix_len = GET_UINT32(ip_addr, prefix_len_param);
+
+        uint8_t array[16] = {0};
+        for(uint32_t i = 0; i < prefix_len; i++) {
+            array[i / 8] += (0b10000000 >> (i % 8)) & (uint8_t) my_parsed_ip.s6_addr[i / 8];
+        }
+
+        char prefix_string_array[INET6_ADDRSTRLEN];
+        if(!inet_ntop(AF_INET6, array, prefix_string_array, INET6_ADDRSTRLEN)) {
+            SAH_TRACEZ_ERROR(ME, "Could not parse a static IPv6 prefix to string for %s", path);
+            goto skip_prefix;
+        }
+        amxc_string_setf(&prefix_string, "%s/%d", prefix_string_array, prefix_len);
+
+        //Generating the Child Prefix Bits
+        uint8_t child_array[16] = {0};
+        child_array[(prefix_len - 1) / 8] += (0b10000000 >> ((prefix_len - 1) % 8));
+
+        char child_prefix_string_array[INET6_ADDRSTRLEN];
+        if(!inet_ntop(AF_INET6, child_array, child_prefix_string_array, INET6_ADDRSTRLEN)) {
+            SAH_TRACEZ_ERROR(ME, "Could not parse a static IPv6 child prefix bits to string for %s", path);
+            goto skip_prefix;
+        }
+        amxc_string_setf(&child_prefix_bit_string, "%s/%d", child_prefix_string_array, prefix_len);
+
+skip_prefix:
+
+        // Filling the parameters in
+        amxc_var_add_key(cstring_t, &params, "ValidLifetime", "9999-12-31T23:59:59Z");
+        amxc_var_add_key(cstring_t, &params, "PreferredLifetime", "9999-12-31T23:59:59Z");
+        amxc_var_add_key(cstring_t, &params, "ChildPrefixBits", amxc_string_get(&child_prefix_bit_string, 0));
+        amxc_var_add_key(cstring_t, &params, "Prefix", amxc_string_get(&prefix_string, 0));
+        amxc_var_add_key(bool, &params, "Enable", false);
+
+        if(path == NULL) {
+            //Creating an ipv6 prefix instance
+            amxc_var_add_key(cstring_t, &params, "Alias", alias);
+            amxc_string_setf(&addr_path, "%sIPv6Prefix.", intf_path);
+            path = component_add_instance(amxc_string_get(&addr_path, 0), &params, ip_get_context());
+
+            if(path == NULL) {
+                rc = amxd_status_unknown_error;
+                SAH_TRACEZ_ERROR(ME, "Could not add a static IPv6 prefix instance to IP-Manager");
+                goto exit;
+            }
+        } else {
+            //Setting the parameters in the right ipv6 prefix instance
+            rc = component_set_params(path, ip_get_context(), &params);
+            when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 prefix instance to %s", path);
+        }
+
+        //Activating the custom IPv6 prefix
+        rc = component_set_enable(path, ip_get_context(), true);
+        when_failed_trace(rc, exit, ERROR, "Could not enable %s", path);
+    } else {
+
+        // Filling the parameters in
+        amxc_var_add_key(cstring_t, &params, "ChildPrefixBits", "");
+        amxc_var_add_key(cstring_t, &params, "Prefix", "");
+        amxc_var_add_key(bool, &params, "Enable", false);
+
+        //Removing the content of the prefix
+        amxc_string_setf(&addr_path, "%sIPv6Prefix.[Alias == '%s' && Origin == '%s']", intf_path, alias, addr_type);
+        path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
+
+        rc = component_set_params(path, ip_get_context(), &params);
+        when_failed_trace(rc, exit, ERROR, "Could not update the Static IPv6 prefix instance to %s", path);
+    }
+
+exit:
+    free(path);
+    amxc_var_clean(&params);
+    amxc_string_clean(&addr_path);
+    amxc_string_clean(&prefix_string);
+    amxc_string_clean(&child_prefix_bit_string);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

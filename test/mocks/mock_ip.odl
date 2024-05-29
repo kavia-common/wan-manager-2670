@@ -22,12 +22,19 @@
                 string IPAddress;
                 string IPAddressStatus;
                 string Origin;
+                string Prefix;
+                uint32 PrefixLen = 0; 
             }
 
             object IPv6Prefix[]{
                 bool Enable = 0;
                 string Alias;
-                string ParentPrefix = "";
+                string ParentPrefix;
+                string Origin;
+                string Prefix;
+                string ChildPrefixBits;
+                string ValidLifetime;
+                string PreferredLifetime;
             }
 
             string IPv6AddressDelegate;
@@ -50,12 +57,22 @@
                     parameter Alias = "GUA_RA";
                     parameter Enable = 1;
                 }
+                instance add(2,"GUA_STATIC"){
+                    parameter Alias = "GUA_STATIC";
+                    parameter Enable = 1;
+                    parameter Origin = "Static";
+                }
             }
 
             object IPv6Prefix {
                 instance add(0,"GUA_IAPD"){
                     parameter Alias = "GUA_IAPD";
                     parameter Enable = 1;
+                }
+                instance add(2,"GUA_STATIC"){
+                    parameter Alias = "GUA_STATIC";
+                    parameter Enable = 1;
+                    parameter Origin = "Static";
                 }
             }
         }

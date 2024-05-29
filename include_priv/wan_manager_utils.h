@@ -74,6 +74,10 @@ extern "C" {
 #define DHCP_ADDRESSING_TYPE "DHCP"
 #define PPP_ADDRESSING_TYPE "IPCP"
 #define STATIC_ADDRESSING_TYPE "Static"
+#define AUTO_ADDRESSING_TYPE "AutoConfigured"
+
+#define CHILD_PREFIX_TYPE "Child"
+#define STATIC_PREFIX_TYPE "Static"
 
 #define ROUTING_ORIGIN_DHCPV4 "DHCPv4"
 #define ROUTING_ORIGIN_IPCP "IPCP"
@@ -108,6 +112,7 @@ amxb_bus_ctx_t* xpon_get_context(void);
 
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
+amxd_status_t ipv6_prefix_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_path, const char* new_reference_path);
 amxd_status_t routing_default_route_set_origin(const char* route_path, const char* ip_path, const char* routing_origin, const char* ip_addr);
 amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, const char* next_hop, const char* ip_intf, bool enable);

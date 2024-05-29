@@ -378,9 +378,6 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
     assert_true(ip_addr == NULL);
 
-    ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static']");
-    assert_true(ip_addr == NULL);
-
     assert_true(set_wan_mode("demo_staticmode", amxd_status_ok));
     reset_counter = get_reset_counter();
 
@@ -406,9 +403,6 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     assert_string_equal("demo_wanmode", wan_mode_str);
 
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
-    assert_true(ip_addr == NULL);
-
-    ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static']");
     assert_true(ip_addr == NULL);
 
     assert_int_equal(reset_counter, get_reset_counter());
