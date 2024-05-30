@@ -86,3 +86,7 @@ requires "Logical.";
 }
 
 #include "mod_pcm_svc.odl";
+
+%populate {
+    on event "app:start" call app_start;
+}

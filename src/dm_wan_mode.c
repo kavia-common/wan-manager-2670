@@ -128,7 +128,7 @@ static const char* wan_mode_status_str[WAN_Mode_Nr_] = {
     "Error",
 };
 
-static amxd_object_t* wan_manager;
+static amxd_object_t* wan_manager = NULL;
 static bool wan_autosensing_can_start = false;
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
@@ -772,4 +772,19 @@ void _ipv6_mode_toggled(UNUSED const char* const event_name,
     ip_mode_toggled(event_data, false);
     SAH_TRACEZ_OUT(ME);
     return;
+}
+
+void _app_start(UNUSED const char* const event_name,
+                UNUSED const amxc_var_t* const event_data,
+                UNUSED void* const priv) {
+    amxd_object_t* wanm_obj = get_wan_manager_obj();
+    amxd_object_t* wan_obj = amxd_object_get(wanm_obj, "WAN");
+
+    SAH_TRACEZ_INFO(ME, "app:start event is triggered");
+
+    amxd_object_for_each(instance, it, wan_obj) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        const char* phy_type = object_const_string(instance, "PhysicalType");
+        nm_query_ll_add(phy_type);
+    }
 }

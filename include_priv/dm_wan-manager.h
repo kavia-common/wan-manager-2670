@@ -158,6 +158,10 @@ amxd_status_t _interface_destroy(amxd_object_t* intf,
                                  amxc_var_t* const retval,
                                  void* priv);
 
+void _app_start(const char* const event_name,
+                const amxc_var_t* const event_data,
+                void* const priv);
+
 #ifdef __cplusplus
 }
 #endif
