@@ -26,6 +26,7 @@ all:
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C odl clean
+	$(MAKE) -C test clean
 
 install: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT).odl $(DEST)/etc/amx/$(COMPONENT)/$(COMPONENT).odl
