@@ -453,7 +453,7 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
     logical_ll = amxc_var_constcast(cstring_t, &value);
 
     assert_non_null(logical_ll);
-    assert_string_equal("Device.IP.Interface.2.,Device.IP.Interface.7.", logical_ll);
+    assert_string_equal("Device.IP.Interface.7.,Device.IP.Interface.2.", logical_ll);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
 
