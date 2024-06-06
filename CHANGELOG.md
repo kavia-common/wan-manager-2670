@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.5 - 2024-06-06(09:12:54 +0000)
+
+### Other
+
+- [CHR2fA][IPv6][DNS] Wrong IPv6 DNSServer status after firmware upgrade
+
 ## Release v1.6.4 - 2024-05-13(06:32:12 +0000)
 
 ### Fixes
