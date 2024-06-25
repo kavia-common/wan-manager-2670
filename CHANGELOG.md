@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.6 - 2024-06-25(19:19:12 +0000)
+
+### Other
+
+- - Rework mode toggling to a layer approach
+
 ## Release v1.6.5 - 2024-06-06(09:12:54 +0000)
 
 ### Other
