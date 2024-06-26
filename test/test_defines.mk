@@ -37,4 +37,4 @@ CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
 		  $(shell pkg-config --cflags cmocka) -pthread -DUNIT_TESTS
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -lamxm -lamxj -ldl -lsahtrace -lnetmodel
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -lamxm -lamxj -ldl -lsahtrace -lnetmodel -lipat

@@ -1,6 +1,6 @@
 variables:
   PC_DOC_CHECK: "on"
-  PC_PACKAGE_DEPS: libamxc libamxd libamxp libamxb libamxo libamxm libamxj sah-lib-sahtrace-dev libyajl-dev libnetmodel
+  PC_PACKAGE_DEPS: libamxc libamxd libamxp libamxb libamxo libamxm libamxj sah-lib-sahtrace-dev libyajl-dev libnetmodel sah-lib-ipat-dev
   BUILD_TARGET: wan-manager
 
 include:
