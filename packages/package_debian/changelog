@@ -1,3 +1,9 @@
+wan-manager (1.6.7) unstable; urgency=medium
+
+  * - [WANManager][IPv6] Allow a static IPv6 prefix to configure both WAN and LAN
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 01 Jul 2024 19:16:35 +0000
+
 wan-manager (1.6.6) unstable; urgency=medium
 
   * - Rework mode toggling to a layer approach

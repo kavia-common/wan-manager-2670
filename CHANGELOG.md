@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.7 - 2024-07-01(19:16:34 +0000)
+
+### Other
+
+- - [WANManager][IPv6] Allow a static IPv6 prefix to configure both WAN and LAN
+
 ## Release v1.6.6 - 2024-06-25(19:19:12 +0000)
 
 ### Other
