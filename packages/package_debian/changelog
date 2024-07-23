@@ -1,3 +1,9 @@
+wan-manager (1.6.8) unstable; urgency=medium
+
+  * Better shutdown script
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 23 Jul 2024 07:59:22 +0000
+
 wan-manager (1.6.7) unstable; urgency=medium
 
   * - [WANManager][IPv6] Allow a static IPv6 prefix to configure both WAN and LAN

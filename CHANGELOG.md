@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.8 - 2024-07-23(07:59:21 +0000)
+
+### Fixes
+
+- Better shutdown script
+
 ## Release v1.6.7 - 2024-07-01(19:16:34 +0000)
 
 ### Other
