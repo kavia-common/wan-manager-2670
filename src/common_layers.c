@@ -349,15 +349,17 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     int ipmode = mode & (MASK_IPv4 | MASK_IPv6);
     int ip_version = ((ipmode & MASK_IPv4) != 0) ? 4 : 6;
+    amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
     const char* intf_path = ip_version == 4 ? GET_CHAR(parameters, "IPv4Reference") : GET_CHAR(parameters, "IPv6Reference");
     const char* name = GET_CHAR(parameters, "Name");
     const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
+    const char* default_router = GET_CHAR(ipv4, "DefaultRouter");
     char* logical_path = NULL;
 
     // Set the default route origin
     if(enable && (ip_version == 4) && !str_empty(default_route_reference)) {
         const char* routing_origin = get_routing_v4_origin(mode);
-        rc = routing_default_route_set_origin(default_route_reference, intf_path, routing_origin, NULL);
+        rc = routing_default_route_set_origin(default_route_reference, intf_path, routing_origin, default_router);
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 
