@@ -16,6 +16,8 @@
     };
 
     trace-zones = {
+        "bridge-mode" = "${default_trace_zone_level}",
+        "common-layer" = "${default_trace_zone_level}",
         "wan-man" = "${default_trace_zone_level}",
         "uci-ctrl" = "${default_trace_zone_level}",
         "dhcpc-ctrl" = "${default_trace_zone_level}",
