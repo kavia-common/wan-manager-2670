@@ -63,8 +63,8 @@
                     parameter DestIPAddress = "0.0.0.0";
                     parameter DestSubnetMask = "0.0.0.0";
                     parameter Enable = 1;
-                    parameter GatewayIPAddress = "172.16.110.10";
-                    parameter Interface = "Device.IP.Interface.2.";
+                    parameter GatewayIPAddress = "";
+                    parameter Interface = "";
                     parameter Origin = "DHCPv4";
                 }
                 instance add("wwan-default"){

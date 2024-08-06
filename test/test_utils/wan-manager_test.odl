@@ -243,9 +243,21 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
     }
 
+    object 'WANManager.WAN.demo_dslite.Intf.wan.IPv4Address'{
+        instance add("ipv4"){
+            parameter DNSServers = "8.8.8.8,1.1.1.1";
+            parameter DefaultRouter = "80.16.3.1";
+            parameter IPv4Address = "80.16.3.110";
+            parameter SubnetMask = "255.255.255.0";
+        }
+    }
+
     object 'WANManager.WAN.demo_vlanmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
             parameter DNSServers = "8.8.8.8,1.1.1.1";
+            parameter DefaultRouter = "80.16.3.1";
+            parameter IPv4Address = "80.16.3.111";
+            parameter SubnetMask = "255.255.255.0";
         }
     }
 
@@ -264,8 +276,9 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
 
     object 'WANManager.WAN.demo_staticmode.Intf.wan.IPv4Address'{
         instance add("ipv4"){
-            parameter DefaultRouter = "172.16.110.10";
-            parameter IPv4Address = "172.16.110.45";
+            parameter DNSServers = "8.8.8.8,1.1.1.1";
+            parameter DefaultRouter = "80.16.3.1";
+            parameter IPv4Address = "80.16.3.112";
             parameter SubnetMask = "255.255.255.0";
         }
     }

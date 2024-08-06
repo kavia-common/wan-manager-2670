@@ -23,7 +23,7 @@
                 string IPAddressStatus;
                 string Origin;
                 string Prefix;
-                uint32 PrefixLen = 0; 
+                uint32 PrefixLen = 0;
             }
 
             object IPv6Prefix[]{

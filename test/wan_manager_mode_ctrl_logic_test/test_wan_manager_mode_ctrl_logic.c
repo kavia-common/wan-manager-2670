@@ -317,10 +317,18 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     amxc_var_clean(&status);
 }
 
+static void assert_obj_string(amxd_object_t* obj, const char* param_name, const char* value) {
+    char* my_string = NULL;
+
+    assert_non_null(obj);
+    my_string = amxd_object_get_value(cstring_t, obj, param_name, NULL);
+    assert_string_equal(my_string, value);
+    free(my_string);
+}
+
 void test_wan_manager_default_route(UNUSED void** state) {
     amxd_object_t* routing_dm = amxd_dm_findf(test_get_dm(), "Routing.Router.1.");
     amxd_object_t* default_route_inst = NULL;
-    char* origin = NULL;
 
     assert_non_null(routing_dm);
 
@@ -330,28 +338,32 @@ void test_wan_manager_default_route(UNUSED void** state) {
     assert_non_null(default_route_inst);
     // Check that we haven't overriden the wrong default route instance
     assert_non_null(amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.12.']"));
-    origin = amxd_object_get_value(cstring_t, default_route_inst, "Origin", NULL);
-    assert_string_equal(origin, "DHCPv4");
-    free(origin);
+    assert_obj_string(default_route_inst, "Origin", "DHCPv4");
+    assert_obj_string(default_route_inst, "GatewayIPAddress", "");
 
     assert_true(set_wan_mode("demo_dslite", amxd_status_ok));
 
     default_route_inst = amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.7.']");
     assert_non_null(default_route_inst);
     assert_non_null(amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.12.']"));
-    origin = amxd_object_get_value(cstring_t, default_route_inst, "Origin", NULL);
-    assert_string_equal(origin, "Static");
-    free(origin);
+    assert_obj_string(default_route_inst, "Origin", "Static");
+    assert_obj_string(default_route_inst, "GatewayIPAddress", "80.16.3.1");
 
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
 
     default_route_inst = amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.2.']");
     assert_non_null(default_route_inst);
     assert_non_null(amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.12.']"));
-    origin = amxd_object_get_value(cstring_t, default_route_inst, "Origin", NULL);
-    assert_string_equal(origin, "IPCP");
-    free(origin);
+    assert_obj_string(default_route_inst, "Origin", "IPCP");
+    assert_obj_string(default_route_inst, "GatewayIPAddress", "");
 
+    assert_true(set_wan_mode("demo_staticmode", amxd_status_ok));
+
+    default_route_inst = amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.2.']");
+    assert_non_null(default_route_inst);
+    assert_non_null(amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.12.']"));
+    assert_obj_string(default_route_inst, "Origin", "Static");
+    assert_obj_string(default_route_inst, "GatewayIPAddress", "80.16.3.1");
 }
 
 void test_wan_manager_set_static_ip(UNUSED void** state) {
@@ -387,7 +399,7 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     assert_non_null(wan_mode_str);
     assert_string_equal("demo_staticmode", wan_mode_str);
 
-    ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static' && IPAddress == '172.16.110.45']");
+    ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static' && IPAddress == '80.16.3.112']");
     assert_non_null(ip_addr);
 
     ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static' && IPAddress == '2a02:1802:94:3200:10:18ff:fe01:cc01']");

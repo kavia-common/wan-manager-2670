@@ -17,6 +17,13 @@
                 "DefaultRouteReference" : "Device.Routing.Router.1.IPv4Forwarding.1.",
                 "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
                 "IPv4Addresses" : {
+                    "ipv4" : {
+                        "Alias" : "ipv4",
+                        "DNSServers" : "8.8.8.8,1.1.1.1",
+                        "DefaultRouter" : "80.16.3.1",
+                        "IPv4Address" : "80.16.3.110",
+                        "SubnetMask" : "255.255.255.0"
+                    }
                 },
                 "IPv4Mode" : "dslite",
                 "IPv4Reference" : "Device.IP.Interface.7.",
