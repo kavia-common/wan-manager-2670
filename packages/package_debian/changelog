@@ -1,3 +1,9 @@
+wan-manager (1.6.9) unstable; urgency=medium
+
+  * - no default router in static mode
+
+ -- SAH bot <sahbot@softathome.com>  Wed, 07 Aug 2024 06:28:58 +0000
+
 wan-manager (1.6.8) unstable; urgency=medium
 
   * Better shutdown script

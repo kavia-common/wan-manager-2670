@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.9 - 2024-08-07(06:28:57 +0000)
+
+### Other
+
+- - no default router in static mode
+
 ## Release v1.6.8 - 2024-07-23(07:59:21 +0000)
 
 ### Fixes
