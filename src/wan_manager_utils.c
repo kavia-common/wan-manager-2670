@@ -449,8 +449,6 @@ amxd_status_t routing_default_route_set_origin(const char* route_path, const cha
 
     if((ip_addr != NULL) && (strcmp(routing_origin, ROUTING_ORIGIN_STATIC) == 0)) {
         amxc_var_add_key(cstring_t, &params, "GatewayIPAddress", ip_addr);
-    } else {
-        amxc_var_add_key(cstring_t, &params, "GatewayIPAddress", "");
     }
 
     rc = component_set_params(route_path, routing_get_context(), &params);

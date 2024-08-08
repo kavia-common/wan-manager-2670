@@ -349,6 +349,8 @@ void test_wan_manager_default_route(UNUSED void** state) {
     assert_obj_string(default_route_inst, "Origin", "Static");
     assert_obj_string(default_route_inst, "GatewayIPAddress", "80.16.3.1");
 
+    amxd_object_set_cstring_t(default_route_inst, "GatewayIPAddress", ""); // On target this is achieved through changing NetModel queries when changing wan modes
+    test_handle_events();
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
 
     default_route_inst = amxd_object_findf(routing_dm, "IPv4Forwarding.[Interface == 'Device.IP.Interface.2.']");
