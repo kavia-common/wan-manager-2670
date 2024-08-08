@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.10 - 2024-08-08(15:48:40 +0000)
+
+### Other
+
+- - no default route in static mode
+
 ## Release v1.6.9 - 2024-08-07(06:28:57 +0000)
 
 ### Other
