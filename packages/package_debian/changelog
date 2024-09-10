@@ -1,3 +1,9 @@
+wan-manager (1.6.11) unstable; urgency=medium
+
+  * [AppArmor] Create AppAmor profile for plugins
+
+ -- SAH bot <sahbot@softathome.com>  Tue, 10 Sep 2024 07:12:10 +0000
+
 wan-manager (1.6.10) unstable; urgency=medium
 
   * - no default route in static mode

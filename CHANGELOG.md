@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.11 - 2024-09-10(07:12:09 +0000)
+
+### Other
+
+- [AppArmor] Create AppAmor profile for plugins
+
 ## Release v1.6.10 - 2024-08-08(15:48:40 +0000)
 
 ### Other
