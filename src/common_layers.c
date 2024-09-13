@@ -207,8 +207,11 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
         rc = component_set_str_param(intf_path, ip_get_context(), "IPv6AddressDelegate", ipv6_address_delegate);
         when_failed_trace(rc, exit, ERROR, "Failed to set IPv6AddressDelegate on '%s'", intf_path);
 
-        rc = nd_interface_setting_toggle(NEIGH_DISCOVERY_INTF, "AutoConfEnable", false);
-        when_failed_trace(rc, exit, ERROR, "Failed to disable AutoConf");
+    } else {
+        if((mode & MASK_IPv6) == IPv6_PPP) {
+            rc = nd_interface_setting_toggle(NEIGH_DISCOVERY_INTF, "AutoConfEnable", true);
+            when_failed_trace(rc, exit, ERROR, "Failed to enable AutoConf");
+        }
     }
 
     if((mode & MASK_IPv6) == IPv6_STATIC) {
@@ -258,8 +261,8 @@ static amxd_status_t ipv6_clear_config(mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "IPv6AddressDelegate", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear %s.IPv6AddressDelegate", intf_path);
 
-    rc = nd_interface_setting_toggle(NEIGH_DISCOVERY_INTF, "AutoConfEnable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable AutoConf");
+    rc = nd_interface_setting_toggle(NEIGH_DISCOVERY_INTF, "AutoConfEnable", false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable AutoConf");
 
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear IPv6Reference LowerLayers");

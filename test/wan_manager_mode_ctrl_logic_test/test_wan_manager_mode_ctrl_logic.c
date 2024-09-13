@@ -528,7 +528,7 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 
     assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
     assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
-    assert_true(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
+    assert_false(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
 
     /* Change wan_mode to demo_ppp6mode */
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
@@ -573,7 +573,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 
     assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
     assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
-    assert_true(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
 
     /* Remove Password for demo_ppp6mode */
     demo_pppmode_obj = amxd_object_findf(wan_manager_dm, "WAN.demo_ppp6mode.Intf.1");
@@ -582,7 +581,11 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "Password", ""), 0);
     test_handle_events();
 
-    /* Change wan_mode to demo_ppp6mode again */
+    /* Remove IPv6AddressDelegate from demo_ppp6mode (IPv6 numbered mode) */
+    assert_int_equal(amxd_object_set_cstring_t(demo_pppmode_obj, "IPv6AddressDelegate", ""), 0);
+    test_handle_events();
+
+    /* Change wan_mode to demo_ppp6mode again (IPv6 numbered mode)*/
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
@@ -595,12 +598,11 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Password"));
 
     assert_int_equal(amxd_object_get_params(ip_inst, &ip_parameters, amxd_dm_access_protected), 0);
-    assert_string_equal("Device.IP.Interface.3.", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
+    assert_string_equal("", GET_CHAR(&ip_parameters, "IPv6AddressDelegate"));
 
     assert_int_equal(amxd_object_get_params(neighbordiscovery_inst, &neighbordiscovery_parameters, amxd_dm_access_protected), 0);
     assert_true(GET_BOOL(&neighbordiscovery_parameters, "Enable"));
-    assert_false(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
-
+    assert_true(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
 
     assert_int_equal(reset_counter, get_reset_counter());
     amxc_var_clean(&neighbordiscovery_parameters);
