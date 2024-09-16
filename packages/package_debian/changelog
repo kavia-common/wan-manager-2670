@@ -1,3 +1,9 @@
+wan-manager (1.6.12) unstable; urgency=medium
+
+  * [IPv6] Autoconf wrongly enabled on WAN side
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 16 Sep 2024 10:29:39 +0000
+
 wan-manager (1.6.11) unstable; urgency=medium
 
   * [AppArmor] Create AppAmor profile for plugins

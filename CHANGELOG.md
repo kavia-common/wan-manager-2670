@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.12 - 2024-09-16(10:29:39 +0000)
+
+### Other
+
+- [IPv6] Autoconf wrongly enabled on WAN side
+
 ## Release v1.6.11 - 2024-09-10(07:12:09 +0000)
 
 ### Other
