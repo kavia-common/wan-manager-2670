@@ -130,6 +130,37 @@ amxb_bus_ctx_t* xpon_get_context(void) {
     return amxb_be_who_has("XPON.");
 }
 
+amxd_status_t ipv6_prefix_lan_toggle(const char* intf_alias, const char* prefix_alias, bool enable) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rc = amxd_status_unknown_error;
+    amxc_string_t lan_prefix_path;
+    amxc_var_t params;
+    char* path = NULL;
+
+    amxc_string_init(&lan_prefix_path, 0);
+    amxc_var_init(&params);
+    amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
+
+    when_str_empty_trace(intf_alias, exit, ERROR, "No lan alias was provided");
+    when_str_empty_trace(prefix_alias, exit, ERROR, "No prefix alias was provided");
+
+    amxc_string_setf(&lan_prefix_path, "IP.Interface.[Alias == '%s'].IPv6Prefix.[Alias == '%s']", intf_alias, prefix_alias);
+    path = component_get_path_instance(ip_get_context(), amxc_string_get(&lan_prefix_path, 0));
+    when_null_trace(path, exit, ERROR, "Could not find the %s prefix of the %s interface in the datamodel of IP-Manager", prefix_alias, intf_alias);
+
+    amxc_var_add_key(bool, &params, "Enable", enable);
+
+    rc = component_set_params(path, ip_get_context(), &params);
+    when_failed_trace(rc, exit, ERROR, "Could not %s the Static IPv6 prefix instance %s", enable ? "enable":"disable", path);
+
+exit:
+    free(path);
+    amxc_var_clean(&params);
+    amxc_string_clean(&lan_prefix_path);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
+}
+
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;

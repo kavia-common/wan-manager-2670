@@ -222,6 +222,9 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
 
         rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, true);
         when_failed_trace(rc, exit, ERROR, "Failed to set the static ipv6 address in '%s'", intf_path);
+
+        rc = ipv6_prefix_lan_toggle(STATIC_CONF_INTF_ALIAS, STATIC_CONF_PREFIX_ALIAS, true);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable the ipv6 prefix on the %s interface", STATIC_CONF_INTF_ALIAS);
     }
 
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", true);
@@ -253,6 +256,9 @@ static amxd_status_t ipv6_clear_config(mode_ctrl_t mode,
 
         rc = ipv6_prefix_toggle(intf_path, ipv6, STATIC_PREFIX_TYPE, false);
         when_failed_trace(rc, exit, ERROR, "Failed to disable the static ipv6 prefix in interface %s", intf_path);
+
+        rc = ipv6_prefix_lan_toggle(STATIC_CONF_INTF_ALIAS, STATIC_CONF_PREFIX_ALIAS, false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable the ipv6 prefix on the %s interface", STATIC_CONF_INTF_ALIAS);
     }
 
     rc = component_set_bool(intf_path, ip_get_context(), "IPv6Enable", false);
