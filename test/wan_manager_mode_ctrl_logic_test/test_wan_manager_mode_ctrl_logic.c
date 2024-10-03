@@ -758,6 +758,7 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* wan_mode = amxd_object_findf(wan_mgr, "WAN.1.");
     amxd_object_t* intf = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_wanmode.Intf.1.");
+    amxd_object_t* ip_static_prefix = amxd_dm_findf(test_get_dm(), "IP.Interface.lan.IPv6Prefix.GUA_STATIC");
     const char* wan_mode_str = NULL;
     const char* ip_mode_str = NULL;
     const char* dns_mode_str = NULL;
@@ -784,6 +785,10 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
 
     test_handle_events();
 
+    assert_non_null(ip_static_prefix);
+
+    assert_false(GET_BOOL(amxd_object_get_param_value(ip_static_prefix, "Enable"), NULL));
+
     assert_false(set_ipv6_mode("static", "wan", amxd_status_ok));
 
     wan_mode_str = object_const_string(wan_mgr, "WANMode");
@@ -798,6 +803,10 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
 
     assert_non_null(dns_mode_str);
     assert_string_equal("Static", dns_mode_str);
+
+    test_handle_events();
+
+    assert_true(GET_BOOL(amxd_object_get_param_value(ip_static_prefix, "Enable"), NULL));
 }
 
 void test_wan_manager_set_bridge_mode(UNUSED void** state) {

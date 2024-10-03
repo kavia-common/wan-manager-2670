@@ -2,6 +2,7 @@
     object IP {
         object Interface[] {
 
+            string Alias;
             bool Enable;
             bool IPv6Enable;
             bool IPv4Enable;
@@ -27,7 +28,7 @@
             }
 
             object IPv6Prefix[]{
-                bool Enable = 0;
+                bool Enable = false;
                 string Alias;
                 string ParentPrefix;
                 string Origin;
@@ -35,6 +36,9 @@
                 string ChildPrefixBits;
                 string ValidLifetime;
                 string PreferredLifetime;
+                string StaticType;
+                bool Autonomous;
+                bool OnLink;
             }
 
             string IPv6AddressDelegate;
@@ -80,6 +84,7 @@
 
     object IP.Interface {
         instance add(3, "lan") {
+            parameter Alias = "lan";
             object IPv4Address {
                 instance add(0,"primary") {
                     parameter Alias = "primary";
@@ -99,6 +104,11 @@
                     parameter Alias = "GUA_IAPD";
                     parameter Enable = 1;
                     parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
+                }
+                instance add("GUA_STATIC"){
+                    parameter Alias = "GUA_STATIC";
+                    parameter Origin = "Static";
+                    parameter StaticType = "Static";
                 }
             }
         }
