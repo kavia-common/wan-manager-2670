@@ -127,7 +127,7 @@ static void nm_query_response_ll_cb(UNUSED const char* sig_name,
                     phys_type, lower_layer);
     when_str_empty(lower_layer, exit);
     free(info->lower_layer);
-    info->lower_layer = strdup(lower_layer);
+    info->lower_layer = trim_final_dot(lower_layer);
     wan_manager_found_ll(phys_type);
 exit:
     SAH_TRACEZ_OUT(ME);

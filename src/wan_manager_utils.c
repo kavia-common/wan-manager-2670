@@ -706,3 +706,25 @@ const char* object_const_string(amxd_object_t* object, const char* name) {
     const char* value = GET_CHAR(amxd_object_get_param_value(object, name), NULL);
     return value != NULL ? value : "";
 }
+
+static int is_dot(int c) {
+    return (c == '.') ? 1 : 0;
+}
+
+/**
+ * @brief Function to trim the trailing dot from a char string if there is one
+ * @param path char string containing the path that should have the dot removed
+ * @return returns pointer to a string buffer containing the path string without a trailing dot
+ * @note This function allocates memory to store the trimmed path. The memory needs to be freed using "free" if not needed anymore
+ */
+char* trim_final_dot(const char* path) {
+    amxc_string_t trimmed_path;
+    amxc_string_init(&trimmed_path, 0);
+
+    when_str_empty_trace(path, exit, ERROR, "No path given to trim");
+
+    amxc_string_set(&trimmed_path, path);
+    amxc_string_trimr(&trimmed_path, is_dot);
+exit:
+    return amxc_string_take_buffer(&trimmed_path);
+}

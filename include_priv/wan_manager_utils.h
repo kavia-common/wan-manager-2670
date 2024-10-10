@@ -127,6 +127,7 @@ char* create_neighbor_discovery_path(const char* intf_alias);
 amxd_status_t nd_interface_setting_toggle(const char* intf_alias, const char* param, bool enable);
 
 const char* object_const_string(amxd_object_t* object, const char* name);
+char* trim_final_dot(const char* path);
 
 #ifdef __cplusplus
 }
