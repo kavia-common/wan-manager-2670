@@ -1,3 +1,9 @@
+wan-manager (1.6.14) unstable; urgency=medium
+
+  * [wanmannager] remove . from filter in wanmanager
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 14 Oct 2024 09:16:16 +0000
+
 wan-manager (1.6.13) unstable; urgency=medium
 
   * [IPv6 static] Static LAN prefix not supported

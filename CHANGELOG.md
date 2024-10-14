@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.14 - 2024-10-14(09:16:15 +0000)
+
+### Other
+
+- [wanmannager] remove . from filter in wanmanager
+
 ## Release v1.6.13 - 2024-10-10(10:17:09 +0000)
 
 ### Other
