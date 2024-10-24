@@ -442,14 +442,15 @@ amxd_status_t _interface_destroy(amxd_object_t* intf,
                                  UNUSED void* priv) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_unknown_error;
-    netmodel_query_t* query = NULL;
+    intf_isup_queries_t* nm_queries = NULL;
 
     when_false_trace(reason == action_object_destroy, exit, NOTICE, "Wrong reason, expected action_object_destroy(%d) got %d", action_object_destroy, reason);
     when_null_trace(intf, exit, ERROR, "Interface can not be NULL");
     when_false_status(intf->type == amxd_object_instance, exit, rv = amxd_status_ok);
 
-    query = (netmodel_query_t*) intf->priv;
-    netmodel_closeQuery(query);
+    nm_queries = (intf_isup_queries_t*) intf->priv;
+    when_null_status(nm_queries, exit, rv = amxd_status_ok);
+    intf_isup_queries_clean(&nm_queries);
     intf->priv = NULL;
     rv = amxd_status_ok;
 

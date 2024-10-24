@@ -103,6 +103,7 @@ void nm_query_ll_init(void);
 void nm_query_ll_cleanup(void);
 int nm_query_ll_add(const char* name);
 const char* nm_query_get_lower_layer(const char* name);
+void intf_isup_queries_clean(intf_isup_queries_t** nm_queries);
 int nm_query_mode_active(void);
 void nm_close_sensing_queries(void);
 nm_query_ll_info_t* get_nm_query_info(const char* physical_type);

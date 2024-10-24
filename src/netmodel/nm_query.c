@@ -288,7 +288,7 @@ exit:
     return lower_layer;
 }
 
-static void intf_isup_queries_clean(intf_isup_queries_t** nm_queries) {
+void intf_isup_queries_clean(intf_isup_queries_t** nm_queries) {
     SAH_TRACEZ_IN(ME);
     if((nm_queries == NULL) || (*nm_queries == NULL)) {
         goto exit;
