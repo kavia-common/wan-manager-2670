@@ -82,5 +82,7 @@ void test_wan_manager_autosensing_init(void** state);
 void test_wan_manager_autosensing_set_mode(void** state);
 void test_wan_manager_sensing_query(void** state);
 void test_wan_manager_sensing_toggle(void** state);
+void test_query_double_call_cleanup(void** state);
+void test_query_intf_del_cleanup(void** state);
 
 #endif //__TEST_WAN_MANAGER_AUTOSENSING_H__

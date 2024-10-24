@@ -73,6 +73,7 @@
 #include <amxm/amxm.h>
 
 #include "dm_wan_mode.h"
+#include "netmodel/nm_query.h"
 #include "test_wan_manager_autosensing.h"
 #include "test_utils.h"
 #include "reset_mock.h"
@@ -205,4 +206,40 @@ void test_wan_manager_sensing_toggle(UNUSED void** state) {
     amxc_var_delete(&data);
 
     amxc_var_delete(&ret);
+}
+
+void test_query_double_call_cleanup(UNUSED void** state) {
+    amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
+    intf_isup_queries_t* nm_queries = NULL;
+
+    // Call once to create the queries
+    nm_query_mode_active();
+    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+    assert_non_null(nm_queries);
+    assert_non_null(nm_queries->nm_ipv4_up_query);
+    assert_non_null(nm_queries->nm_ipv6_up_query);
+
+    // Call again to make sure the old queries are cleanup
+    nm_query_mode_active();
+    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+    assert_non_null(nm_queries);
+    assert_non_null(nm_queries->nm_ipv4_up_query);
+    assert_non_null(nm_queries->nm_ipv6_up_query);
+
+    // This should not generate a memory leak if correctly cleaned
+}
+
+void test_query_intf_del_cleanup(UNUSED void** state) {
+    amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
+    intf_isup_queries_t* nm_queries = NULL;
+
+    // Call once to create the queries
+    nm_query_mode_active();
+    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+    assert_non_null(nm_queries);
+    assert_non_null(nm_queries->nm_ipv4_up_query);
+    assert_non_null(nm_queries->nm_ipv6_up_query);
+
+    // Call again to make sure the queries are cleanup
+    amxd_object_delete(&intf_obj);
 }

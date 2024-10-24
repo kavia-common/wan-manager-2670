@@ -75,7 +75,9 @@ int main(void) {
         cmocka_unit_test(test_wan_manager_autosensing_init),
         cmocka_unit_test(test_wan_manager_autosensing_set_mode),
         cmocka_unit_test(test_wan_manager_sensing_query),
-        cmocka_unit_test(test_wan_manager_sensing_toggle)
+        cmocka_unit_test(test_wan_manager_sensing_toggle),
+        cmocka_unit_test(test_query_double_call_cleanup),
+        cmocka_unit_test(test_query_intf_del_cleanup)
     };
     return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
 }
