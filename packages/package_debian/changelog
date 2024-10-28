@@ -1,3 +1,10 @@
+wan-manager (1.6.15) unstable; urgency=medium
+
+  * - Static wan deletion from datamodel crashes in libnetmodel
+  * - Static wan deletion from datamodel crashes in libnetmodel
+
+ -- SAH bot <sahbot@softathome.com>  Mon, 28 Oct 2024 16:37:17 +0000
+
 wan-manager (1.6.14) unstable; urgency=medium
 
   * [wanmannager] remove . from filter in wanmanager

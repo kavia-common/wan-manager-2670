@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.6.15 - 2024-10-28(16:37:15 +0000)
+
+### Other
+
+- - Static wan deletion from datamodel crashes in libnetmodel
+- - Static wan deletion from datamodel crashes in libnetmodel
+
 ## Release v1.6.14 - 2024-10-14(09:16:15 +0000)
 
 ### Other
