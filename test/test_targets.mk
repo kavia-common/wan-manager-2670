@@ -69,6 +69,9 @@ $(OBJDIR)/%.o: $(TEST_UTILS_SRC_DIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS)  -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
+$(OBJDIR)/%.o: $(NETWORK_SELECTOR_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/:
 	mkdir -p $@

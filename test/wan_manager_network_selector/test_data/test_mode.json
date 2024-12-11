@@ -1,9 +1,9 @@
 {
     "Alias" : "test_mode",
     "EnableSensing" : true,
-    "SensingPriority": 0,
     "Origin" : "user",
     "PhysicalType" : "Ethernet",
-    "PhysicalReference" : "",
-    "Status" : "Disabled"
+    "Status" : "Disabled",
+    "SFPType" : "",
+    "SupportedSFPType" : ""
 }

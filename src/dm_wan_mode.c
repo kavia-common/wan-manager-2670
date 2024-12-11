@@ -74,6 +74,7 @@
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 #include <amxb/amxb.h>
+#include <amxm/amxm.h>
 
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
@@ -86,6 +87,7 @@
 #include "upstream_intf.h"
 #include "ethernet/ethernet.h"
 #include "bridge_mode.h"
+#include "network-selector/network_selector.h"
 
 #define ME "wan-man"
 
@@ -161,12 +163,38 @@ exit:
 
 void wan_mode_init(void) {
     SAH_TRACEZ_IN(ME);
+    amxc_var_t lcontrollers;
+    amxc_string_t mod_path;
+    amxc_var_init(&lcontrollers);
+    amxc_string_init(&mod_path, 0);
+    int rv = -1;
+    const char* name = NULL;
+    amxm_shared_object_t* module_so = NULL;
 
     wan_manager = amxd_dm_findf(wan_get_dm(), "WANManager");
     when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
+    amxd_object_t* wanm_obj = get_wan_manager_obj();
+    when_null_trace(wanm_obj, exit, ERROR, "Failed to get the WANManager object");
+    amxo_parser_t* parser = wan_get_parser();
+    const amxc_var_t* controllers = amxd_object_get_param_value(wanm_obj, "ExtensionModules");
+    when_null_trace(controllers, exit, ERROR, "Failed to get the ExtensionModules");
+    const char* const mod_dir = GET_CHAR(&parser->config, "external-mod-dir");
+    when_str_empty_trace(mod_dir, exit, ERROR, "'external-mod-dir' is NULL or empty");
+
+    amxc_var_convert(&lcontrollers, controllers, AMXC_VAR_ID_LIST);
+    amxc_var_for_each(controller, &lcontrollers) {
+        name = GET_CHAR(controller, NULL);
+        when_null_trace(name, exit, ERROR, "Failed to get controller name, NULL value return");
+        amxc_string_setf(&mod_path, "%s/%s.so", mod_dir, name);
+
+        rv = amxm_so_open(&module_so, name, amxc_string_get(&mod_path, 0));
+        SAH_TRACEZ_INFO(ME, "Loading controller '%s' %s", name, rv ? "failed" : "successful");
+        when_failed(rv, exit);
+    }
 exit:
+    amxc_string_clean(&mod_path);
+    amxc_var_clean(&lcontrollers);
     SAH_TRACEZ_OUT(ME);
-    return;
 }
 
 amxd_object_t* get_wan_manager_obj(void) {

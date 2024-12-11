@@ -1,6 +1,7 @@
 {
     "ApplyAtNextBoot" : false,
     "Controller" : "mod-autosensing",
+    "ExtensionModules" : "mod-network-selector",
     "OperationMode" : "Manual",
     "SensingPolicy" : "AtBoot",
     "SensingTimeout" : 8,
@@ -11,111 +12,118 @@
             "Alias" : "demo_wanmode",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status" : "Disabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_vlanmode",
             "DNSMode" : "Static",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status" : "Disabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "test_mode",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status" : "Enabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Enabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_pppmode",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "GPON",
             "PhysicalReference" : "Device.XPON.ONU.1.EthernetUNI.1.",
-            "Status" : "Disabled"
+            "PhysicalType" : "GPON",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_ppp6mode",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "GPON",
             "PhysicalReference" : "Device.XPON.ONU.1.EthernetUNI.1.",
-            "Status" : "Disabled"
+            "PhysicalType" : "GPON",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_dslite",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status" : "Disabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_link",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType": "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status": "Disabled"
-        },
-        {
-            "Alias" : "demo_cellular",
-            "DNSMode" : "Dynamic",
-            "EnableSensing" : true,
-            "SensingPriority": 0,
-            "IPv6DNSMode" : "Dynamic",
-            "Origin" : "user",
-            "PhysicalType" : "",
-            "PhysicalReference" : "Device.Cellular.Interface.1.",
-            "Status" : "Disabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_SFP",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "SFP",
             "PhysicalReference" : "",
-            "Status" : "Disabled"
+            "PhysicalType" : "SFP",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         },
         {
             "Alias" : "demo_test",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,
-            "SensingPriority": 0,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
             "PhysicalReference" : "Device.Ethernet.Interface.1",
-            "Status" : "Disabled"
+            "PhysicalType" : "Ethernet",
+            "SFPType" : "",
+            "SensingPriority" : 0,
+            "Status" : "Disabled",
+            "SupportedSFPTypes" : ""
         }
     ]
 }

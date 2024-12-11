@@ -1,8 +1,10 @@
 %config {
     name = "wan-manager";
     import-dbg = false;
+    extension_modules = "";
 }
 
+include "../../odl/extensions";
 include "../../odl/${name}_definition.odl";
 include "../../odl/${name}_WAN_definition.odl";
 include "../../odl/${name}_WAN_Intf_definition.odl";

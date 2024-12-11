@@ -5,6 +5,7 @@
 %config {
     name = "wan-manager";
     import-dbg = false;
+    extension_modules = "";
 
     vendor_prefix = {
         "dns" = "X_PRPL-COM_"
@@ -68,6 +69,7 @@
     %global ip_intf_mgmt = "Device.IP.Interface.11.";
 }
 #include "global_ip_interfaces.odl";
+#include "extensions";
 
 import "${name}.so" as "${name}";
 import "mod-dmext.so";

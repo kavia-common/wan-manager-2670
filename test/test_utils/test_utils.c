@@ -110,6 +110,7 @@ static const char* odl_bridging_mock = "../mocks/mock_bridging.odl";
 static const char* odl_dhcp_mock = "../mocks/mock_dhcp.odl";
 static const char* odl_dslite_mock = "../mocks/mock_dslite.odl";
 static const char* odl_pcp_mock = "../mocks/mock_pcp.odl";
+static const char* odl_mod_mock = "../mocks/mod_mock.odl";
 
 static amxd_status_t _AddPort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_function_t* func, amxc_var_t* args, UNUSED amxc_var_t* ret) {
     amxd_status_t status = amxd_status_unknown_error;
@@ -214,6 +215,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_dhcp_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_dslite_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_pcp_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_mod_mock, root_obj), 0);
     // Bridging rpc mocks
     assert_int_equal(amxo_resolver_ftab_add(&parser, "AddPort", AMXO_FUNC(_AddPort)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "DisablePort", AMXO_FUNC(_DisablePort)), 0);

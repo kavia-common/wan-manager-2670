@@ -86,6 +86,7 @@
 #include "netmodel/nm_query.h"
 #include "wan_manager_utils.h"
 #include "upstream_intf.h"
+#include "network-selector/network_selector.h"
 
 #define ME "wan-man"
 
@@ -121,6 +122,7 @@ int _wan_manager_main(int reason,
         netmodel_initialize();
         wan_mode_init();
         autosensing_init();
+        mod_network_selector_init();
         break;
     case 1:
         nm_close_sensing_queries();

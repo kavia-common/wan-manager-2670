@@ -74,7 +74,7 @@
             * Status parameter to indicate the WAN Mode is active, in error state or disabled
             * @version 1.0
             */
-            %read-only string Status {
+            %persistent %read-only string Status {
                 on action validate call check_enum ["Enabled", "Disabled", "Error"];
                 default "Disabled";
             }
@@ -102,6 +102,32 @@
                 default "Dynamic";
                 userflags %upc;
             }
+
+            /**
+            * Indicates the SFP type that is detected.
+            * Enumeration of :
+            *   XGSPON
+            *   GPON
+            *   AE
+            *   10G-T
+            *   Defaults to empty string indicates no SFP inserted
+            */
+            %persistent %read-only string SFPType {
+                default "";
+            }
+
+            /**
+             * Only SFP types that are added to this comma separated list can be configured
+             * in the SFPType parameter.
+             * Supported SFPType could be :
+             *   XGSPON
+             *   GPON
+             *   AE
+             *   10G-T
+             */
+            %persistent %protected %read-only string SupportedSFPTypes {
+                default "";
+            }
         }
     }
 }
@@ -116,6 +142,8 @@
         filter 'path matches "WANManager\.WAN\.[0-9]+\.$" && (
             (contains("parameters.SensingPriority"))
         )';
+    on event "dm:object-changed" call update_network_selector
+        filter 'path matches "WANManager." and contains("parameters.SFPType")';
     on event "dm:instance-added" call dm_wan_manager_wan_added
         filter 'path matches "WANManager\.WAN\.$"';
 }

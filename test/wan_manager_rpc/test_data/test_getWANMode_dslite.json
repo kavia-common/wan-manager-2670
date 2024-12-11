@@ -9,6 +9,7 @@
         "EnableSensing" : true,
         "SensingPriority": 0,
         "IPv6DNSMode" : "Dynamic",
+        "SFPType" : "",
         "Interfaces" : {
             "wan" : {
                 "Alias" : "wan",

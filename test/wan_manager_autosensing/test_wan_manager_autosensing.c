@@ -81,8 +81,6 @@
 
 #include "autosensing/autosensing.h"
 
-static const char* odl_mod_mock = "../mocks/mod_mock.odl";
-
 /**
  * Tests the init for autosensing
  * Expectations:
@@ -91,20 +89,9 @@ static const char* odl_mod_mock = "../mocks/mod_mock.odl";
  *      * After calling the init function the core function should be loaded
  */
 void test_wan_manager_autosensing_init(UNUSED void** state) {
-    amxd_object_t* root_obj = amxd_dm_get_root(test_get_dm());
-    assert_non_null(root_obj);
-
-    // If no mod path is loaded, the init should fail because no module can be found
-    assert_int_equal(autosensing_init(), -1);
-
-    // Set the mod path, now the init should work
-    assert_int_equal(amxo_parser_parse_file(test_get_parser(), odl_mod_mock, root_obj), 0);
-    assert_int_equal(autosensing_init(), 0);
-
     // Check if all local function are loaded
     assert_true(amxm_has_function("self", MOD_DM_MNGR, "set-mode"));
     assert_true(amxm_has_function("self", MOD_DM_MNGR, "isup-sensing-stop"));
-
 }
 
 /**
@@ -119,6 +106,10 @@ void test_wan_manager_autosensing_init(UNUSED void** state) {
 void test_wan_manager_autosensing_set_mode(UNUSED void** state) {
     amxc_var_t* data = NULL;
     amxc_var_t* ret = NULL;
+    amxd_object_t* root_obj = amxd_dm_get_root(test_get_dm());
+    assert_non_null(root_obj);
+    wan_mode_init();
+
     amxd_object_t* wanm_obj = get_wan_manager_obj();
     amxd_object_t* intf_obj = amxd_object_findf(wanm_obj, "WAN.test_mode.Intf.1.");
     char* wan_mode = NULL;

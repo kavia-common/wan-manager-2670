@@ -11,6 +11,7 @@ NETMODEL_SRCDIR = $(realpath ../../src/netmodel)
 DNS_INT_SRC = $(realpath ../../src/dns)
 DSLITE_SRCDIR = $(realpath ../../src/dslite)
 LINK_SRCDIR = $(realpath ../../src/link)
+NETWORK_SELECTOR_SRCDIR = $(realpath ../../src/network-selector)
 
 OBJDIR = $(realpath ../../output/$(MACHINE)/coverage)
 INCDIR = $(realpath ../../include ../../include_priv ../include ../mocks ../test_utils)
@@ -27,7 +28,7 @@ SOURCES += $(wildcard $(DNS_INT_SRC)/*.c)
 SOURCES += $(wildcard $(DSLITE_SRCDIR)/*.c)
 SOURCES += $(wildcard $(STATICC_SRCDIR)/*.c)
 SOURCES += $(wildcard $(LINK_SRCDIR)/*.c)
-
+SOURCES += $(wildcard $(NETWORK_SELECTOR_SRCDIR)/*.c)
 
 CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
           --std=gnu99 -g3 -Wmissing-declarations \

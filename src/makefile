@@ -19,6 +19,7 @@ ETHERNET_INT_SRC = ./ethernet
 NETMODEL_INT_SRC = ./netmodel
 DSLITE_INT_SRC = ./dslite
 LINK_INT_SRC = ./link
+NETWORK_SELECTOR_SRC = ./network-selector
 
 INCDIR_PRIV = ../include_priv
 INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
@@ -36,7 +37,8 @@ SRC = $(wildcard $(SRCDIR)/*.c 				\
  				 $(ETHERNET_INT_SRC)/*.c \
 				 $(DSLITE_INT_SRC)/*.c \
 				 $(DNS_INT_SRC)/*.c \
-				 $(LINK_INT_SRC)/*.c)
+				 $(LINK_INT_SRC)/*.c \
+				 $(NETWORK_SELECTOR_SRC)/*.c)
 
 
 
@@ -109,6 +111,10 @@ $(OBJDIR)/%.o: $(DSLITE_INT_SRC)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(LINK_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(NETWORK_SELECTOR_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

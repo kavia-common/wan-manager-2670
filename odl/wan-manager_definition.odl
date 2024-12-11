@@ -10,6 +10,15 @@
         %read-only %protected csv_string SupportedControllers = "mod-autosensing";
 
         /**
+        * Extension modules that are added to this comma separated list can be
+        * loaded by WANManager
+        * The name used should be the name of the so file without the extension.
+        *
+        * @version 1.0
+        */
+        %protected %read-only csv_string ExtensionModules = "${extension_modules}";
+
+        /**
         * Configures the module that should be used for autosensing.
         * Can only be one of the supported controllers configured in SupportedControllers
         *
