@@ -30,6 +30,24 @@
         }
 
         /**
+         * Enable WAN mode. Only succeeds when the WANMode has a different Physical Type as the already enabled WANModes.
+         * @param WANMode - list of WANModes to enable
+         * @param Autosensing - Change requested by WANAutosensing
+         * @return - true on success
+         * @version 1.0
+         */
+        bool WANModeEnable(%in %mandatory string WANMode, %in bool Autosensing);
+
+        /**
+         * Disable WAN mode
+         * @param WANMode - list of WANModes to disable
+         * @param Autosensing - Change requested by WANAutosensing
+         * @return - true on success
+         * @version 1.0
+         */
+        bool WANModeDisable(%in %mandatory string WANMode, %in bool Autosensing);
+
+        /**
          * Set WAN mode
          * @param WANMode - value to which to change WANMode
          * @param Autosensing - Change requested by WANAutosensing
@@ -84,6 +102,7 @@
          */
         %persistent string WANMode {
             on action validate call check_maximum_length 64;
+            on action validate call check_wan_mode;
             default "";
             userflags %usersetting;
         }

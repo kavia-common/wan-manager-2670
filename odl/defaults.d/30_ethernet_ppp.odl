@@ -17,8 +17,8 @@
             parameter VlanPriority = 0;
             parameter IPv4Reference = "${ip_intf_wan}";
             parameter IPv6Reference = "${ip_intf_wan6}";
-            parameter NeighborDiscoveryReference = "Device.NeighborDiscovery.InterfaceSetting.1.";
-            parameter PPPv4Reference = "Device.PPP.Interface.1.";
+            parameter NeighborDiscoveryReference = "Device.NeighborDiscovery.InterfaceSetting.1";
+            parameter PPPv4Reference = "Device.PPP.Interface.1";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
             parameter DeferredIPv6Instances = "${ip_intf_lan},${ip_intf_guest},${ip_intf_lcm}";
             parameter UserName = "softathome";

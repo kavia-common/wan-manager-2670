@@ -80,7 +80,7 @@
 
 #define ME "dslite-ctrl"
 
-// TODO SMAES: by default DSLite.Enable is false
+#define DSLITE_DEVICE_PATH DEVICE_PATH DSLITE_PATH
 
 static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
                                    amxc_var_t* const parameters) {
@@ -107,6 +107,8 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     when_str_empty_trace(pcp_path, exit, ERROR, "Failed to get PCP client path");
 
     // Enable DSLite
+    rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite");
     rc = component_set_enable(dslite_path, dslite_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite interface '%s'", dslite_path);
 

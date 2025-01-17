@@ -194,6 +194,7 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
     const char* deferred_ipv6_instances = GET_CHAR(parameters, "DeferredIPv6Instances");
     const char* ipv6_address_delegate = GET_CHAR(parameters, "IPv6AddressDelegate");
 
+    when_str_empty_trace(intf_path, exit, ERROR, "Empty IP interface set");
     if(str_empty(lower_layer)) {
         lower_layer = GET_CHAR(parameters, "LowerLayer");
     }
@@ -220,7 +221,7 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
         rc = ipv6_prefix_toggle(intf_path, ipv6, STATIC_PREFIX_TYPE, true);
         when_failed_trace(rc, exit, ERROR, "Failed to set the static ipv6 prefix in interface %s", intf_path);
 
-        rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, true);
+        rc = ipv6_addr_toggle(intf_path, ipv6, true);
         when_failed_trace(rc, exit, ERROR, "Failed to set the static ipv6 address in '%s'", intf_path);
 
         rc = ipv6_prefix_lan_toggle(STATIC_CONF_INTF_ALIAS, STATIC_CONF_PREFIX_ALIAS, true);
@@ -252,7 +253,7 @@ static amxd_status_t ipv6_clear_config(mode_ctrl_t mode,
 
     if((mode & MASK_IPv6) == IPv6_STATIC) {
         amxc_var_t* ipv6 = GET_ARG(parameters, "ipv6");
-        rc = ipv6_addr_toggle(intf_path, ipv6, STATIC_ADDRESSING_TYPE, false);
+        rc = ipv6_addr_toggle(intf_path, ipv6, false);
         when_failed_trace(rc, exit, ERROR, "Failed to unset the static ipv6 address in '%s'", intf_path);
 
         rc = ipv6_prefix_toggle(intf_path, ipv6, STATIC_PREFIX_TYPE, false);

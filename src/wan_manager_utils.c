@@ -82,6 +82,8 @@
 #include "wan_manager_utils.h"
 #define ME "wan-man"
 
+#define SUPPORT_OLD_PATH_IMPL
+
 bool ipversion_valid(const ipversion_t ip_version) {
     return ip_version != IPvInvalid && (ip_version == IPv4 || ip_version == IPv6);
 }
@@ -163,6 +165,8 @@ const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t i
 
     path = GET_CHAR(parameters, (ip_version == IPv4 ? PPPV4_REFERENCE_PATH : PPPV6_REFERENCE_PATH));
     #ifdef SUPPORT_OLD_PATH_IMPL
+    // This code is considered deprecated and should not be changed.
+    // Use the PPP Reference path instead
     if(str_empty(path)) {
         path = "Device.PPP.Interface.1.";
     }
@@ -186,6 +190,8 @@ const char* get_nd_path(const amxc_var_t* const parameters) {
     const char* path = GET_CHAR(parameters, NEIGH_REFERENCE_PATH);
 
     #ifdef SUPPORT_OLD_PATH_IMPL
+    // This code is considered deprecated and should not be changed.
+    // Use the NeighborDiscovery reference path instead
     if(str_empty(path)) {
         path = "Device.NeighborDiscovery.InterfaceSetting.1.";
     }
@@ -198,6 +204,8 @@ const char* get_dslite_path(const amxc_var_t* const parameters) {
     const char* path = GET_CHAR(parameters, DSLITE_REFERENCE_PATH);
 
     #ifdef SUPPORT_OLD_PATH_IMPL
+    // This code is considered deprecated and should not be changed.
+    // Use the DSLite Reference path instead
     if(str_empty(path)) {
         path = "Device.DSLite.InterfaceSetting.1.";
     }
@@ -210,6 +218,8 @@ const char* get_pcp_path(const amxc_var_t* const parameters) {
     const char* path = GET_CHAR(parameters, PCP_REFERENCE_PATH);
 
     #ifdef SUPPORT_OLD_PATH_IMPL
+    // This code is considered deprecated and should not be changed.
+    // Use the PCP Reference path instead
     if(str_empty(path)) {
         path = "Device.PCP.Client.1.";
     }
@@ -249,7 +259,7 @@ exit:
     return rc;
 }
 
-amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable) {
+amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     amxc_var_t params;
@@ -264,14 +274,12 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
 
     when_str_empty_trace(intf_path, exit, ERROR, "Interface path for the ipv6 address is empty");
-    when_str_empty_trace(addr_type, exit, ERROR, "Addressing type of the ipv6 address is empty");
 
     amxc_string_setf(&addr_path, "%sIPv6Address.[Alias == '%s']", intf_path, alias);
     path = component_get_path_instance(ip_get_context(), amxc_string_get(&addr_path, 0));
     when_null_trace(path, exit, ERROR, "Could not update the static IPv6 instance %s to IP-Manager", alias);
 
     if(enable) {
-
         //Setting up the new ipv6 address
         amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, ip_param));
         amxc_var_add_key(bool, &params, "Enable", false);
@@ -292,7 +300,6 @@ amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
         rc = component_set_enable(path, ip_get_context(), false);
         when_failed_trace(rc, exit, ERROR, "Could not disable the %s IPv6 address.", gua);
     } else {
-
         //Setting up the empty ipv6 address
         amxc_var_add_key(cstring_t, &params, "IPAddress", "");
         amxc_var_add_key(bool, &params, "Enable", false);
@@ -561,6 +568,7 @@ amxd_status_t routing_default_route_set_origin(const char* route_path, const cha
 
     when_str_empty_trace(route_path, exit, ERROR, "No forwarding instance specified for default route");
     when_str_empty_trace(routing_origin, exit, ERROR, "Routing Origin parameter empty");
+    when_str_empty_trace(ip_path, exit, ERROR, "IP Path parameter empty");
 
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &params, "Origin", routing_origin);
@@ -647,22 +655,6 @@ exit:
     amxc_string_clean(&alias);
     amxc_string_clean(&route_path);
     free(path);
-    SAH_TRACEZ_OUT(ME);
-    return rc;
-}
-
-amxd_status_t nd_interface_setting_toggle(const char* intf_alias, const char* param, bool enable) {
-    SAH_TRACEZ_IN(ME);
-    char* nd_path = NULL;
-    amxd_status_t rc = amxd_status_ok;
-
-    nd_path = create_neighbor_discovery_path(intf_alias);
-
-    rc = component_set_bool(nd_path, neighbor_discovery_get_context(), param, enable);
-    when_failed_trace(rc, exit, ERROR, "Could not %s '%s' in '%s'", enable ? "enable" : "disable", param, nd_path);
-
-exit:
-    free(nd_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

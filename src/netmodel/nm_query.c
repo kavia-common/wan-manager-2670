@@ -311,59 +311,93 @@ exit:
 int nm_query_mode_active(void) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
-    amxd_object_t* wan_mode_obj = NULL;
-    wan_mode_obj = get_current_wan_mode();
-    when_null_trace(wan_mode_obj, exit, ERROR, "Failed to start query, no wan mode found");
+    const char* wan_mode_str = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
 
-    amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
-        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        amxc_var_t data;
-        intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) calloc(1, sizeof(intf_isup_queries_t));
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-        amxc_var_init(&data);
-        amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
+    amxc_string_set(&current_wan_modes_str, wan_mode_str);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(mode_it, &current_list) {
+        // Loop over all active WANModes
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(mode_it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        when_null_trace(wan_mode_obj, exit, ERROR, "Failed to start query, no wan mode found");
 
-        when_null_trace(interface, exit_loop, ERROR, "No interface found to open query");
-        when_null_trace(nm_queries, exit_loop, ERROR, "Failed to allocate memory for queries");
-        amxd_object_get_params(interface, &data, amxd_dm_access_protected);
+        amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
+            // Loop over all Intf objects of an active WANMode
+            amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+            amxc_var_t data;
+            intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) calloc(1, sizeof(intf_isup_queries_t));
 
-        SAH_TRACEZ_INFO(ME, "Adding queries for '%s'", interface->name);
-        nm_queries->nm_ipv4_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, "IPv4Reference"), "wan-manager", "ipv4-up", netmodel_traverse_this, nm_query_mode_active_cb, interface);
-        nm_queries->nm_ipv6_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, "IPv6Reference"), "wan-manager", "ipv6-up", netmodel_traverse_this, nm_query_mode6_active_cb, interface);
-        if(interface->priv != NULL) {
-            SAH_TRACEZ_ERROR(ME, "Interface already has a query, closing old query");
-            intf_isup_queries_t* old_nm_queries = (intf_isup_queries_t*) interface->priv;
-            intf_isup_queries_clean(&old_nm_queries);
-        }
-        interface->priv = nm_queries;
+            amxc_var_init(&data);
+            amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
+
+            when_null_trace(interface, exit_loop, ERROR, "No interface found to open query");
+            when_null_trace(nm_queries, exit_loop, ERROR, "Failed to allocate memory for queries");
+            amxd_object_get_params(interface, &data, amxd_dm_access_protected);
+
+            SAH_TRACEZ_INFO(ME, "Adding queries for '%s'", interface->name);
+            nm_queries->nm_ipv4_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, IPV4_REFERENCE_PATH), "wan-manager", "ipv4-up", netmodel_traverse_this, nm_query_mode_active_cb, interface);
+            nm_queries->nm_ipv6_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, IPV6_REFERENCE_PATH), "wan-manager", "ipv6-up", netmodel_traverse_this, nm_query_mode6_active_cb, interface);
+            if((nm_queries->nm_ipv4_up_query == NULL) || (nm_queries->nm_ipv6_up_query == NULL)) {
+                SAH_TRACEZ_ERROR(ME, "Could not open IP up queries");
+                intf_isup_queries_clean(&nm_queries);
+            }
+            if(interface->priv != NULL) {
+                SAH_TRACEZ_ERROR(ME, "Interface already has a query, closing old query");
+                intf_isup_queries_t* old_nm_queries = (intf_isup_queries_t*) interface->priv;
+                intf_isup_queries_clean(&old_nm_queries);
+            }
+            interface->priv = nm_queries;
 exit_loop:
-        amxc_var_clean(&data);
+            amxc_var_clean(&data);
+        }
     }
     rv = 0;
 
 exit:
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
 
 void nm_close_sensing_queries(void) {
     SAH_TRACEZ_IN(ME);
-    amxd_object_t* wan_mode_obj = get_current_wan_mode();
-    SAH_TRACEZ_INFO(ME, "Stopping all queries on current wan mode");
-    when_null_trace(wan_mode_obj, exit, ERROR, "Failed to stop queries, no wan mode found");
+    const char* wan_mode_str = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
 
-    amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
-        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-        const char* intf_name = object_const_string(interface, "Name");
-        intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) interface->priv;
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-        interface->priv = NULL;
-        SAH_TRACEZ_INFO(ME, "Clearing queries from '%s'", interface->name);
-        netmodel_clearFlag(intf_name, LOGICAL_UP_FLAGS, NULL, netmodel_traverse_this);
-        intf_isup_queries_clean(&nm_queries);
+    SAH_TRACEZ_INFO(ME, "Stopping all queries on current wan modes");
+    when_str_empty_trace(wan_mode_str, exit, ERROR, "Failed to stop queries, no wan modes found");
+
+    amxc_string_set(&current_wan_modes_str, wan_mode_str);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(mode_it, &current_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(mode_it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get current WANMode object");
+        amxd_object_for_each(instance, intf_it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
+            amxd_object_t* interface = amxc_container_of(intf_it, amxd_object_t, it);
+            const char* intf_name = object_const_string(interface, "Name");
+            intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) interface->priv;
+
+            interface->priv = NULL;
+            SAH_TRACEZ_INFO(ME, "Clearing queries from '%s'", interface->name);
+            netmodel_clearFlag(intf_name, LOGICAL_UP_FLAGS, NULL, netmodel_traverse_this);
+            intf_isup_queries_clean(&nm_queries);
+        }
     }
 
 exit:
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
     SAH_TRACEZ_OUT(ME);
     return;
 }

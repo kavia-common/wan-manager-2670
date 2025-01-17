@@ -238,7 +238,6 @@ int mod_autosensing_start(void) {
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
     amxd_object_get_params(wanm_obj, &data, amxd_dm_access_protected);
-    sense_current_mode = amxd_object_get_value(bool, get_current_wan_mode(), "EnableSensing", NULL);
     amxc_var_add_key(bool, &data, "sense_current_mode", sense_current_mode);
     modes = amxc_var_add_key(amxc_llist_t, &data, "modes", NULL);
     amxd_object_for_each(instance, it, wan_obj) {

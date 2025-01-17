@@ -157,6 +157,7 @@
             * @version 1.0
             */
             %persistent string PPPv4Reference{
+                on action validate call matches_regexp "^$|^(Device\.)?PPP\.Interface\..+?";
                 default "";
             }
 
@@ -165,6 +166,7 @@
             * @version 1.0
             */
             %persistent string PPPv6Reference{
+                on action validate call matches_regexp "^$|^(Device\.)?PPP\.Interface\..+?";
                 default "";
             }
 
@@ -173,6 +175,7 @@
             * @version 1.0
             */
             %persistent string DSLiteReference{
+                on action validate call matches_regexp "^$|^(Device\.)?DSLite\.InterfaceSetting\..+?";
                 default "";
             }
 
@@ -181,13 +184,16 @@
             * @version 1.0
             */
             %persistent string PCPReference{
+                on action validate call matches_regexp "^$|^(Device\.)?PCP\.Client\..+?";
                 default "";
             }
 
             /**
             * Reference to the NeighborDiscovery InterfaceSetting instance, required for IPv6 WAN modes
+            * @version 1.0
             */
             %persistent string NeighborDiscoveryReference{
+                on action validate call matches_regexp "^$|^(Device\.)?NeighborDiscovery\.InterfaceSetting\..+?";
                 default "";
             }
 

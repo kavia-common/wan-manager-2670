@@ -15,6 +15,14 @@
         "Order": 2,
         "CommandEvent": "--x-"
     },
+    "Device.X_PRPL-COM_WANManager.WANModeEnable": {
+        "Order": 2,
+        "CommandEvent": "--x-"
+    },
+    "Device.X_PRPL-COM_WANManager.WANModeDisable": {
+        "Order": 2,
+        "CommandEvent": "--x-"
+    },
     "Device.X_PRPL-COM_WANManager.WAN.*.Intf.1.": {
         "Order": 2,
         "Param": "rw-n"

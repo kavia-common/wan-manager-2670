@@ -85,8 +85,16 @@
 #include "autosensing/autosensing.h"
 #include "netmodel/nm_query.h"
 #include "wan_manager_utils.h"
+#include "upstream_intf.h"
 
 #define ME "wan-man"
+
+typedef enum {
+    INVALID_MODE,
+    REM_MODE,
+    SET_MODE,
+    ADD_MODE,
+} operation_t;
 
 static wan_manager_app_t app;
 
@@ -129,13 +137,52 @@ int _wan_manager_main(int reason,
     return 0;
 }
 
-amxd_status_t _setWANMode(amxd_object_t* object,
-                          UNUSED amxd_function_t* func,
-                          amxc_var_t* args,
-                          amxc_var_t* ret) {
+static char* change_wan_mode_values(const char* str, operation_t operation) {
+    SAH_TRACEZ_IN(ME);
+    amxc_var_t new_value;
+    amxc_var_t llist;
+    const amxc_var_t* current_mode = amxd_object_get_param_value(get_wan_manager_obj(), "WANMode");
+    char* new_str = NULL;
+
+    amxc_var_init(&new_value);
+    amxc_var_init(&llist);
+    amxc_var_set_type(&llist, AMXC_VAR_ID_LIST);
+
+    when_str_empty_trace(str, exit, WARNING, "No string provided to set");
+
+    if(operation == SET_MODE) {
+        new_str = strdup(str);
+        goto exit;
+    }
+
+    if(!str_empty(GET_CHAR(current_mode, NULL))) {
+        when_failed_trace(amxc_var_convert(&llist, current_mode, AMXC_VAR_ID_LIST), exit, ERROR, "Failed to cast current WANModes to list variant");
+    }
+
+    if(operation == ADD_MODE) {
+        add_str_to_list(&llist, str);
+    } else if(operation == REM_MODE) {
+        remove_str_from_list(&llist, str);
+    } else {
+        when_true_trace(false, exit, ERROR, "Invalid operation mode");
+    }
+    when_failed_trace(amxc_var_convert(&new_value, &llist, AMXC_VAR_ID_CSV_STRING), exit, ERROR, "Failed to cast list to CSV string");
+    new_str = amxc_var_take(cstring_t, &new_value);
+
+exit:
+    amxc_var_clean(&new_value);
+    amxc_var_clean(&llist);
+    SAH_TRACEZ_OUT(ME);
+    return new_str;
+}
+
+static amxd_status_t manipulate_mode(amxd_object_t* object,
+                                     amxc_var_t* args,
+                                     amxc_var_t* ret,
+                                     int operation) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t status = amxd_status_invalid_attr;
-    const char* wan_mode_value = GET_CHAR(args, "WANMode");
+    char* new_wan_modes = change_wan_mode_values(GET_CHAR(args, "WANMode"), operation);
     bool autosensing_req = GET_BOOL(args, "Autosensing");
 
     if(!autosensing_req) {
@@ -143,16 +190,48 @@ amxd_status_t _setWANMode(amxd_object_t* object,
         if(strcmp("Automatic", current_mode) == 0) {
             mod_autosensing_stop();
         }
-        SAH_TRACEZ_INFO(ME, "Configure %s as WANMode and set OperationMode to Manual", wan_mode_value);
+        SAH_TRACEZ_INFO(ME, "Configure %s as WANMode and set OperationMode to Manual", new_wan_modes);
     } else {
         SAH_TRACEZ_INFO(ME, "Setting OperationMode to Automatic, requested WANMode will be ignored");
-        wan_mode_value = NULL;
+        free(new_wan_modes);
+        new_wan_modes = NULL;
     }
 
     amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
-    status = wan_mode_dm_set(wan_mode_value, autosensing_req ? "Automatic" : "Manual");
+    status = wan_mode_dm_set(new_wan_modes, autosensing_req ? "Automatic" : "Manual");
     amxc_var_add_key(bool, ret, "status", status == amxd_status_ok);
 
+    free(new_wan_modes);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _setWANMode(amxd_object_t* object,
+                          UNUSED amxd_function_t* func,
+                          amxc_var_t* args,
+                          amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = manipulate_mode(object, args, ret, SET_MODE);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _WANModeEnable(amxd_object_t* object,
+                             UNUSED amxd_function_t* func,
+                             amxc_var_t* args,
+                             amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = manipulate_mode(object, args, ret, ADD_MODE);
+    SAH_TRACEZ_OUT(ME);
+    return status;
+}
+
+amxd_status_t _WANModeDisable(amxd_object_t* object,
+                              UNUSED amxd_function_t* func,
+                              amxc_var_t* args,
+                              amxc_var_t* ret) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t status = manipulate_mode(object, args, ret, REM_MODE);
     SAH_TRACEZ_OUT(ME);
     return status;
 }
@@ -248,28 +327,54 @@ amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
                                        amxc_var_t* ret) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rv = amxd_status_unknown_error;
-    amxd_object_t* current_mode_obj = get_current_wan_mode();
-    amxd_object_t* wan_intf_obj = amxd_object_findf(current_mode_obj, ".Intf.wan.");
+    const char* current_wanmodes = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
     bool mode_active = false;
-    const char* bridge_reference = NULL;
-    const char* ip_reference = NULL;
 
-    when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-    bridge_reference = object_const_string(wan_intf_obj, "BridgeReference");
-    if(!str_empty(bridge_reference)) {
-        mode_active = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
-    } else {
-        ip_reference = object_const_string(wan_intf_obj, "IPv4Reference");
-        when_str_empty(ip_reference, exit);     // When the ip_reference is empty the mode is not active
-        mode_active = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
+    when_str_empty_trace(current_wanmodes, exit, ERROR, "Current wan mode objects could not be found");
+
+    amxc_string_set(&current_wan_modes_str, current_wanmodes);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        const char* bridge_reference = NULL;
+        const char* ip_reference = NULL;
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        amxd_object_t* wan_intf_obj = amxd_object_findf(wan_mode_obj, ".Intf.wan.");
+        when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get WANMode object");
+        when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
+
+        // Only active when all netmodel_isUp calls are positive
+        bridge_reference = object_const_string(wan_intf_obj, "BridgeReference");
+        if(!str_empty(bridge_reference)) {
+            bool up = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
+            if(!up) {
+                mode_active = false;
+                break;
+            }
+            mode_active = true;
+        } else {
+            ip_reference = object_const_string(wan_intf_obj, IPV4_REFERENCE_PATH);
+            when_str_empty(ip_reference, exit); // When the ip_reference is empty the mode is not active
+            bool up = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
+            if(!up) {
+                mode_active = false;
+                break;
+            }
+            mode_active = true;
+        }
     }
-
     rv = amxd_status_ok;
 
 exit:
     amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(bool, ret, "active", mode_active);
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
@@ -344,7 +449,7 @@ void _set_wan_mode(UNUSED const char* const event_name,
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
 
-    if(is_valid_mode(new_wan_mode) == amxd_status_ok) {
+    if(is_valid_mode_list(new_wan_mode) == amxd_status_ok) {
         wan_mode_set(new_wan_mode, old_wan_mode);
     } else {
         wan_mode_dm_set(old_wan_mode, NULL);
@@ -353,6 +458,45 @@ void _set_wan_mode(UNUSED const char* const event_name,
 exit:
     SAH_TRACEZ_OUT(ME);
     return;
+}
+
+amxd_status_t _check_wan_mode(UNUSED amxd_object_t* object,
+                              UNUSED amxd_param_t* param,
+                              amxd_action_t reason,
+                              const amxc_var_t* const args,
+                              UNUSED amxc_var_t* const retval,
+                              UNUSED void* priv) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rc = amxd_status_invalid_value;
+    const char* new_value = GET_CHAR(args, NULL);
+    amxc_string_t new_wan_modes_str;
+    amxc_llist_t new_list;
+    int wan_mode_physical_types[physical_type_last] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    amxc_string_init(&new_wan_modes_str, 0);
+    amxc_llist_init(&new_list);
+
+    when_true_status(reason != action_param_validate, exit, rc = amxd_status_function_not_implemented);
+    when_str_empty_status(new_value, exit, rc = amxd_status_ok);
+
+    amxc_string_set(&new_wan_modes_str, new_value);
+    amxc_string_split_to_llist(&new_wan_modes_str, &new_list, ',');
+    amxc_llist_for_each(it, &new_list) {
+        const char* candidate = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode = get_wan_mode(candidate);
+        int physical_type = phys_type_to_index(get_physical_type(wan_mode));
+        when_true_status(physical_type == -1, exit, rc = amxd_status_ok);
+        when_true_trace(wan_mode_physical_types[physical_type] > 0, exit, ERROR, "Cannot enable multiple WANModes with physical type %s", get_physical_type(wan_mode));
+        wan_mode_physical_types[physical_type]++;
+    }
+
+    rc = amxd_status_ok;
+
+exit:
+    amxc_llist_clean(&new_list, amxc_string_list_it_free);
+    amxc_string_clean(&new_wan_modes_str);
+    SAH_TRACEZ_OUT(ME);
+    return rc;
 }
 
 amxd_status_t _interface_already_configured(amxd_object_t* object,
@@ -392,14 +536,28 @@ exit:
     return rc;
 }
 
-amxd_status_t is_valid_mode(const char* new_wan_mode) {
+amxd_status_t is_valid_mode_list(const char* new_wan_mode) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_invalid_attr;
+    amxc_string_t wan_modes_str;
+    amxc_llist_t list;
 
-    if(get_wan_mode(new_wan_mode) != NULL) {
-        rc = amxd_status_ok;
+    amxc_string_init(&wan_modes_str, 0);
+    amxc_llist_init(&list);
+    when_str_empty(new_wan_mode, exit);
+
+    amxc_string_set(&wan_modes_str, new_wan_mode);
+    amxc_string_split_to_llist(&wan_modes_str, &list, ',');
+    amxc_llist_for_each(it, &list) {
+        const char* candidate = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        when_null(get_wan_mode(candidate), exit);
     }
 
+    rc = amxd_status_ok;
+
+exit:
+    amxc_llist_clean(&list, amxc_string_list_it_free);
+    amxc_string_clean(&wan_modes_str);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

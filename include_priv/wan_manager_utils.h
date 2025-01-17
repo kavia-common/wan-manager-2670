@@ -130,7 +130,6 @@ amxb_bus_ctx_t* neighbor_discovery_get_context(void);
 amxb_bus_ctx_t* pcp_get_context(void);
 amxb_bus_ctx_t* xpon_get_context(void);
 
-amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
 const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
 const char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
@@ -138,6 +137,7 @@ const char* get_nd_path(const amxc_var_t* const parameters);
 const char* get_dslite_path(const amxc_var_t* const parameters);
 const char* get_pcp_path(const amxc_var_t* const parameters);
 
+amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, bool enable);
 amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv6_prefix_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv6_prefix_lan_toggle(const char* intf_alias, const char* prefix_alias, bool enable);

@@ -99,6 +99,16 @@ amxd_dm_t* PRIVATE wan_get_dm(void);
 
 amxo_parser_t* PRIVATE wan_get_parser(void);
 
+amxd_status_t _WANModeEnable(amxd_object_t* object,
+                             amxd_function_t* func,
+                             amxc_var_t* args,
+                             amxc_var_t* ret);
+
+amxd_status_t _WANModeDisable(amxd_object_t* object,
+                              amxd_function_t* func,
+                              amxc_var_t* args,
+                              amxc_var_t* ret);
+
 amxd_status_t _setWANMode(amxd_object_t* object,
                           amxd_function_t* func,
                           amxc_var_t* args,
@@ -134,6 +144,13 @@ void _set_wan_mode(const char* const event_name,
                    const amxc_var_t* const event_data,
                    void* const priv);
 
+amxd_status_t _check_wan_mode(amxd_object_t* object,
+                              amxd_param_t* param,
+                              amxd_action_t reason,
+                              const amxc_var_t* const args,
+                              amxc_var_t* const retval,
+                              void* priv);
+
 amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             amxd_param_t* param,
                                             amxd_action_t reason,
@@ -141,7 +158,7 @@ amxd_status_t _interface_already_configured(amxd_object_t* object,
                                             amxc_var_t* const retval,
                                             void* priv);
 
-amxd_status_t is_valid_mode(const char* new_wan_mode);
+amxd_status_t is_valid_mode_list(const char* new_wan_mode);
 
 void _dm_wan_manager_physical_type_changed(const char* const event_name,
                                            const amxc_var_t* const event_data,
