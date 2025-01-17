@@ -136,7 +136,7 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
                                      const char* custom_ipv4_mode,
                                      const char* custom_ipv6_mode);
 static bool wan_mode_different_physical_type(amxd_object_t* const current, amxd_object_t* const new_mode);
-static mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4);
+static mode_ctrl_t wan_mode_convert_from_str(const char* mode, const ipversion_t ipversion);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 static operation_mode_t update_operation_mode(const char* new_operation_mode);
@@ -608,23 +608,28 @@ exit:
     return rc;
 }
 
-mode_ctrl_t wan_mode_convert_from_str(const char* mode, bool ipv4) {
+mode_ctrl_t wan_mode_convert_from_str(const char* mode, const ipversion_t ipversion) {
     SAH_TRACEZ_IN(ME);
     mode_cnv_t* lookup = mode_cnv;
     mode_ctrl_t rc = IP_None;
+
+    when_false(ipversion_valid(ipversion), exit);
+
     while(lookup->str != NULL) {
         if(0 == strcmp(mode, lookup->str)) {
             rc = lookup->mode;
             // keywords static and link are used in both parameter IPv4Mode & IPv6Mode
-            if((rc == IPv4_STATIC) && (ipv4 == false)) {
+            if((rc == IPv4_STATIC) && (ipversion != IPv4)) {
                 rc = IPv6_STATIC;
-            } else if((rc == IPv4_LINK) && (ipv4 == false)) {
+            } else if((rc == IPv4_LINK) && (ipversion != IPv4)) {
                 rc = IPv6_LINK;
             }
             break;
         }
         lookup++;
     }
+
+exit:
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -647,16 +652,16 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
     if(include_type == true) {
         type = GET_CHAR(&data, "Type");
         when_str_empty_trace(type, exit, ERROR, "Empty 'Type' parameter");
-        mode = (int) wan_mode_convert_from_str(type, false);
+        mode = (int) wan_mode_convert_from_str(type, IPv6);
     }
 
     ipv4mode = custom_ipv4_mode == NULL ? GET_CHAR(&data, "IPv4Mode") : custom_ipv4_mode;
     when_str_empty_trace(ipv4mode, exit, ERROR, "Empty 'IPv4Mode' parameter");
-    mode |= (int) wan_mode_convert_from_str(ipv4mode, true);
+    mode |= (int) wan_mode_convert_from_str(ipv4mode, IPv4);
 
     ipv6mode = custom_ipv6_mode == NULL ? GET_CHAR(&data, "IPv6Mode") : custom_ipv6_mode;
     when_str_empty_trace(ipv6mode, exit, ERROR, "Empty 'IPv6Mode' parameter");
-    mode |= (int) wan_mode_convert_from_str(ipv6mode, false);
+    mode |= (int) wan_mode_convert_from_str(ipv6mode, IPv6);
 
     SAH_TRACEZ_INFO(ME, "Type '%s', ipv4 '%s', ipv6 '%s': mode %#06X",
                     include_type ? type : "", ipv4mode, ipv6mode, mode);
@@ -694,14 +699,13 @@ void _wan_sensing_toggled(UNUSED const char* const event_name,
     SAH_TRACEZ_OUT(ME);
 }
 
-static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
+static void ip_mode_toggled(const amxc_var_t* const event_data, const ipversion_t ipversion) {
     SAH_TRACEZ_IN(ME);
-    const char* ip_type = ipv4 ? "IPv4Mode" : "IPv6Mode";
     amxd_status_t rc = amxd_status_unknown_error;
     nm_query_ll_info_t* info = NULL;
     amxd_object_t* wan_mode_obj = NULL;
     amxd_object_t* intf_obj = NULL;
-    amxc_var_t* ip_mode_arg = GET_ARG(GET_ARG(event_data, "parameters"), ip_type);
+    amxc_var_t* ip_mode_arg = NULL;
     const char* new_ip_mode = NULL;
     const char* ipv4_mode_ovr = NULL;
     const char* ipv6_mode_ovr = NULL;
@@ -709,13 +713,7 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
     const char* current_operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
     const char* wan_mode_name = NULL;
 
-    new_ip_mode = GET_CHAR(ip_mode_arg, "to");
-    if(ipv4) {
-        ipv4_mode_ovr = GET_CHAR(ip_mode_arg, "from");
-    } else {
-        ipv6_mode_ovr = GET_CHAR(ip_mode_arg, "from");
-    }
-
+    when_false(ipversion_valid(ipversion), exit);
     when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_true_trace(strcmp(current_operation_mode, "Automatic") == 0, exit, WARNING, "Ignoring changes made when autosensing is active");
 
@@ -726,6 +724,14 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, bool ipv4) {
 
     wan_mode_name = amxd_object_get_name(wan_mode_obj, AMXD_OBJECT_NAMED);
     when_str_empty_trace(wan_mode_name, exit, ERROR, "The event WANMode is null or empty");
+
+    ip_mode_arg = GET_ARG(GET_ARG(event_data, "parameters"), ipversion == IPv4 ? "IPv4Mode" : "IPv6Mode");
+    new_ip_mode = GET_CHAR(ip_mode_arg, "to");
+    if(ipversion == IPv4) {
+        ipv4_mode_ovr = GET_CHAR(ip_mode_arg, "from");
+    } else {
+        ipv6_mode_ovr = GET_CHAR(ip_mode_arg, "from");
+    }
 
     // If the event WANMode is different than the current WANMode, then do nothing
     if(strcmp(wan_mode_name, get_current_wan_mode_str()) != 0) {
@@ -760,7 +766,7 @@ void _ipv4_mode_toggled(UNUSED const char* const event_name,
                         const amxc_var_t* const event_data,
                         UNUSED void* const priv) {
     SAH_TRACEZ_IN(ME);
-    ip_mode_toggled(event_data, true);
+    ip_mode_toggled(event_data, IPv4);
     SAH_TRACEZ_OUT(ME);
     return;
 }
@@ -769,7 +775,7 @@ void _ipv6_mode_toggled(UNUSED const char* const event_name,
                         const amxc_var_t* const event_data,
                         UNUSED void* const priv) {
     SAH_TRACEZ_IN(ME);
-    ip_mode_toggled(event_data, false);
+    ip_mode_toggled(event_data, IPv6);
     SAH_TRACEZ_OUT(ME);
     return;
 }

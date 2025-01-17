@@ -80,7 +80,7 @@
 static amxd_status_t bridge_mode_none_enable(const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* intf_path = get_ip_path(parameters, IPv4);
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
@@ -110,7 +110,7 @@ exit:
 static amxd_status_t bridge_mode_none_disable(const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GET_CHAR(parameters, "IPv4Reference");
+    const char* intf_path = get_ip_path(parameters, IPv4);
     const char* name = GET_CHAR(parameters, "Name");
     char* logical_path = NULL;
 

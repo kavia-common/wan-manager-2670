@@ -21,6 +21,10 @@
             parameter IPv6Reference = "${ip_intf_wan}";
             parameter IPv6AddressDelegate="${ip_intf_lan}";
             parameter DeferredIPv6Instances = "${ip_intf_lan},${ip_intf_guest},${ip_intf_lcm}";
+            parameter NeighborDiscoveryReference = "Device.NeighborDiscovery.InterfaceSetting.1.";
+            parameter DSLiteReference = "Device.DSLite.InterfaceSetting.1.";
+            parameter PCPReference = "Device.PCP.Client.1.";
+            parameter PPPv6Reference = "Device.PPP.Interface.1.";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
         }
 

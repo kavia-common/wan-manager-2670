@@ -82,6 +82,22 @@
 #include "wan_manager_utils.h"
 #define ME "wan-man"
 
+bool ipversion_valid(const ipversion_t ip_version) {
+    return ip_version != IPvInvalid && (ip_version == IPv4 || ip_version == IPv6);
+}
+
+ipversion_t get_ipversion(const mode_ctrl_t ipmode) {
+    ipversion_t ipversion = IPvInvalid;
+
+    if((ipmode & MASK_IPv4) != 0) {
+        ipversion = IPv4;
+    } else if((ipmode & MASK_IPv6) != 0) {
+        ipversion = IPv6;
+    }
+
+    return ipversion;
+}
+
 amxb_bus_ctx_t* ip_get_context(void) {
     return amxb_be_who_has("IP.");
 }
@@ -128,6 +144,78 @@ amxb_bus_ctx_t* pcp_get_context(void) {
 
 amxb_bus_ctx_t* xpon_get_context(void) {
     return amxb_be_who_has("XPON.");
+}
+
+const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+    const char* path = NULL;
+
+    when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
+    path = GET_CHAR(parameters, (ip_version == IPv4 ? IPV4_REFERENCE_PATH : IPV6_REFERENCE_PATH));
+
+exit:
+    return path;
+}
+
+const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+    const char* path = NULL;
+
+    when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
+
+    path = GET_CHAR(parameters, (ip_version == IPv4 ? PPPV4_REFERENCE_PATH : PPPV6_REFERENCE_PATH));
+    #ifdef SUPPORT_OLD_PATH_IMPL
+    if(str_empty(path)) {
+        path = "Device.PPP.Interface.1.";
+    }
+    #endif
+
+exit:
+    return path;
+}
+
+const char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+    const char* path = NULL;
+
+    when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
+    path = GET_CHAR(parameters, (ip_version == IPv4 ? DHCPV4_REFERENCE_PATH : DHCPV6_REFERENCE_PATH));
+
+exit:
+    return path;
+}
+
+const char* get_nd_path(const amxc_var_t* const parameters) {
+    const char* path = GET_CHAR(parameters, NEIGH_REFERENCE_PATH);
+
+    #ifdef SUPPORT_OLD_PATH_IMPL
+    if(str_empty(path)) {
+        path = "Device.NeighborDiscovery.InterfaceSetting.1.";
+    }
+    #endif
+
+    return path;
+}
+
+const char* get_dslite_path(const amxc_var_t* const parameters) {
+    const char* path = GET_CHAR(parameters, DSLITE_REFERENCE_PATH);
+
+    #ifdef SUPPORT_OLD_PATH_IMPL
+    if(str_empty(path)) {
+        path = "Device.DSLite.InterfaceSetting.1.";
+    }
+    #endif
+
+    return path;
+}
+
+const char* get_pcp_path(const amxc_var_t* const parameters) {
+    const char* path = GET_CHAR(parameters, PCP_REFERENCE_PATH);
+
+    #ifdef SUPPORT_OLD_PATH_IMPL
+    if(str_empty(path)) {
+        path = "Device.PCP.Client.1.";
+    }
+    #endif
+
+    return path;
 }
 
 amxd_status_t ipv6_prefix_lan_toggle(const char* intf_alias, const char* prefix_alias, bool enable) {
@@ -442,9 +530,9 @@ int ip_parent_prefix_toggle(const char* interfaces, const char* old_reference_pa
     int rv = -1;
     amxc_var_init(&ret);
 
-    when_str_empty_trace(new_reference_path, exit, ERROR, "New IPv6Reference not provided");
+    when_str_empty_trace(new_reference_path, exit, ERROR, "New " IPV6_REFERENCE_PATH " not provided");
     rv = 0;
-    when_str_empty_trace(old_reference_path, exit, INFO, "No old IPv6Reference provided");
+    when_str_empty_trace(old_reference_path, exit, INFO, "No old " IPV6_REFERENCE_PATH " provided");
     when_str_empty_trace(interfaces, exit, INFO, "No deferred interfaces");
 
     if(strcmp(old_reference_path, new_reference_path) != 0) {
@@ -683,20 +771,6 @@ char* create_logical_path(const char* intf_name) {
     amxc_string_setf(&logical_intf, DEVICE_PATH "Logical.Interface.%s.", intf_name);
     path = amxc_string_take_buffer(&logical_intf);
     amxc_string_clean(&logical_intf);
-
-    SAH_TRACEZ_OUT(ME);
-    return path;
-}
-
-char* create_neighbor_discovery_path(const char* intf_alias) {
-    SAH_TRACEZ_IN(ME);
-    char* path = NULL;
-    amxc_string_t nd_path;
-
-    amxc_string_init(&nd_path, 0);
-    amxc_string_setf(&nd_path, DEVICE_PATH "NeighborDiscovery.InterfaceSetting.[Alias == 'cpe-%s']", intf_alias);
-    path = amxc_string_take_buffer(&nd_path);
-    amxc_string_clean(&nd_path);
 
     SAH_TRACEZ_OUT(ME);
     return path;

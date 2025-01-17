@@ -66,6 +66,7 @@
 extern "C" {
 #endif
 
+#include <amxb/amxb.h>
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
 #include <amxp/amxp.h>
@@ -93,11 +94,28 @@ extern "C" {
 #define PPP_PATH "PPP."
 #define DSLITE_PATH "DSLite."
 
-#define NEIGH_DISCOVERY_INTF "wan"
+#define IPV4_REFERENCE_PATH "IPv4Reference"
+#define IPV6_REFERENCE_PATH "IPv6Reference"
+#define DHCPV4_REFERENCE_PATH "DHCPv4Reference"
+#define DHCPV6_REFERENCE_PATH "DHCPv6Reference"
+#define PPPV4_REFERENCE_PATH "PPPv4Reference"
+#define PPPV6_REFERENCE_PATH "PPPv6Reference"
+#define DSLITE_REFERENCE_PATH "DSLiteReference"
+#define PCP_REFERENCE_PATH "PCPReference"
+#define NEIGH_REFERENCE_PATH "NeighborDiscoveryReference"
+
 #define STATIC_CONF_INTF_ALIAS "lan"
 #define STATIC_CONF_PREFIX_ALIAS "GUA_STATIC"
 
 #define str_empty(txt) ((txt == NULL) || (*txt == 0))
+
+typedef enum  {
+    IPv4 = 4,
+    IPv6 = 6,
+    IPvInvalid = 100,
+} ipversion_t;
+
+bool ipversion_valid(const ipversion_t ip_version);
 
 amxb_bus_ctx_t* ip_get_context(void);
 amxb_bus_ctx_t* dhcpv4_get_context(void);
@@ -113,6 +131,13 @@ amxb_bus_ctx_t* pcp_get_context(void);
 amxb_bus_ctx_t* xpon_get_context(void);
 
 amxd_status_t ipv6_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
+const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
+const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
+const char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
+const char* get_nd_path(const amxc_var_t* const parameters);
+const char* get_dslite_path(const amxc_var_t* const parameters);
+const char* get_pcp_path(const amxc_var_t* const parameters);
+
 amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv6_prefix_toggle(const char* intf_path, amxc_var_t* ip_addr, const char* addr_type, bool enable);
 amxd_status_t ipv6_prefix_lan_toggle(const char* intf_alias, const char* prefix_alias, bool enable);
@@ -123,8 +148,6 @@ char* routing_get_interfacesetting(const char* intf_path);
 void add_str_to_list(amxc_var_t* list, const char* str);
 void remove_str_from_list(amxc_var_t* list, const char* str);
 char* create_logical_path(const char* intf_name);
-char* create_neighbor_discovery_path(const char* intf_alias);
-amxd_status_t nd_interface_setting_toggle(const char* intf_alias, const char* param, bool enable);
 
 const char* object_const_string(amxd_object_t* object, const char* name);
 char* trim_final_dot(const char* path);

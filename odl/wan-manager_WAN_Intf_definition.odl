@@ -137,7 +137,7 @@
             }
 
             /**
-            * Reference to the DHCPv4 Client instance, required if IPv4Mode is set to dhcp
+            * Reference to the DHCPv4 Client instance, required if IPv4Mode is set to dhcp4
             * @version 1.0
             */
             %persistent string DHCPv4Reference{
@@ -145,10 +145,49 @@
             }
 
             /**
-            * Reference to the DHCPv6 Client instance, required if IPv4Mode is set to dhcp
+            * Reference to the DHCPv6 Client instance, required if IPv6Mode is set to dhcp6
             * @version 1.0
             */
             %persistent string DHCPv6Reference{
+                default "";
+            }
+
+            /**
+            * Reference to the PPP Client instance, required if IPv4Mode is set to ppp4
+            * @version 1.0
+            */
+            %persistent string PPPv4Reference{
+                default "";
+            }
+
+            /**
+            * Reference to the PPP Client instance, required if IPv6Mode is set to ppp6
+            * @version 1.0
+            */
+            %persistent string PPPv6Reference{
+                default "";
+            }
+
+            /**
+            * Reference to the DSLite Interface instance, required if IPv4Mode is set to dslite
+            * @version 1.0
+            */
+            %persistent string DSLiteReference{
+                default "";
+            }
+
+            /**
+            * Reference to the PCP Client instance, required if IPv4Mode is set to dslite
+            * @version 1.0
+            */
+            %persistent string PCPReference{
+                default "";
+            }
+
+            /**
+            * Reference to the NeighborDiscovery InterfaceSetting instance, required for IPv6 WAN modes
+            */
+            %persistent string NeighborDiscoveryReference{
                 default "";
             }
 

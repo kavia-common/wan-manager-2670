@@ -82,18 +82,23 @@
 
 #define ME "static-ctrl"
 
-static amxd_status_t static_enable(UNUSED mode_ctrl_t mode,
+static amxd_status_t static_enable(const mode_ctrl_t mode,
                                    const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
+    ipversion_t ip_version = get_ipversion(mode);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
-    const char* name = GET_CHAR(parameters, "Name");
-    bool ipv6 = (mode & MASK_IPv6) != 0;
+    const char* name = NULL;
+    const char* intf_path = NULL;
 
+    when_false(ipversion_valid(ip_version), exit);
+
+    intf_path = get_ip_path(parameters, IPv6);
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+
+    name = GET_CHAR(parameters, "Name");
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
-    if(ipv6) {
+    if(ip_version == IPv6) {
         rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), intf_path, true);
         when_failed_trace(rc, exit, ERROR, "Failed to set the static default IPv6 route");
     }
@@ -101,8 +106,8 @@ static amxd_status_t static_enable(UNUSED mode_ctrl_t mode,
     if((strcmp(name, "wan") == 0)) {
         amxd_object_t* interface = amxd_dm_findf(wan_get_dm(), "%s", GET_CHAR(parameters, "intf_obj_path"));
         amxd_object_t* wan_mode_obj = amxd_object_findf(interface, "^.^.");
-        rc = amxd_object_set_value(cstring_t, wan_mode_obj, ipv6 ? "IPv6DNSMode" : "DNSMode", "Static");
-        when_failed_trace(rc, exit, ERROR, "Failed to set %s to 'Static'", ipv6 ? "IPv6DNSMode" : "DNSMode");
+        rc = amxd_object_set_value(cstring_t, wan_mode_obj, ip_version == IPv6 ? "IPv6DNSMode" : "DNSMode", "Static");
+        when_failed_trace(rc, exit, ERROR, "Failed to set %s to 'Static'", ip_version == IPv6 ? "IPv6DNSMode" : "DNSMode");
     }
 
     rc = amxd_status_ok;
@@ -112,14 +117,17 @@ exit:
     return rc;
 }
 
-static amxd_status_t static_disable(UNUSED mode_ctrl_t mode,
+static amxd_status_t static_disable(const mode_ctrl_t mode,
                                     const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
+    ipversion_t ip_version = get_ipversion(mode);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = GET_CHAR(parameters, "IPv6Reference");
-    bool ipv6 = (mode & MASK_IPv6) != 0;
+    const char* intf_path = NULL;
 
-    when_false_status(ipv6, exit, rc = amxd_status_ok); // We have nothing to do for IPv4
+    when_false(ipversion_valid(ip_version), exit);
+
+    when_true_status(ip_version == IPv4, exit, rc = amxd_status_ok); // We have nothing to do for IPv4
+    intf_path = get_ip_path(parameters, IPv6);
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
     rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), intf_path, false);

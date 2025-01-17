@@ -75,6 +75,7 @@ extern "C"
 #include <amxc/amxc.h>
 #include <amxp/amxp.h>
 #include <amxd/amxd_types.h>
+#include "wan_manager_utils.h"
 
 typedef enum {
     IP_None       = 0x000000,
@@ -98,6 +99,8 @@ typedef enum {
     MASK_IPv6     = 0x00FF00,
     MASK_TYPE     = 0xFF0000
 } mode_ctrl_t;
+
+ipversion_t get_ipversion(const mode_ctrl_t ipmode);
 
 typedef amxd_status_t (* ctrl_fn)(mode_ctrl_t mode, amxc_var_t* const, bool enable);
 

@@ -80,38 +80,46 @@
 
 #define ME "dslite-ctrl"
 
-#define DSLITE_DEVICE_PATH DEVICE_PATH DSLITE_PATH
-#define DSLITE_IF_PATH DSLITE_DEVICE_PATH "InterfaceSetting.1"
+// TODO SMAES: by default DSLite.Enable is false
 
 static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
                                    amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* ipv4_path = GET_CHAR(parameters, "IPv4Reference");
-    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
+    const char* ipv4_path = NULL;
+    const char* dhcpv6_path = NULL;
+    const char* dslite_path = NULL;
+    const char* pcp_path = NULL;
     const char* dslite_wan_if = NULL;
     amxc_var_t wan_if;
 
     amxc_var_init(&wan_if);
+    ipv4_path = get_ip_path(parameters, IPv4);
     when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
 
-    // Enable DSLite
-    rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite instance '%s'", DSLITE_DEVICE_PATH);
-
-    // Enable PCP
-    rc = component_set_bool("PCP.", pcp_get_context(), "Enable", true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
-
-    // Enable DHCPv6 Client
+    dhcpv6_path = get_dhcp_path(parameters, IPv6);
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
 
-    component_get_param(&wan_if, DSLITE_IF_PATH, dslite_get_context(), "WANInterface");
+    dslite_path = get_dslite_path(parameters);
+    when_str_empty_trace(dslite_path, exit, ERROR, "Failed to get DSLite interface path");
+
+    pcp_path = get_pcp_path(parameters);
+    when_str_empty_trace(pcp_path, exit, ERROR, "Failed to get PCP client path");
+
+    // Enable DSLite
+    rc = component_set_enable(dslite_path, dslite_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite interface '%s'", dslite_path);
+
+    // Enable PCP
+    rc = component_set_bool(pcp_path, pcp_get_context(), "Enable", true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
+
+    component_get_param(&wan_if, dslite_path, dslite_get_context(), "WANInterface");
     dslite_wan_if = GETP_CHAR(&wan_if, "0.0.WANInterface");
     when_str_empty_trace(dslite_wan_if, exit, ERROR, "Failed to get DSLite WANInterface parameter");
 
     rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", dslite_wan_if);
-    when_failed_trace(rc, exit, ERROR, "Failed to set DHCPv6Reference Interface to '%s'", dslite_wan_if);
+    when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV6_REFERENCE_PATH " Interface to '%s'", dslite_wan_if);
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
 
 exit:
@@ -124,20 +132,26 @@ static amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
                                     amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* dhcpv6_path = GET_CHAR(parameters, "DHCPv6Reference");
+    const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
+    const char* dslite_path = NULL;
+    const char* pcp_path = NULL;
+
+    dslite_path = get_dslite_path(parameters);
+    when_str_empty_trace(dslite_path, exit, ERROR, "Failed to get DSLite interface path");
+    pcp_path = get_pcp_path(parameters);
 
     // Disable DHCPv6 Client
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
     rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
-    when_failed_trace(rc, exit, ERROR, "Failed to clear DHCPv6Reference Interface");
+    when_failed_trace(rc, exit, ERROR, "Failed to clear " DHCPV6_REFERENCE_PATH " Interface");
 
     // Disable DSLite
-    rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", DSLITE_DEVICE_PATH);
+    rc = component_set_enable(dslite_path, dslite_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable DSLite instance '%s'", dslite_path);
 
     // Disable PCP
-    rc = component_set_bool("PCP.", pcp_get_context(), "Enable", false);
+    rc = component_set_bool(pcp_path, pcp_get_context(), "Enable", false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
 
 exit:

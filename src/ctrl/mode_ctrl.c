@@ -94,10 +94,12 @@ controller_item_t controllers [] = {
     { (mode_ctrl_t) 0, {NULL, NULL, NULL, NULL, NULL}}
 };
 
-static controller_item_t* get_mode_ctrl_action(mode_ctrl_t mode, bool ipv4) {
+static controller_item_t* get_mode_ctrl_action(const mode_ctrl_t mode, const ipversion_t ipversion) {
     SAH_TRACEZ_IN(ME);
     controller_item_t* ctrll = controllers;
-    int ipmode = mode & (ipv4 ? MASK_IPv4 : MASK_IPv6);
+    mode_ctrl_t ipmode = mode & (ipversion == IPv4 ? MASK_IPv4 : MASK_IPv6);
+
+    when_false_status(ipversion_valid(ipversion), exit, ctrll = NULL);
 
     if(ipmode != 0) {
         for(int cnt = 0; (ipmode != 0); ctrll++, cnt++) {
@@ -107,7 +109,7 @@ static controller_item_t* get_mode_ctrl_action(mode_ctrl_t mode, bool ipv4) {
             }
         }
     } else {
-        SAH_TRACEZ_INFO(ME, "Nothing to do, %s is 'none'", ipv4 ? "IPv4Mode" : "IPv6Mode");
+        SAH_TRACEZ_INFO(ME, "Nothing to do, %s is 'none'", ipversion == IPv4 ? "IPv4Mode" : "IPv6Mode");
         // Make sure not to exit without setting the ctrll to NULL
     }
 
@@ -123,8 +125,8 @@ amxd_status_t mode_ctrl_action(mode_ctrl_t mode,
                                bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    controller_item_t* ctrll_v4 = get_mode_ctrl_action(mode, true);
-    controller_item_t* ctrll_v6 = get_mode_ctrl_action(mode, false);
+    controller_item_t* ctrll_v4 = get_mode_ctrl_action(mode, IPv4);
+    controller_item_t* ctrll_v6 = get_mode_ctrl_action(mode, IPv6);
 
     when_null_trace(parameters, exit, ERROR, "Missing parameters");
 
