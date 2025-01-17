@@ -85,6 +85,10 @@ int get_reset_counter(void) {
     return reset_counter;
 }
 
+void clear_reset_counter(void) {
+    reset_counter = 0;
+}
+
 amxd_status_t __wrap_restart(void) {
     reset_counter++;
     return amxd_status_ok;
