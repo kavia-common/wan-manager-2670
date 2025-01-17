@@ -33,8 +33,8 @@ CFLAGS += -Werror -Wall -Wextra -Wno-attributes\
           --std=gnu99 -g3 -Wmissing-declarations \
 		  $(addprefix -I ,$(INCDIR)) -I$(OBJDIR)/.. \
 		  -fkeep-inline-functions -fkeep-static-functions \
-		   -Wno-format-nonliteral \
+		  -Wno-format-nonliteral \
 		  $(shell pkg-config --cflags cmocka) -pthread -DUNIT_TESTS
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -lamxm -lamxj -ldl -lsahtrace -lnetmodel -lipat
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo -lamxb -lamxm -lamxj -ldl -lnetmodel -lipat

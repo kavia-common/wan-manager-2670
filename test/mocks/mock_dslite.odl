@@ -1,6 +1,6 @@
 %define {
     object DSLite {
-        bool Enable = false;
+        bool Enable = true;
         object InterfaceSetting[] {
             bool Enable;
             string Status;
@@ -20,7 +20,7 @@
 
 %populate {
     object DSLite {
-        parameter Enable = false;
+        parameter Enable = true;
     }
 
     object DSLite.InterfaceSetting {

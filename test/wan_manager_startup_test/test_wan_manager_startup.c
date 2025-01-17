@@ -182,24 +182,41 @@ static void reset_apply_at_next_boot(amxd_object_t* wanm_obj) {
 }
 
 void test_apply_at_next_boot(UNUSED void** state) {
+    const char* current_wanmodes = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
     amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
     bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
+
     assert_false(apply);
+    assert_non_null(current_wanmodes);
 
-    reset_apply_at_next_boot(wanm_obj);
-    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
-    assert_true(apply);
+    amxc_string_set(&current_wan_modes_str, current_wanmodes);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        char* physical_type = NULL;
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
 
-    amxd_object_t* wan_mode_inst = get_current_wan_mode();
-    char* physical_type = NULL;
+        assert_non_null(wan_mode_obj);
 
-    assert_non_null(wan_mode_inst);
-    physical_type = amxd_object_get_value(cstring_t, wan_mode_inst, "PhysicalType", NULL);
-    assert_non_null(physical_type);
+        reset_apply_at_next_boot(wanm_obj);
+        apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+        assert_true(apply);
 
-    wan_manager_found_ll(physical_type);
+        physical_type = amxd_object_get_value(cstring_t, wan_mode_obj, "PhysicalType", NULL);
+        assert_non_null(physical_type);
 
-    apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
-    assert_false(apply);
-    free(physical_type);
+        wan_manager_found_ll(physical_type);
+
+        apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
+        assert_false(apply);
+        free(physical_type);
+    }
+
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
 }

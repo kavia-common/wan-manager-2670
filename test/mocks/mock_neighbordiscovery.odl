@@ -23,15 +23,19 @@
         instance add(1, "cpe-wan") {
             parameter AcceptDefaultRoute = true;
             parameter Alias = "cpe-wan";
-            parameter AutoConfEnable = true;
+            parameter AutoConfEnable = false;
             parameter DADTransmits = 1;
             parameter Enable = true;
             parameter Interface ="Device.Logical.Interface.1.";
-            parameter MaxRtrSolicitations = 3;
-            parameter NUDEnable = true;
-            parameter RSEnable = true;
-            parameter RetransTimer = 1000;
-            parameter RtrSolicitationInterval = 4000;
+            parameter Status = "Enabled";
+        }
+        instance add(2, "cpe-wan_ppp6") {
+            parameter AcceptDefaultRoute = true;
+            parameter Alias = "cpe-wan_ppp6";
+            parameter AutoConfEnable = false;
+            parameter DADTransmits = 1;
+            parameter Enable = true;
+            parameter Interface ="Device.Logical.Interface.1.";
             parameter Status = "Enabled";
         }
     }

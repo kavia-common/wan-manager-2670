@@ -72,6 +72,9 @@
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_wan_manager_set_multiple_valid_modes),
+        cmocka_unit_test(test_wan_manager_set_multiple_invalid_modes),
+        cmocka_unit_test(test_wan_manager_set_multiple_valid_used_modes),
         cmocka_unit_test(test_wan_manager_set_invalid_mode),
         cmocka_unit_test(test_wan_manager_set_valid_mode),
         cmocka_unit_test(test_wan_manager_set_link_mode),

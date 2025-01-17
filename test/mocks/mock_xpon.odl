@@ -1,0 +1,18 @@
+%define {
+    object XPON {
+        %read-only object ONU[] {
+            bool Enable = false;
+            string PONMode;
+            %unique %key string Name {
+                on action validate call check_maximum_length 64;
+            }
+        }
+    }
+}
+
+%populate {
+    object 'XPON.ONU' {
+        instance add (0, "onu1", Name = "onu1") {
+        }
+    }
+}

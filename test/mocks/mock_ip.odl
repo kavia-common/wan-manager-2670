@@ -183,4 +183,29 @@
             }
         }
     }
+
+    object IP.Interface {
+        instance add(7, "wan_ppp6") {
+            object IPv4Address {
+                instance add(0,"wan_ppp6") {
+                    parameter AddressingType = "IPCP";
+                }
+            }
+
+            object IPv6Address {
+                instance add(0,"GUA_RA"){
+                    parameter Alias = "GUA_RA";
+                    parameter Enable = 1;
+                }
+            }
+
+            object IPv6Prefix {
+                instance add(0,"GUA_IAPD"){
+                    parameter Alias = "GUA_IAPD";
+                    parameter Enable = 1;
+                    parameter ParentPrefix = "Device.IP.Interface.2.IPv6Prefix.1.";
+                }
+            }
+        }
+    }
 }

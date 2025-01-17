@@ -156,27 +156,47 @@ void test_wan_manager_autosensing_set_mode(UNUSED void** state) {
  *      * After calling start again the priv should be filled in again
  */
 void test_wan_manager_sensing_query(UNUSED void** state) {
-    amxc_var_t* data = NULL;
-    amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
+    const char* current_wanmodes = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
 
-    amxc_var_new(&data);
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-    assert_non_null(intf_obj);
-    assert_non_null(intf_obj->priv);
+    assert_non_null(current_wanmodes);
 
-    assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
-    assert_non_null(intf_obj);
-    assert_non_null(intf_obj->priv);
+    amxc_string_set(&current_wan_modes_str, current_wanmodes);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        amxc_var_t* data = NULL;
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        assert_non_null(wan_mode_obj);
 
-    assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-stop", data, data), 0);
-    assert_non_null(intf_obj);
-    assert_null(intf_obj->priv);
+        amxd_object_t* intf_obj = amxd_object_findf(wan_mode_obj, "Intf.1.");
 
-    assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
-    assert_non_null(intf_obj);
-    assert_non_null(intf_obj->priv);
+        amxc_var_new(&data);
 
-    amxc_var_delete(&data);
+        assert_non_null(intf_obj);
+        assert_non_null(intf_obj->priv);
+
+        assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
+        assert_non_null(intf_obj);
+        assert_non_null(intf_obj->priv);
+
+        assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-stop", data, data), 0);
+        assert_non_null(intf_obj);
+        assert_null(intf_obj->priv);
+
+        assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
+        assert_non_null(intf_obj);
+        assert_non_null(intf_obj->priv);
+
+        amxc_var_delete(&data);
+    }
+
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
 }
 
 void test_wan_manager_sensing_toggle(UNUSED void** state) {
@@ -209,37 +229,76 @@ void test_wan_manager_sensing_toggle(UNUSED void** state) {
 }
 
 void test_query_double_call_cleanup(UNUSED void** state) {
-    amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
-    intf_isup_queries_t* nm_queries = NULL;
+    const char* current_wanmodes = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
 
-    // Call once to create the queries
-    nm_query_mode_active();
-    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
-    assert_non_null(nm_queries);
-    assert_non_null(nm_queries->nm_ipv4_up_query);
-    assert_non_null(nm_queries->nm_ipv6_up_query);
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-    // Call again to make sure the old queries are cleanup
-    nm_query_mode_active();
-    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
-    assert_non_null(nm_queries);
-    assert_non_null(nm_queries->nm_ipv4_up_query);
-    assert_non_null(nm_queries->nm_ipv6_up_query);
+    assert_non_null(current_wanmodes);
 
+    amxc_string_set(&current_wan_modes_str, current_wanmodes);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        amxd_object_t* intf_obj = amxd_object_findf(wan_mode_obj, "Intf.1.");
+        intf_isup_queries_t* nm_queries = NULL;
+
+        assert_non_null(wan_mode_obj);
+
+        // Call once to create the queries
+        nm_query_mode_active();
+        nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+        assert_non_null(nm_queries);
+        assert_non_null(nm_queries->nm_ipv4_up_query);
+        assert_non_null(nm_queries->nm_ipv6_up_query);
+
+        // Call again to make sure the old queries are cleanup
+        nm_query_mode_active();
+        nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+        assert_non_null(nm_queries);
+        assert_non_null(nm_queries->nm_ipv4_up_query);
+        assert_non_null(nm_queries->nm_ipv6_up_query);
+    }
+
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
     // This should not generate a memory leak if correctly cleaned
 }
 
 void test_query_intf_del_cleanup(UNUSED void** state) {
-    amxd_object_t* intf_obj = amxd_object_findf(get_current_wan_mode(), "Intf.1.");
-    intf_isup_queries_t* nm_queries = NULL;
+    const char* current_wanmodes = get_current_wan_mode_str();
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
 
-    // Call once to create the queries
-    nm_query_mode_active();
-    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
-    assert_non_null(nm_queries);
-    assert_non_null(nm_queries->nm_ipv4_up_query);
-    assert_non_null(nm_queries->nm_ipv6_up_query);
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
 
-    // Call again to make sure the queries are cleanup
-    amxd_object_delete(&intf_obj);
+    assert_non_null(current_wanmodes);
+
+    amxc_string_set(&current_wan_modes_str, current_wanmodes);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        amxd_object_t* intf_obj = amxd_object_findf(wan_mode_obj, "Intf.1.");
+        intf_isup_queries_t* nm_queries = NULL;
+
+        assert_non_null(wan_mode_obj);
+
+        // Call once to create the queries
+        nm_query_mode_active();
+        nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+        assert_non_null(nm_queries);
+        assert_non_null(nm_queries->nm_ipv4_up_query);
+        assert_non_null(nm_queries->nm_ipv6_up_query);
+
+        // Call again to make sure the queries are cleanup
+        amxd_object_delete(&intf_obj);
+    }
+
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
 }

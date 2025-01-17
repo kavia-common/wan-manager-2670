@@ -40,7 +40,7 @@
             "EnableSensing" : true,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
+            "PhysicalType" : "GPON",
             "Status" : "Disabled"
         },
         {
@@ -49,7 +49,7 @@
             "EnableSensing" : true,
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
-            "PhysicalType" : "Ethernet",
+            "PhysicalType" : "GPON",
             "Status" : "Disabled"
         },
         {
@@ -89,5 +89,5 @@
             "Status" : "Disabled"
         }
     ],
-    "sense_current_mode" : true
+    "sense_current_mode" : false
 }

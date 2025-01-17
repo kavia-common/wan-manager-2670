@@ -101,6 +101,7 @@ static const char* odl_ip_mock = "../mocks/mock_ip.odl";
 static const char* odl_routing_mock = "../mocks/mock_routing.odl";
 static const char* odl_dns_mock = "../mocks/mock_dns.odl";
 static const char* odl_ethernet_mock = "../mocks/mock_ethernet.odl";
+static const char* odl_xpon_mock = "../mocks/mock_xpon.odl";
 static const char* odl_logical_mock = "../mocks/mock_logical.odl";
 static const char* odl_ppp_mock = "../mocks/mock_ppp.odl";
 static const char* odl_neigbordiscovery_mock = "../mocks/mock_neighbordiscovery.odl";
@@ -177,6 +178,8 @@ int test_wan_manager_setup(UNUSED void** state) {
     root_obj = amxd_dm_get_root(&dm);
     assert_non_null(root_obj);
 
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "WANModeEnable", AMXO_FUNC(_WANModeEnable)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "WANModeDisable", AMXO_FUNC(_WANModeDisable)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "setWANMode", AMXO_FUNC(_setWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "getWANMode", AMXO_FUNC(_getWANMode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "Reset", AMXO_FUNC(_Reset)), 0);
@@ -186,6 +189,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "wan_sensing_toggled", AMXO_FUNC(_wan_sensing_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "set_wan_mode", AMXO_FUNC(_set_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_already_configured", AMXO_FUNC(_interface_already_configured)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "check_wan_mode", AMXO_FUNC(_check_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
@@ -202,6 +206,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ip_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_routing_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ethernet_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_xpon_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_logical_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_ppp_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_neigbordiscovery_mock, root_obj), 0);
@@ -294,6 +299,52 @@ amxc_var_t* read_json_from_file(const char* fname) {
 exit:
     amxj_reader_delete(&reader);
     return data;
+}
+
+bool enable_wan_mode(const char* mode_to_enable, amxd_status_t expected_status) {
+    amxc_var_t args;
+    amxc_var_t ret;
+    bool rc = false;
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
+
+    amxc_var_init(&args);
+    amxc_var_init(&ret);
+
+    assert_non_null(wan_mode);
+    assert_non_null(mode_to_enable);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_enable);
+    assert_int_equal(amxd_object_invoke_function(wan_mode, "WANModeEnable", &args, &ret), expected_status);
+    rc = GET_BOOL(&ret, "status");
+
+    test_handle_events();
+
+    amxc_var_clean(&args);
+    amxc_var_clean(&ret);
+    return rc;
+}
+
+bool disable_wan_mode(const char* mode_to_disable, amxd_status_t expected_status) {
+    amxc_var_t args;
+    amxc_var_t ret;
+    bool rc = false;
+    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
+
+    amxc_var_init(&args);
+    amxc_var_init(&ret);
+
+    assert_non_null(wan_mode);
+    assert_non_null(mode_to_disable);
+    amxc_var_set_type(&args, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(cstring_t, &args, "WANMode", mode_to_disable);
+    assert_int_equal(amxd_object_invoke_function(wan_mode, "WANModeDisable", &args, &ret), expected_status);
+    rc = GET_BOOL(&ret, "status");
+
+    test_handle_events();
+
+    amxc_var_clean(&args);
+    amxc_var_clean(&ret);
+    return rc;
 }
 
 bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status) {

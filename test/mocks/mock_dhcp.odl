@@ -40,6 +40,12 @@
                 parameter 'RequestAddresses' = false;
                 parameter 'RequestPrefixes' = true;
             }
+            instance add('wan_ppp6') {
+                parameter 'Enable' = false;
+                parameter 'Interface' = "Device.IP.Interface.7.";
+                parameter 'RequestAddresses' = false;
+                parameter 'RequestPrefixes' = true;
+            }
         }
     }
 }

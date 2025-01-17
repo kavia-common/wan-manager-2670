@@ -80,6 +80,9 @@
 
 void test_wan_manager_set_invalid_mode(void** state);
 void test_wan_manager_set_valid_mode(void** state);
+void test_wan_manager_set_multiple_valid_modes(void** state);
+void test_wan_manager_set_multiple_invalid_modes(void** state);
+void test_wan_manager_set_multiple_valid_used_modes(void** state);
 void test_wan_manager_switch_to_invalid(void** state);
 void test_wan_manager_switch_to_valid_different_intf(void** state);
 void test_wan_manager_switch_to_valid_same_intf(void** state);

@@ -12,8 +12,12 @@
             "wan" : {
                 "Alias" : "wan",
                 "BridgeReference" : "",
-                "DHCPv4Reference" : "Device.DHCPv4.Client.1.",
+                "DHCPv4Reference" : "",
                 "DHCPv6Reference" : "Device.DHCPv6.Client.1.",
+                "PPPv4Reference" : "",
+                "PPPv6Reference" : "",
+                "DSLiteReference" : "Device.DSLite.InterfaceSetting.1",
+                "PCPReference" : "Device.PCP.Client.1",
                 "DefaultRouteReference" : "Device.Routing.Router.1.IPv4Forwarding.1.",
                 "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
                 "IPv4Addresses" : {
@@ -33,6 +37,7 @@
                 "IPv6Mode" : "dhcp6",
                 "IPv6Reference" : "Device.IP.Interface.2.",
                 "Name" : "wan",
+                "NeighborDiscoveryReference" : "Device.NeighborDiscovery.InterfaceSetting.1",
                 "Password" : "",
                 "Type" : "untagged",
                 "UserName" : "",

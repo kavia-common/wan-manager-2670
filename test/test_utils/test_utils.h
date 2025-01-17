@@ -82,6 +82,8 @@ amxd_dm_t* test_get_dm(void);
 amxo_parser_t* test_get_parser(void);
 void test_handle_events(void);
 amxc_var_t* read_json_from_file(const char* fname);
+bool enable_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
+bool disable_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
 bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
 
 #endif //__WAN_MANAGER_TEST_UTILS_H__

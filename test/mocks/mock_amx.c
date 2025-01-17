@@ -54,12 +54,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <debug/sahtrace.h>
-#include <debug/sahtrace_macros.h>
-
 #include "mock_amx.h"
-
-#define ME "test"
 
 static char* remove_device_prefix(const char* str) {
     amxc_string_t object_path;
