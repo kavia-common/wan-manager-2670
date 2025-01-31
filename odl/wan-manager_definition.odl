@@ -82,13 +82,6 @@
         void Reset();
 
         /**
-         * Get status of current WAN mode. Use by WANAutosensing
-         * @return - true when WANMode status is Enabled and configured interface obtain IP address
-         * @version 1.0
-         */
-        bool getCurrentWANModeStatus();
-
-        /**
          *
          * Get WAN mode
          * @return - complete map with the whole configuration

@@ -129,11 +129,6 @@ amxd_status_t _Reset(amxd_object_t* object,
                      amxc_var_t* args,
                      amxc_var_t* ret);
 
-amxd_status_t _getCurrentWANModeStatus(amxd_object_t* object,
-                                       amxd_function_t* func,
-                                       amxc_var_t* args,
-                                       amxc_var_t* ret);
-
 amxd_status_t _getWANMode(amxd_object_t* object,
                           amxd_function_t* func,
                           amxc_var_t* args,

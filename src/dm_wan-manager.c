@@ -321,64 +321,6 @@ exit:
     return status;
 }
 
-amxd_status_t _getCurrentWANModeStatus(UNUSED amxd_object_t* object,
-                                       UNUSED amxd_function_t* func,
-                                       UNUSED amxc_var_t* args,
-                                       amxc_var_t* ret) {
-    SAH_TRACEZ_IN(ME);
-    amxd_status_t rv = amxd_status_unknown_error;
-    const char* current_wanmodes = get_current_wan_mode_str();
-    amxc_string_t current_wan_modes_str;
-    amxc_llist_t current_list;
-    bool mode_active = false;
-
-    amxc_string_init(&current_wan_modes_str, 0);
-    amxc_llist_init(&current_list);
-
-    when_str_empty_trace(current_wanmodes, exit, ERROR, "Current wan mode objects could not be found");
-
-    amxc_string_set(&current_wan_modes_str, current_wanmodes);
-    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
-    amxc_llist_for_each(it, &current_list) {
-        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
-        const char* bridge_reference = NULL;
-        const char* ip_reference = NULL;
-        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
-        amxd_object_t* wan_intf_obj = amxd_object_findf(wan_mode_obj, ".Intf.wan.");
-        when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get WANMode object");
-        when_null_trace(wan_intf_obj, exit, ERROR, " Failed to get the wan interface object");
-
-        // Only active when all netmodel_isUp calls are positive
-        bridge_reference = object_const_string(wan_intf_obj, "BridgeReference");
-        if(!str_empty(bridge_reference)) {
-            bool up = netmodel_isUp(bridge_reference, "", netmodel_traverse_this);
-            if(!up) {
-                mode_active = false;
-                break;
-            }
-            mode_active = true;
-        } else {
-            ip_reference = object_const_string(wan_intf_obj, IPV4_REFERENCE_PATH);
-            when_str_empty(ip_reference, exit); // When the ip_reference is empty the mode is not active
-            bool up = netmodel_isUp(ip_reference, "ipv4-up", netmodel_traverse_this);
-            if(!up) {
-                mode_active = false;
-                break;
-            }
-            mode_active = true;
-        }
-    }
-    rv = amxd_status_ok;
-
-exit:
-    amxc_var_set_type(ret, AMXC_VAR_ID_HTABLE);
-    amxc_var_add_key(bool, ret, "active", mode_active);
-    amxc_llist_clean(&current_list, amxc_string_list_it_free);
-    amxc_string_clean(&current_wan_modes_str);
-    SAH_TRACEZ_OUT(ME);
-    return rv;
-}
-
 amxd_status_t _getWANMode(amxd_object_t* object,
                           UNUSED amxd_function_t* func,
                           UNUSED amxc_var_t* args,

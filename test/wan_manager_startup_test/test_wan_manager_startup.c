@@ -147,29 +147,6 @@ void test_wan_manager_automatic_mode_enable_autosensing_module(UNUSED void** sta
     free(operation_mode);
 }
 
-/**
- * This test makes sure that
- *      * the _getCurrentWANModeStatus provides the correct values to the netmodel_isUp function,
- *        this check is done by the __wrap_netmodel_isUp function
- *      * the function correctly populates the return with the netmodel_isUp result
- *        mocked by setting the return with the set_isUp_result function
- */
-void test_getCurrentWANModeStatus(UNUSED void** state) {
-    amxc_var_t ret;
-
-    set_isUp_result(false);
-    amxc_var_init(&ret);
-    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_false(GET_BOOL(&ret, "active"));
-    amxc_var_clean(&ret);
-
-    set_isUp_result(true);
-    amxc_var_init(&ret);
-    assert_int_equal(0, _getCurrentWANModeStatus(NULL, NULL, NULL, &ret));
-    assert_true(GET_BOOL(&ret, "active"));
-    amxc_var_clean(&ret);
-}
-
 static void reset_apply_at_next_boot(amxd_object_t* wanm_obj) {
     amxd_trans_t trans;
     amxd_trans_init(&trans);
