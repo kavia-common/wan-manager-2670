@@ -47,6 +47,7 @@
         },
         "Origin" : "user",
         "PhysicalType" : "Ethernet",
+        "PhysicalReference" : "",
         "Status" : "Enabled"
     }
 }

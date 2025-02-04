@@ -3,5 +3,6 @@
     "EnableSensing" : true,
     "Origin" : "user",
     "PhysicalType" : "Ethernet",
+    "PhysicalReference" : "",
     "Status" : "Disabled"
 }

@@ -192,6 +192,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_resolver_ftab_add(&parser, "check_wan_mode", AMXO_FUNC(_check_wan_mode)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_physical_type_changed", AMXO_FUNC(_dm_wan_manager_physical_type_changed)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "dm_wan_manager_wan_added", AMXO_FUNC(_dm_wan_manager_wan_added)), 0);
+    assert_int_equal(amxo_resolver_ftab_add(&parser, "wan_destroy", AMXO_FUNC(_wan_destroy)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "interface_destroy", AMXO_FUNC(_interface_destroy)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv4_mode_toggled", AMXO_FUNC(_ipv4_mode_toggled)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "ipv6_mode_toggled", AMXO_FUNC(_ipv6_mode_toggled)), 0);
@@ -234,7 +235,7 @@ int test_wan_manager_setup(UNUSED void** state) {
 
     _wan_manager_main(0, &dm, &parser);
     // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_wanmode.
-    expect_netmodel_openQuery_getFirstParameter("Device.Ethernet.Interface.1.");
+    expect_netmodel_openQuery_getFirstParameter("Device.Ethernet.Interface.1");
     expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_vlanmode
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
     expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // test_mode

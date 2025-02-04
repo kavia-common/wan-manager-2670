@@ -14,6 +14,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status" : "Disabled"
         },
         {
@@ -23,6 +24,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         },
         {
@@ -32,6 +34,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
+            "PhysicalReference" : "",
             "Status" : "Enabled"
         },
         {
@@ -41,6 +44,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "GPON",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         },
         {
@@ -50,6 +54,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "GPON",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         },
         {
@@ -59,6 +64,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         },
         {
@@ -68,6 +74,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType": "Ethernet",
+            "PhysicalReference" : "",
             "Status": "Disabled"
         },
         {
@@ -77,6 +84,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "SFP",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         },
         {
@@ -86,6 +94,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
+            "PhysicalReference" : "",
             "Status" : "Disabled"
         }
     ],

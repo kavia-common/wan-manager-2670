@@ -40,6 +40,7 @@
         },
         "Origin" : "user",
         "PhysicalType" : "Ethernet",
+        "PhysicalReference" : "Device.Ethernet.Interface.1",
         "Status" : "Enabled"
     }
 }

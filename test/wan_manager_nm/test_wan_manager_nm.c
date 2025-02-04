@@ -90,6 +90,7 @@ void test_wm_nm_change_physical_type(UNUSED void** state) {
 
     amxd_trans_init(&trans);
     amxd_trans_select_object(&trans, wan);
+    amxd_trans_set_value(cstring_t, &trans, "PhysicalReference", "");
     amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "Bridge");
     assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
     expect_netmodel_openQuery_getIntfs("bridge && upstream");
@@ -103,6 +104,16 @@ void test_wm_nm_change_physical_type(UNUSED void** state) {
     assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
     expect_netmodel_openQuery_getIntfs("xpon && upstream");
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.xpon-cpe-EthernetUNI-1.");
+    test_handle_events();
+
+    amxd_trans_clean(&trans);
+
+    amxd_trans_select_object(&trans, wan);
+    amxd_trans_set_value(cstring_t, &trans, "PhysicalReference", "Device.XPON.ONU.1.EthernetUNI.1.");
+    amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "GPON");
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
+    // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set.
+    expect_netmodel_openQuery_getFirstParameter("Device.XPON.ONU.1.EthernetUNI.1.");
     test_handle_events();
 
     amxd_trans_clean(&trans);

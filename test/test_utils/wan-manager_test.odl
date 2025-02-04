@@ -19,6 +19,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
     object 'WANManager.WAN' {
         instance add ("demo_wanmode"){
            parameter PhysicalType = "Ethernet";
+           parameter PhysicalReference = "Device.Ethernet.Interface.1";
         }
         instance add ("demo_vlanmode"){
            parameter PhysicalType = "Ethernet";

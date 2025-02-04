@@ -1179,7 +1179,7 @@ void test_wan_manager_set_bridge_mode(UNUSED void** state) {
     amxd_object_get_params(obj, &params, amxd_dm_access_protected);
 
     assert_string_equal(GET_CHAR(&params, "Alias"), "INITIAL_VALUE");
-    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1");
     assert_string_equal(GET_CHAR(&params, "VlanName"), "INITIAL_VALUE");
     assert_true(GET_BOOL(&params, "Enable"));
     assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
@@ -1196,7 +1196,7 @@ void test_wan_manager_set_bridge_mode(UNUSED void** state) {
     test_handle_events();
 
     amxd_object_get_params(obj, &params, amxd_dm_access_protected);
-    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1");
     assert_int_equal(GET_UINT32(&params, "VlanId"), 999);
 
     amxc_var_clean(&params);
@@ -1215,7 +1215,7 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
     amxd_object_get_params(obj, &params, amxd_dm_access_protected);
 
     assert_string_equal(GET_CHAR(&params, "Alias"), "INITIAL_VALUE");
-    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1");
     assert_string_equal(GET_CHAR(&params, "VlanName"), "INITIAL_VALUE");
     assert_true(GET_BOOL(&params, "Enable"));
     assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
@@ -1232,7 +1232,7 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
     test_handle_events();
 
     amxd_object_get_params(obj, &params, amxd_dm_access_protected);
-    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1.");
+    assert_string_equal(GET_CHAR(&params, "LowerLayers"), "Device.Ethernet.Interface.1");
     assert_int_equal(GET_UINT32(&params, "VlanId"), 100);
 
     amxc_var_clean(&params);
