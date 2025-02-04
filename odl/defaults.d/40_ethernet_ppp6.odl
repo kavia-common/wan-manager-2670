@@ -3,6 +3,7 @@
         instance add ("Ethernet_PPP6"){
             parameter Alias = "Ethernet_PPP6";
             parameter PhysicalType = "Ethernet";
+            parameter PhysicalReference = "Device.Ethernet.Interface.1";
             parameter DNSMode = "Dynamic";
         }
     }

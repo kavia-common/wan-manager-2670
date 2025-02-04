@@ -84,10 +84,19 @@ extern "C"
 #include <amxo/amxo.h>
 #include <amxo/amxo_save.h>
 
-int phys_type_to_index(const char* phys_type);
-const char* index_to_phys_type(const int index);
-const char* index_to_phys_type_flag(const int index);
-int toggle_upstream_intf(const char* physical_type, bool enable);
+#define PHYS_TYPE_ETHERNET "Ethernet"
+#define PHYS_TYPE_BRIDGE "Bridge"
+#define PHYS_TYPE_ADSL "ADSL"
+#define PHYS_TYPE_VDSL "VDSL"
+#define PHYS_TYPE_SFP "SFP"
+#define PHYS_TYPE_GPON "GPON"
+#define PHYS_TYPE_GFAST "GFAST"
+#define PHYS_TYPE_WWAN "WWAN"
+
+physical_type_t string_to_physical_type(const char* phys_type);
+const char* physical_type_to_string(physical_type_t type);
+const char* phys_type_to_flag(physical_type_t type);
+int toggle_upstream_intf(nm_query_ll_info_t* info, bool enable);
 
 #ifdef __cplusplus
 }

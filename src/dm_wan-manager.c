@@ -123,7 +123,6 @@ int _wan_manager_main(int reason,
         autosensing_init();
         break;
     case 1:
-        nm_query_ll_cleanup();
         nm_close_sensing_queries();
         netmodel_cleanup();
         amxm_close_all();
@@ -426,9 +425,15 @@ amxd_status_t _check_wan_mode(UNUSED amxd_object_t* object,
     amxc_llist_for_each(it, &new_list) {
         const char* candidate = amxc_string_get(amxc_string_from_llist_it(it), 0);
         amxd_object_t* wan_mode = get_wan_mode(candidate);
-        int physical_type = phys_type_to_index(get_physical_type(wan_mode));
-        when_true_status(physical_type == -1, exit, rc = amxd_status_ok);
-        when_true_trace(wan_mode_physical_types[physical_type] > 0, exit, ERROR, "Cannot enable multiple WANModes with physical type %s", get_physical_type(wan_mode));
+        physical_type_t physical_type = physical_type_last;
+
+        if(wan_mode == NULL) {
+            continue;
+        }
+
+        physical_type = get_physical_type(wan_mode);
+        when_true_status(physical_type == physical_type_last, exit, rc = amxd_status_ok);
+        when_true_trace(wan_mode_physical_types[physical_type] > 0, exit, ERROR, "Cannot enable multiple WANModes with physical type %s", physical_type_to_string(physical_type));
         wan_mode_physical_types[physical_type]++;
     }
 
@@ -504,26 +509,12 @@ exit:
     return rc;
 }
 
-static void dm_wan_manager_register_physical(const amxc_var_t* const event_data,
-                                             const char* query) {
-    SAH_TRACEZ_IN(ME);
-    const char* type = NULL;
-    when_null_trace(event_data, exit, ERROR, "No data");
-    type = GETP_CHAR(event_data, query);
-    SAH_TRACEZ_INFO(ME, "PhysicalType: %s", type);
-    nm_query_ll_add(type);
-exit:
-    SAH_TRACEZ_OUT(ME);
-    return;
-
-}
-
 void _dm_wan_manager_physical_type_changed(UNUSED const char* const event_name,
                                            const amxc_var_t* const event_data,
                                            UNUSED void* const priv) {
-
     SAH_TRACEZ_IN(ME);
-    dm_wan_manager_register_physical(event_data, "parameters.PhysicalType.to");
+    amxd_object_t* wan_mode = amxd_dm_signal_get_object(wan_get_dm(), event_data);
+    nm_query_ll_add(wan_mode);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -531,8 +522,35 @@ void _dm_wan_manager_wan_added(UNUSED const char* const event_name,
                                const amxc_var_t* const event_data,
                                UNUSED void* const priv) {
     SAH_TRACEZ_IN(ME);
-    dm_wan_manager_register_physical(event_data, "parameters.PhysicalType");
+    amxd_object_t* templ = amxd_dm_signal_get_object(wan_get_dm(), event_data);
+    amxd_object_t* wan_mode = amxd_object_get_instance(templ, NULL, GET_UINT32(event_data, "index"));
+    nm_query_ll_add(wan_mode);
     SAH_TRACEZ_OUT(ME);
+}
+
+amxd_status_t _wan_destroy(amxd_object_t* intf,
+                           UNUSED amxd_param_t* param,
+                           amxd_action_t reason,
+                           UNUSED const amxc_var_t* const args,
+                           UNUSED amxc_var_t* const retval,
+                           UNUSED void* priv) {
+    SAH_TRACEZ_IN(ME);
+    amxd_status_t rv = amxd_status_unknown_error;
+    nm_query_ll_info_t* info = NULL;
+
+    when_false_trace(reason == action_object_destroy, exit, NOTICE, "Wrong reason, expected action_object_destroy(%d) got %d", action_object_destroy, reason);
+    when_null_trace(intf, exit, ERROR, "Interface can not be NULL");
+    when_false_status(intf->type == amxd_object_instance, exit, rv = amxd_status_ok);
+
+    info = (nm_query_ll_info_t*) intf->priv;
+    when_null_status(info, exit, rv = amxd_status_ok);
+    ll_queries_clean(&info);
+    intf->priv = NULL;
+    rv = amxd_status_ok;
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return rv;
 }
 
 amxd_status_t _interface_destroy(amxd_object_t* intf,

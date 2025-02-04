@@ -94,6 +94,7 @@ static amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
     rc = component_set_str_param(dhcpv4_path, dhcpv4_get_context(), "Interface", intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV4_REFERENCE_PATH " Interface to '%s'", intf_path);
     rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Could not enable %s", dhcpv4_path);
 
 exit:
     SAH_TRACEZ_OUT(ME);
@@ -203,7 +204,7 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
     if(dhcpv6_path != NULL) {
         SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
-        when_failed(rc, exit);
+        when_failed_trace(rc, exit, ERROR, "Could not disable %s", dhcpv6_path);
         rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
         when_failed_trace(rc, exit, ERROR, "Failed to clear " DHCPV6_REFERENCE_PATH " Interface");
     } else {

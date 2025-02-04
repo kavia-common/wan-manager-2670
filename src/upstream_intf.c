@@ -98,7 +98,7 @@ static int toggle_xpon(nm_query_ll_info_t* info, bool enable);
  * Make sure their order of appearance matches
  */
 const char* phys_types[physical_type_last] = {
-    "Ethernet", "Bridge", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "WWAN"
+    PHYS_TYPE_ETHERNET, PHYS_TYPE_BRIDGE, PHYS_TYPE_ADSL, PHYS_TYPE_VDSL, PHYS_TYPE_SFP, PHYS_TYPE_GPON, PHYS_TYPE_GFAST, PHYS_TYPE_WWAN
 };
 const char* phys_types_flags[physical_type_last] = {
     "eth_intf", "bridge", NULL, NULL, NULL, "xpon", NULL, NULL
@@ -115,7 +115,7 @@ static const upstream_toggle_func_t upstream_toggle[physical_type_last] = {
 static int toggle_dummy(nm_query_ll_info_t* info, UNUSED bool enable) {
     SAH_TRACEZ_IN(ME);
     when_null_trace(info, exit, ERROR, "No info structure provided");
-    SAH_TRACEZ_ERROR(ME, "No toggle function defined for %s", index_to_phys_type(info->index));
+    SAH_TRACEZ_ERROR(ME, "No toggle function defined for %s", physical_type_to_string(info->physical_type));
 exit:
     SAH_TRACEZ_OUT(ME);
     return -1;
@@ -123,7 +123,7 @@ exit:
 
 /**
  * This function is intended to toggle upstream interfaces of type "Ethernet".
- * The expected upstream_intf_path is something like "Device.Ethernet.Interface.1.".
+ * The expected upstream_intf_path is something like "Device.Ethernet.Interface.1".
  * The enable parameter for this instance is toggled
  */
 static int toggle_ethernet(nm_query_ll_info_t* info, bool enable) {
@@ -133,6 +133,7 @@ static int toggle_ethernet(nm_query_ll_info_t* info, bool enable) {
     SAH_TRACEZ_INFO(ME, "Toggling ethernet to %d", enable);
 
     rv = component_set_enable(info->upstream_intf_path, ethernet_get_context(), enable);
+    when_failed_trace(rv, exit, ERROR, "Could not %s %s", enable ? "enable" : "disable", info->upstream_intf_path);
 
 exit:
     SAH_TRACEZ_OUT(ME);
@@ -160,6 +161,7 @@ static int toggle_xpon(nm_query_ll_info_t* info, bool enable) {
     pos = amxc_string_search(&path, "EthernetUNI", 0);
     amxc_string_remove_at(&path, pos, UINT32_MAX);
     rv = component_set_enable(amxc_string_get(&path, 0), xpon_get_context(), enable);
+    when_failed_trace(rv, exit, ERROR, "Could not %s %s", enable ? "enable" : "disable", amxc_string_get(&path, 0));
 
 exit:
     amxc_string_clean(&path);
@@ -168,15 +170,15 @@ exit:
 }
 
 /**
- * @brief Converts the physical type from a string to the corresponding index.
- *  This index can be used to find the flags or toggle function corresponding with this type.
+ * @brief Converts the physical type from a string to a corresponding enum value.
+ *  This enum value can be used to find the flags or toggle function corresponding with this type.
  * @param phys_type The physical type in string as it is stored in the "PhysicalType" parameter
- * @return A value between 0 and physical_type_last if a valid physical type was provided, -1 otherwise.
+ * @return An enum value of type physical_type_t if a valid physical type was provided, physical_type_last otherwise.
    error code and no changes in the data model are done.
  */
-int phys_type_to_index(const char* phys_type) {
+physical_type_t string_to_physical_type(const char* phys_type) {
     SAH_TRACEZ_IN(ME);
-    int rv = -1;
+    physical_type_t rv = physical_type_last;
     int cnt = 0;
     when_str_empty_trace(phys_type, exit, WARNING, "PhysicalType name is empty");
     while(cnt < (int) physical_type_last) {
@@ -192,30 +194,24 @@ exit:
 }
 
 /**
- * @brief Converts the index to a physical type string
- * @param index A value between 0 and physical_type_last that corresponds with the wanted physical type
+ * @brief Converts the physical type enum value to a physical type string
+ * @param type An enum value of type physical_type_t that corresponds with the wanted physical type
  * @return The physical type in string as it is stored in the "PhysicalType" parameter, NULL if no valid index was provided
  */
-const char* index_to_phys_type(const int index) {
-    SAH_TRACEZ_IN(ME);
-    const char* rv = NULL;
-    if((index >= 0) && (index < physical_type_last)) {
-        rv = phys_types[index];
-    }
-    SAH_TRACEZ_OUT(ME);
-    return rv;
+const char* physical_type_to_string(physical_type_t type) {
+    return (type >= 0 && type <= physical_type_last) ? phys_types[type] : NULL;
 }
 
 /**
- * @brief Converts the index to a physical type flag string
- * @param index A value between 0 and physical_type_last that corresponds with the wanted physical type for which the flags are wanted
+ * @brief Converts an enum value of type physical_type_t to a physical type flag string
+ * @param type An enum value of type physical_type_t that corresponds with the wanted physical type for which the flags are wanted
  * @return The flags for the corresponding physical type in string, NULL if no valid index was provided
  */
-const char* index_to_phys_type_flag(const int index) {
+const char* phys_type_to_flag(physical_type_t type) {
     SAH_TRACEZ_IN(ME);
     const char* rv = NULL;
-    if((index >= 0) && (index < physical_type_last)) {
-        rv = phys_types_flags[index];
+    if((type >= 0) && (type < physical_type_last)) {
+        rv = phys_types_flags[type];
     }
     SAH_TRACEZ_OUT(ME);
     return rv;
@@ -226,16 +222,15 @@ const char* index_to_phys_type_flag(const int index) {
  * @param physical_type The physical type in string as it is stored in the "PhysicalType" parameter
  * @return 0 if successful, -1 if an error occurred
  */
-int toggle_upstream_intf(const char* physical_type, bool enable) {
+int toggle_upstream_intf(nm_query_ll_info_t* info, bool enable) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
-    nm_query_ll_info_t* info = NULL;
 
-    info = get_nm_query_info(physical_type);
-    when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type);
+    when_null_trace(info, exit, ERROR, "No info structure found");
+    when_true_trace(info->physical_type >= physical_type_last, exit, ERROR, "Invalid physical type");
 
-    if(upstream_toggle[info->index] != NULL) {
-        rv = upstream_toggle[info->index](info, enable);
+    if(upstream_toggle[info->physical_type] != NULL) {
+        rv = upstream_toggle[info->physical_type](info, enable);
     } else {
         rv = toggle_dummy(info, enable);
     }

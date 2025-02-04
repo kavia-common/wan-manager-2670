@@ -88,6 +88,12 @@
 #include "bridge_mode.h"
 
 #define ME "wan-man"
+
+#define NEEDLE_ETHERNET "Device.Ethernet.Interface."
+#define NEEDLE_BRIDGE "Device.Bridging.Bridge."
+#define NEEDLE_GPON "Device.XPON."
+#define NEEDLE_WWAN "Device.Cellular.Interface."
+
 typedef enum {
     WAN_Mode_Enabled = 0,
     WAN_Mode_Disabled,
@@ -165,7 +171,6 @@ void wan_mode_init(void) {
 
     wan_manager = amxd_dm_findf(wan_get_dm(), "WANManager");
     when_null_trace(wan_manager, exit, ERROR, "Failed to find the WANManager instance");
-    nm_query_ll_init();
 exit:
     SAH_TRACEZ_OUT(ME);
     return;
@@ -183,20 +188,36 @@ void wan_mode_cleanup(void) {
     SAH_TRACEZ_OUT(ME);
 }
 
-const char* get_physical_type(amxd_object_t* wan_mode) {
+physical_type_t get_physical_type(amxd_object_t* wan_mode) {
     SAH_TRACEZ_IN(ME);
+    physical_type_t result = physical_type_last;
     const char* physical_type = NULL;
+    const char* physical_reference = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "Could not find wan-mode");
     physical_type = object_const_string(wan_mode, "PhysicalType");
+    physical_reference = object_const_string(wan_mode, "PhysicalReference");
+
+    if(str_empty(physical_reference)) {
+        result = string_to_physical_type(physical_type);
+    } else if(strstr(physical_reference, NEEDLE_ETHERNET) != NULL) {
+        result = physical_type_ethernet;
+    } else if(strstr(physical_reference, NEEDLE_BRIDGE) != NULL) {
+        result = physical_type_bridge;
+    } else if(strstr(physical_reference, NEEDLE_GPON) != NULL) {
+        result = physical_type_gpon;
+    } else if(strstr(physical_reference, NEEDLE_WWAN) != NULL) {
+        result = physical_type_wwan;
+    }
+
 exit:
     SAH_TRACEZ_OUT(ME);
-    return physical_type;
+    return result;
 }
 
-void wan_manager_found_ll(const char* found_phys_type) {
+void wan_manager_found_ll(physical_type_t found_phys_type) {
     SAH_TRACEZ_IN(ME);
-    const char* current_phys_type = NULL;
+    physical_type_t current_phys_type = physical_type_last;
     operation_mode_t operation_mode = startup_wan_autosensing();
     amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
     bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
@@ -219,8 +240,8 @@ void wan_manager_found_ll(const char* found_phys_type) {
         amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
         when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get WANMode object");
         current_phys_type = get_physical_type(wan_mode_obj);
-        when_str_empty_trace(current_phys_type, exit, ERROR, "Failed to get the physical type for the current wan mode");
-        if((strcmp(found_phys_type, current_phys_type) == 0)) {
+        when_true_trace(current_phys_type == physical_type_last, exit, ERROR, "Failed to get the physical type for the current wan mode");
+        if(found_phys_type == current_phys_type) {
             amxd_status_t rc = wan_mode_enable(wan_mode_obj, true);
             if(rc != amxd_status_ok) {
                 wan_mode_set_status(wan_mode_obj, WAN_Mode_Error);
@@ -347,13 +368,13 @@ static bool wan_mode_different_physical_type(const char* current_wan_modes, UNUS
     amxc_llist_for_each(it_active, &active_list) {
         const char* active_mode = amxc_string_get(amxc_string_from_llist_it(it_active), 0);
         amxd_object_t* wan_mode = NULL;
-        int physical_type = -1;
+        physical_type_t physical_type = physical_type_last;
         if(str_empty(active_mode)) {
             continue;
         }
         wan_mode = get_wan_mode(active_mode);
-        physical_type = phys_type_to_index(get_physical_type(wan_mode));
-        if(physical_type == -1) {
+        physical_type = get_physical_type(wan_mode);
+        if(physical_type == physical_type_last) {
             continue;
         }
         active_wan_mode_physical_types[physical_type]++;
@@ -361,13 +382,13 @@ static bool wan_mode_different_physical_type(const char* current_wan_modes, UNUS
     amxc_llist_for_each(it_new, &new_list) {
         const char* new_mode = amxc_string_get(amxc_string_from_llist_it(it_new), 0);
         amxd_object_t* wan_mode = NULL;
-        int physical_type = -1;
+        physical_type_t physical_type = physical_type_last;
         if(str_empty(new_mode)) {
             continue;
         }
         wan_mode = get_wan_mode(new_mode);
-        physical_type = phys_type_to_index(get_physical_type(wan_mode));
-        if(physical_type == -1) {
+        physical_type = get_physical_type(wan_mode);
+        if(physical_type == physical_type_last) {
             continue;
         }
         new_wan_mode_physical_types[physical_type]++;
@@ -590,19 +611,17 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     nm_query_ll_info_t* info = NULL;
-    const char* physical_type = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "bad wan mode object given");
-    physical_type = object_const_string(wan_mode, "PhysicalType");
 
-    info = get_nm_query_info(physical_type);
-    when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type);
-    when_str_empty_trace(info->lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type);
+    info = (nm_query_ll_info_t*) wan_mode->priv;
+    when_null_trace(info, exit, ERROR, "No info structure found for physical type '%s'", physical_type_to_string(get_physical_type(wan_mode)));
+    when_str_empty_trace(info->lower_layer, exit, ERROR, "LowerLayer for PhysicalType %s returned empty (or null)", physical_type_to_string(get_physical_type(wan_mode)));
 
     if(!enable) {
         wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
     } else {
-        toggle_upstream_intf(physical_type, true);
+        toggle_upstream_intf(info, true);
     }
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {
@@ -619,7 +638,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
     } else {
         rc = dns_mode_unset();
         nm_close_sensing_queries();
-        toggle_upstream_intf(physical_type, false);
+        toggle_upstream_intf(info, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
@@ -793,7 +812,6 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, const ipversion_
     const char* new_ip_mode = NULL;
     const char* ipv4_mode_ovr = NULL;
     const char* ipv6_mode_ovr = NULL;
-    const char* physical_type = NULL;
     const char* current_operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
     const char* wan_mode_name = NULL;
     const char* current_wan_mode = get_current_wan_mode_str();
@@ -826,10 +844,8 @@ static void ip_mode_toggled(const amxc_var_t* const event_data, const ipversion_
         goto exit;
     }
 
-    physical_type = object_const_string(wan_mode_obj, "PhysicalType");
-
-    info = get_nm_query_info(physical_type);
-    when_null_trace(info, exit, ERROR, "No info structure found for PhysicalType '%s'", physical_type);
+    info = (nm_query_ll_info_t*) wan_mode_obj->priv;
+    when_null_trace(info, exit, ERROR, "No info structure found");
 
     // Disable the previous ip mode of the interface
     rc = wan_mode_intf_enable(intf_obj, wan_mode_name, info, false, ipv4_mode_ovr, ipv6_mode_ovr);
@@ -876,7 +892,6 @@ void _app_start(UNUSED const char* const event_name,
 
     amxd_object_for_each(instance, it, wan_obj) {
         amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
-        const char* phy_type = object_const_string(instance, "PhysicalType");
-        nm_query_ll_add(phy_type);
+        nm_query_ll_add(instance);
     }
 }

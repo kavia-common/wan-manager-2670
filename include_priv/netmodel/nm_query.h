@@ -87,11 +87,10 @@ typedef enum _physical_type {
 typedef struct _nm_query_ll_info {
     netmodel_query_t* q_name;
     netmodel_query_t* q_intf_path;
+    physical_type_t physical_type;
     char* intf_name;
     char* lower_layer;
     char* upstream_intf_path;
-    int index;
-    bool used;
 } nm_query_ll_info_t;
 
 typedef struct _intf_isup_queries {
@@ -99,14 +98,11 @@ typedef struct _intf_isup_queries {
     netmodel_query_t* nm_ipv6_up_query;                 // pointer to a netmodel ipv6-up query
 } intf_isup_queries_t;
 
-void nm_query_ll_init(void);
-void nm_query_ll_cleanup(void);
-int nm_query_ll_add(const char* name);
-const char* nm_query_get_lower_layer(const char* name);
+int nm_query_ll_add(amxd_object_t* wan_mode);
+void ll_queries_clean(nm_query_ll_info_t** info);
 void intf_isup_queries_clean(intf_isup_queries_t** nm_queries);
 int nm_query_mode_active(void);
 void nm_close_sensing_queries(void);
-nm_query_ll_info_t* get_nm_query_info(const char* physical_type);
 
 #ifdef __cplusplus
 }

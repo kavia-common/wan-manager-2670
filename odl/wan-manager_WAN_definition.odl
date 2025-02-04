@@ -5,6 +5,8 @@
          * @version 1.0
          */
         %persistent object WAN[] {
+            on action destroy call wan_destroy;
+
             /**
             * A non-volatile unique key used to reference this instance (as defined in TR181)
             * @version 1.0
@@ -14,13 +16,28 @@
             }
 
             /**
+            * This parameter was deprecated and replaced by the PhysicalReference parameter.
+            * When PhysicalReference is filled in the PhysicalType is ignored.
+            *
             * Physical interface type of the WAN mode.
             * @version 1.0
             */
             %persistent string PhysicalType {
-                on action validate call check_enum ["Ethernet", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "Bridge", "WWAN"];
+                on action validate call check_enum ["Ethernet", "ADSL", "VDSL", "SFP", "GPON", "GFAST", "Bridge", "WWAN", ""];
                 default "Ethernet";
             }
+
+            /**
+            * Reference to an entry of a physical interface.
+            * Examples:
+            *   - Device.Ethernet.Interface.i.
+            *   - Device.Cellular.Interface.i.
+            *   - Device.XPON.
+            *   - Device.Wifi.SSID.i.
+            *
+            * @version 1.0
+            */
+            %persistent string PhysicalReference = "";
 
             /**
             * Indicates if the WANMode is considered owned by the:
@@ -80,7 +97,10 @@
 
 %populate {
     on event "dm:object-changed" call dm_wan_manager_physical_type_changed
-        filter 'path matches "WANManager." and contains("parameters.PhysicalType")';
+        filter 'path matches "WANManager\.WAN\.[0-9]+\.$" && (
+            (contains("parameters.PhysicalType")) ||
+            (contains("parameters.PhysicalReference"))
+        )';
     on event "dm:instance-added" call dm_wan_manager_wan_added
         filter 'path matches "WANManager\.WAN\.$"';
 }
