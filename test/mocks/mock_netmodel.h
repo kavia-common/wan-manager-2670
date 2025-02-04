@@ -59,6 +59,10 @@
 #include <amxc/amxc_macros.h>
 #include "netmodel/client.h"
 
+void expect_netmodel_openQuery_getFirstParameter(const char* interface);
+
+void expect_netmodel_openQuery_getIntfs(const char* flags);
+
 bool __wrap_netmodel_initialize(void);
 
 void __wrap_netmodel_cleanup(void);

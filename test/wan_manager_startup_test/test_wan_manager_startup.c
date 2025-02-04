@@ -117,6 +117,8 @@ void test_wan_manager_change_wan_mode_intf_type(UNUSED void** state) {
     amxd_trans_set_value(cstring_t, &transaction, "PhysicalType", "Ethernet");
     amxd_trans_apply(&transaction, test_get_dm());
 
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream");
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
     test_handle_events();
 
     intf = amxd_object_get_value(cstring_t, wan_mode, "PhysicalType", NULL);

@@ -15,8 +15,10 @@ MOCK_WRAP = netmodel_initialize		\
             netmodel_cleanup		\
             netmodel_openQuery_getFirstParameter \
             netmodel_openQuery_getIntfs \
-            netmodel_closeQuery \
+            netmodel_openQuery_isUp \
             netmodel_getFirstParameter \
+            netmodel_closeQuery \
+            netmodel_isUp 	\
             netmodel_clearFlag \
             amxp_proc_ctrl_new 		\
             amxp_proc_ctrl_start 	\

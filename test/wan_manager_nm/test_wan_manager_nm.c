@@ -81,6 +81,7 @@
 #include "test_wan_manager_nm.h"
 #include "test_utils.h"
 #include "reset_mock.h"
+#include "../mocks/mock_netmodel.h"
 
 void test_wm_nm_change_physical_type(UNUSED void** state) {
     amxd_trans_t trans;
@@ -91,6 +92,8 @@ void test_wm_nm_change_physical_type(UNUSED void** state) {
     amxd_trans_select_object(&trans, wan);
     amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "Bridge");
     assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
+    expect_netmodel_openQuery_getIntfs("bridge && upstream");
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.bridge-eth_port2.");
     test_handle_events();
 
     amxd_trans_clean(&trans);
@@ -98,6 +101,8 @@ void test_wm_nm_change_physical_type(UNUSED void** state) {
     amxd_trans_select_object(&trans, wan);
     amxd_trans_set_value(cstring_t, &trans, "PhysicalType", "GPON");
     assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
+    expect_netmodel_openQuery_getIntfs("xpon && upstream");
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.xpon-cpe-EthernetUNI-1.");
     test_handle_events();
 
     amxd_trans_clean(&trans);

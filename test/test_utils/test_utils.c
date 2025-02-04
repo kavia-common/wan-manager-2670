@@ -88,6 +88,7 @@
 #include "dhcpc/dhcpc.h"
 #include "dummy_backend.h"
 #include "../mocks/mock_dns.h"
+#include "../mocks/mock_netmodel.h"
 
 typedef struct {
     bool was_called;
@@ -232,6 +233,29 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_true(apply);
 
     _wan_manager_main(0, &dm, &parser);
+    // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_wanmode.
+    expect_netmodel_openQuery_getFirstParameter("Device.Ethernet.Interface.1.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_vlanmode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // test_mode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("xpon && upstream");     // demo_pppmode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.xpon-cpe-EthernetUNI-1.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_staticmode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("xpon && upstream");     // demo_ppp6mode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.xpon-cpe-EthernetUNI-1.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_dslite
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_link
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // Bridge_mode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // Bridge_vlanmode
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    // SKIP demo_SFP since there is no physical flag defined
+    expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_test
+    expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
     test_handle_events();
 
     // After startup ApplyAtNextBoot should be disabled

@@ -66,6 +66,21 @@
 
 bool isUp_result = false;
 
+void expect_netmodel_openQuery_getFirstParameter(const char* interface) {
+    expect_string(__wrap_netmodel_openQuery_getFirstParameter, intf, interface);
+    expect_string(__wrap_netmodel_openQuery_getFirstParameter, subscriber, "wan-manager");
+    expect_string(__wrap_netmodel_openQuery_getFirstParameter, name, "InterfacePath");
+    expect_string(__wrap_netmodel_openQuery_getFirstParameter, flag, "");
+    expect_string(__wrap_netmodel_openQuery_getFirstParameter, traverse, netmodel_traverse_one_level_up);
+}
+
+void expect_netmodel_openQuery_getIntfs(const char* flags) {
+    expect_string(__wrap_netmodel_openQuery_getIntfs, intf, "NetModel.Intf.resolver.");
+    expect_string(__wrap_netmodel_openQuery_getIntfs, subscriber, "wan-manager");
+    expect_string(__wrap_netmodel_openQuery_getIntfs, flag, flags);
+    expect_string(__wrap_netmodel_openQuery_getIntfs, traverse, "all");
+}
+
 bool __wrap_netmodel_initialize(void) {
     return true;
 }
@@ -77,27 +92,30 @@ void __wrap_netmodel_cleanup(void) {
 netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
                                                               const char* subscriber,
                                                               const char* name,
-                                                              UNUSED const char* flag,
+                                                              const char* flag,
                                                               const char* traverse,
                                                               amxp_slot_fn_t handler,
                                                               void* userdata) {
     amxc_var_t data;
     amxc_var_init(&data);
 
+    check_expected(intf);
+    check_expected(subscriber);
+    check_expected(name);
+    check_expected(flag);
+    check_expected(traverse);
+
     assert_non_null(intf);
-    assert_non_null(subscriber);
-    assert_non_null(traverse);
     assert_non_null(handler);
-    assert_non_null(name);
     assert_string_equal(subscriber, "wan-manager");
     assert_string_equal(name, "InterfacePath");
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
-    if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
+    if((strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) || (strcmp(intf, "Device.Ethernet.Interface.1") == 0)) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "Ethernet" is 0 (index in array)
-        assert_int_equal(info->index, 0);
+        // info->physical_type for "Ethernet" is 0 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 0);
         // 1. call function with no data
         handler("sig_name", &data, userdata);
         // 2. call function with empty string
@@ -108,10 +126,10 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         handler("sig_name", &data, userdata);
         // 4. call with same data
         handler("sig_name", &data, userdata);
-    } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
+    } else if((strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) || (strcmp(intf, "Device.XPON.ONU.1.EthernetUNI.1.") == 0)) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "GPON" is 5 (index in array)
-        assert_int_equal(info->index, 5);
+        // info->physical_type for "GPON" is 5 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 5);
         // 1. call function with no data
         handler("sig_name", &data, userdata);
         // 2. call function with empty string
@@ -121,6 +139,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.6.");
         handler("sig_name", &data, userdata);
         // 4. call with same data
+        handler("sig_name", &data, userdata);
+    } else if(strcmp(intf, "NetModel.Intf.bridge-eth_port2.") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->physical_type for "Bridge" is 1 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 1);
+        amxc_var_set(cstring_t, &data, "Device.Bridging.Bridge.1.Port.2");
         handler("sig_name", &data, userdata);
     } else {
         assert_string_equal(name, "NetModel.Intf.unknown.");
@@ -137,14 +161,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
                                                      void* userdata) {
     amxc_var_t data;
     amxc_var_init(&data);
+    check_expected(intf);
+    check_expected(subscriber);
+    check_expected(flag);
+    check_expected(traverse);
 
-    assert_non_null(intf);
-    assert_non_null(subscriber);
-    assert_non_null(flag);
-    assert_non_null(traverse);
     assert_non_null(handler);
-    assert_string_equal(subscriber, "wan-manager");
-    assert_string_equal(intf, "NetModel.Intf.resolver.");
 
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
 
@@ -152,8 +174,8 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
 
     if(strcmp(flag, "eth_intf && upstream") == 0) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "Ethernet" is 0 (index in array)
-        assert_int_equal(info->index, 0);
+        // info->physical_type for "Ethernet" is 0 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 0);
         // 1. call function with no data
         handler("sig_name", &data, userdata);
         // 2. call function with empty string
@@ -166,14 +188,17 @@ netmodel_query_t* __wrap_netmodel_openQuery_getIntfs(const char* intf,
         handler("sig_name", &data, userdata);
     } else if(strcmp(flag, "bridge && upstream") == 0) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "Bridge" is 1 (index in array)
-        assert_int_equal(info->index, 1);
+        // info->physical_type for "Bridge" is 1 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 1);
         // 1. call function with no data
+        handler("sig_name", &data, userdata);
+        // 2. call with usefull data
+        amxc_var_add(cstring_t, &data, "bridge-eth_port2");
         handler("sig_name", &data, userdata);
     } else if(strcmp(flag, "xpon && upstream") == 0) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
-        // info->index for "GPON" is 5 (index in array)
-        assert_int_equal(info->index, 5);
+        // info->physical_type for "GPON" is 5 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 5);
         amxc_var_add(cstring_t, &data, "xpon-cpe-EthernetUNI-1");
         handler("sig_name", &data, userdata);
     } else {
@@ -219,6 +244,9 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
 
         // Check to see if interface object in userdata is an interface from the current wanmode
         intf_obj = amxd_object_findf(wan_mode_obj, "Intf.%s.", priv_obj->name);
+        if(intf_obj != priv_obj) {
+            continue;
+        }
         assert_non_null(intf_obj);
 
         if(strcmp(flag, "ipv4-up") == 0) {
@@ -302,13 +330,13 @@ amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name
 
     if(strcmp(intf, "NetModel.Intf.ethIntf-ETH0.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_this);
-        amxc_var_set(cstring_t, data, "Device.Ethernet.Interface.1.");
+        amxc_var_set(cstring_t, data, "Device.Ethernet.Interface.1");
     } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_this);
         amxc_var_set(cstring_t, data, "Device.XPON.ONU.1.EthernetUNI.1.");
-    } else if(strcmp(intf, "NetModel.Intf.xpon-cpe-EthernetUNI-1.") == 0) {
+    } else if(strcmp(intf, "NetModel.Intf.bridge-eth_port2.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_this);
-        amxc_var_set(cstring_t, data, "Device.XPON.ONU.1.EthernetUNI.1.");
+        amxc_var_set(cstring_t, data, "NetModel.Intf.bridge-eth_port2");
     } else if(strcmp(intf, "Device.Bridging.Bridge.1.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_one_level_up);
         amxc_var_set(cstring_t, data, "Device.Ethernet.Link.3.");

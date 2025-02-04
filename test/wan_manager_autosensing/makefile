@@ -19,6 +19,7 @@ MOCK_WRAP = netmodel_initialize		\
             netmodel_openQuery_isUp \
             netmodel_getFirstParameter \
             netmodel_closeQuery \
+            netmodel_isUp 	\
             netmodel_clearFlag \
             amxb_set \
             amxb_set_multiple \
