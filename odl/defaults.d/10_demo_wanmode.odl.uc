@@ -7,7 +7,7 @@
         instance add ("demo_wanmode"){
             parameter Alias = "demo_wanmode";
             parameter PhysicalType = "Ethernet";
-            parameter PhysicalReference = "Device.Ethernet.Interface.1";
+            parameter PhysicalReference = "Device.Ethernet.Interface.{{ BDfn.getUpstreamInterfaceIndex() + 1 }}";
         }
     }
 

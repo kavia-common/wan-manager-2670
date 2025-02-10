@@ -3,7 +3,7 @@
         instance add ("Ethernet_bridged"){
             parameter Alias = "Ethernet_bridged";
             parameter PhysicalType = "Ethernet";
-            parameter PhysicalReference = "Device.Ethernet.Interface.1";
+            parameter PhysicalReference = "Device.Ethernet.Interface.{{ BDfn.getUpstreamInterfaceIndex() + 1 }}";
             parameter EnableSensing = false;
         }
     }

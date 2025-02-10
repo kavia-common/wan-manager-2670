@@ -3,7 +3,7 @@
         instance add ("Ethernet_DHCP"){
             parameter Alias = "Ethernet_DHCP";
             parameter PhysicalType = "Ethernet";
-            parameter PhysicalReference = "Device.Ethernet.Interface.1";
+            parameter PhysicalReference = "Device.Ethernet.Interface.{{ BDfn.getUpstreamInterfaceIndex() + 1 }}";
         }
     }
 

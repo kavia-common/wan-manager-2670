@@ -65,7 +65,7 @@ artifacts:
   - source: "odl/$(COMPONENT)_WAN_Intf_definition.odl"
     destination: "/etc/amx/$(COMPONENT)/$(COMPONENT)_WAN_Intf_definition.odl"
     permissions: "0644"
-  - source: "odl/defaults.d/*.odl"
+  - source: "odl/defaults.d/*"
     destination: "/etc/amx/$(COMPONENT)/defaults.d/"
     permissions: "0644"
   - source: "odl/$(COMPONENT)_mapping.odl"

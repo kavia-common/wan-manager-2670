@@ -3,7 +3,7 @@
         instance add ("Ethernet_PPP"){
             parameter Alias = "Ethernet_PPP";
             parameter PhysicalType = "Ethernet";
-            parameter PhysicalReference = "Device.Ethernet.Interface.1";
+            parameter PhysicalReference = "Device.Ethernet.Interface.{{ BDfn.getUpstreamInterfaceIndex() + 1 }}";
         }
     }
 
