@@ -81,6 +81,7 @@
 #define ME "dslite-ctrl"
 
 #define DSLITE_DEVICE_PATH DEVICE_PATH DSLITE_PATH
+#define PCP_DEVICE_PATH DEVICE_PATH PCP_PATH
 
 static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
                                    amxc_var_t* const parameters) {
@@ -110,11 +111,13 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     rc = component_set_enable(DSLITE_DEVICE_PATH, dslite_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite");
     rc = component_set_enable(dslite_path, dslite_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite interface '%s'", dslite_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable DSLite Interface '%s'", dslite_path);
 
     // Enable PCP
-    rc = component_set_bool(pcp_path, pcp_get_context(), "Enable", true);
+    rc = component_set_enable(PCP_DEVICE_PATH, pcp_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable PCP");
+    rc = component_set_enable(pcp_path, pcp_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable PCP Client %s", pcp_path);
 
     component_get_param(&wan_if, dslite_path, dslite_get_context(), "WANInterface");
     dslite_wan_if = GETP_CHAR(&wan_if, "0.0.WANInterface");

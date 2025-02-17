@@ -93,6 +93,7 @@ extern "C" {
 #define DNS_PATH "DNS."
 #define PPP_PATH "PPP."
 #define DSLITE_PATH "DSLite."
+#define PCP_PATH "PCP."
 
 #define IPV4_REFERENCE_PATH "IPv4Reference"
 #define IPV6_REFERENCE_PATH "IPv6Reference"

@@ -105,15 +105,18 @@ static bool is_dhcp_mode(const char* wan_mode) {
     return strcmp(wan_mode, "demo_wanmode") == 0 || strcmp(wan_mode, "demo_test") == 0;
 }
 
-static void assert_dslite() {
-    amxd_object_t* routeinfo = amxd_dm_findf(test_get_dm(), "DSLite.");
-    // amxd_object_t* routeinfo_inst = NULL;
+static void assert_dslite(void) {
+    amxd_object_t* dslite_obj = amxd_dm_findf(test_get_dm(), "DSLite.");
+    amxd_object_t* pcp_obj = amxd_dm_findf(test_get_dm(), "PCP.");
+    amxd_object_t* dslite_intf_obj = NULL;
 
-    assert_non_null(routeinfo);
-    assert_true(amxd_object_get_bool(routeinfo, "Enable", NULL));
+    assert_non_null(dslite_obj);
+    assert_true(amxd_object_get_bool(dslite_obj, "Enable", NULL));
+    assert_non_null(pcp_obj);
+    assert_true(amxd_object_get_bool(pcp_obj, "Enable", NULL));
 
-    // routeinfo_inst = amxd_object_findf(routeinfo, "InterfaceSetting.[Interface==\"Device.IP.%s.\"]", ip_interface);
-    // assert_non_null(routeinfo_inst);
+    dslite_intf_obj = amxd_object_findf(dslite_obj, "InterfaceSetting.1.");
+    assert_non_null(dslite_intf_obj);
 
 }
 
