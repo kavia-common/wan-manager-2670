@@ -60,6 +60,17 @@
             }
 
             /**
+            * Ignored when EnableSensing is false.
+            * This value indicates how important this WANMode is compared to others in the context of autosensing.
+            * Highest priority will be the WANMode with the lowest SensingPriority.
+            * Multiple WANModes can have the same SensingPriority value, in that case there is no preference on which of those is set.
+            * @version 1.0
+            */
+            %persistent uint32 SensingPriority {
+                default 0;
+            }
+
+            /**
             * Status parameter to indicate the WAN Mode is active, in error state or disabled
             * @version 1.0
             */
@@ -100,6 +111,10 @@
         filter 'path matches "WANManager\.WAN\.[0-9]+\.$" && (
             (contains("parameters.PhysicalType")) ||
             (contains("parameters.PhysicalReference"))
+        )';
+    on event "dm:object-changed" call wan_sensing_priority_changed
+        filter 'path matches "WANManager\.WAN\.[0-9]+\.$" && (
+            (contains("parameters.SensingPriority"))
         )';
     on event "dm:instance-added" call dm_wan_manager_wan_added
         filter 'path matches "WANManager\.WAN\.$"';

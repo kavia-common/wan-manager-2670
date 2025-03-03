@@ -802,6 +802,14 @@ void _wan_sensing_toggled(UNUSED const char* const event_name,
     SAH_TRACEZ_OUT(ME);
 }
 
+void _wan_sensing_priority_changed(UNUSED const char* const event_name,
+                                   UNUSED const amxc_var_t* const event_data,
+                                   UNUSED void* const priv) {
+    SAH_TRACEZ_IN(ME);
+    update_sensing();
+    SAH_TRACEZ_OUT(ME);
+}
+
 static void ip_mode_toggled(const amxc_var_t* const event_data, const ipversion_t ipversion) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;

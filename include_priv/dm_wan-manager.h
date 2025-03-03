@@ -159,6 +159,10 @@ void _dm_wan_manager_physical_type_changed(const char* const event_name,
                                            const amxc_var_t* const event_data,
                                            void* const priv);
 
+void _wan_sensing_priority_changed(const char* const event_name,
+                                   const amxc_var_t* const event_data,
+                                   void* const priv);
+
 void _dm_wan_manager_wan_added(const char* const event_name,
                                const amxc_var_t* const event_data,
                                void* const priv);
