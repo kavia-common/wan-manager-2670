@@ -78,6 +78,7 @@ extern "C"
 #include "ctrl/mode_ctrl.h"
 #include "netmodel/nm_query.h"
 
+void update_sensing(void);
 void wan_mode_init(void);
 amxd_object_t* get_wan_manager_obj(void);
 physical_type_t get_physical_type(amxd_object_t* wan_mode);
@@ -104,6 +105,9 @@ void _ipv4_mode_toggled(const char* const event_name,
 void _ipv6_mode_toggled(const char* const event_name,
                         const amxc_var_t* const event_data,
                         void* const priv);
+
+mode_ctrl_t wan_mode_convert_from_str(const char* mode, const ipversion_t ipversion);
+
 #ifdef __cplusplus
 }
 #endif

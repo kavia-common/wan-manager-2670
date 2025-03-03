@@ -75,6 +75,7 @@ extern "C" {
 #define MOD_AUTOSENSING_CTRL    "autosensing-ctrl"
 #define MOD_DM_MNGR             "dm-mngr"
 
+void autosensing_found_mode(void);
 int autosensing_init(void);
 int mod_autosensing_start(void);
 int mod_autosensing_stop(void);

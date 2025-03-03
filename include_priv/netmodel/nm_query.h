@@ -91,11 +91,16 @@ typedef struct _nm_query_ll_info {
     char* intf_name;
     char* lower_layer;
     char* upstream_intf_path;
+    bool wan_mode_up;
 } nm_query_ll_info_t;
 
 typedef struct _intf_isup_queries {
     netmodel_query_t* nm_ipv4_up_query;                 // pointer to a netmodel ipv4-up query
     netmodel_query_t* nm_ipv6_up_query;                 // pointer to a netmodel ipv6-up query
+    bool ipv4_needed;
+    bool ipv6_needed;
+    bool ipv4_result;
+    bool ipv6_result;
 } intf_isup_queries_t;
 
 int nm_query_ll_add(amxd_object_t* wan_mode);

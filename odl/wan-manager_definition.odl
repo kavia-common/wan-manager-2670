@@ -113,13 +113,14 @@
 
         /**
          * WANMode sensing Policy: Defines how the autosensing mechanism should work. Different behavior can be applied
-         * * Policy = AtBoot: WAN Sensing will be started at boot, once a WANMode is detected, it will be set 'fixed'
-         * * Policy = Continuous: The WANMode selection procedure will be continuous looping over all applicable WANModes
-         *   until we found a working WANMode.
+         * * Policy = AtBoot:     WAN Sensing will be started at boot, once a WANMode is detected, it will be set 'fixed'
+         * * Policy = Continuous: The WANMode selection procedure will be continuous looping over all applicable WANModes until we found a working WANMode.
+         * *                      After that it will immediately switch to a higher sensing priority mode when a changed hardware configuration is detected.
+         * * Policy = Sticky:     WAN Sensing will only start if the current WANMode is interrupted.
          * @version 1.0
          */
          %persistent string SensingPolicy {
-            on action validate call check_enum ["AtBoot", "Continuous"];
+            on action validate call check_enum ["AtBoot", "Continuous", "Sticky"];
             default "AtBoot";
          }
 

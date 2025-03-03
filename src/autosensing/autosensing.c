@@ -81,6 +81,26 @@
 
 #define ME "as-ctrl"
 
+bool sensing_at_boot_finished = false;
+
+static bool is_sensing_policy(const char* policy) {
+    bool res = false;
+    const char* sensing_policy = object_const_string(get_wan_manager_obj(), "SensingPolicy");
+
+    when_str_empty(sensing_policy, exit);
+    res = strcmp(sensing_policy, policy) == 0;
+
+exit:
+    return res;
+}
+
+void autosensing_found_mode(void) {
+    sensing_at_boot_finished = true;
+    if(is_sensing_policy("AtBoot")) {
+        SAH_TRACEZ_INFO(ME, "Active WANMode sensed at boot!");
+    }
+}
+
 static int autosensing_set_wan_mode(UNUSED const char* function_name,
                                     amxc_var_t* args,
                                     UNUSED amxc_var_t* ret) {
@@ -100,19 +120,6 @@ static int autosensing_set_wan_mode(UNUSED const char* function_name,
     when_failed_trace(rv, exit, ERROR, "Failed to set wan mode '%s'", next_wan_mode_str);
 
 exit:
-    SAH_TRACEZ_OUT(ME);
-    return rv;
-}
-
-static int autosensing_is_up_query_start(UNUSED const char* function_name,
-                                         UNUSED amxc_var_t* args,
-                                         UNUSED amxc_var_t* ret) {
-    SAH_TRACEZ_IN(ME);
-    int rv = -1;
-
-    SAH_TRACEZ_INFO(ME, "Autosensing, start sensing query");
-    rv = nm_query_mode_active();
-
     SAH_TRACEZ_OUT(ME);
     return rv;
 }
@@ -139,8 +146,6 @@ static int register_core_functions(void) {
     when_failed(amxm_module_register(&mod, so, MOD_DM_MNGR), exit);
     rv = amxm_module_add_function(mod, "set-mode", autosensing_set_wan_mode);
     when_failed_trace(rv, exit, ERROR, "Failed to register function set-mode");
-    rv = amxm_module_add_function(mod, "isup-sensing-start", autosensing_is_up_query_start);
-    when_failed_trace(rv, exit, ERROR, "Failed to register function isup-sensing-start");
     rv = amxm_module_add_function(mod, "isup-sensing-stop", autosensing_is_up_query_stop);
     when_failed_trace(rv, exit, ERROR, "Failed to register function isup-sensing-stop");
 
@@ -229,24 +234,35 @@ int mod_autosensing_start(void) {
     amxc_var_t* modes = NULL;
     amxd_object_t* wanm_obj = get_wan_manager_obj();
     amxd_object_t* wan_obj = amxd_object_findf(wanm_obj, "WAN.");
-    bool sense_current_mode = false;
+
+    amxc_var_init(&data);
 
     when_null_trace(wanm_obj, exit, ERROR, "Could not find wan manager object");
     when_null_trace(wan_obj, exit, ERROR, "Could not find wan mode object");
+    when_true_trace(is_sensing_policy("AtBoot") && sensing_at_boot_finished, exit, INFO, "Not starting autosensing module since AtBoot sensing is finished!");
 
-    amxc_var_init(&data);
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
     amxd_object_get_params(wanm_obj, &data, amxd_dm_access_protected);
-    amxc_var_add_key(bool, &data, "sense_current_mode", sense_current_mode);
     modes = amxc_var_add_key(amxc_llist_t, &data, "modes", NULL);
     amxd_object_for_each(instance, it, wan_obj) {
         amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
+        when_null(info, exit);
+
         // Only add modes that we want to sense
         if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
             SAH_TRACEZ_INFO(ME, "Adding '%s' to module data", instance->name);
             params = amxc_var_add(amxc_htable_t, modes, NULL);
             amxd_object_get_params(instance, params, amxd_dm_access_protected);
+
+            // When PhysicalReference is not set but we found one via NetModel use this one.
+            if(str_empty(GET_CHAR(params, "PhysicalReference"))) {
+                if(!str_empty(info->upstream_intf_path)) {
+                    amxc_var_t* physical_reference = GET_ARG(params, "PhysicalReference");
+                    amxc_var_set(cstring_t, physical_reference, info->upstream_intf_path);
+                }
+            }
         }
     }
 

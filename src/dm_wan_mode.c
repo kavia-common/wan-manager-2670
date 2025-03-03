@@ -101,12 +101,6 @@ typedef enum {
     WAN_Mode_Nr_
 } wan_mode_status_t;
 
-typedef enum {
-    OPERATION_MODE_UNKNOWN,
-    OPERATION_MODE_AUTOMATIC,
-    OPERATION_MODE_MANUAL
-} operation_mode_t;
-
 typedef struct {
     mode_ctrl_t mode;
     const char* str;
@@ -141,13 +135,12 @@ static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
                                      bool include_type,
                                      const char* custom_ipv4_mode,
                                      const char* custom_ipv6_mode);
-static mode_ctrl_t wan_mode_convert_from_str(const char* mode, const ipversion_t ipversion);
 static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
-static operation_mode_t update_operation_mode(const char* new_operation_mode);
-static operation_mode_t startup_wan_autosensing(void);
+static void update_operation_mode(const char* new_operation_mode, const char* sensing_policy, bool override_boot);
+static void startup_wan_autosensing(void);
 
-static void update_sensing(void) {
+void update_sensing(void) {
     SAH_TRACEZ_IN(ME);
     const char* current_operation_mode = object_const_string(wan_manager, "OperationMode");
     const char* sensing_policy = object_const_string(wan_manager, "SensingPolicy");
@@ -217,8 +210,8 @@ exit:
 
 void wan_manager_found_ll(physical_type_t found_phys_type) {
     SAH_TRACEZ_IN(ME);
+    const char* operation_mode = object_const_string(wan_manager, "OperationMode");
     physical_type_t current_phys_type = physical_type_last;
-    operation_mode_t operation_mode = startup_wan_autosensing();
     amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
     bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
     const char* current_wanmodes = get_current_wan_mode_str();
@@ -229,9 +222,13 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
     amxc_string_init(&current_wan_modes_str, 0);
     amxc_llist_init(&current_list);
 
+    if(strcmp(operation_mode, "Automatic") == 0) {
+        startup_wan_autosensing();
+        goto exit;
+    }
+
     when_str_empty_trace(current_wanmodes, exit, ERROR, "Current wan mode objects could not be found");
     when_false(apply, exit);
-    when_true(operation_mode == OPERATION_MODE_AUTOMATIC, exit);
 
     amxc_string_set(&current_wan_modes_str, current_wanmodes);
     amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
@@ -269,42 +266,55 @@ exit:
     SAH_TRACEZ_OUT(ME);
 }
 
-static operation_mode_t startup_wan_autosensing(void) {
+static void startup_wan_autosensing(void) {
     SAH_TRACEZ_IN(ME);
-    operation_mode_t rv = OPERATION_MODE_UNKNOWN;
-    const amxc_var_t* var_operation_mode = NULL;
+    const char* current_operation_mode = NULL;
+    const char* sensing_policy = NULL;
+    amxd_object_t* wan_obj = amxd_object_get(wan_manager, "WAN");
 
     when_true(wan_autosensing_can_start, exit);
     when_null_trace(wan_manager, exit, ERROR, "Did not get the wan-manager object yet");
+    current_operation_mode = object_const_string(wan_manager, "OperationMode");
+    sensing_policy = object_const_string(wan_manager, "SensingPolicy");
+
+    // All WANModes that need to be sensed should have a lower layer
+    amxd_object_for_each(instance, it, wan_obj) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        when_null(instance, exit);
+        if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
+            nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
+            when_null(info, exit);
+            when_str_empty_trace(info->lower_layer, exit, INFO, "Waiting on WANMode %s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
+        }
+    }
 
     wan_autosensing_can_start = true;
-    var_operation_mode = amxd_object_get_param_value(wan_manager, "OperationMode");
-    rv = update_operation_mode(GET_CHAR(var_operation_mode, NULL));
+    update_operation_mode(current_operation_mode, sensing_policy, true);
 
 exit:
     SAH_TRACEZ_OUT(ME);
-    return rv;
+    return;
 }
 
-static operation_mode_t update_operation_mode(const char* new_operation_mode) {
+static void update_operation_mode(const char* new_operation_mode, const char* sensing_policy, bool override_boot) {
     SAH_TRACEZ_IN(ME);
-    operation_mode_t rv = OPERATION_MODE_UNKNOWN;
     when_str_empty_trace(new_operation_mode, exit, ERROR, "Bad new operation mode value");
 
     SAH_TRACEZ_INFO(ME, "WANManager set sensing mode to %s", new_operation_mode);
     if(0 == strcmp(new_operation_mode, "Automatic")) {
+        when_str_empty_trace(sensing_policy, exit, ERROR, "Bad sensing policy value");
         when_false_trace(wan_autosensing_can_start, exit, WARNING, "Not able to start autosensing, physical interface not known yet");
+        when_true_trace(!override_boot && strcmp(sensing_policy, "AtBoot") == 0, exit, INFO, "Not starting autosensing since Policy is AtBoot");
+        when_true_trace(!override_boot && strcmp(sensing_policy, "Sticky") == 0, exit, INFO, "Not starting autosensing explicitly since Policy is Sticky, waiting on NetModel events");
         mod_autosensing_start();
-        rv = OPERATION_MODE_AUTOMATIC;
     } else if(0 == strcmp(new_operation_mode, "Manual")) {
         mod_autosensing_stop();
-        rv = OPERATION_MODE_MANUAL;
     } else {
         SAH_TRACEZ_ERROR(ME, "Unsupported operation mode[%s]", new_operation_mode);
     }
 exit:
     SAH_TRACEZ_OUT(ME);
-    return rv;
+    return;
 }
 
 /**
@@ -638,7 +648,6 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
     } else {
         rc = dns_mode_unset();
         nm_close_sensing_queries();
-        toggle_upstream_intf(info, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
@@ -717,6 +726,7 @@ mode_ctrl_t wan_mode_convert_from_str(const char* mode, const ipversion_t ipvers
     mode_ctrl_t rc = IP_None;
 
     when_false(ipversion_valid(ipversion), exit);
+    when_null(mode, exit);
 
     while(lookup->str != NULL) {
         if(0 == strcmp(mode, lookup->str)) {
@@ -779,10 +789,13 @@ void _update_autosensing(UNUSED const char* const event_name,
                          const amxc_var_t* const event_data,
                          UNUSED void* const priv) {
     SAH_TRACEZ_IN(ME);
+    const char* sensing_policy = object_const_string(wan_manager, "SensingPolicy");
+
     SAH_TRACEZ_INFO(ME, "Toggling OperationMode from %s to %s",
                     GETP_CHAR(event_data, "parameters.OperationMode.from"),
                     GETP_CHAR(event_data, "parameters.OperationMode.to"));
-    update_operation_mode(GETP_CHAR(event_data, "parameters.OperationMode.to"));
+
+    update_operation_mode(GETP_CHAR(event_data, "parameters.OperationMode.to"), sensing_policy, false);
     SAH_TRACEZ_OUT(ME);
 }
 

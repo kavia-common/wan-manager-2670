@@ -82,6 +82,7 @@
 #include "wan_manager_utils.h"
 #include "netmodel/nm_query.h"
 #include "upstream_intf.h"
+#include "dm_wan_mode.h"
 
 #define ME "wan-man"
 

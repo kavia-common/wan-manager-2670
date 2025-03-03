@@ -61,19 +61,12 @@
 ****************************************************************************/
 
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include <debug/sahtrace.h>
 #include <debug/sahtrace_macros.h>
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <netmodel/client.h>
-#include <netmodel/common_api.h>
 
 #include "dm_wan_mode.h"
 #include "netmodel/nm_query.h"
@@ -172,31 +165,92 @@ exit:
     return;
 }
 
+/**
+ * @brief This function loops over all Interfaces of a WANMode and checks if all active netmodel queries are up.
+ *
+ * @param intf_obj WANManager.WAN.{}.Intf object
+ * @return true when all queries for intf_obj and it's sibling Intf objects are returning true
+ * @return false otherwise
+ */
+static bool wan_mode_up(amxd_object_t* wan_mode_obj) {
+    bool up = false;
+    nm_query_ll_info_t* info = NULL;
+
+    when_null_trace(wan_mode_obj, exit, ERROR, "Could not get the wanmode object");
+    info = (nm_query_ll_info_t*) wan_mode_obj->priv;
+    when_null_trace(info, exit, ERROR, "Could not find wanmode private data");
+
+    amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
+        amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
+        intf_isup_queries_t* nm_queries = NULL;
+        when_null_trace(interface, exit, ERROR, "Could not get interface object");
+        nm_queries = (intf_isup_queries_t*) interface->priv;
+        when_null_trace(nm_queries, exit, ERROR, "Could not get netmodel queries");
+
+        when_true(nm_queries->ipv4_needed && nm_queries->ipv4_result == false, exit);
+        when_true(nm_queries->ipv6_needed && nm_queries->ipv6_result == false, exit);
+    }
+
+    up = true;
+
+exit:
+    SAH_TRACEZ_INFO(ME, "WANMode is %s!", up ? "UP" : "(still) DOWN");
+    if(info != NULL) {
+        info->wan_mode_up = up;
+    }
+    return up;
+}
 
 /**
  * @brief This function will handle the netmodel flags and, if required, stopping autosensing
  * @param data a variant that contains a boolean indication if the mode interface is active or not
  * @param intf_obj The wan mode interface object for which the flag will be toggled on the corresponding logical netmodel interface
  * @param flag The flag that should be toggled
- * @param stop_sensing If set to true, sensing will be stopped if this mode is active
+ * @param ip_version Indicates whether IPv4 or IPv6 mode interface is active or not
  */
-static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_object_t* intf_obj, const char* flag, bool stop_sensing) {
+static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_object_t* intf_obj, const char* flag, ipversion_t ip_version) {
     SAH_TRACEZ_IN(ME);
+    bool wan_mode_active = false;
+    bool intf_was_up_before = false;
     bool active = GET_BOOL(data, NULL);
     const char* intf_name = object_const_string(intf_obj, "Name");
+    nm_query_ll_info_t* info = NULL;
+    intf_isup_queries_t* nm_queries = NULL;
+    amxd_object_t* wan_mode_obj = NULL;
 
     when_null_trace(intf_obj, exit, ERROR, "Failed to get interface object");
+    when_str_empty_trace(intf_name, exit, ERROR, "Failed to get interface name");
 
-    SAH_TRACEZ_INFO(ME, "Current mode is %s", active ? "active" : "inactive");
+    wan_mode_obj = amxd_object_get_parent(amxd_object_get_parent(intf_obj));
+    when_null_trace(wan_mode_obj, exit, ERROR, "Could not get the wanmode object");
+    info = (nm_query_ll_info_t*) wan_mode_obj->priv;
+    when_null_trace(info, exit, ERROR, "Failed to get netmodel queries");
+    intf_was_up_before = info->wan_mode_up;
+
+    nm_queries = (intf_isup_queries_t*) intf_obj->priv;
+    when_null_trace(nm_queries, exit, ERROR, "Failed to get netmodel queries");
+    if(ip_version == IPv4) {
+        nm_queries->ipv4_result = active;
+    } else if(ip_version == IPv6) {
+        nm_queries->ipv6_result = active;
+    }
+
     if(active) {
         SAH_TRACEZ_INFO(ME, "Setting flag '%s' on interface '%s'", flag, intf_name);
         netmodel_setFlag(intf_name, flag, NULL, netmodel_traverse_this);
-        if(stop_sensing) {
-            mod_autosensing_stop();
-        }
     } else {
         SAH_TRACEZ_INFO(ME, "Clearing flag '%s' from interface '%s'", flag, intf_name);
         netmodel_clearFlag(intf_name, flag, NULL, netmodel_traverse_this);
+    }
+
+    wan_mode_active = wan_mode_up(wan_mode_obj);
+    if(wan_mode_active) {
+        autosensing_found_mode();
+        mod_autosensing_stop();
+    } else {
+        if(intf_was_up_before) {
+            mod_autosensing_start();
+        }
     }
 
 exit:
@@ -210,7 +264,7 @@ static void nm_query_mode_active_cb(UNUSED const char* sig_name,
     SAH_TRACEZ_IN(ME);
     amxd_object_t* intf_obj = (amxd_object_t*) priv;
 
-    nm_query_mode_active_handle_flags(data, intf_obj, LOGICAL4_UP_FLAG, true);
+    nm_query_mode_active_handle_flags(data, intf_obj, LOGICAL4_UP_FLAG, IPv4);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -220,7 +274,7 @@ static void nm_query_mode6_active_cb(UNUSED const char* sig_name,
     SAH_TRACEZ_IN(ME);
     amxd_object_t* intf_obj = (amxd_object_t*) priv;
 
-    nm_query_mode_active_handle_flags(data, intf_obj, LOGICAL6_UP_FLAG, false);
+    nm_query_mode_active_handle_flags(data, intf_obj, LOGICAL6_UP_FLAG, IPv6);
     SAH_TRACEZ_OUT(ME);
 }
 
@@ -269,6 +323,7 @@ int nm_query_ll_add(amxd_object_t* wan_mode) {
         ll_queries_clean(&old_nm_queries);
     }
     wan_mode->priv = info;
+    info->wan_mode_up = false;
     info->physical_type = physical_type;
 
     if(str_empty(physical_reference)) {
@@ -308,6 +363,51 @@ exit:
     return;
 }
 
+static void init_intf_isup_query(amxd_object_t* interface, intf_isup_queries_t* nm_queries, ipversion_t ip_version) {
+    amxc_var_t intf_params;
+    const char* ip_reference_path = NULL;
+    bool* query_needed = NULL;
+
+    amxc_var_init(&intf_params);
+    amxc_var_set_type(&intf_params, AMXC_VAR_ID_HTABLE);
+
+    when_null(nm_queries, exit);
+
+    amxd_object_get_params(interface, &intf_params, amxd_dm_access_protected);
+    ip_reference_path = (ip_version == IPv4) ? GET_CHAR(&intf_params, IPV4_REFERENCE_PATH) : GET_CHAR(&intf_params, IPV6_REFERENCE_PATH);
+    when_str_empty(ip_reference_path, exit);
+
+    query_needed = (ip_version == IPv4) ? &(nm_queries->ipv4_needed) : &(nm_queries->ipv6_needed);
+    *query_needed = (wan_mode_convert_from_str(GET_CHAR(&intf_params, (ip_version == IPv4 ? "IPv4Mode" : "IPv6Mode")), ip_version) != IP_None) && (!str_empty(ip_reference_path));
+
+exit:
+    amxc_var_clean(&intf_params);
+}
+
+static int open_intf_isup_query(amxd_object_t* interface, netmodel_callback_t handler, ipversion_t ip_version) {
+    intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) interface->priv;
+    netmodel_query_t** up_query = NULL;
+    char* ip_reference_path = NULL;
+    int rv = -1;
+
+    when_null(nm_queries, exit);
+    when_false_status(ip_version == IPv4 ? nm_queries->ipv4_needed : nm_queries->ipv6_needed, exit, rv = 0);
+
+    ip_reference_path = amxd_object_get_cstring_t(interface, ip_version == IPv4 ? IPV4_REFERENCE_PATH : IPV6_REFERENCE_PATH, NULL);
+    when_str_empty(ip_reference_path, exit);
+
+    up_query = (ip_version == IPv4) ? &(nm_queries->nm_ipv4_up_query) : &(nm_queries->nm_ipv6_up_query);
+    *up_query = netmodel_openQuery_isUp(ip_reference_path, "wan-manager", (ip_version == IPv4) ? "ipv4-up" : "ipv6-up", netmodel_traverse_this, handler, interface);
+    when_null_trace(*up_query, exit, ERROR, "Could not open IPv%d up query", ip_version);
+
+    rv = 0;
+
+exit:
+    free(ip_reference_path);
+    return rv;
+}
+
+
 /**
  * @brief Create a netmodel query that will monitor if the modes is functional
  * @return Returns 0 is all queries where created successful, -1 otherwise
@@ -333,31 +433,32 @@ int nm_query_mode_active(void) {
         amxd_object_for_each(instance, it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
             // Loop over all Intf objects of an active WANMode
             amxd_object_t* interface = amxc_container_of(it, amxd_object_t, it);
-            amxc_var_t data;
-            intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) calloc(1, sizeof(intf_isup_queries_t));
-
-            amxc_var_init(&data);
-            amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
+            intf_isup_queries_t* nm_queries = NULL;
 
             when_null_trace(interface, exit_loop, ERROR, "No interface found to open query");
-            when_null_trace(nm_queries, exit_loop, ERROR, "Failed to allocate memory for queries");
-            amxd_object_get_params(interface, &data, amxd_dm_access_protected);
-
-            SAH_TRACEZ_INFO(ME, "Adding queries for '%s'", interface->name);
-            nm_queries->nm_ipv4_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, IPV4_REFERENCE_PATH), "wan-manager", "ipv4-up", netmodel_traverse_this, nm_query_mode_active_cb, interface);
-            nm_queries->nm_ipv6_up_query = netmodel_openQuery_isUp(GET_CHAR(&data, IPV6_REFERENCE_PATH), "wan-manager", "ipv6-up", netmodel_traverse_this, nm_query_mode6_active_cb, interface);
-            if((nm_queries->nm_ipv4_up_query == NULL) || (nm_queries->nm_ipv6_up_query == NULL)) {
-                SAH_TRACEZ_ERROR(ME, "Could not open IP up queries");
-                intf_isup_queries_clean(&nm_queries);
-            }
             if(interface->priv != NULL) {
                 SAH_TRACEZ_ERROR(ME, "Interface already has a query, closing old query");
                 intf_isup_queries_t* old_nm_queries = (intf_isup_queries_t*) interface->priv;
                 intf_isup_queries_clean(&old_nm_queries);
+                interface->priv = NULL;
             }
+
+            SAH_TRACEZ_INFO(ME, "Adding queries for '%s'", interface->name);
+            nm_queries = (intf_isup_queries_t*) calloc(1, sizeof(intf_isup_queries_t));
+            when_null_trace(nm_queries, exit_loop, ERROR, "Failed to allocate memory for queries");
+            init_intf_isup_query(interface, nm_queries, IPv4);
+            init_intf_isup_query(interface, nm_queries, IPv6);
             interface->priv = nm_queries;
+
+            // The queries cannot be opened in "init_intf_isup_query" itself!
+            // We need to know the values of nm_queries->ipv4_needed and nm_queries->ipv6_needed first since they are used in the callback functions of the queries!
+            open_intf_isup_query(interface, nm_query_mode_active_cb, IPv4);
+            if(open_intf_isup_query(interface, nm_query_mode6_active_cb, IPv6) != 0) {
+                intf_isup_queries_clean(&nm_queries);
+            }
+
 exit_loop:
-            amxc_var_clean(&data);
+            (void) 0;
         }
     }
     rv = 0;
@@ -391,11 +492,10 @@ void nm_close_sensing_queries(void) {
             amxd_object_t* interface = amxc_container_of(intf_it, amxd_object_t, it);
             const char* intf_name = object_const_string(interface, "Name");
             intf_isup_queries_t* nm_queries = (intf_isup_queries_t*) interface->priv;
-
+            intf_isup_queries_clean(&nm_queries);
             interface->priv = NULL;
             SAH_TRACEZ_INFO(ME, "Clearing queries from '%s'", interface->name);
             netmodel_clearFlag(intf_name, LOGICAL_UP_FLAGS, NULL, netmodel_traverse_this);
-            intf_isup_queries_clean(&nm_queries);
         }
     }
 
