@@ -1,6 +1,7 @@
 {
     "Alias" : "",
     "EnableSensing" : true,
+    "SensingPriority": 0,
     "Origin" : "user",
     "PhysicalType" : "Ethernet",
     "PhysicalReference" : "",

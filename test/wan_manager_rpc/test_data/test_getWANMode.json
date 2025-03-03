@@ -7,6 +7,7 @@
         "Alias" : "demo_wanmode",
         "DNSMode" : "Dynamic",
         "EnableSensing" : true,
+        "SensingPriority": 0,
         "IPv6DNSMode" : "Dynamic",
         "Interfaces" : {
             "wan" : {
