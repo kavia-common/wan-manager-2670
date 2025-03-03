@@ -215,7 +215,7 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
                                                  netmodel_callback_t handler,
                                                  UNUSED void* userdata) {
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
-    amxd_object_t* priv_obj = (amxd_object_t*) userdata;
+    amxd_object_t* priv_obj = NULL;
     const char* current_wanmodes = get_current_wan_mode_str();
     amxc_string_t current_wan_modes_str;
     amxc_llist_t current_list;
@@ -224,12 +224,16 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
     amxc_string_init(&current_wan_modes_str, 0);
     amxc_llist_init(&current_list);
 
+    if(!str_empty(flag)) {
+        priv_obj = (amxd_object_t*) userdata;
+        assert_non_null(priv_obj);
+    }
+
     assert_non_null(intf);
     assert_non_null(subscriber);
     assert_non_null(flag);
     assert_non_null(traverse);
     assert_non_null(handler);
-    assert_non_null(priv_obj);
     assert_non_null(current_wanmodes);
     assert_string_equal(traverse, netmodel_traverse_this);
     assert_string_equal(subscriber, "wan-manager");
@@ -243,24 +247,29 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
         assert_non_null(wan_mode_obj);
 
         // Check to see if interface object in userdata is an interface from the current wanmode
-        intf_obj = amxd_object_findf(wan_mode_obj, "Intf.%s.", priv_obj->name);
-        if(intf_obj != priv_obj) {
-            continue;
+        if(!str_empty(flag)) {
+            intf_obj = amxd_object_findf(wan_mode_obj, "Intf.%s.", priv_obj->name);
+            if(intf_obj != priv_obj) {
+                continue;
+            }
+            assert_non_null(intf_obj);
         }
-        assert_non_null(intf_obj);
 
         if(strcmp(flag, "ipv4-up") == 0) {
             ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv4Reference", NULL);
+            assert_non_null(ip_reference);
+            assert_string_equal(intf, ip_reference);
+            free(ip_reference);
         } else if(strcmp(flag, "ipv6-up") == 0) {
             ip_reference = amxd_object_get_value(cstring_t, intf_obj, "IPv6Reference", NULL);
+            assert_non_null(ip_reference);
+            assert_string_equal(intf, ip_reference);
+            free(ip_reference);
         } else {
-            // This is to generate an error if the flag is not ipv4-up or ipv6-up
-            assert_string_equal(flag, "ipv4-up or ipv6-up");
+            assert_string_equal(flag, "");
         }
 
-        assert_non_null(ip_reference);
-        assert_string_equal(intf, ip_reference);
-        free(ip_reference);
+
     }
 
     amxc_llist_clean(&current_list, amxc_string_list_it_free);

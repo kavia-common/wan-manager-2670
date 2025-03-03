@@ -26,7 +26,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status" : "Disabled"
         },
         {
@@ -37,7 +37,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status" : "Enabled"
         },
         {
@@ -48,7 +48,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "GPON",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.XPON.ONU.1.EthernetUNI.1.",
             "Status" : "Disabled"
         },
         {
@@ -59,7 +59,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "GPON",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.XPON.ONU.1.EthernetUNI.1.",
             "Status" : "Disabled"
         },
         {
@@ -70,7 +70,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status" : "Disabled"
         },
         {
@@ -81,7 +81,7 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType": "Ethernet",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status": "Disabled"
         },
         {
@@ -114,9 +114,8 @@
             "IPv6DNSMode" : "Dynamic",
             "Origin" : "user",
             "PhysicalType" : "Ethernet",
-            "PhysicalReference" : "",
+            "PhysicalReference" : "Device.Ethernet.Interface.1",
             "Status" : "Disabled"
         }
-    ],
-    "sense_current_mode" : false
+    ]
 }

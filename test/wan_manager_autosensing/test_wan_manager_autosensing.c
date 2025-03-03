@@ -67,6 +67,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include <cmocka.h>
+#include <string.h>
 
 #include <amxc/amxc.h>
 #include <amxc/amxc_macros.h>
@@ -102,7 +103,6 @@ void test_wan_manager_autosensing_init(UNUSED void** state) {
 
     // Check if all local function are loaded
     assert_true(amxm_has_function("self", MOD_DM_MNGR, "set-mode"));
-    assert_true(amxm_has_function("self", MOD_DM_MNGR, "isup-sensing-start"));
     assert_true(amxm_has_function("self", MOD_DM_MNGR, "isup-sensing-stop"));
 
 }
@@ -180,17 +180,9 @@ void test_wan_manager_sensing_query(UNUSED void** state) {
         assert_non_null(intf_obj);
         assert_non_null(intf_obj->priv);
 
-        assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
-        assert_non_null(intf_obj);
-        assert_non_null(intf_obj->priv);
-
         assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-stop", data, data), 0);
         assert_non_null(intf_obj);
         assert_null(intf_obj->priv);
-
-        assert_int_equal(amxm_execute_function("self", MOD_DM_MNGR, "isup-sensing-start", data, data), 0);
-        assert_non_null(intf_obj);
-        assert_non_null(intf_obj->priv);
 
         amxc_var_delete(&data);
     }
@@ -245,22 +237,38 @@ void test_query_double_call_cleanup(UNUSED void** state) {
         amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
         amxd_object_t* intf_obj = amxd_object_findf(wan_mode_obj, "Intf.1.");
         intf_isup_queries_t* nm_queries = NULL;
+        amxc_var_t intf_params;
+
+        amxc_var_init(&intf_params);
 
         assert_non_null(wan_mode_obj);
+
+        amxc_var_set_type(&intf_params, AMXC_VAR_ID_HTABLE);
+        amxd_object_get_params(intf_obj, &intf_params, amxd_dm_access_protected);
 
         // Call once to create the queries
         nm_query_mode_active();
         nm_queries = (intf_isup_queries_t*) intf_obj->priv;
         assert_non_null(nm_queries);
-        assert_non_null(nm_queries->nm_ipv4_up_query);
-        assert_non_null(nm_queries->nm_ipv6_up_query);
+        if(strcmp(GET_CHAR(&intf_params, "IPv4Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv4_up_query);
+        }
+        if(strcmp(GET_CHAR(&intf_params, "IPv6Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv6_up_query);
+        }
 
         // Call again to make sure the old queries are cleanup
         nm_query_mode_active();
         nm_queries = (intf_isup_queries_t*) intf_obj->priv;
         assert_non_null(nm_queries);
-        assert_non_null(nm_queries->nm_ipv4_up_query);
-        assert_non_null(nm_queries->nm_ipv6_up_query);
+        if(strcmp(GET_CHAR(&intf_params, "IPv4Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv4_up_query);
+        }
+        if(strcmp(GET_CHAR(&intf_params, "IPv6Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv6_up_query);
+        }
+
+        amxc_var_clean(&intf_params);
     }
 
     amxc_llist_clean(&current_list, amxc_string_list_it_free);
@@ -285,18 +293,29 @@ void test_query_intf_del_cleanup(UNUSED void** state) {
         amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
         amxd_object_t* intf_obj = amxd_object_findf(wan_mode_obj, "Intf.1.");
         intf_isup_queries_t* nm_queries = NULL;
+        amxc_var_t intf_params;
+
+        amxc_var_init(&intf_params);
 
         assert_non_null(wan_mode_obj);
+
+        amxc_var_set_type(&intf_params, AMXC_VAR_ID_HTABLE);
+        amxd_object_get_params(intf_obj, &intf_params, amxd_dm_access_protected);
 
         // Call once to create the queries
         nm_query_mode_active();
         nm_queries = (intf_isup_queries_t*) intf_obj->priv;
         assert_non_null(nm_queries);
-        assert_non_null(nm_queries->nm_ipv4_up_query);
-        assert_non_null(nm_queries->nm_ipv6_up_query);
+        if(strcmp(GET_CHAR(&intf_params, "IPv4Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv4_up_query);
+        }
+        if(strcmp(GET_CHAR(&intf_params, "IPv6Mode"), "none") != 0) {
+            assert_non_null(nm_queries->nm_ipv6_up_query);
+        }
 
         // Call again to make sure the queries are cleanup
         amxd_object_delete(&intf_obj);
+        amxc_var_clean(&intf_params);
     }
 
     amxc_llist_clean(&current_list, amxc_string_list_it_free);
