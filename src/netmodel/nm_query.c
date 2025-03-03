@@ -81,13 +81,57 @@
 #define ME "netmod-ctrl"
 
 void ll_queries_clean(nm_query_ll_info_t** info) {
+    when_null(*info, exit);
+
     netmodel_closeQuery((*info)->q_name);
     netmodel_closeQuery((*info)->q_intf_path);
+    netmodel_closeQuery((*info)->q_phys_up);
     free((*info)->intf_name);
     free((*info)->lower_layer);
     free((*info)->upstream_intf_path);
     free(*info);
     *info = NULL;
+
+exit:
+    return;
+}
+
+static void nm_query_response_phys_up_cb(UNUSED const char* sig_name,
+                                         const amxc_var_t* data,
+                                         void* priv) {
+    SAH_TRACEZ_IN(ME);
+    const char* physical_reference = (const char*) priv;
+    bool up = false;
+
+    when_str_empty(physical_reference, exit);
+
+    up = GET_BOOL(data, NULL);
+    SAH_TRACEZ_INFO(ME, "Physical interface %s is %s", physical_reference, up ? "UP" : "DOWN");
+
+    // Not needed if physical ref is used for current wanmode.
+    // We have the ipv4 and ipv6 up queries for these cases.
+    if(!physical_reference_used(physical_reference)) {
+        mod_autosensing_notify_intf_changed(physical_reference, up, true);
+    }
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return;
+}
+
+void nm_query_create_phys_up_query(nm_query_ll_info_t* info) {
+    SAH_TRACEZ_IN(ME);
+
+    when_null_trace(info, exit, ERROR, "Invalid private data");
+    when_str_empty_trace(info->upstream_intf_path, exit, ERROR, "Invalid physical interface");
+
+    netmodel_closeQuery(info->q_phys_up);
+    info->q_phys_up = netmodel_openQuery_isUp(info->upstream_intf_path, "wan-manager", "", netmodel_traverse_this, nm_query_response_phys_up_cb, (void*) info->upstream_intf_path);
+    when_null_trace(info->q_phys_up, exit, ERROR, "Could not open NetModel query");
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return;
 }
 
 static void nm_query_response_ll_cb(UNUSED const char* sig_name,
@@ -249,6 +293,10 @@ static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_objec
         mod_autosensing_stop();
     } else {
         if(intf_was_up_before) {
+            if(!str_empty(info->upstream_intf_path)) {
+                /* restart happens with mod_autosensing start below*/
+                mod_autosensing_notify_intf_changed(info->upstream_intf_path, false, false);
+            }
             mod_autosensing_start();
         }
     }
@@ -436,6 +484,7 @@ int nm_query_mode_active(void) {
             intf_isup_queries_t* nm_queries = NULL;
 
             when_null_trace(interface, exit_loop, ERROR, "No interface found to open query");
+
             if(interface->priv != NULL) {
                 SAH_TRACEZ_ERROR(ME, "Interface already has a query, closing old query");
                 intf_isup_queries_t* old_nm_queries = (intf_isup_queries_t*) interface->priv;

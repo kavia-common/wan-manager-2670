@@ -181,6 +181,20 @@ void wan_mode_cleanup(void) {
     SAH_TRACEZ_OUT(ME);
 }
 
+physical_type_t get_physical_type_by_reference(const char* physical_reference) {
+    physical_type_t result = physical_type_last;
+    if(strstr(physical_reference, NEEDLE_ETHERNET) != NULL) {
+        result = physical_type_ethernet;
+    } else if(strstr(physical_reference, NEEDLE_BRIDGE) != NULL) {
+        result = physical_type_bridge;
+    } else if(strstr(physical_reference, NEEDLE_GPON) != NULL) {
+        result = physical_type_gpon;
+    } else if(strstr(physical_reference, NEEDLE_WWAN) != NULL) {
+        result = physical_type_wwan;
+    }
+    return result;
+}
+
 physical_type_t get_physical_type(amxd_object_t* wan_mode) {
     SAH_TRACEZ_IN(ME);
     physical_type_t result = physical_type_last;
@@ -193,14 +207,8 @@ physical_type_t get_physical_type(amxd_object_t* wan_mode) {
 
     if(str_empty(physical_reference)) {
         result = string_to_physical_type(physical_type);
-    } else if(strstr(physical_reference, NEEDLE_ETHERNET) != NULL) {
-        result = physical_type_ethernet;
-    } else if(strstr(physical_reference, NEEDLE_BRIDGE) != NULL) {
-        result = physical_type_bridge;
-    } else if(strstr(physical_reference, NEEDLE_GPON) != NULL) {
-        result = physical_type_gpon;
-    } else if(strstr(physical_reference, NEEDLE_WWAN) != NULL) {
-        result = physical_type_wwan;
+    } else {
+        result = get_physical_type_by_reference(physical_reference);
     }
 
 exit:

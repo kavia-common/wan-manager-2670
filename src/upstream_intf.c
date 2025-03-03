@@ -218,6 +218,43 @@ const char* phys_type_to_flag(physical_type_t type) {
     return rv;
 }
 
+
+/**
+ * @brief checks whether the given physical reference is used in an active WANMode
+ *
+ * @param physical_reference
+ * @return true when physical reference is used in an active WANMode
+ * @return false otherwise
+ */
+bool physical_reference_used(const char* physical_reference) {
+    bool res = false;
+    const char* active_wan_mode_str = get_current_wan_mode_str();
+    physical_type_t physical_type = physical_type_last;
+    amxc_string_t current_wan_modes_str;
+    amxc_llist_t current_list;
+
+    amxc_string_init(&current_wan_modes_str, 0);
+    amxc_llist_init(&current_list);
+
+    when_str_empty(active_wan_mode_str, exit);
+    physical_type = get_physical_type_by_reference(physical_reference);
+
+    amxc_string_set(&current_wan_modes_str, active_wan_mode_str);
+    amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
+    amxc_llist_for_each(it, &current_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get WANMode object");
+        when_false(physical_type == get_physical_type(wan_mode_obj), exit);
+    }
+    res = true;
+
+exit:
+    amxc_llist_clean(&current_list, amxc_string_list_it_free);
+    amxc_string_clean(&current_wan_modes_str);
+    return res;
+}
+
 /**
  * @brief Will call the upstream_toggle function for the requested physical_type
  * @param physical_type The physical type in string as it is stored in the "PhysicalType" parameter

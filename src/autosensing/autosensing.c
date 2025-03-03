@@ -250,6 +250,11 @@ int mod_autosensing_start(void) {
         nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
         when_null(info, exit);
 
+        // When setting WANModes we typically enable and disable interfaces, this clashes with the phys_up query.
+        // Because of that the query should only be open when a WANMode is considered up and autosensing is stopped again.
+        netmodel_closeQuery(info->q_phys_up);
+        info->q_phys_up = NULL;
+
         // Only add modes that we want to sense
         if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
             SAH_TRACEZ_INFO(ME, "Adding '%s' to module data", instance->name);
@@ -282,11 +287,50 @@ int mod_autosensing_stop(void) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
     amxc_var_t data;
+    amxd_object_t* wan_obj = amxd_object_get(get_wan_manager_obj(), "WAN");
 
     amxc_var_init(&data);
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
     rv = mod_autosensing_execute_function("autosensing-stop", &data);
+
+    // All WANModes that need to be sensed will have their PhysicalReference sensed
+    // in case a higher priority WANMode becomes available
+    amxd_object_for_each(instance, it, wan_obj) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        when_null(instance, exit);
+        if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
+            nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
+            nm_query_create_phys_up_query(info);
+        }
+    }
+
+exit:
+    amxc_var_clean(&data);
+    SAH_TRACEZ_OUT(ME);
+    return rv;
+}
+
+int mod_autosensing_notify_intf_changed(const char* intf, bool up, bool force_restart) {
+    SAH_TRACEZ_IN(ME);
+    int rv = -1;
+    amxc_var_t data;
+    bool restart_needed = false;
+
+    amxc_var_init(&data);
+
+    if((is_sensing_policy("AtBoot") && sensing_at_boot_finished) || (is_sensing_policy("Sticky"))) {
+        restart_needed = false;
+    } else {
+        restart_needed = force_restart;
+    }
+
+    amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
+    amxc_var_add_key(bool, &data, "up", up);
+    amxc_var_add_key(bool, &data, "restart", restart_needed);
+    amxc_var_add_key(cstring_t, &data, "physical_ref", intf);
+
+    rv = mod_autosensing_execute_function("autosensing-physical-intf-change", &data);
 
     amxc_var_clean(&data);
     SAH_TRACEZ_OUT(ME);

@@ -96,6 +96,7 @@ extern "C"
 physical_type_t string_to_physical_type(const char* phys_type);
 const char* physical_type_to_string(physical_type_t type);
 const char* phys_type_to_flag(physical_type_t type);
+bool physical_reference_used(const char* physical_reference);
 int toggle_upstream_intf(nm_query_ll_info_t* info, bool enable);
 
 #ifdef __cplusplus

@@ -81,6 +81,7 @@ extern "C"
 void update_sensing(void);
 void wan_mode_init(void);
 amxd_object_t* get_wan_manager_obj(void);
+physical_type_t get_physical_type_by_reference(const char* physical_reference);
 physical_type_t get_physical_type(amxd_object_t* wan_mode);
 void wan_mode_cleanup(void);
 amxd_status_t wan_mode_dm_set(const char* wan_mode, const char* operation_mode);
