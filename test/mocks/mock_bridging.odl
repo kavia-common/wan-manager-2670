@@ -3,6 +3,9 @@
         object Bridge[] {
             void AddPort(%mandatory string LowerLayers, string Alias, bool Enable, uint32 VlanId, string VlanName, uint32 VlanPriority);
             void DisablePort(%mandatory string LowerLayers, uint32 VlanId);
+            object Port[] {
+                bool ManagementPort = false;
+            }
         }
 
         object LastAddParameters[] {
@@ -24,7 +27,16 @@
 %populate {
     object Bridging {
         object Bridge {
-            instance add("lan") {}
+            instance add("lan") {
+                object 'Port' {
+                    instance add(1) {
+                        parameter 'ManagementPort' = true;
+                    }
+                    instance add(2) {
+                        parameter 'ManagementPort' = false;
+                    }
+                }
+            }
         }
         object LastAddParameters {
             instance add("Test") {
