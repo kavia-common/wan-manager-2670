@@ -249,7 +249,7 @@ amxd_status_t ipv6_prefix_lan_toggle(const char* intf_alias, const char* prefix_
     amxc_var_add_key(bool, &params, "Enable", enable);
 
     rc = component_set_params(path, ip_get_context(), &params);
-    when_failed_trace(rc, exit, ERROR, "Could not %s the Static IPv6 prefix instance %s", enable ? "enable":"disable", path);
+    when_failed_trace(rc, exit, ERROR, "Could not %s the Static IPv6 prefix instance %s", enable ? "enable" : "disable", path);
 
 exit:
     free(path);

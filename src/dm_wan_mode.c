@@ -652,12 +652,31 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     bridge_reference = GET_CHAR(&parameters, "BridgeReference");
     bridge = !str_empty(bridge_reference);
     if(enable && bridge) {
-        amxc_var_t* var_intf_path = netmodel_getFirstParameter(bridge_reference, "InterfacePath", NULL, netmodel_traverse_one_level_up);
-        when_true_trace(amxc_var_is_null(var_intf_path), exit, ERROR, "Failed to find link layer path for '%s'", bridge_reference);
-        amxc_var_add_key(cstring_t, &parameters, "LowerLayer", GET_CHAR(var_intf_path, NULL));
-        rc = manage_bridge(bridge_reference, ll_info->upstream_intf_path, enable, mode, GET_UINT32(&parameters, "VlanID"), GET_UINT32(&parameters, "VlanPriority"));
+        const char* full_bridging_path = NULL;
+        amxb_bus_ctx_t* bus_ctx = amxb_be_who_has("Bridging.");
+        amxc_string_t search_path;
+        amxc_var_t ret;
+        amxc_var_t* var_intf_path = NULL;
+
+        amxc_var_init(&ret);
+        amxc_string_init(&search_path, 0);
+        amxc_string_setf(&search_path, "%sPort.[ManagementPort == true].", bridge_reference);
+
+        // Can only return one instance by ManagementPort definition
+        rc = amxb_get(bus_ctx, amxc_string_get(&search_path, strlen(DEVICE_PATH)), 0, &ret, 5);
+        full_bridging_path = amxc_var_key(GETP_ARG(&ret, "0.0"));
+        if(str_empty(full_bridging_path)) {
+            SAH_TRACEZ_ERROR(ME, "Failed to find the management port path for '%s'", bridge_reference);
+        } else {
+            var_intf_path = netmodel_getFirstParameter(full_bridging_path, "InterfacePath", NULL, netmodel_traverse_one_level_up);
+            when_true_trace(amxc_var_is_null(var_intf_path), exit, ERROR, "Failed to find link layer path for '%s'", bridge_reference);
+            amxc_var_add_key(cstring_t, &parameters, "LowerLayer", GET_CHAR(var_intf_path, NULL));
+            rc = manage_bridge(bridge_reference, ll_info->upstream_intf_path, enable, mode, GET_UINT32(&parameters, "VlanID"), GET_UINT32(&parameters, "VlanPriority"));
+        }
 
         amxc_var_delete(&var_intf_path);
+        amxc_string_clean(&search_path);
+        amxc_var_clean(&ret);
         when_failed_trace(rc, exit, ERROR, "Failed to add port to bridge, return '%d'", rc);
     } else if(enable && ((mode & TYPE_VLAN) != 0)) {
         SAH_TRACEZ_INFO(ME, "Enable VLAN interface");
