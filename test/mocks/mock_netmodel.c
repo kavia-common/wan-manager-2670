@@ -346,7 +346,7 @@ amxc_var_t* __wrap_netmodel_getFirstParameter(const char* intf, const char* name
     } else if(strcmp(intf, "NetModel.Intf.bridge-eth_port2.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_this);
         amxc_var_set(cstring_t, data, "NetModel.Intf.bridge-eth_port2");
-    } else if(strcmp(intf, "Device.Bridging.Bridge.1.") == 0) {
+    } else if(strcmp(intf, "Bridging.Bridge.1.Port.1.") == 0) {
         assert_string_equal(traverse, netmodel_traverse_one_level_up);
         amxc_var_set(cstring_t, data, "Device.Ethernet.Link.3.");
     } else {
