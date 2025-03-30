@@ -87,6 +87,7 @@
 #include "wan_manager_utils.h"
 #include "upstream_intf.h"
 #include "network-selector/network_selector.h"
+#include "sfp/sfp.h"
 
 #define ME "wan-man"
 
@@ -123,6 +124,7 @@ int _wan_manager_main(int reason,
         wan_mode_init();
         autosensing_init();
         mod_network_selector_init();
+        mod_wanmgr_sfp_init();
         break;
     case 1:
         nm_close_sensing_queries();

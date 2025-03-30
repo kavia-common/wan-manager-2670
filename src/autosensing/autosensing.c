@@ -181,7 +181,6 @@ int autosensing_init(void) {
     }
 
     register_core_functions();
-
     rv = 0;
 
 exit:

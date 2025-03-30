@@ -78,12 +78,11 @@ extern "C"
 #include <amxd/amxd_object_event.h>
 #include <amxd/amxd_transaction.h>
 #include <amxd/amxd_action.h>
-
 #include <amxb/amxb.h>
-
 #include <amxo/amxo.h>
 #include <amxo/amxo_save.h>
 
+#define MOD_DM_MNGR   "dm-mngr"
 
 typedef struct  {
     amxd_dm_t* dm;

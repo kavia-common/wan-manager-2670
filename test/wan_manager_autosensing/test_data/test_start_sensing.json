@@ -1,7 +1,7 @@
 {
     "ApplyAtNextBoot" : false,
     "Controller" : "mod-autosensing",
-    "ExtensionModules" : "mod-network-selector",
+    "ExtensionModules" : "mod-network-selector,mod-wanmgr-sfp",
     "OperationMode" : "Manual",
     "SensingPolicy" : "AtBoot",
     "SensingTimeout" : 8,
