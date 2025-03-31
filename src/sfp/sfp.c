@@ -89,7 +89,6 @@
 #include "dm_wan_mode.h"
 #include "dm_wan-manager.h"
 #include "wan_manager_utils.h"
-#include "ctrl/restart.h"
 #include "sfp/sfp.h"
 #include "autosensing/autosensing.h"
 

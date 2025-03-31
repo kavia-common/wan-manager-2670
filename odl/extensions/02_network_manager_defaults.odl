@@ -1,3 +1,0 @@
-%config {
-    %global extension_modules = "mod-network-selector";
-}

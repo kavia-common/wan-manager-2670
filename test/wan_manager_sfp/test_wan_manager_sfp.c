@@ -77,7 +77,6 @@
 #include "netmodel/nm_query.h"
 #include "test_wan_manager_sfp.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 
 #include "sfp/sfp.h"
 

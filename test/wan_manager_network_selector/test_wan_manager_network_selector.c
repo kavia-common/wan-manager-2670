@@ -79,7 +79,6 @@
 #include "netmodel/nm_query.h"
 #include "test_wan_manager_network_selector.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 
 #include "network-selector/network_selector.h"
 

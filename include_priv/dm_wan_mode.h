@@ -78,6 +78,10 @@ extern "C"
 #include "ctrl/mode_ctrl.h"
 #include "netmodel/nm_query.h"
 
+#define MOD_WAN_SYS_NAME "mod-wanmgr-system"
+#define MOD_WAN_SYS_CTRL "mod-wmmsys-ctrl"
+#define MOD_WAN_SYS_FUNC "request-system-update"
+
 void update_sensing(void);
 void wan_mode_init(void);
 amxd_object_t* get_wan_manager_obj(void);

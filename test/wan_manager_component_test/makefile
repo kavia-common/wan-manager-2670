@@ -24,7 +24,6 @@ MOCK_WRAP = netmodel_initialize		\
             amxp_proc_ctrl_start 	\
             amxp_proc_ctrl_stop 	\
             amxp_proc_ctrl_delete	\
-            restart \
             amxb_set \
             amxb_set_multiple \
             amxb_get \

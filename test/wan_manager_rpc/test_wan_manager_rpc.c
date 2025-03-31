@@ -81,7 +81,6 @@
 #include "dm_wan-manager.h"
 #include "test_wan_manager_rpc.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 
 void test_get_wanmode(UNUSED void** state) {
     amxc_var_t ret;

@@ -78,7 +78,6 @@
 
 #include "dm_wan-manager.h"
 #include "dm_wan_mode.h"
-#include "ctrl/restart.h"
 #include "netmodel/nm_query.h"
 #include "autosensing/autosensing.h"
 #include "wan_manager_utils.h"
@@ -489,6 +488,10 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
     amxc_llist_t new_list;
     amxc_llist_t active_list;
     bool restart_needed = false;
+    amxc_var_t data;
+    amxc_var_t ret;
+    amxc_var_init(&data);
+    amxc_var_init(&ret);
 
     amxc_string_init(&active_wan_modes_str, 0);
     amxc_string_init(&new_wan_modes_str, 0);
@@ -498,7 +501,6 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
     when_str_empty_status(active_wan_modes, exit, rc = amxd_status_ok);
     when_str_empty_status(wan_modes_to_set, exit, rc = amxd_status_ok);
     SAH_TRACEZ_INFO(ME, "Change mode: [From = %s, To = %s]", active_wan_modes, wan_modes_to_set);
-
 
     if(wan_mode_different_physical_type(active_wan_modes, wan_modes_to_set)) {
         restart_needed = true;
@@ -563,7 +565,19 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
     }
 
     if(restart_needed) {
-        rc = restart();
+        /* Calls "request-system-update" from the "mod-wanmgr-system" module to
+         * update the system configuration for the active WAN mode.
+         * Returns 0 if the system configuration is successful.
+         * Returns -1 if there is a failure.
+         */
+        rc = amxm_execute_function(MOD_WAN_SYS_NAME,
+                                   MOD_WAN_SYS_CTRL,
+                                   MOD_WAN_SYS_FUNC,
+                                   &data,
+                                   &ret);
+        if(rc != 0) {
+            SAH_TRACEZ_ERROR(ME, "Request system update failed, rc = %d", rc);
+        }
     }
 
 exit:
@@ -571,6 +585,8 @@ exit:
     amxc_llist_clean(&new_list, amxc_string_list_it_free);
     amxc_string_clean(&new_wan_modes_str);
     amxc_string_clean(&active_wan_modes_str);
+    amxc_var_clean(&data);
+    amxc_var_clean(&ret);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

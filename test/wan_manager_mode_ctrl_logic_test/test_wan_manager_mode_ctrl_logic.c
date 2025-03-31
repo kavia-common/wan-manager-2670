@@ -80,7 +80,6 @@
 
 #include "test_wan_manager_mode_ctrl_logic.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 #include "wan_manager_utils.h"
 
 static void assert_nr_instances(const char* templ_path, uint32_t expected_nr) {
@@ -585,7 +584,6 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     amxc_var_t status;
     amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
-    int reset_counter = get_reset_counter();
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
@@ -606,9 +604,6 @@ void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_test", "");
 
-    assert_int_not_equal(reset_counter, get_reset_counter);
-    clear_reset_counter();
-
     amxc_var_clean(&status);
 }
 
@@ -616,11 +611,9 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     amxc_var_t status;
     amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     const char* wan_mode_str = NULL;
-    int reset_counter = 0;
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -635,9 +628,6 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
     assert_string_equal("demo_vlanmode", wan_mode_str);
-
-    assert_int_equal(reset_counter, get_reset_counter());
-    clear_reset_counter();
 
     amxc_var_clean(&status);
 }
@@ -680,7 +670,6 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     assert_nr_instances("PPP.Interface.", 1);
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_string_equal("demo_pppmode", wan_mode_str);
-    assert_int_equal(get_reset_counter(), 1); // Switch from Ethernet (demo_wanmode) to GPON (demo_pppmode)
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
 
     routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
@@ -694,9 +683,7 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
     assert_string_equal("demo_vlanmode", wan_mode_str);
-    assert_int_equal(get_reset_counter(), 2); // Switch from GPON (demo_pppmode) to Ethernet (demo_vlanmode)
 
-    clear_reset_counter();
     amxc_var_clean(&status);
 }
 
@@ -760,14 +747,12 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "IP.Interface.2.");
     amxd_object_t* ip_addr = NULL;
-    int reset_counter = 0;
 
     assert_non_null(ip_dm);
 
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -781,7 +766,6 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     assert_true(ip_addr == NULL);
 
     assert_true(set_wan_mode("demo_staticmode", amxd_status_ok));
-    reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -796,7 +780,6 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
     assert_non_null(ip_addr);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    reset_counter = get_reset_counter();
 
     amxd_object_get_param(wan_mode, "WANMode", &status);
     wan_mode_str = amxc_var_constcast(cstring_t, &status);
@@ -808,9 +791,6 @@ void test_wan_manager_set_static_ip(UNUSED void** state) {
 
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
     assert_true(ip_addr == NULL);
-
-    assert_int_equal(reset_counter, get_reset_counter());
-    clear_reset_counter();
 
     amxc_var_clean(&status);
 }
@@ -901,7 +881,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), 1); // Switch from Ethernet (demo_wanmode) to GPON (demo_wanmode)
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("ppp4", "softathome", 4, false, "Interface.2", "demo_pppmode");
@@ -910,7 +889,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), 1);
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
@@ -928,7 +906,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), 1);
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
@@ -948,15 +925,12 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), 1);
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 6, true, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "");
 
-    assert_int_equal(get_reset_counter(), 1);
-    clear_reset_counter();
     amxc_var_clean(&ppp_parameters);
     amxc_var_clean(&wan_manager_parameters);
 }
@@ -968,11 +942,8 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
     amxd_object_t* logical_dm = amxd_dm_findf(test_get_dm(), "Logical.");
     amxd_object_t* logical_inst_voip = amxd_object_findf(logical_dm, "Interface.2");
     amxd_object_t* logical_inst_mgmt = amxd_object_findf(logical_dm, "Interface.3");
-    int reset_counter = 0;
     amxc_var_init(&wan_manager_parameters);
     amxc_var_init(&logical_parameters);
-
-    reset_counter = get_reset_counter();
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
@@ -994,8 +965,6 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
     assert_int_equal(amxd_object_get_params(logical_inst_mgmt, &logical_parameters, amxd_dm_access_protected), 0);
     assert_string_equal("Device.IP.Interface.2.", GET_CHAR(&logical_parameters, "LowerLayers"));
 
-    assert_int_equal(reset_counter, get_reset_counter());
-    clear_reset_counter();
     amxc_var_clean(&logical_parameters);
     amxc_var_clean(&wan_manager_parameters);
 }
@@ -1025,7 +994,6 @@ void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), 1); // Switch from Ethernet (demo_wanmode) to GPON (demo_pppmode)
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
@@ -1049,8 +1017,6 @@ void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("changed_user", "changed_pw", 4, false, "Interface.2", "demo_pppmode");
 
-    assert_int_equal(get_reset_counter(), 1);
-    clear_reset_counter();
     amxc_var_clean(&ppp_parameters);
     amxc_var_clean(&wan_manager_parameters);
 }

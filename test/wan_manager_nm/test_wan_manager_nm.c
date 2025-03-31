@@ -80,7 +80,6 @@
 
 #include "test_wan_manager_nm.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 #include "../mocks/mock_netmodel.h"
 
 void test_wm_nm_change_physical_type(UNUSED void** state) {

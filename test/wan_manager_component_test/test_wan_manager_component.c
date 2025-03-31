@@ -82,7 +82,6 @@
 #include "component.h"
 #include "wan_manager_utils.h"
 #include "test_utils.h"
-#include "reset_mock.h"
 
 void test_wan_manager_component_add_str_to_csv(UNUSED void** state) {
     amxc_var_t value;
