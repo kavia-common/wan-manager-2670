@@ -105,26 +105,6 @@ exit:
     return logical_intf;
 }
 
-static char* get_config_path(void) {
-    char* config_path = NULL;
-    amxc_string_t search_path;
-    const char* prefix = NULL;
-
-    amxc_string_init(&search_path, 0);
-
-    prefix = GET_CHAR(amxo_parser_get_config(wan_get_parser(), "vendor_prefix"), "dns");
-    if(prefix == NULL) {
-        prefix = "";
-    }
-
-    amxc_string_setf(&search_path, DEVICE_PATH DNS_PATH "Relay.%sConfig.*.", prefix); // terminate with . to only return instances and not the template
-
-    config_path = component_get_path_instance(dns_get_context(), amxc_string_get(&search_path, 0));
-
-    amxc_string_clean(&search_path);
-    return config_path;
-}
-
 static amxd_status_t remove_static_dnsservers(void) {
     amxc_string_t alias;
     amxd_status_t rc = amxd_status_unknown_error;
@@ -276,7 +256,7 @@ static amxd_status_t set_dnsmode(amxd_object_t* wan_mode) {
     }
 
     // at 31 Jan 2024 the dns plugin only uses the first DNS.Relay.Config instance for [IPv6]DNSMode
-    config_path = get_config_path();
+    config_path = component_get_path_instance(dns_get_context(), DEVICE_PATH DNS_PATH "Relay.Config.*."); // terminate with . to only return instances and not the template;
     when_str_empty_trace(config_path, exit, ERROR, "Failed to set [IPv6]DNSMode");
     SAH_TRACEZ_INFO(ME, "Set [IPv6]DNSMode of '%s'", config_path);
 

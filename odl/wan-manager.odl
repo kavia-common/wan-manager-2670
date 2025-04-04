@@ -1,11 +1,12 @@
 #include "mod_sahtrace.odl";
 #include "mod_apparmor.odl";
-#include "global_amxb_timeouts.odl";
+#include "global_variables.odl";
 
 %config {
     name = "wan-manager";
     import-dbg = false;
     extension_modules = "";
+    global_vendor_prefix_ = "X_PRPL-COM_";
 
     vendor_prefix = {
         "dns" = "X_PRPL-COM_"
