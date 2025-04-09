@@ -72,6 +72,9 @@ artifacts:
   - source: "odl/$(COMPONENT)_mapping.odl"
     destination: "/etc/amx/tr181-device/extensions/01_device-x_prpl-com_wanmanager_mapping.odl"
     permissions: "0644"
+  - source: "odl/extensions/*.odl"
+    destination: "/etc/amx/$(COMPONENT)/extensions/"
+    permissions: "0644"
   - source: "acl/admin/$(COMPONENT).json"
     destination: "$(ACLDIR)/admin/$(COMPONENT).json"
     permissions: "0660"
@@ -118,7 +121,7 @@ dependencies:
       min: "*"
     - name: "libipat"
       min: "*"
-      
+
   runtime:
     - name: "libamxc"
     - name: "libamxp"
