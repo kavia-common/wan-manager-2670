@@ -94,6 +94,7 @@
 
 #define ME "wanmgr_sfp"
 extern bool network_selector_can_start;
+bool module_loaded_correctly = true;
 
 /**
  * @brief update_sfp_type
@@ -268,6 +269,10 @@ int get_sfp_type(void) {
     return rv;
 }
 
+bool sfp_module_loaded_correctly(void) {
+    return module_loaded_correctly;
+}
+
 /**
  * @brief check_sfp_type
  *
@@ -347,18 +352,17 @@ int mod_wanmgr_sfp_init(void) {
 
     // Get the registered so for WANManager
     rv = wanmgr_sfp_register_core_functions();
-    if(rv != 0) {
-        SAH_TRACEZ_ERROR(ME, "Failed to execute wanmgr_sfp_register_core_function [%d]", rv);
-        return rv;
-    }
+    when_failed_trace(rv, exit, ERROR, "Failed to execute wanmgr_sfp_register_core_function [%d]", rv);
 
     // Get information of the changed SFP type
     rv = check_sfp_type();
     if(rv != 0) {
         SAH_TRACEZ_ERROR(ME, "Failed to execute check_sfp_type function [%d]", rv);
-        return rv;
+        module_loaded_correctly = false;
+        goto exit;
     }
 
+exit:
     SAH_TRACEZ_OUT(ME);
     return rv;
 }

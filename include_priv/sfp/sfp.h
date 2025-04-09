@@ -53,6 +53,7 @@ extern "C" {
 int mod_wanmgr_sfp_init(void);
 int read_sfp_category(amxc_var_t* ret);
 int get_sfp_type(void);
+bool sfp_module_loaded_correctly(void);
 
 #ifdef __cplusplus
 }

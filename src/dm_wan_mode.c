@@ -246,6 +246,34 @@ exit:
     return result;
 }
 
+static amxd_status_t check_sfp(void) {
+    const char* sfp_type = NULL;
+    amxd_status_t retval = amxd_status_unknown_error;
+    amxc_var_t ret;
+
+    amxc_var_init(&ret);
+
+    when_false_status(sfp_module_loaded_correctly(), exit, retval = amxd_status_ok);
+    amxc_var_set_type(&ret, AMXC_VAR_ID_HTABLE);
+
+    retval = read_sfp_category(&ret);
+    when_failed_trace(retval, exit, ERROR, "Unable to read sfp_category, '%d'", retval);
+
+    sfp_type = GET_CHAR(&ret, "SFPCategory");
+    when_null_trace(sfp_type, exit, ERROR, "SFPType returned a NULL value");
+    if(strcmp("SFP_UNKNOWN", sfp_type) != 0) {
+        retval = get_sfp_type();
+        if(retval != 0) {
+            SAH_TRACEZ_ERROR(ME, "Failed to execute get-sfp-type function '%d'", retval);
+        }
+        goto exit;
+    }
+
+exit:
+    amxc_var_clean(&ret);
+    return retval;
+}
+
 void wan_manager_found_ll(physical_type_t found_phys_type) {
     SAH_TRACEZ_IN(ME);
     const char* operation_mode = object_const_string(wan_manager, "OperationMode");
@@ -257,31 +285,10 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
     amxc_llist_t current_list;
     bool wan_mode_enabled = false;
 
-    const char* sfp_type = NULL;
-    int retval = amxd_status_unknown_error;
-    int retval_get = amxd_status_unknown_error;
-    amxc_var_t ret;
-    amxc_var_init(&ret);
-    amxc_var_set_type(&ret, AMXC_VAR_ID_HTABLE);
-
     amxc_string_init(&current_wan_modes_str, 0);
     amxc_llist_init(&current_list);
 
-    retval = read_sfp_category(&ret);
-    if(retval != 0) {
-        SAH_TRACEZ_ERROR(ME, "Unable to read sfp_category, '%d'", retval);
-        goto exit;
-    }
-
-    sfp_type = GET_CHAR(&ret, "SFPCategory");
-    when_null_trace(sfp_type, exit, ERROR, "SFPType returned a NULL value");
-    if(strcmp("SFP_UNKNOWN", sfp_type) != 0) {
-        retval_get = get_sfp_type();
-        if(retval_get != 0) {
-            SAH_TRACEZ_ERROR(ME, "Failed to execute get-sfp-type function '%d'", retval_get);
-        }
-        goto exit;
-    }
+    when_failed(check_sfp(), exit);
 
     if(strcmp(operation_mode, "Automatic") == 0) {
         startup_wan_autosensing();
@@ -322,7 +329,6 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
     }
 
 exit:
-    amxc_var_clean(&ret);
     amxc_llist_clean(&current_list, amxc_string_list_it_free);
     amxc_string_clean(&current_wan_modes_str);
     SAH_TRACEZ_OUT(ME);
