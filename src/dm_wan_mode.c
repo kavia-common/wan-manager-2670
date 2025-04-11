@@ -134,6 +134,7 @@ static const char* wan_mode_status_str[WAN_Mode_Nr_] = {
 
 static amxd_object_t* wan_manager = NULL;
 static bool wan_autosensing_can_start = false;
+static bool mod_sys_loaded = false;
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
                                      bool include_type,
@@ -143,6 +144,10 @@ static const char* wan_mode_status_to_str(wan_mode_status_t status);
 static amxd_status_t wan_mode_set_status(amxd_object_t* const object, wan_mode_status_t status);
 static void update_operation_mode(const char* new_operation_mode, const char* sensing_policy, bool override_boot);
 static void startup_wan_autosensing(void);
+
+bool system_module_loaded(void) {
+    return mod_sys_loaded;
+}
 
 void update_sensing(void) {
     SAH_TRACEZ_IN(ME);
@@ -192,6 +197,9 @@ void wan_mode_init(void) {
         rv = amxm_so_open(&module_so, name, amxc_string_get(&mod_path, 0));
         SAH_TRACEZ_INFO(ME, "Loading controller '%s' %s", name, rv ? "failed" : "successful");
         when_failed(rv, exit);
+        if(strcmp(name, MOD_WAN_SYS_NAME) == 0) {
+            mod_sys_loaded = true;
+        }
     }
 exit:
     amxc_string_clean(&mod_path);
@@ -578,7 +586,7 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
         }
     }
 
-    if(restart_needed) {
+    if(restart_needed && system_module_loaded()) {
         /* Calls "request-system-update" from the "mod-wanmgr-system" module to
          * update the system configuration for the active WAN mode.
          * Returns 0 if the system configuration is successful.

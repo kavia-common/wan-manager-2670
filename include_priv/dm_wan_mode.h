@@ -82,6 +82,7 @@ extern "C"
 #define MOD_WAN_SYS_CTRL "mod-wmmsys-ctrl"
 #define MOD_WAN_SYS_FUNC "request-system-update"
 
+bool system_module_loaded(void);
 void update_sensing(void);
 void wan_mode_init(void);
 amxd_object_t* get_wan_manager_obj(void);
