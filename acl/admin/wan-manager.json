@@ -1,29 +1,29 @@
 {
-    "Device.X_PRPL-COM_WANManager.": {
+    "Device.${global_vendor_prefix_}WANManager.": {
         "Order": 1,
         "Param": "r--n"
     },
-    "Device.X_PRPL-COM_WANManager.WANMode": {
+    "Device.${global_vendor_prefix_}WANManager.WANMode": {
         "Order": 2,
         "Param": "rw-n"
     },
-    "Device.X_PRPL-COM_WANManager.getWANMode": {
+    "Device.${global_vendor_prefix_}WANManager.getWANMode": {
         "Order": 2,
         "CommandEvent": "--x-"
     },
-    "Device.X_PRPL-COM_WANManager.setWANMode": {
+    "Device.${global_vendor_prefix_}WANManager.setWANMode": {
         "Order": 2,
         "CommandEvent": "--x-"
     },
-    "Device.X_PRPL-COM_WANManager.WANModeEnable": {
+    "Device.${global_vendor_prefix_}WANManager.WANModeEnable": {
         "Order": 2,
         "CommandEvent": "--x-"
     },
-    "Device.X_PRPL-COM_WANManager.WANModeDisable": {
+    "Device.${global_vendor_prefix_}WANManager.WANModeDisable": {
         "Order": 2,
         "CommandEvent": "--x-"
     },
-    "Device.X_PRPL-COM_WANManager.WAN.*.Intf.1.": {
+    "Device.${global_vendor_prefix_}WANManager.WAN.*.Intf.1.": {
         "Order": 2,
         "Param": "rw-n"
     }

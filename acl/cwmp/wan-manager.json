@@ -1,9 +1,9 @@
 {
-    "Device.X_PRPL-COM_WANManager.": {
+    "Device.${global_vendor_prefix_}WANManager.": {
         "Order": 1,
         "Param": "rw-n"
     },
-    "Device.X_PRPL-COM_WANManager.WAN.": {
+    "Device.${global_vendor_prefix_}WANManager.WAN.": {
         "Order": 1,
         "Param": "rw-n",
         "Obj": "-w--"
