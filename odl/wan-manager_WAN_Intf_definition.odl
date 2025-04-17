@@ -21,7 +21,7 @@
             * @version 1.0
             */
             %persistent string Name {
-                on action validate call check_enum ["wan", "voip", "mgmt", "iptv"];
+                on action validate call check_enum ["wan", "voip", "mgmt", "iptv", "wan-cellular"];
                 on action validate call interface_already_configured;
                 default "wan";
             }

@@ -8,7 +8,7 @@
     }
 
     object 'WANManager.WAN.Cellular_IPv4.Intf'{
-        instance add(0,"wan"){
+        instance add(0,"wan-cellular"){
             parameter Type = "untagged";
             parameter IPv4Mode = "3gpp-nas";
             parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
