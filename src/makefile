@@ -18,6 +18,7 @@ AUTOSENSING_INT_SRC = ./autosensing
 ETHERNET_INT_SRC = ./ethernet
 NETMODEL_INT_SRC = ./netmodel
 DSLITE_INT_SRC = ./dslite
+CELLULAR_INT_SRC = ./cellular
 LINK_INT_SRC = ./link
 NETWORK_SELECTOR_SRC = ./network-selector
 SFP_SRC = ./sfp
@@ -40,7 +41,8 @@ SRC = $(wildcard $(SRCDIR)/*.c 				\
 				 $(DNS_INT_SRC)/*.c \
 				 $(LINK_INT_SRC)/*.c \
 				 $(NETWORK_SELECTOR_SRC)/*.c \
-				 $(SFP_SRC)/*.c)
+				 $(SFP_SRC)/*.c \
+				 $(CELLULAR_INT_SRC)/*.c)
 
 
 
@@ -109,6 +111,10 @@ $(OBJDIR)/%.o: $(DNS_INT_SRC)/%.c | $(OBJDIR)/
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
 $(OBJDIR)/%.o: $(DSLITE_INT_SRC)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(CELLULAR_INT_SRC)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 

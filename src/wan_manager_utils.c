@@ -148,6 +148,10 @@ amxb_bus_ctx_t* xpon_get_context(void) {
     return amxb_be_who_has("XPON.");
 }
 
+amxb_bus_ctx_t* cellular_get_context(void) {
+    return amxb_be_who_has("Cellular.");
+}
+
 const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
     const char* path = NULL;
 
@@ -425,7 +429,7 @@ amxd_status_t ipv4_addr_toggle(const char* intf_path, amxc_var_t* ip_addr, const
     amxc_var_set_type(&params, AMXC_VAR_ID_HTABLE);
     amxc_var_add_key(cstring_t, &params, "AddressingType", addr_type);
 
-    if((ip_addr != NULL) && (strcmp(addr_type, STATIC_ADDRESSING_TYPE) == 0)) {
+    if((ip_addr != NULL) && (strcmp(addr_type, ADDRESSING_TYPE_STATIC) == 0)) {
         amxc_var_add_key(cstring_t, &params, "IPAddress", GET_CHAR(ip_addr, "IPv4Address"));
         amxc_var_add_key(cstring_t, &params, "SubnetMask", GET_CHAR(ip_addr, "SubnetMask"));
     }

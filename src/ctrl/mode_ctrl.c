@@ -70,6 +70,7 @@
 #include "ppp/ppp.h"
 #include "staticc/static_controller.h"
 #include "dslite/dslite.h"
+#include "cellular/cellular.h"
 #include "link/link.h"
 #include "common_layers.h"
 
@@ -84,6 +85,7 @@ controller_item_t controllers [] = {
     { IPv4_DHCP, {NULL, ipv4_layer, ip_enable, dhcp4_layer, logical_layer}},
     { IPv6_DHCP, {NULL, ipv6_layer, ip_enable, dhcp6_layer, logical_layer}},
     { IPv4_DSLITE, {NULL, NULL, NULL, dslite_layer, logical_layer}},
+    { IPv4_CELLULAR, {NULL, ipv4_layer, ip_enable, cellular_layer, logical_layer}},
     { IPv4_PPP, {ppp_lower_layer, ipv4_layer, ip_enable, ppp_upper_layer, logical_layer}},
     { IPv6_PPP, {ppp_lower_layer, ipv6_layer, ip_enable, ppp_upper_layer, logical_layer}},
     { IPv4_STATIC, {NULL, ipv4_layer, ip_enable, static_layer, logical_layer}},

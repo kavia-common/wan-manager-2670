@@ -53,7 +53,7 @@
             * @version 1.0
             */
             %persistent string IPv4Mode{
-                on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite", "link"];
+                on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite", "link", "3gpp-nas"];
                 default "dhcp4";
                 userflags %usersetting;
             }

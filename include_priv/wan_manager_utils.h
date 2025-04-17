@@ -72,10 +72,11 @@ extern "C" {
 #include <amxp/amxp.h>
 #include <amxd/amxd_dm.h>
 
-#define DHCP_ADDRESSING_TYPE "DHCP"
-#define PPP_ADDRESSING_TYPE "IPCP"
-#define STATIC_ADDRESSING_TYPE "Static"
-#define AUTO_ADDRESSING_TYPE "AutoConfigured"
+#define ADDRESSING_TYPE_DHCP "DHCP"
+#define ADDRESSING_TYPE_PPP "IPCP"
+#define ADDRESSING_TYPE_STATIC "Static"
+#define ADDRESSING_TYPE_3GPP_NAS "3GPP-NAS"
+#define ADDRESSING_TYPE_AUTO "AutoConfigured"
 
 #define CHILD_PREFIX_TYPE "Child"
 #define STATIC_PREFIX_TYPE "Static"
@@ -85,6 +86,7 @@ extern "C" {
 #define ROUTING_ORIGIN_RIP "RIP"
 #define ROUTING_ORIGIN_OSPF "OSPF"
 #define ROUTING_ORIGIN_STATIC "Static"
+#define ROUTING_ORIGIN_3GPP_NAS "3GPP-NAS"
 #define ROUTING_ORIGIN_AUTOMATIC "Automatic"
 
 #define DEVICE_PATH "Device."
@@ -130,6 +132,7 @@ amxb_bus_ctx_t* logical_get_context(void);
 amxb_bus_ctx_t* neighbor_discovery_get_context(void);
 amxb_bus_ctx_t* pcp_get_context(void);
 amxb_bus_ctx_t* xpon_get_context(void);
+amxb_bus_ctx_t* cellular_get_context(void);
 
 const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
 const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);

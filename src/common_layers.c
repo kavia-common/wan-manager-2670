@@ -76,13 +76,16 @@ static const char* get_addressing_v4_type(mode_ctrl_t mode) {
     const char* addr_type = NULL;
     switch(mode & MASK_IPv4) {
     case IPv4_DHCP:
-        addr_type = DHCP_ADDRESSING_TYPE;
+        addr_type = ADDRESSING_TYPE_DHCP;
         break;
     case IPv4_PPP:
-        addr_type = PPP_ADDRESSING_TYPE;
+        addr_type = ADDRESSING_TYPE_PPP;
         break;
     case IPv4_STATIC:
-        addr_type = STATIC_ADDRESSING_TYPE;
+        addr_type = ADDRESSING_TYPE_STATIC;
+        break;
+    case IPv4_CELLULAR:
+        addr_type = ADDRESSING_TYPE_3GPP_NAS;
         break;
     default:
         break;
@@ -111,6 +114,9 @@ static const char* get_routing_v4_origin(mode_ctrl_t mode) {
         break;
     case IPv4_DSLITE:
         routing_origin = ROUTING_ORIGIN_STATIC;
+        break;
+    case IPv4_CELLULAR:
+        routing_origin = ROUTING_ORIGIN_3GPP_NAS;
         break;
     default:
         break;
