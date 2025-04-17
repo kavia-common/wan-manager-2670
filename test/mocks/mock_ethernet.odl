@@ -8,6 +8,13 @@
             string LowerLayers;
         }
 
+        object Link[] {
+            bool Enable = true;
+            string Alias;
+            string Name;
+            string LowerLayers;
+        }
+
         object VLANTermination[] {
             bool Enable;
             string Status = "Down";
@@ -29,6 +36,20 @@
             parameter LowerLayers = "Device.Ethernet.Link.2.";
             parameter VLANID = 201;
             parameter VLANPriority = 0;
+        }
+    }
+    object 'Ethernet.Link' {
+        instance add (2, "ethernet_wan", Name = "eth1") {
+            parameter LowerLayers = "Device.Ethernet.Interface.1.";
+        }
+        instance add (3, "bridge_lan", Name = "br-lan") {
+            parameter LowerLayers = "Device.Bridging.Bridge.1.Port.1.";
+        }
+        instance add (4, "gpon", Name = "gpon1") {
+            parameter LowerLayers = "Device.XPON.ONU.1.EthernetUNI.1.";
+        }
+        instance add (5, "wwan", Name = "wwan0") {
+            parameter LowerLayers = "Device.Cellular.Interface.1.";
         }
     }
     object 'Ethernet.Interface' {

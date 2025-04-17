@@ -111,6 +111,7 @@ static const char* odl_dhcp_mock = "../mocks/mock_dhcp.odl";
 static const char* odl_dslite_mock = "../mocks/mock_dslite.odl";
 static const char* odl_pcp_mock = "../mocks/mock_pcp.odl";
 static const char* odl_mod_mock = "../mocks/mod_mock.odl";
+static const char* odl_cellular_mock = "../mocks/mock_cellular.odl";
 
 static amxd_status_t _AddPort(UNUSED amxd_object_t* bridge_obj, UNUSED amxd_function_t* func, amxc_var_t* args, UNUSED amxc_var_t* ret) {
     amxd_status_t status = amxd_status_unknown_error;
@@ -216,6 +217,7 @@ int test_wan_manager_setup(UNUSED void** state) {
     assert_int_equal(amxo_parser_parse_file(&parser, odl_dslite_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_pcp_mock, root_obj), 0);
     assert_int_equal(amxo_parser_parse_file(&parser, odl_mod_mock, root_obj), 0);
+    assert_int_equal(amxo_parser_parse_file(&parser, odl_cellular_mock, root_obj), 0);
     // Bridging rpc mocks
     assert_int_equal(amxo_resolver_ftab_add(&parser, "AddPort", AMXO_FUNC(_AddPort)), 0);
     assert_int_equal(amxo_resolver_ftab_add(&parser, "DisablePort", AMXO_FUNC(_DisablePort)), 0);
@@ -256,6 +258,8 @@ int test_wan_manager_setup(UNUSED void** state) {
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
     expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // Bridge_vlanmode
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
+    // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_cellular.
+    expect_netmodel_openQuery_getFirstParameter("Device.Cellular.Interface.1.");
     // SKIP demo_SFP since there is no physical flag defined
     expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_test
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
@@ -277,6 +281,23 @@ int test_wan_manager_teardown(UNUSED void** state) {
     amxd_dm_clean(&dm);
 
     return 0;
+}
+
+char* remove_device_prefix(const char* str) {
+    amxc_string_t object_path;
+    char* res = NULL;
+    amxc_string_init(&object_path, 0);
+    amxc_string_setf(&object_path, "%s", str);
+    amxc_string_replace(&object_path, "Device.DHCPv4.", "DHCPv4Client.", UINT32_MAX);
+    amxc_string_replace(&object_path, "Device.DHCPv6.", "DHCPv6Client.", UINT32_MAX);
+    if(amxc_string_search(&object_path, "Device.", 0) == 0) {
+        amxc_string_replace(&object_path, "Device.", "", 1);
+    }
+
+    res = amxc_string_take_buffer(&object_path);
+
+    amxc_string_clean(&object_path);
+    return res;
 }
 
 amxd_dm_t* test_get_dm(void) {

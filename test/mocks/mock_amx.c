@@ -55,23 +55,7 @@
 #include <stdlib.h>
 
 #include "mock_amx.h"
-
-static char* remove_device_prefix(const char* str) {
-    amxc_string_t object_path;
-    char* res = NULL;
-    amxc_string_init(&object_path, 0);
-    amxc_string_setf(&object_path, "%s", str);
-    amxc_string_replace(&object_path, "Device.DHCPv4.", "DHCPv4Client.", UINT32_MAX);
-    amxc_string_replace(&object_path, "Device.DHCPv6.", "DHCPv6Client.", UINT32_MAX);
-    if(amxc_string_search(&object_path, "Device.", 0) == 0) {
-        amxc_string_replace(&object_path, "Device.", "", 1);
-    }
-
-    res = strdup(amxc_string_get(&object_path, 0));
-
-    amxc_string_clean(&object_path);
-    return res;
-}
+#include "test_utils.h"
 
 int __wrap_amxb_set(amxb_bus_ctx_t* const bus_ctx, const char* object, amxc_var_t* values, amxc_var_t* ret, int timeout) {
     int rv = -1;

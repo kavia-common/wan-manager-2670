@@ -1,0 +1,21 @@
+%define {
+    object Cellular {
+        %read-only object Interface[] {
+            bool Enable;
+            string Alias;
+            string Name;
+            csv_string LowerLayers = "";
+        }
+    }
+}
+
+%populate {
+    object Cellular {
+        object Interface {
+            instance add('wan') {
+                parameter Name = "wan";
+                parameter Enable = false;
+            }
+        }
+    }
+}

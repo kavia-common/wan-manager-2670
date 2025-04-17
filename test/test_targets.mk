@@ -45,6 +45,10 @@ $(OBJDIR)/%.o: $(DSLITE_SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
+$(OBJDIR)/%.o: $(CELLULAR_SRCDIR)/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)

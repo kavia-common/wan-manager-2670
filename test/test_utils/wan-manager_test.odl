@@ -62,7 +62,12 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter PhysicalType = "Ethernet";
             parameter EnableSensing = false;
         }
-    }
+        instance add ("demo_cellular"){
+            parameter Alias = "demo_cellular";
+            parameter PhysicalType = "";
+            parameter PhysicalReference = "Device.Cellular.Interface.1.";
+        }
+}
 
     object 'WANManager.WAN.demo_wanmode.Intf'{
         instance add(0,"wan"){
@@ -330,6 +335,18 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter BridgeReference = "Device.Bridging.Bridge.1.";
             parameter DHCPv4Reference = "Device.DHCPv4.Client.1.";
             parameter DHCPv6Reference = "Device.DHCPv6.Client.1.";
+        }
+    }
+
+    object 'WANManager.WAN.demo_cellular.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "3gpp-nas";
+            parameter IPv6Mode = "none";
+            parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.10.";
+            parameter IPv6Reference = "Device.IP.Interface.10.";
         }
     }
 }

@@ -92,6 +92,7 @@ int main(void) {
         cmocka_unit_test(test_wan_manager_set_intf_ipv6_static_mode),
         cmocka_unit_test(test_wan_manager_set_bridge_mode),
         cmocka_unit_test(test_wan_manager_set_bridge_vlanmode),
+        cmocka_unit_test(test_wan_manager_set_cellular_mode),
     };
     return cmocka_run_group_tests(tests, test_wan_manager_setup, test_wan_manager_teardown);
 }

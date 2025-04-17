@@ -78,6 +78,8 @@
 int test_wan_manager_setup(void** state);
 int test_wan_manager_teardown(void** state);
 
+char* remove_device_prefix(const char* str);
+
 amxd_dm_t* test_get_dm(void);
 amxo_parser_t* test_get_parser(void);
 void test_handle_events(void);

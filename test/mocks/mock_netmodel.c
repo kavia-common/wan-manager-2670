@@ -136,7 +136,7 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         amxc_var_set(cstring_t, &data, "");
         handler("sig_name", &data, userdata);
         // 3. call with usefull data
-        amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.6.");
+        amxc_var_set(cstring_t, &data, "Device.Ethernet.Link.4.");
         handler("sig_name", &data, userdata);
         // 4. call with same data
         handler("sig_name", &data, userdata);
@@ -145,6 +145,12 @@ netmodel_query_t* __wrap_netmodel_openQuery_getFirstParameter(const char* intf,
         // info->physical_type for "Bridge" is 1 (index in physical_type_t)
         assert_int_equal(info->physical_type, 1);
         amxc_var_set(cstring_t, &data, "Device.Bridging.Bridge.1.Port.2");
+        handler("sig_name", &data, userdata);
+    } else if(strcmp(intf, "Device.Cellular.Interface.1.") == 0) {
+        nm_query_ll_info_t* info = (nm_query_ll_info_t*) userdata;
+        // info->physical_type for "Cellular" is 7 (index in physical_type_t)
+        assert_int_equal(info->physical_type, 7);
+        amxc_var_set(cstring_t, &data, "Device.IP.Interface.10.");
         handler("sig_name", &data, userdata);
     } else {
         assert_string_equal(name, "NetModel.Intf.unknown.");
@@ -213,14 +219,16 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
                                                  const char* flag,
                                                  const char* traverse,
                                                  netmodel_callback_t handler,
-                                                 UNUSED void* userdata) {
+                                                 void* userdata) {
     netmodel_query_t* q = malloc(sizeof(netmodel_query_t*));
     amxd_object_t* priv_obj = NULL;
     const char* current_wanmodes = get_current_wan_mode_str();
     amxc_string_t current_wan_modes_str;
     amxc_llist_t current_list;
     amxd_object_t* intf_obj = NULL;
+    amxc_var_t data;
 
+    amxc_var_init(&data);
     amxc_string_init(&current_wan_modes_str, 0);
     amxc_llist_init(&current_list);
 
@@ -272,6 +280,10 @@ netmodel_query_t* __wrap_netmodel_openQuery_isUp(const char* intf,
 
     }
 
+    amxc_var_set(bool, &data, isUp_result);
+    handler("sig_name", &data, userdata);
+
+    amxc_var_clean(&data);
     amxc_llist_clean(&current_list, amxc_string_list_it_free);
     amxc_string_clean(&current_wan_modes_str);
     return q;
