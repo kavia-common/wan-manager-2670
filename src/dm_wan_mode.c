@@ -512,39 +512,45 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
     amxc_string_set(&new_wan_modes_str, wan_modes_to_set);
 
     amxc_string_split_to_llist(&new_wan_modes_str, &new_list, ',');
+    amxc_string_split_to_llist(&active_wan_modes_str, &active_list, ',');
 
     /*
        First we have to check which of the already active wanmodes need to stay active.
-       These ones are removed from active_wan_modes_str, and new_list.
-       The end result is that active_wan_mode_str contains a list of wanmodes that are no longer needed
+       These ones are removed from both active_list and new_list.
+       The end result is that active_list contains a list of wanmodes that are no longer needed
        and new_list contains a list of wanmodes that need to be setup.
 
-       NOTE: When wan_modes_to_set and active_wan_modes are equal,
+       NOTE: When wan_modes_to_set and active_wan_modes are equal (for example when calling WanManager.Reset()),
        all the wanmodes need to be teared down and setup again. This means we have to skip this step.
      */
     if(strcmp(wan_modes_to_set, active_wan_modes) != 0) {
-        amxc_llist_for_each(it, &new_list) {
-            const char* new_wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
-            if(amxc_string_replace(&active_wan_modes_str, new_wan_mode, "", UINT32_MAX) > 0) {
-                amxc_llist_it_take(it);
-                amxc_string_list_it_free(it);
+        amxc_llist_for_each(it_new, &new_list) {
+            const char* new_wan_mode = amxc_string_get(amxc_string_from_llist_it(it_new), 0);
+
+            amxc_llist_for_each(it_active, &active_list) {
+                const char* active_wan_mode = amxc_string_get(amxc_string_from_llist_it(it_active), 0);
+                if(strcmp(new_wan_mode, active_wan_mode) == 0) {
+                    amxc_llist_it_take(it_new);
+                    amxc_string_list_it_free(it_new);
+                    amxc_llist_it_take(it_active);
+                    amxc_string_list_it_free(it_active);
+                }
             }
         }
     }
 
     /* Disable the WANModes that are no longer needed */
-    amxc_string_split_to_llist(&active_wan_modes_str, &active_list, ',');
     amxc_llist_for_each(active_it, &active_list) {
         amxd_object_t* active_wan_mode_obj = NULL;
-        const char* new_wan_mode = amxc_string_get(amxc_string_from_llist_it(active_it), 0);
-        if(str_empty(new_wan_mode)) {
+        const char* active_wan_mode = amxc_string_get(amxc_string_from_llist_it(active_it), 0);
+        if(str_empty(active_wan_mode)) {
             continue;
         }
-        active_wan_mode_obj = get_wan_mode(new_wan_mode);
-        when_null_trace(active_wan_mode_obj, exit, ERROR, "Current wanmode object could not be found");
+        active_wan_mode_obj = get_wan_mode(active_wan_mode);
+        when_null_trace(active_wan_mode_obj, exit, ERROR, "Wanmode object for current WANMode '%s' could not be found", active_wan_mode);
 
         rc = wan_mode_enable(active_wan_mode_obj, false);
-        when_failed_trace(rc, exit, ERROR, "Failed to disable %s", new_wan_mode);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable %s", active_wan_mode);
     }
 
     rc = wan_mode_dm_set(wan_modes_to_set, NULL);
@@ -583,6 +589,20 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
     }
 
 exit:
+
+    if(rc != amxd_status_ok) {
+        amxc_llist_t set_wan_modes_list;
+        amxc_llist_init(&set_wan_modes_list);
+        amxc_string_split_to_llist(&new_wan_modes_str, &set_wan_modes_list, ',');
+
+        amxc_llist_for_each(it, &set_wan_modes_list) {
+            const char* new_wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+            wan_mode_set_status(get_wan_mode(new_wan_mode), WAN_Mode_Error);
+        }
+
+        amxc_llist_clean(&set_wan_modes_list, amxc_string_list_it_free);
+    }
+
     amxc_llist_clean(&active_list, amxc_string_list_it_free);
     amxc_llist_clean(&new_list, amxc_string_list_it_free);
     amxc_string_clean(&new_wan_modes_str);
