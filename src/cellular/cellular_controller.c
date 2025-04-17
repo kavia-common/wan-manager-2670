@@ -166,6 +166,10 @@ static amxd_status_t cellular_disable(UNUSED mode_ctrl_t mode,
     cellular_path = object_const_string(wan_mode, "PhysicalReference");
     when_str_empty_trace(cellular_path, exit, ERROR, "Failed to get Cellular interface path");
 
+    /* Device.Cellular.Interface is not disabled since it would not be usable for wan autosensing if it is disabled.
+       This is something that we will look at in the future to see if this can be improved.
+     */
+
 exit:
     SAH_TRACEZ_OUT(ME);
     return rc;
