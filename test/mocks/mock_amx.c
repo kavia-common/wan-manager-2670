@@ -131,3 +131,13 @@ int __wrap_amxb_del(amxb_bus_ctx_t* const bus_ctx, const char* object, uint32_t 
 
     return rv;
 }
+
+int __wrap_amxm_execute_function(const char* const shared_object_name, const char* const module_name, const char* const func_name, amxc_var_t* args, amxc_var_t* ret) {
+    // Simulate succesfull call of request-system-update for reboot purposes
+    if((strcmp(shared_object_name, "mod-wanmgr-system") == 0) &&
+       (strcmp(module_name, "mod-wmmsys-ctrl") == 0) &&
+       (strcmp(func_name, "request-system-update") == 0)) {
+        return 0;
+    }
+    return __real_amxm_execute_function(shared_object_name, module_name, func_name, args, ret);
+}

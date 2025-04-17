@@ -415,8 +415,45 @@ bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status) {
     rc = GET_BOOL(&ret, "status");
 
     test_handle_events();
+    if(rc) {
+        assert_active_wan_mode(mode_to_set, "Enabled");
+    }
 
     amxc_var_clean(&args);
     amxc_var_clean(&ret);
     return rc;
+}
+
+void assert_active_wan_mode(const char* wan_modes, const char* status) {
+    amxc_var_t wan_manager_parameters;
+    amxc_string_t wanmodes_string;
+    amxc_llist_t wanmodes_list;
+    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
+
+    amxc_string_init(&wanmodes_string, 0);
+    amxc_llist_init(&wanmodes_list);
+
+    assert_non_null(wan_manager_dm);
+
+    amxc_var_init(&wan_manager_parameters);
+    assert_int_equal(amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters), 0);
+    assert_string_equal(wan_modes, GET_CHAR(&wan_manager_parameters, NULL));
+
+    amxc_string_set(&wanmodes_string, wan_modes);
+    assert_int_equal(amxc_string_split_to_llist(&wanmodes_string, &wanmodes_list, ','), 0);
+    amxc_llist_for_each(it, &wanmodes_list) {
+        const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(it), 0);
+        amxd_object_t* wan_manager_inst = amxd_object_findf(wan_manager_dm, "WAN.%s", wan_mode);
+        amxc_var_t wan_manager_inst_parameters;
+
+        assert_non_null(wan_manager_inst);
+        amxc_var_init(&wan_manager_inst_parameters);
+        assert_int_equal(amxd_object_get_params(wan_manager_inst, &wan_manager_inst_parameters, amxd_dm_access_protected), 0);
+        assert_string_equal(status, GET_CHAR(&wan_manager_inst_parameters, "Status"));
+        amxc_var_clean(&wan_manager_inst_parameters);
+    }
+
+    amxc_llist_clean(&wanmodes_list, amxc_string_list_it_free);
+    amxc_string_clean(&wanmodes_string);
+    amxc_var_clean(&wan_manager_parameters);
 }

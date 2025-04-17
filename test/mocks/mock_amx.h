@@ -83,6 +83,9 @@ int __real_amxb_call(amxb_bus_ctx_t* const bus_ctx, const char* object, const ch
 int __wrap_amxb_set_multiple(amxb_bus_ctx_t* const bus_ctx, uint32_t flags, amxc_var_t* req_paths, amxc_var_t* ret, int timeout);
 int __real_amxb_set_multiple(amxb_bus_ctx_t* const bus_ctx, uint32_t flags, amxc_var_t* req_paths, amxc_var_t* ret, int timeout);
 
+int __wrap_amxm_execute_function(const char* const shared_object_name, const char* const module_name, const char* const func_name, amxc_var_t* args, amxc_var_t* ret);
+int __real_amxm_execute_function(const char* const shared_object_name, const char* const module_name, const char* const func_name, amxc_var_t* args, amxc_var_t* ret);
+
 #ifdef __cplusplus
 }
 #endif

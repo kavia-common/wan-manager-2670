@@ -30,7 +30,8 @@ MOCK_WRAP = netmodel_initialize		\
             amxb_get \
             amxb_add \
             amxb_del \
-            amxb_call
+            amxb_call \
+            amxm_execute_function
 
 LDFLAGS += -g $(addprefix $(WRAP_FUNC),$(MOCK_WRAP))
 

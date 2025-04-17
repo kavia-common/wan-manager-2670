@@ -451,18 +451,10 @@ static void reset_wan_mode() {
 
 void test_wan_manager_set_invalid_mode(UNUSED void** state) {
     amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-
     amxc_var_init(&status);
 
     assert_false(set_wan_mode("test", amxd_status_invalid_attr));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_ppp6mode", wan_mode_str);
+    assert_active_wan_mode("demo_ppp6mode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "DHCP", "demo_ppp6mode", "Device.IP.Interface.3.");
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
@@ -472,17 +464,10 @@ void test_wan_manager_set_invalid_mode(UNUSED void** state) {
 
 void test_wan_manager_set_valid_mode(UNUSED void** state) {
     amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
 
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
@@ -490,82 +475,36 @@ void test_wan_manager_set_valid_mode(UNUSED void** state) {
 }
 
 void test_wan_manager_set_multiple_valid_modes(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-
-    amxc_var_init(&status);
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_true(set_wan_mode("demo_wanmode,demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode,demo_ppp6mode", wan_mode_str);
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 2);
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "Device.IP.Interface.3.");
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
-
-    amxc_var_clean(&status);
 }
 
 void test_wan_manager_set_multiple_invalid_modes(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-
-    amxc_var_init(&status);
-
     assert_false(set_wan_mode("demo_wanmode,demo_vlanmode", amxd_status_invalid_value));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode,demo_ppp6mode", wan_mode_str);
-
-    amxc_var_clean(&status);
+    assert_active_wan_mode("demo_wanmode,demo_ppp6mode", "Enabled");
 }
 
 void test_wan_manager_set_multiple_valid_used_modes(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-    amxc_var_init(&status);
-
     assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_vlanmode", wan_mode_str);
     assert_dhcp_mode(true, "Interface.2", true, false, "DHCP", "demo_vlanmode", "");
 
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_ppp6mode", wan_mode_str);
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "Device.IP.Interface.3.");
 
     assert_true(enable_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_ppp6mode,demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_ppp6mode,demo_wanmode", "Enabled");
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 2);
     assert_nr_active_objects("PPP.Interface.", 1);
@@ -573,51 +512,30 @@ void test_wan_manager_set_multiple_valid_used_modes(UNUSED void** state) {
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "Device.IP.Interface.3.");
 
     assert_true(disable_wan_mode("demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_ppp6mode", wan_mode_str);
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "Device.IP.Interface.3.");
-
-    amxc_var_clean(&status);
 }
 
 void test_wan_manager_switch_to_invalid(UNUSED void** state) {
     amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_false(set_wan_mode("test", amxd_status_invalid_attr));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
@@ -625,55 +543,21 @@ void test_wan_manager_switch_to_invalid(UNUSED void** state) {
 }
 
 void test_wan_manager_switch_to_valid_different_intf(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-    amxc_var_init(&status);
-
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_true(set_wan_mode("demo_test", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("demo_test", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_test", "");
-
-    amxc_var_clean(&status);
 }
 
 void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
-    const char* wan_mode_str = NULL;
-    amxc_var_init(&status);
-
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("demo_vlanmode", wan_mode_str);
-
-    amxc_var_clean(&status);
 }
 
 /*
@@ -688,19 +572,11 @@ void test_wan_manager_routing_interface_create(UNUSED void** state) {
 
 void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     amxc_var_t status;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* routing_dm = amxd_dm_findf(test_get_dm(), "Routing.RouteInformation.");
     amxd_object_t* routing_inst = NULL;
-    const char* wan_mode_str = NULL;
     amxc_var_init(&status);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
@@ -708,12 +584,8 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     assert_non_null(routing_inst);
 
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
     assert_nr_instances("PPP.Interface.", 1);
     assert_nr_active_objects("PPP.Interface.", 1);
-    assert_string_equal("demo_pppmode", wan_mode_str);
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
 
     routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
@@ -723,10 +595,6 @@ void test_wan_manager_routing_interface_switch(UNUSED void** state) {
     assert_non_null(routing_inst);
 
     assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-    assert_string_equal("demo_vlanmode", wan_mode_str);
 
     amxc_var_clean(&status);
 }
@@ -786,64 +654,33 @@ void test_wan_manager_default_route(UNUSED void** state) {
 }
 
 void test_wan_manager_set_static_ip(UNUSED void** state) {
-    amxc_var_t status;
-    const char* wan_mode_str = NULL;
-    amxd_object_t* wan_mode = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "IP.Interface.2.");
     amxd_object_t* ip_addr = NULL;
 
     assert_non_null(ip_dm);
 
-    amxc_var_init(&status);
-
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
-
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
     assert_true(ip_addr == NULL);
 
     assert_true(set_wan_mode("demo_staticmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_staticmode", wan_mode_str);
-
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static' && IPAddress == '80.16.3.112']");
     assert_non_null(ip_addr);
-
     ip_addr = amxd_object_findf(ip_dm, "IPv6Address.[Origin == 'Static' && IPAddress == '2a02:1802:94:3200:10:18ff:fe01:cc01']");
     assert_non_null(ip_addr);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mode, "WANMode", &status);
-    wan_mode_str = amxc_var_constcast(cstring_t, &status);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
-
     ip_addr = amxd_object_findf(ip_dm, "IPv4Address.[AddressingType == 'Static']");
     assert_true(ip_addr == NULL);
-
-    amxc_var_clean(&status);
 }
 
 void test_wan_manager_logical_interface(UNUSED void** state) {
     amxc_var_t value;
-    amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* logical_intf = amxd_dm_findf(test_get_dm(), "Logical.Interface.wan.");
-    const char* wan_mode_str = NULL;
     const char* logical_ll = NULL;
 
     amxc_var_init(&value);
@@ -851,12 +688,6 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
     assert_non_null(logical_intf);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mgr, "WANMode", &value);
-    wan_mode_str = amxc_var_constcast(cstring_t, &value);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
@@ -869,13 +700,6 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
     assert_true(set_wan_mode("demo_dslite", amxd_status_ok));
     assert_dslite();
 
-    amxd_object_get_param(wan_mgr, "WANMode", &value);
-    wan_mode_str = amxc_var_constcast(cstring_t, &value);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_dslite", wan_mode_str);
-    assert_dslite();
-
     amxd_object_get_param(logical_intf, "LowerLayers", &value);
     logical_ll = amxc_var_constcast(cstring_t, &value);
 
@@ -883,12 +707,6 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
     assert_string_equal("Device.IP.Interface.7.,Device.IP.Interface.2.", logical_ll);
 
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-
-    amxd_object_get_param(wan_mgr, "WANMode", &value);
-    wan_mode_str = amxc_var_constcast(cstring_t, &value);
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
@@ -902,20 +720,15 @@ void test_wan_manager_logical_interface(UNUSED void** state) {
 }
 
 void test_wan_manager_set_ppp_mode(UNUSED void** state) {
-    amxc_var_t wan_manager_parameters;
     amxc_var_t ppp_parameters;
     amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "PPP.");
     amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
     amxd_object_t* demo_pppmode_obj = NULL;
-    amxc_var_init(&wan_manager_parameters);
     amxc_var_init(&ppp_parameters);
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
-
     assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
     assert_false(GET_BOOL(&ppp_parameters, "Enable"));
     assert_string_equal("softathome", GET_CHAR(&ppp_parameters, "Username"));
@@ -923,17 +736,11 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 
     /* Change wan_mode to demo_pppmode */
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
-
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("ppp4", "softathome", 4, false, "Interface.2", "demo_pppmode");
 
     /* Change wan_mode to demo_ppp6mode */
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
-
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "ppp6", 6, false, "Interface.7", "demo_ppp6mode");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
@@ -948,8 +755,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 
     /* Change wan_mode to demo_pppmode again */
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
@@ -967,8 +772,6 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
 
     /* Change wan_mode to demo_ppp6mode again (IPv6 numbered mode)*/
     assert_true(set_wan_mode("demo_ppp6mode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_ppp6mode", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 6, true, "Interface.7", "demo_ppp6mode");
@@ -976,23 +779,17 @@ void test_wan_manager_set_ppp_mode(UNUSED void** state) {
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "");
 
     amxc_var_clean(&ppp_parameters);
-    amxc_var_clean(&wan_manager_parameters);
 }
 
 void test_wan_manager_set_link_mode(UNUSED void** state) {
-    amxc_var_t wan_manager_parameters;
     amxc_var_t logical_parameters;
-    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* logical_dm = amxd_dm_findf(test_get_dm(), "Logical.");
     amxd_object_t* logical_inst_voip = amxd_object_findf(logical_dm, "Interface.2");
     amxd_object_t* logical_inst_mgmt = amxd_object_findf(logical_dm, "Interface.3");
-    amxc_var_init(&wan_manager_parameters);
     amxc_var_init(&logical_parameters);
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_int_equal(amxd_object_get_params(logical_inst_voip, &logical_parameters, amxd_dm_access_protected), 0);
     assert_string_equal("", GET_CHAR(&logical_parameters, "LowerLayers"));
@@ -1001,8 +798,6 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
 
     /* Change wan_mode to demo_link */
     assert_true(set_wan_mode("demo_link", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_link", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_int_equal(amxd_object_get_params(logical_inst_voip, &logical_parameters, amxd_dm_access_protected), 0);
     assert_string_equal("Device.IP.Interface.2.", GET_CHAR(&logical_parameters, "LowerLayers"));
@@ -1010,24 +805,19 @@ void test_wan_manager_set_link_mode(UNUSED void** state) {
     assert_string_equal("Device.IP.Interface.2.", GET_CHAR(&logical_parameters, "LowerLayers"));
 
     amxc_var_clean(&logical_parameters);
-    amxc_var_clean(&wan_manager_parameters);
 }
 
 
 void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
-    amxc_var_t wan_manager_parameters;
     amxc_var_t ppp_parameters;
     amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* ppp_dm = amxd_dm_findf(test_get_dm(), "PPP.");
     amxd_object_t* ppp_inst = amxd_object_findf(ppp_dm, "Interface.1");
     amxd_object_t* demo_pppmode_obj = NULL;
-    amxc_var_init(&wan_manager_parameters);
     amxc_var_init(&ppp_parameters);
 
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_int_equal(amxd_object_get_params(ppp_inst, &ppp_parameters, amxd_dm_access_protected), 0);
     assert_false(GET_BOOL(&ppp_parameters, "Enable"));
@@ -1036,8 +826,6 @@ void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
 
     /* Change wan_mode to demo_pppmode */
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
@@ -1055,21 +843,18 @@ void test_wan_manager_reset_ppp_mode(UNUSED void** state) {
 
     /* Reset wan mode */
     reset_wan_mode();
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_active_wan_mode("demo_pppmode", "Enabled");
 
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_ppp_mode("changed_user", "changed_pw", 4, false, "Interface.2", "demo_pppmode");
 
     amxc_var_clean(&ppp_parameters);
-    amxc_var_clean(&wan_manager_parameters);
 }
 
 void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     amxd_object_t* wan_mgr = amxd_dm_findf(test_get_dm(), "WANManager.");
     amxd_object_t* wan_mode = amxd_object_findf(wan_mgr, "WAN.1.");
     amxd_object_t* intf = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_wanmode.Intf.1.");
-    const char* wan_mode_str = NULL;
     const char* ip_mode_str = NULL;
     const char* dns_mode_str = NULL;
 
@@ -1079,16 +864,12 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     test_handle_events();
 
     assert_false(set_ipv4_mode("test", "wan", amxd_status_invalid_value));
-
-    wan_mode_str = object_const_string(wan_mgr, "WANMode");
-    ip_mode_str = object_const_string(intf, "IPv4Mode");
-    dns_mode_str = object_const_string(wan_mode, "DNSMode");
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
+    ip_mode_str = object_const_string(intf, "IPv4Mode");
+    dns_mode_str = object_const_string(wan_mode, "DNSMode");
     assert_non_null(ip_mode_str);
     assert_string_equal("dhcp4", ip_mode_str);
 
@@ -1098,16 +879,12 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     test_handle_events();
 
     assert_false(set_ipv4_mode("static", "wan", amxd_status_ok));
-
-    wan_mode_str = object_const_string(wan_mgr, "WANMode");
-    ip_mode_str = object_const_string(intf, "IPv4Mode");
-    dns_mode_str = object_const_string(wan_mode, "DNSMode");
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "Static", "demo_wanmode", "");
 
+    ip_mode_str = object_const_string(intf, "IPv4Mode");
+    dns_mode_str = object_const_string(wan_mode, "DNSMode");
     assert_non_null(ip_mode_str);
     assert_string_equal("static", ip_mode_str);
 
@@ -1115,6 +892,7 @@ void test_wan_manager_set_intf_ipv4_static_mode(UNUSED void** state) {
     assert_string_equal("Static", dns_mode_str);
 
     assert_false(set_ipv4_mode("dhcp4", "wan", amxd_status_ok));
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 }
@@ -1124,7 +902,6 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     amxd_object_t* wan_mode = amxd_object_findf(wan_mgr, "WAN.1.");
     amxd_object_t* intf = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_wanmode.Intf.1.");
     amxd_object_t* ip_static_prefix = amxd_dm_findf(test_get_dm(), "IP.Interface.lan.IPv6Prefix.GUA_STATIC");
-    const char* wan_mode_str = NULL;
     const char* ip_mode_str = NULL;
     const char* dns_mode_str = NULL;
 
@@ -1134,16 +911,12 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     test_handle_events();
 
     assert_false(set_ipv6_mode("test", "wan", amxd_status_invalid_value));
-
-    wan_mode_str = object_const_string(wan_mgr, "WANMode");
-    ip_mode_str = object_const_string(intf, "IPv6Mode");
-    dns_mode_str = object_const_string(wan_mode, "IPv6DNSMode");
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("PPP.Interface.", 0);
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
+    ip_mode_str = object_const_string(intf, "IPv6Mode");
+    dns_mode_str = object_const_string(wan_mode, "IPv6DNSMode");
     assert_non_null(ip_mode_str);
     assert_string_equal("dhcp6", ip_mode_str);
 
@@ -1157,14 +930,10 @@ void test_wan_manager_set_intf_ipv6_static_mode(UNUSED void** state) {
     assert_false(GET_BOOL(amxd_object_get_param_value(ip_static_prefix, "Enable"), NULL));
 
     assert_false(set_ipv6_mode("static", "wan", amxd_status_ok));
+    assert_active_wan_mode("demo_wanmode", "Enabled");
 
-    wan_mode_str = object_const_string(wan_mgr, "WANMode");
     ip_mode_str = object_const_string(intf, "IPv6Mode");
     dns_mode_str = object_const_string(wan_mode, "IPv6DNSMode");
-
-    assert_non_null(wan_mode_str);
-    assert_string_equal("demo_wanmode", wan_mode_str);
-
     assert_non_null(ip_mode_str);
     assert_string_equal("static", ip_mode_str);
 
@@ -1249,72 +1018,48 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
 }
 
 void test_wan_manager_set_cellular_mode(UNUSED void** state) {
-    amxc_var_t wan_manager_parameters;
-    amxd_object_t* wan_manager_dm = amxd_dm_findf(test_get_dm(), "WANManager.");
-    int reset_counter = get_reset_counter();
-
-    amxc_var_init(&wan_manager_parameters);
-
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("Cellular.Interface.", 0);
 
     /* Change wan_mode to demo_cellular */
     assert_true(set_wan_mode("demo_cellular", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_cellular", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 1); // Switch from Ethernet (demo_wanmode) to WWAN (demo_cellular)
+    assert_active_wan_mode("demo_cellular", "Enabled");
     assert_cellular_mode("Interface.10", true, false, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_cellular_v4v6 */
     assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_cellular_v4v6", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 1);
+    assert_active_wan_mode("demo_cellular_v4v6", "Enabled");
     assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_cellular */
     assert_true(set_wan_mode("demo_cellular", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_cellular", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 1);
+    assert_active_wan_mode("demo_cellular", "Enabled");
     assert_cellular_mode("Interface.10", true, false, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 2); // Switch from WWAN (demo_cellular) to Ethernet (demo_wanmode)
+    assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_cellular_v6 */
     assert_true(set_wan_mode("demo_cellular_v6", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_cellular_v6", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 3);
+    assert_active_wan_mode("demo_cellular_v6", "Enabled");
     assert_cellular_mode("Interface.10", false, true, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_pppmode */
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 4); // Switch from WWAN (demo_cellular_v6) to GPON (demo_pppmode)
+    assert_active_wan_mode("demo_pppmode", "Enabled");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     /* Change wan_mode to demo_cellular_v4v6 */
     assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
-    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
-    assert_string_equal("demo_cellular_v4v6", GET_CHAR(&wan_manager_parameters, NULL));
-    assert_int_equal(get_reset_counter(), reset_counter + 5); // Switch from GPON (demo_pppmode) to WWAN (demo_cellular_v4v6)
+    assert_active_wan_mode("demo_cellular_v4v6", "Enabled");
     assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
-
-    clear_reset_counter();
-    amxc_var_clean(&wan_manager_parameters);
 }

@@ -88,4 +88,6 @@ bool enable_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
 bool disable_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
 bool set_wan_mode(const char* mode_to_set, amxd_status_t expected_status);
 
+void assert_active_wan_mode(const char* wan_mode, const char* status);
+
 #endif //__WAN_MANAGER_TEST_UTILS_H__
