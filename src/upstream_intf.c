@@ -200,7 +200,7 @@ exit:
  * @return The physical type in string as it is stored in the "PhysicalType" parameter, NULL if no valid index was provided
  */
 const char* physical_type_to_string(physical_type_t type) {
-    return (type >= 0 && type <= physical_type_last) ? phys_types[type] : NULL;
+    return (type >= 0 && type < physical_type_last) ? phys_types[type] : NULL;
 }
 
 /**
