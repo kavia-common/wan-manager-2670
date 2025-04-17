@@ -100,6 +100,28 @@
             "SupportedSFPTypes" : ""
         },
         {
+            "Alias" : "demo_cellular_v4v6",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "SensingPriority": 0,
+            "IPv6DNSMode" : "Dynamic",
+            "Origin" : "user",
+            "PhysicalType" : "",
+            "PhysicalReference" : "Device.Cellular.Interface.1.",
+            "Status" : "Disabled"
+        },
+        {
+            "Alias" : "demo_cellular_v6",
+            "DNSMode" : "Dynamic",
+            "EnableSensing" : true,
+            "SensingPriority": 0,
+            "IPv6DNSMode" : "Dynamic",
+            "Origin" : "user",
+            "PhysicalType" : "",
+            "PhysicalReference" : "Device.Cellular.Interface.1.",
+            "Status" : "Disabled"
+        },
+        {
             "Alias" : "demo_SFP",
             "DNSMode" : "Dynamic",
             "EnableSensing" : true,

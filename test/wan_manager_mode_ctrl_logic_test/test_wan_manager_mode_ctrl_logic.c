@@ -151,12 +151,14 @@ static void assert_routing_ipv4forward(const char* ip_interface, const char* ori
     amxc_var_clean(&ipv4_params);
 }
 
-static void assert_ip_dm(const char* ip_interface, bool ipv4, bool ipv6, const char* addressing_type, const char* ll, const char* ipv6addr_delegate) {
+static void assert_ip_dm(const char* ip_interface, const char* ipv4_addr_alias, const char* ipv6_addr_alias, const char* addressing_type, const char* ll, const char* ipv6addr_delegate) {
     amxc_var_t ip_parameters;
     amxd_object_t* ip_dm = amxd_dm_findf(test_get_dm(), "IP.");
     amxd_object_t* ip_inst = amxd_object_findf(ip_dm, ip_interface);
     char* _ll = remove_device_prefix(ll);
     amxd_object_t* ll_inst = amxd_dm_findf(test_get_dm(), _ll);
+    bool ipv4 = !str_empty(ipv4_addr_alias);
+    bool ipv6 = !str_empty(ipv6_addr_alias);
 
     amxc_var_init(&ip_parameters);
 
@@ -173,11 +175,10 @@ static void assert_ip_dm(const char* ip_interface, bool ipv4, bool ipv6, const c
 
         amxc_var_init(&ipv4_parameters);
 
-        ipv4_inst = amxd_object_findf(ip_dm, "%s.IPv4Address.1", ip_interface);
+        ipv4_inst = amxd_object_findf(ip_dm, "%s.IPv4Address.%s", ip_interface, ipv4_addr_alias);
         assert_non_null(ipv4_inst);
 
         assert_int_equal(amxd_object_get_params(ipv4_inst, &ipv4_parameters, amxd_dm_access_protected), 0);
-        assert_string_equal("primary", GET_CHAR(&ipv4_parameters, "Alias"));
         assert_string_equal(addressing_type, GET_CHAR(&ipv4_parameters, "AddressingType"));
 
         assert_true(GET_BOOL(&ip_parameters, "IPv4Enable"));
@@ -186,58 +187,64 @@ static void assert_ip_dm(const char* ip_interface, bool ipv4, bool ipv6, const c
     }
 
     if(ipv6) {
-        amxd_object_t* ipv6_inst = NULL;
-        amxc_var_t ipv6_parameters;
-
-        amxc_var_init(&ipv6_parameters);
-
-        ipv6_inst = amxd_object_findf(ip_dm, "%s.IPv6Address.1", ip_interface);
-        assert_non_null(ipv6_inst);
-
-        assert_int_equal(amxd_object_get_params(ipv6_inst, &ipv6_parameters, amxd_dm_access_protected), 0);
-        assert_string_equal("GUA_RA", GET_CHAR(&ipv6_parameters, "Alias"));
-
         assert_true(GET_BOOL(&ip_parameters, "IPv6Enable"));
 
-        assert_routing_routeinfo_interfacesetting(ip_interface);
-
-        amxc_var_clean(&ipv6_parameters);
+        if(strcmp(ipv6_addr_alias, "GUA_3GPP_NAS") != 0) { // Not applicable for Cellular IPv6
+            assert_routing_routeinfo_interfacesetting(ip_interface);
+        }
     }
 
     free(_ll);
     amxc_var_clean(&ip_parameters);
 }
 
-static void assert_cellular_mode(const char* ip_interface, const char* cellular_interface) {
-    amxc_var_t cellular_parameters;
+static void assert_cellular_mode(const char* ip_interface, bool ipv4, bool ipv6, const char* cellular_interface) {
+    amxc_var_t cellular_interface_parameters;
+    amxc_var_t cellular_accesspoint_parameters;
     amxc_var_t logical_parameters;
     amxd_object_t* cellular_dm = amxd_dm_findf(test_get_dm(), "Cellular.");
-    amxd_object_t* cellular_inst = amxd_object_findf(cellular_dm, "Interface.%s", cellular_interface);
+    amxd_object_t* cellular_interface_inst = amxd_object_findf(cellular_dm, "Interface.%s", cellular_interface);
+    amxd_object_t* cellular_accesspoint_inst = NULL;
     amxd_object_t* logical_inst = amxd_dm_findf(test_get_dm(), "Logical.Interface.wan.");
     amxc_string_t expected_ll_string;
 
     amxc_string_init(&expected_ll_string, 0);
-    amxc_var_init(&cellular_parameters);
+    amxc_var_init(&cellular_interface_parameters);
+    amxc_var_init(&cellular_accesspoint_parameters);
     amxc_var_init(&logical_parameters);
 
     amxc_string_setf(&expected_ll_string, "Device.IP.%s.", ip_interface);
 
-    assert_non_null(cellular_inst);
-    assert_int_equal(amxd_object_get_params(cellular_inst, &cellular_parameters, amxd_dm_access_protected), 0);
-    assert_string_equal("", GET_CHAR(&cellular_parameters, "LowerLayers"));
-    assert_int_equal(1, GET_BOOL(&cellular_parameters, "Enable"));
+    assert_non_null(cellular_interface_inst);
+    assert_int_equal(amxd_object_get_params(cellular_interface_inst, &cellular_interface_parameters, amxd_dm_access_protected), 0);
+    assert_string_equal("", GET_CHAR(&cellular_interface_parameters, "LowerLayers"));
+    assert_int_equal(1, GET_BOOL(&cellular_interface_parameters, "Enable"));
+
+    cellular_accesspoint_inst = amxd_object_findf(cellular_dm, ".AccessPoint.[Interface=='Device.Cellular.Interface.%d.']", amxd_object_get_index(cellular_interface_inst));
+    assert_non_null(cellular_accesspoint_inst);
+    assert_int_equal(amxd_object_get_params(cellular_accesspoint_inst, &cellular_accesspoint_parameters, amxd_dm_access_protected), 0);
+    if(ipv4 && ipv6) {
+        assert_string_equal("ipv4v6", GET_CHAR(&cellular_accesspoint_parameters, "TEST_IPType"));
+    } else if(ipv4) {
+        assert_string_equal("ipv4", GET_CHAR(&cellular_accesspoint_parameters, "TEST_IPType"));
+    } else if(ipv6) {
+        assert_string_equal("ipv6", GET_CHAR(&cellular_accesspoint_parameters, "TEST_IPType"));
+    }
 
     assert_non_null(logical_inst);
     assert_int_equal(amxd_object_get_params(logical_inst, &logical_parameters, amxd_dm_access_protected), 0);
     assert_string_equal(amxc_string_get(&expected_ll_string, 0), GET_CHAR(&logical_parameters, "LowerLayers"));
 
-    assert_routing_ipv4forward(ip_interface, "3GPP-NAS");
+    if(ipv4) {
+        assert_routing_ipv4forward(ip_interface, "3GPP-NAS");
+    }
     amxc_string_shrink(&expected_ll_string, 1); // Remove final dot in Device.IP.Interface.x.
-    assert_ip_dm(ip_interface, true, false, "3GPP-NAS", amxc_string_get(&expected_ll_string, 0), "");
+    assert_ip_dm(ip_interface, ipv4 ? "primary" : NULL, ipv6 ? "GUA_3GPP_NAS" : NULL, "3GPP-NAS", amxc_string_get(&expected_ll_string, 0), "");
 
     amxc_string_clean(&expected_ll_string);
     amxc_var_clean(&logical_parameters);
-    amxc_var_clean(&cellular_parameters);
+    amxc_var_clean(&cellular_accesspoint_parameters);
+    amxc_var_clean(&cellular_interface_parameters);
 }
 
 static void assert_dhcp_mode(bool nd_enable, const char* ip_interface, bool ipv4, bool ipv6, const char* addressing_type, const char* wan_mode, const char* ipv6_delegate) {
@@ -250,9 +257,9 @@ static void assert_dhcp_mode(bool nd_enable, const char* ip_interface, bool ipv4
     amxc_string_init(&dhcp_client, 0);
 
     if((is_dhcp_mode(wan_mode) && (strcmp(addressing_type, "DHCP") == 0))) {
-        assert_ip_dm(ip_interface, ipv4, ipv6, addressing_type, "Device.Ethernet.Link.2", ipv6_delegate);
+        assert_ip_dm(ip_interface, ipv4 ? "primary" : NULL, ipv6 ? "GUA_RA" : NULL, addressing_type, "Device.Ethernet.Link.2", ipv6_delegate);
     } else if(is_ppp_mode(wan_mode) && (strcmp(addressing_type, "IPCP") == 0)) {
-        assert_ip_dm(ip_interface, ipv4, ipv6, addressing_type, "Device.PPP.Interface.1", ipv6_delegate);
+        assert_ip_dm(ip_interface, ipv4 ? "primary" : NULL, ipv6 ? "GUA_RA" : NULL, addressing_type, "Device.PPP.Interface.1", ipv6_delegate);
     }
 
     wan_manager_inst = amxd_object_findf(wan_manager_dm, "WAN.%s.Intf.1", wan_mode);
@@ -331,7 +338,7 @@ static void assert_ppp_mode(const char* username, const char* password, int ip_v
 
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
 
-    assert_ip_dm(ip_interface, ip_version == 4, ip_version == 6, "IPCP", "Device.PPP.Interface.1", ipv6addr_delegate);
+    assert_ip_dm(ip_interface, ip_version == 4 ? "primary" : NULL, ip_version == 6 ? "GUA_RA" : NULL, "IPCP", "Device.PPP.Interface.1", ipv6addr_delegate);
 
     wan_manager_inst = amxd_object_findf(wan_manager_dm, "WAN.%s.Intf.1", wan_mode);
     assert_non_null(wan_manager_inst);
@@ -1259,14 +1266,53 @@ void test_wan_manager_set_cellular_mode(UNUSED void** state) {
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_cellular", GET_CHAR(&wan_manager_parameters, NULL));
     assert_int_equal(get_reset_counter(), reset_counter + 1); // Switch from Ethernet (demo_wanmode) to WWAN (demo_cellular)
-    assert_cellular_mode("Interface.10", "wan");
+    assert_cellular_mode("Interface.10", true, false, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
-    /* Change wan_mode to demo_pppmode */
+    /* Change wan_mode to demo_cellular_v4v6 */
+    assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_cellular_v4v6", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_int_equal(get_reset_counter(), reset_counter + 1);
+    assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
+    assert_nr_active_objects("Cellular.Interface.", 1);
+
+    /* Change wan_mode to demo_cellular */
+    assert_true(set_wan_mode("demo_cellular", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_cellular", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_int_equal(get_reset_counter(), reset_counter + 1);
+    assert_cellular_mode("Interface.10", true, false, "CELLULAR0");
+    assert_nr_active_objects("Cellular.Interface.", 1);
+
+    /* Change wan_mode to demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
     assert_string_equal("demo_wanmode", GET_CHAR(&wan_manager_parameters, NULL));
     assert_int_equal(get_reset_counter(), reset_counter + 2); // Switch from WWAN (demo_cellular) to Ethernet (demo_wanmode)
+    assert_nr_active_objects("Cellular.Interface.", 1);
+
+    /* Change wan_mode to demo_cellular_v6 */
+    assert_true(set_wan_mode("demo_cellular_v6", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_cellular_v6", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_int_equal(get_reset_counter(), reset_counter + 3);
+    assert_cellular_mode("Interface.10", false, true, "CELLULAR0");
+    assert_nr_active_objects("Cellular.Interface.", 1);
+
+    /* Change wan_mode to demo_pppmode */
+    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_pppmode", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_int_equal(get_reset_counter(), reset_counter + 4); // Switch from WWAN (demo_cellular_v6) to GPON (demo_pppmode)
+    assert_nr_active_objects("Cellular.Interface.", 1);
+
+    /* Change wan_mode to demo_cellular_v4v6 */
+    assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
+    amxd_object_get_param(wan_manager_dm, "WANMode", &wan_manager_parameters);
+    assert_string_equal("demo_cellular_v4v6", GET_CHAR(&wan_manager_parameters, NULL));
+    assert_int_equal(get_reset_counter(), reset_counter + 5); // Switch from GPON (demo_pppmode) to WWAN (demo_cellular_v4v6)
+    assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
     assert_nr_active_objects("Cellular.Interface.", 1);
 
     clear_reset_counter();

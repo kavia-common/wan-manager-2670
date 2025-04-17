@@ -1,10 +1,17 @@
 %define {
     object Cellular {
-        %read-only object Interface[] {
+        object Interface[] {
             bool Enable;
             string Alias;
             string Name;
             csv_string LowerLayers = "";
+        }
+        object AccessPoint[] {
+            bool Enable;
+            string Alias;
+            string APN;
+            string Interface;
+            string '${global_vendor_prefix_}IPType';
         }
     }
 }
@@ -12,9 +19,16 @@
 %populate {
     object Cellular {
         object Interface {
-            instance add('wan') {
-                parameter Name = "wan";
+            instance add('CELLULAR0') {
+                parameter Name = "wwan0";
                 parameter Enable = false;
+            }
+        }
+
+        object AccessPoint {
+            instance add('AP0') {
+                parameter Interface = "Device.Cellular.Interface.1.";
+                parameter '${global_vendor_prefix_}IPType' = "ipv4v6";
             }
         }
     }

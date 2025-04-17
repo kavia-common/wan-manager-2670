@@ -260,6 +260,10 @@ int test_wan_manager_setup(UNUSED void** state) {
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");
     // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_cellular.
     expect_netmodel_openQuery_getFirstParameter("Device.Cellular.Interface.1.");
+    // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_cellular_v4v6.
+    expect_netmodel_openQuery_getFirstParameter("Device.Cellular.Interface.1.");
+    // Do no expect netmodel_openQuery_getIntfs because PhysicalReference is set for demo_cellular_v6.
+    expect_netmodel_openQuery_getFirstParameter("Device.Cellular.Interface.1.");
     // SKIP demo_SFP since there is no physical flag defined
     expect_netmodel_openQuery_getIntfs("eth_intf && upstream"); // demo_test
     expect_netmodel_openQuery_getFirstParameter("NetModel.Intf.ethIntf-ETH0.");

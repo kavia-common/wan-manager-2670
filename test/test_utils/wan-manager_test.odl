@@ -2,6 +2,9 @@
     name = "wan-manager";
     import-dbg = false;
     extension_modules = "";
+
+    ip_intf_lo = "Device.IP.Interface.1.";
+    global_vendor_prefix_ = "TEST_";
 }
 
 include "../../odl/extensions";
@@ -64,6 +67,16 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
         }
         instance add ("demo_cellular"){
             parameter Alias = "demo_cellular";
+            parameter PhysicalType = "";
+            parameter PhysicalReference = "Device.Cellular.Interface.1.";
+        }
+        instance add ("demo_cellular_v4v6"){
+            parameter Alias = "demo_cellular_v4v6";
+            parameter PhysicalType = "";
+            parameter PhysicalReference = "Device.Cellular.Interface.1.";
+        }
+        instance add ("demo_cellular_v6"){
+            parameter Alias = "demo_cellular_v6";
             parameter PhysicalType = "";
             parameter PhysicalReference = "Device.Cellular.Interface.1.";
         }
@@ -343,6 +356,30 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
             parameter Type = "untagged";
             parameter IPv4Mode = "3gpp-nas";
             parameter IPv6Mode = "none";
+            parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.10.";
+            parameter IPv6Reference = "Device.IP.Interface.10.";
+        }
+    }
+
+    object 'WANManager.WAN.demo_cellular_v4v6.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "3gpp-nas";
+            parameter IPv6Mode = "3gpp-nas";
+            parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
+            parameter VlanPriority = 0;
+            parameter IPv4Reference = "Device.IP.Interface.10.";
+            parameter IPv6Reference = "Device.IP.Interface.10.";
+        }
+    }
+
+    object 'WANManager.WAN.demo_cellular_v6.Intf'{
+        instance add(0,"wan"){
+            parameter Type = "untagged";
+            parameter IPv4Mode = "none";
+            parameter IPv6Mode = "3gpp-nas";
             parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter VlanPriority = 0;
             parameter IPv4Reference = "Device.IP.Interface.10.";
