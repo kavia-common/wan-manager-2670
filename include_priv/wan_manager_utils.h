@@ -156,6 +156,8 @@ char* create_logical_path(const char* intf_name);
 const char* object_const_string(amxd_object_t* object, const char* name);
 char* trim_final_dot(const char* path);
 
+char* get_prefixed_parameter_name(const char* parameter_name);
+
 #ifdef __cplusplus
 }
 #endif

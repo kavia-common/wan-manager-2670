@@ -80,7 +80,6 @@ extern "C"
 #include <amxd/amxd_action.h>
 #include <amxb/amxb.h>
 #include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
 
 #define MOD_DM_MNGR   "dm-mngr"
 

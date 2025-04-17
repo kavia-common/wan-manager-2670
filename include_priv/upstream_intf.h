@@ -81,9 +81,6 @@ extern "C"
 
 #include <amxb/amxb.h>
 
-#include <amxo/amxo.h>
-#include <amxo/amxo_save.h>
-
 #define PHYS_TYPE_ETHERNET "Ethernet"
 #define PHYS_TYPE_BRIDGE "Bridge"
 #define PHYS_TYPE_ADSL "ADSL"

@@ -65,7 +65,7 @@
             * @version 1.0
             */
             %persistent string IPv6Mode{
-                on action validate call check_enum ["dhcp6", "ppp6", "none", "static", "link"];
+                on action validate call check_enum ["dhcp6", "ppp6", "none", "static", "link", "3gpp-nas"];
                 default "none";
                 userflags %usersetting;
             }

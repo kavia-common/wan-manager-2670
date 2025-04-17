@@ -798,3 +798,20 @@ char* trim_final_dot(const char* path) {
 exit:
     return amxc_string_take_buffer(&trimmed_path);
 }
+
+char* get_prefixed_parameter_name(const char* parameter_name) {
+    char* result = NULL;
+    const char* prefix = GET_CHAR(amxo_parser_get_config(wan_get_parser(), "global_vendor_prefix_"), NULL);
+    amxc_string_t prefixed_parameter;
+
+    amxc_string_init(&prefixed_parameter, 0);
+    amxc_string_set(&prefixed_parameter, parameter_name);
+    if(!str_empty(prefix)) {
+        amxc_string_prependf(&prefixed_parameter, "%s", prefix);
+    }
+
+    result = amxc_string_take_buffer(&prefixed_parameter);
+
+    amxc_string_clean(&prefixed_parameter);
+    return result;
+}

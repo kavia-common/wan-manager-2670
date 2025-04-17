@@ -66,26 +66,90 @@
 #include "cellular/cellular.h"
 #include "component.h"
 #include "dm_wan_mode.h"
+#include "dm_wan-manager.h"
 
 #define ME "cellular-ctrl"
+
+#define CELLULAR_IPv4_TYPE "ipv4"
+#define CELLULAR_IPv6_TYPE "ipv6"
+#define CELLULAR_BOTH_TYPE "ipv4v6"
+
+static const char* get_cellular_ip_type(amxc_var_t* const parameters) {
+    const char* ip_type = NULL;
+    bool cellular_ipv4 = (wan_mode_convert_from_str(GET_CHAR(parameters, "IPv4Mode"), IPv4) == IPv4_CELLULAR);
+    bool cellular_ipv6 = (wan_mode_convert_from_str(GET_CHAR(parameters, "IPv6Mode"), IPv6) == IPv6_CELLULAR);
+
+    if(cellular_ipv4 && cellular_ipv6) {
+        ip_type = CELLULAR_BOTH_TYPE;
+    } else if(cellular_ipv4) {
+        ip_type = CELLULAR_IPv4_TYPE;
+    } else if(cellular_ipv6) {
+        ip_type = CELLULAR_IPv6_TYPE;
+    }
+
+    return ip_type;
+}
+
+static char* get_cellular_accesspoint_search_path(const char* cellular_interface) {
+    char* path = NULL;
+    amxc_string_t search_path;
+
+    amxc_string_init(&search_path, 0);
+
+    when_str_empty_trace(cellular_interface, exit, ERROR, "Empty cellular interface");
+    amxc_string_setf(&search_path, "Cellular.AccessPoint.[Interface=='%s']", cellular_interface);
+
+    path = amxc_string_take_buffer(&search_path);
+
+exit:
+    amxc_string_clean(&search_path);
+    return path;
+}
 
 static amxd_status_t cellular_enable(UNUSED mode_ctrl_t mode,
                                      amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* cellular_path = NULL;
+    const char* current_iptype = NULL;
+    const char* new_iptype = get_cellular_ip_type(parameters);
     const char* wan_mode_str = GET_CHAR(parameters, "wanmode_name");
+    char* accesspoint_path = NULL;
+    char* iptype_parameter = get_prefixed_parameter_name("IPType");
     amxd_object_t* wan_mode = get_wan_mode(wan_mode_str);
+    amxc_var_t* ip_type_param;
 
+    amxc_var_new(&ip_type_param);
+
+    when_str_empty_trace(new_iptype, exit, ERROR, "Failed to get new %s", iptype_parameter);
     when_null_trace(wan_mode, exit, ERROR, "Failed to get WANMode");
     cellular_path = object_const_string(wan_mode, "PhysicalReference");
     when_str_empty_trace(cellular_path, exit, ERROR, "Failed to get Cellular interface path");
+    accesspoint_path = get_cellular_accesspoint_search_path(cellular_path);
+    when_null_trace(accesspoint_path, exit, ERROR, "Could not get Cellular Accesspoint path");
+
+    component_get_param(ip_type_param, accesspoint_path, cellular_get_context(), iptype_parameter);
+
+    current_iptype = GETP_CHAR(GETP_ARG(ip_type_param, "0.0"), iptype_parameter);
+    when_str_empty_trace(current_iptype, exit, ERROR, "Failed to get current %s", iptype_parameter);
+
+    if(strcmp(current_iptype, new_iptype) != 0) {
+        rc = component_set_str_param(accesspoint_path, cellular_get_context(), iptype_parameter, new_iptype);
+        when_failed_trace(rc, exit, ERROR, "Failed to set '%s' to '%s'", iptype_parameter, new_iptype);
+
+        // Changes in Cellular.AccessPoint need to be followed by toggling Cellular.Interface to be applied
+        rc = component_set_enable(cellular_path, cellular_get_context(), false);
+        when_failed_trace(rc, exit, ERROR, "Failed to disable Cellular interface to apply %s", iptype_parameter);
+    }
 
     // Enable Cellular Interface
     rc = component_set_enable(cellular_path, cellular_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Failed to enable Cellular interface");
 
 exit:
+    amxc_var_delete(&ip_type_param);
+    free(iptype_parameter);
+    free(accesspoint_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
