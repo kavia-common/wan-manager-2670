@@ -3,7 +3,7 @@ short_description: "TR-181 compatible plugin for advanced WAN mode configuration
 long_description: ""
 
 type: plugin
-category: amx
+category: other
 
 urls:
   opensource: "https://gitlab.com/prpl-foundation/components/core/plugins/wan-manager"
