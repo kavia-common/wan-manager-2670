@@ -6,10 +6,9 @@
     name = "wan-manager";
     import-dbg = false;
     extension_modules = "";
-    global_vendor_prefix_ = "X_PRPL-COM_";
 
     vendor_prefix = {
-        "dns" = "X_PRPL-COM_"
+        "dns" = global_vendor_prefix_
     };
 
     // SAHTRACE
