@@ -8,7 +8,7 @@
     extension_modules = "";
 
     vendor_prefix = {
-        "dns" = global_vendor_prefix_
+        "dns" = "${global_vendor_prefix_}"
     };
 
     // SAHTRACE
