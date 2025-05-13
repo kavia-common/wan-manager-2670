@@ -53,9 +53,15 @@
 ****************************************************************************/
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <setjmp.h>
+
+#include <cmocka.h>
 
 #include "mock_amx.h"
 #include "test_utils.h"
+
+bool check_iterator = false;
 
 int __wrap_amxb_set(amxb_bus_ctx_t* const bus_ctx, const char* object, amxc_var_t* values, amxc_var_t* ret, int timeout) {
     int rv = -1;
@@ -140,4 +146,21 @@ int __wrap_amxm_execute_function(const char* const shared_object_name, const cha
         return 0;
     }
     return __real_amxm_execute_function(shared_object_name, module_name, func_name, args, ret);
+}
+
+void __wrap_amxc_llist_it_take(amxc_llist_it_t* const it) {
+    if(check_iterator) {
+        assert_non_null(it);
+        assert_non_null(it->llist);
+    }
+
+    __real_amxc_llist_it_take(it);
+}
+
+void __wrap_amxc_string_list_it_free(amxc_llist_it_t* it) {
+    if(check_iterator) {
+        assert_non_null(it);
+    }
+
+    __real_amxc_string_list_it_free(it);
 }

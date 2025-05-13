@@ -475,6 +475,8 @@ void test_wan_manager_set_valid_mode(UNUSED void** state) {
 }
 
 void test_wan_manager_set_multiple_valid_modes(UNUSED void** state) {
+    extern bool check_iterator;
+    check_iterator = true;
     assert_active_wan_mode("demo_wanmode", "Enabled");
     assert_nr_active_objects("DHCPv6Client.Client", 1);
     assert_nr_active_objects("PPP.Interface.", 0);
@@ -486,11 +488,17 @@ void test_wan_manager_set_multiple_valid_modes(UNUSED void** state) {
     assert_nr_active_objects("PPP.Interface.", 1);
     assert_dhcp_mode(true, "Interface.7", false, true, "IPCP", "demo_ppp6mode", "Device.IP.Interface.3.");
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
+
+    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
+    assert_nr_active_objects("DHCPv6Client.Client", 1);
+    assert_nr_active_objects("PPP.Interface", 0);
+    assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
+    check_iterator = false;
 }
 
 void test_wan_manager_set_multiple_invalid_modes(UNUSED void** state) {
     assert_false(set_wan_mode("demo_wanmode,demo_vlanmode", amxd_status_invalid_value));
-    assert_active_wan_mode("demo_wanmode,demo_ppp6mode", "Enabled");
+    assert_active_wan_mode("demo_wanmode", "Enabled");
 }
 
 void test_wan_manager_set_multiple_valid_used_modes(UNUSED void** state) {

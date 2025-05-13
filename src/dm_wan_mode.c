@@ -556,6 +556,7 @@ amxd_status_t wan_mode_set(const char* wan_modes_to_set, const char* active_wan_
                     amxc_string_list_it_free(it_new);
                     amxc_llist_it_take(it_active);
                     amxc_string_list_it_free(it_active);
+                    break;
                 }
             }
         }

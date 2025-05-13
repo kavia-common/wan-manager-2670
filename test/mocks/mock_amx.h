@@ -86,6 +86,12 @@ int __real_amxb_set_multiple(amxb_bus_ctx_t* const bus_ctx, uint32_t flags, amxc
 int __wrap_amxm_execute_function(const char* const shared_object_name, const char* const module_name, const char* const func_name, amxc_var_t* args, amxc_var_t* ret);
 int __real_amxm_execute_function(const char* const shared_object_name, const char* const module_name, const char* const func_name, amxc_var_t* args, amxc_var_t* ret);
 
+void __wrap_amxc_llist_it_take(amxc_llist_it_t* const it);
+void __real_amxc_llist_it_take(amxc_llist_it_t* const it);
+
+void __wrap_amxc_string_list_it_free(amxc_llist_it_t* it);
+void __real_amxc_string_list_it_free(amxc_llist_it_t* it);
+
 #ifdef __cplusplus
 }
 #endif

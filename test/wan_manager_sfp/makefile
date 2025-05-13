@@ -20,6 +20,13 @@ MOCK_WRAP = netmodel_initialize		\
             netmodel_getFirstParameter \
             netmodel_closeQuery \
             netmodel_clearFlag \
+            amxp_proc_ctrl_new 		\
+            amxp_proc_ctrl_start 	\
+            amxp_proc_ctrl_stop 	\
+            amxp_proc_ctrl_delete	\
+            amxc_llist_it_take \
+            amxc_string_list_it_free \
+            restart \
             amxb_set \
             amxb_set_multiple \
             amxb_get \
