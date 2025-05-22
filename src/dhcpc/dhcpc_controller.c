@@ -84,15 +84,15 @@ static amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
-    const char* intf_path = get_ip_path(parameters, IPv4);
+    const char* prefixed_intf_path = get_ip_path(parameters, IPv4, true);
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv4");
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
-    when_str_empty_trace(dhcpv4_path, exit, ERROR, "No DHCPv4 client found with Interface='%s'", intf_path);
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "No IP interface path found");
+    when_str_empty_trace(dhcpv4_path, exit, ERROR, "No DHCPv4 client found with Interface='%s'", prefixed_intf_path);
 
     // Enable the DHCPv4 Client
-    rc = component_set_str_param(dhcpv4_path, dhcpv4_get_context(), "Interface", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV4_REFERENCE_PATH " Interface to '%s'", intf_path);
+    rc = component_set_str_param(dhcpv4_path, dhcpv4_get_context(), "Interface", prefixed_intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV4_REFERENCE_PATH " Interface to '%s'", prefixed_intf_path);
     rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), true);
     when_failed_trace(rc, exit, ERROR, "Could not enable %s", dhcpv4_path);
 
@@ -105,21 +105,21 @@ static amxd_status_t dhcpc4_disable(UNUSED mode_ctrl_t mode,
                                     const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv4);
+    const char* prefixed_intf_path = get_ip_path(parameters, IPv4, true);
     const char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
 
     SAH_TRACEZ_INFO(ME, "Disabling DHCPv4");
-    when_str_empty(intf_path, exit);
+    when_str_empty(prefixed_intf_path, exit);
 
     // Disable the DHCPv4 Client
     if(dhcpv4_path != NULL) {
-        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", intf_path, dhcpv4_path);
+        SAH_TRACEZ_INFO(ME, "DHCPv4 path for %s -> %s", prefixed_intf_path, dhcpv4_path);
         rc = component_set_enable(dhcpv4_path, dhcpv4_get_context(), false);
         when_failed_trace(rc, exit, ERROR, "Failed to disable '%s'", dhcpv4_path);
         rc = component_set_str_param(dhcpv4_path, dhcpv4_get_context(), "Interface", "");
         when_failed_trace(rc, exit, ERROR, "Failed to clear " DHCPV4_REFERENCE_PATH " Interface");
     } else {
-        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", intf_path);
+        SAH_TRACEZ_INFO(ME, "No DHCPv4 client found with Interface='%s'", prefixed_intf_path);
     }
 
 exit:
@@ -147,28 +147,28 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
-    const char* intf_path = get_ip_path(parameters, IPv6);
-    char* route_path = routing_get_interfacesetting(intf_path);
+    const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
+    char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = NULL;
     const char* name = GET_CHAR(parameters, "Name");
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv6");
     when_str_empty(intf_alias, exit);
-    when_str_empty(intf_path, exit);
-    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+    when_str_empty(prefixed_intf_path, exit);
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", prefixed_intf_path);
 
     // Fill the interface reference of the RouteInformation in
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to update the Routing manager's interface with %s", intf_path);
+    rc = component_set_str_param(route_path, routing_get_context(), "Interface", prefixed_intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to update the Routing manager's interface with %s", prefixed_intf_path);
 
     // Enable the DHCPv6 Client
     if(dhcpv6_path != NULL) {
-        rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", intf_path);
-        when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV6_REFERENCE_PATH " Interface to '%s'", intf_path);
+        rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", prefixed_intf_path);
+        when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV6_REFERENCE_PATH " Interface to '%s'", prefixed_intf_path);
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
-        when_failed_trace(rc, exit, ERROR, "Failed to enable DHCPv6 Client for Interface '%s'", intf_path);
+        when_failed_trace(rc, exit, ERROR, "Failed to enable DHCPv6 Client for Interface '%s'", prefixed_intf_path);
     } else {
-        SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
+        SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", prefixed_intf_path);
     }
 
     // Enable NeighborDiscovery for the wan
@@ -186,15 +186,15 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
                                     const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv6);
+    const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
     const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
-    char* route_path = routing_get_interfacesetting(intf_path);
+    char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = get_nd_path(parameters);
     const char* name = GET_CHAR(parameters, "Name");
 
     SAH_TRACEZ_INFO(ME, "Disabling DHCPv6");
-    when_str_empty_trace(intf_path, exit, ERROR, "Interface path is empty");
-    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Interface path is empty");
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", prefixed_intf_path);
 
     // Disable NeighborDiscovery for the wan
     rc = component_set_enable(neigh_disc_path, neighbor_discovery_get_context(), false);
@@ -202,13 +202,13 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
 
     // Disable the DHCPv6 Client
     if(dhcpv6_path != NULL) {
-        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", intf_path, dhcpv6_path);
+        SAH_TRACEZ_INFO(ME, "DHCPv6 path for %s -> %s", prefixed_intf_path, dhcpv6_path);
         rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), false);
         when_failed_trace(rc, exit, ERROR, "Could not disable %s", dhcpv6_path);
         rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
         when_failed_trace(rc, exit, ERROR, "Failed to clear " DHCPV6_REFERENCE_PATH " Interface");
     } else {
-        SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", intf_path);
+        SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", prefixed_intf_path);
     }
 
     // Empty the interface reference of the RouteInformation

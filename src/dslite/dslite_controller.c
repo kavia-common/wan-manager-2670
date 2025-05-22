@@ -87,7 +87,7 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
                                    amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* ipv4_path = NULL;
+    const char* prefixed_ipv4_path = NULL;
     const char* dhcpv6_path = NULL;
     const char* dslite_path = NULL;
     const char* pcp_path = NULL;
@@ -95,8 +95,8 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     amxc_var_t wan_if;
 
     amxc_var_init(&wan_if);
-    ipv4_path = get_ip_path(parameters, IPv4);
-    when_str_empty_trace(ipv4_path, exit, ERROR, "No IPv4 interface path found");
+    prefixed_ipv4_path = get_ip_path(parameters, IPv4, true);
+    when_str_empty_trace(prefixed_ipv4_path, exit, ERROR, "No IPv4 interface path found");
 
     dhcpv6_path = get_dhcp_path(parameters, IPv6);
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");

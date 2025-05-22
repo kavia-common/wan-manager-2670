@@ -88,7 +88,7 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
-    const char* intf_path = NULL;
+    const char* prefixed_intf_path = NULL;
     const char* ppp_path = NULL;
     const char* username = GET_CHAR(parameters, "UserName");
     const char* password = GET_CHAR(parameters, "Password");
@@ -96,8 +96,7 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
     when_false(ipversion_valid(ip_version), exit);
     SAH_TRACEZ_INFO(ME, "Enabling PPP%d", ip_version);
 
-    intf_path = get_ip_path(parameters, ip_version);
-    when_str_empty_trace(intf_path, exit, ERROR, "Failed to get/create IP interface path");
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get/create IP interface path");
 
     ppp_path = get_ppp_path(parameters, ip_version);
     when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get/create PPP instance path");
@@ -153,7 +152,7 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = NULL;
+    const char* prefixed_intf_path = NULL;
     const char* dhcpv6_path = NULL;
     char* route_path = NULL;
     const char* neigh_disc_path = NULL;
@@ -161,12 +160,12 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     when_false(ipversion_valid(ip_version), exit);
     when_false_status(ip_version == IPv6, exit, rc = amxd_status_ok);
 
-    intf_path = get_ip_path(parameters, IPv6);
-    when_str_empty_trace(intf_path, exit, ERROR, "Failed to get IP interface path");
+    prefixed_intf_path = get_ip_path(parameters, IPv6, true);
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get IP interface path");
 
-    route_path = routing_get_interfacesetting(intf_path);
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to set the routing interface to %s'", intf_path);
+    route_path = routing_get_interfacesetting(prefixed_intf_path);
+    rc = component_set_str_param(route_path, routing_get_context(), "Interface", prefixed_intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to set the routing interface to %s'", prefixed_intf_path);
 
     // Enable NeighborDiscovery for the wan
     neigh_disc_path = get_nd_path(parameters);
@@ -176,8 +175,8 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     // Enable the DHCPv6 Client
     dhcpv6_path = get_dhcp_path(parameters, IPv6);
     when_str_empty_trace(dhcpv6_path, exit, ERROR, "Failed to get DHCPv6 client instance path");
-    rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV6_REFERENCE_PATH " Interface to '%s'", intf_path);
+    rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", prefixed_intf_path);
+    when_failed_trace(rc, exit, ERROR, "Failed to set " DHCPV6_REFERENCE_PATH " Interface to '%s'", prefixed_intf_path);
     rc = component_set_bool(dhcpv6_path, dhcpv6_get_context(), "RequestPrefixes", true);
     when_failed_trace(rc, exit, ERROR, "Failed to configure DHCPv6 IA_PD");
     rc = component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
@@ -196,15 +195,15 @@ static amxd_status_t ppp_disable_lower(mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
-    const char* intf_path = NULL;
+    const char* prefixed_intf_path = NULL;
     const char* ppp_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
     SAH_TRACEZ_INFO(ME, "Disabling PPP%d", ip_version);
 
-    intf_path = get_ip_path(parameters, ip_version);
+    prefixed_intf_path = get_ip_path(parameters, ip_version, true);
     ppp_path = get_ppp_path(parameters, ip_version);
-    when_str_empty_trace(intf_path, exit, ERROR, "Failed to get IP interface path");
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get IP interface path");
     when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get PPP instance path");
 
     // Disable the PPP interface
@@ -243,7 +242,7 @@ static amxd_status_t ppp_disable_upper(mode_ctrl_t mode,
     when_false(ipversion_valid(ip_version), exit);
     when_false_status(ip_version == IPv6, exit, rc = amxd_status_ok);
 
-    intf_path = get_ip_path(parameters, IPv6);
+    intf_path = get_ip_path(parameters, IPv6, true);
     when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
 
     // Disable NeighborDiscovery for the wan

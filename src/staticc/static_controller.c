@@ -88,18 +88,18 @@ static amxd_status_t static_enable(const mode_ctrl_t mode,
     ipversion_t ip_version = get_ipversion(mode);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* name = NULL;
-    const char* intf_path = NULL;
+    const char* prefixed_intf_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
 
-    intf_path = get_ip_path(parameters, IPv6);
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    prefixed_intf_path = get_ip_path(parameters, IPv6, true);
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "No IP interface path found");
 
     name = GET_CHAR(parameters, "Name");
-    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
+    when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", prefixed_intf_path);
 
     if(ip_version == IPv6) {
-        rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), intf_path, true);
+        rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), prefixed_intf_path, true);
         when_failed_trace(rc, exit, ERROR, "Failed to set the static default IPv6 route");
     }
 
@@ -122,15 +122,15 @@ static amxd_status_t static_disable(const mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     ipversion_t ip_version = get_ipversion(mode);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = NULL;
+    const char* prefixed_intf_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
 
     when_true_status(ip_version == IPv4, exit, rc = amxd_status_ok); // We have nothing to do for IPv4
-    intf_path = get_ip_path(parameters, IPv6);
-    when_str_empty_trace(intf_path, exit, ERROR, "No IP interface path found");
+    prefixed_intf_path = get_ip_path(parameters, IPv6, true);
+    when_str_empty_trace(prefixed_intf_path, exit, ERROR, "No IP interface path found");
 
-    rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), intf_path, false);
+    rc = routing_default_ipv6_route_mod_inst(ROUTING_ORIGIN_STATIC, GETP_CHAR(parameters, "ipv6.DefaultRouter"), prefixed_intf_path, false);
     when_failed_trace(rc, exit, ERROR, "Failed to remove the default route");
 
 exit:

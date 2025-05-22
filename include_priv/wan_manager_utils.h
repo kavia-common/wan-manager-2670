@@ -134,7 +134,7 @@ amxb_bus_ctx_t* pcp_get_context(void);
 amxb_bus_ctx_t* xpon_get_context(void);
 amxb_bus_ctx_t* cellular_get_context(void);
 
-const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
+const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version, bool prefixed);
 const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
 const char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version);
 const char* get_nd_path(const amxc_var_t* const parameters);

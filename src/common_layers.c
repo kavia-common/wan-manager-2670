@@ -135,7 +135,7 @@ static amxd_status_t ipv4_set_config(mode_ctrl_t mode,
                                      const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv4);
+    const char* intf_path = get_ip_path(parameters, IPv4, false);
     const char* lower_layer = GET_CHAR(parameters, "LowerLayersV4Override"); // Some modes might have a LowerLayers override, example ppp
     const char* addr_type = get_addressing_v4_type(mode);
     amxc_var_t* ipv4_params = GET_ARG(parameters, "ipv4");
@@ -168,7 +168,7 @@ static amxd_status_t ipv4_clear_config(mode_ctrl_t mode,
                                        const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv4);
+    const char* intf_path = get_ip_path(parameters, IPv4, false);
     const char* addr_type = get_addressing_v4_type(mode);
 
     rc = component_set_bool(intf_path, ip_get_context(), "IPv4Enable", false);
@@ -194,7 +194,8 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
                                      const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv6);
+    const char* intf_path = get_ip_path(parameters, IPv6, false);
+    const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
     const char* lower_layer = GET_CHAR(parameters, "LowerLayersV6Override");
     const char* old_intf_path = GETP_CHAR(parameters, "old_interface_parameters." IPV6_REFERENCE_PATH);
     const char* deferred_ipv6_instances = GET_CHAR(parameters, "DeferredIPv6Instances");
@@ -208,7 +209,7 @@ static amxd_status_t ipv6_set_config(mode_ctrl_t mode,
     rc = component_set_str_param(intf_path, ip_get_context(), "LowerLayers", lower_layer);
     when_failed_trace(rc, exit, ERROR, "Failed to set '%s' LowerLayers to '%s'", intf_path, lower_layer);
 
-    ip_parent_prefix_toggle(deferred_ipv6_instances, old_intf_path, intf_path);
+    ip_parent_prefix_toggle(deferred_ipv6_instances, old_intf_path, prefixed_intf_path);
 
     if(!str_empty(ipv6_address_delegate)) { // Unnumbered mode
         rc = component_set_str_param(intf_path, ip_get_context(), "IPv6AddressDelegate", ipv6_address_delegate);
@@ -251,7 +252,7 @@ static amxd_status_t ipv6_clear_config(mode_ctrl_t mode,
                                        const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* intf_path = get_ip_path(parameters, IPv6);
+    const char* intf_path = get_ip_path(parameters, IPv6, false);
     const char* neigh_disc_path = get_nd_path(parameters);
 
     rc = component_set_enable(intf_path, ip_get_context(), false);
@@ -347,7 +348,7 @@ amxd_status_t ip_enable(mode_ctrl_t mode,
 
     when_false(ipversion_valid(ip_version), exit);
 
-    intf_path = get_ip_path(parameters, ip_version);
+    intf_path = get_ip_path(parameters, ip_version, false);
     rc = component_set_enable(intf_path, ip_get_context(), enable);
     when_failed_trace(rc, exit, ERROR, "Failed to '%s' '%s'", enable ? "enable" : "disable", intf_path);
 
@@ -373,7 +374,7 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
     const char* name = GET_CHAR(parameters, "Name");
     const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
     const char* default_router = GET_CHAR(ipv4, "DefaultRouter");
-    const char* intf_path = get_ip_path(parameters, ip_version);
+    const char* prefixed_intf_path = get_ip_path(parameters, ip_version, true);
     char* logical_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
@@ -381,15 +382,15 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
     // Set the default route origin
     if(enable && (ip_version == IPv4) && !str_empty(default_route_reference)) {
         const char* routing_origin = get_routing_v4_origin(mode);
-        rc = routing_default_route_set_origin(default_route_reference, intf_path, routing_origin, default_router);
+        rc = routing_default_route_set_origin(default_route_reference, prefixed_intf_path, routing_origin, default_router);
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 
     logical_path = create_logical_path(name);
     if(enable) {
-        rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+        rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", prefixed_intf_path);
     } else {
-        rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", intf_path);
+        rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", prefixed_intf_path);
     }
     when_failed_trace(rc, exit, ERROR, "Failed to %s IPv%dReference to '%s'", enable ? "add" : "remove", ip_version, logical_path);
 

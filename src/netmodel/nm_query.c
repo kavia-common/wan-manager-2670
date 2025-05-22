@@ -425,7 +425,6 @@ static void init_intf_isup_query(amxd_object_t* interface, intf_isup_queries_t* 
 
     amxd_object_get_params(interface, &intf_params, amxd_dm_access_protected);
     ip_reference_path = (ip_version == IPv4) ? GET_CHAR(&intf_params, IPV4_REFERENCE_PATH) : GET_CHAR(&intf_params, IPV6_REFERENCE_PATH);
-    when_str_empty(ip_reference_path, exit);
 
     query_needed = (ip_version == IPv4) ? &(nm_queries->ipv4_needed) : &(nm_queries->ipv6_needed);
     *query_needed = (wan_mode_convert_from_str(GET_CHAR(&intf_params, (ip_version == IPv4 ? "IPv4Mode" : "IPv6Mode")), ip_version) != IP_None) && (!str_empty(ip_reference_path));

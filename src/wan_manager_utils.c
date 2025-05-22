@@ -152,11 +152,17 @@ amxb_bus_ctx_t* cellular_get_context(void) {
     return amxb_be_who_has("Cellular.");
 }
 
-const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip_version, bool prefixed) {
+    const char* full_path = NULL;
     const char* path = NULL;
 
     when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
-    path = GET_CHAR(parameters, (ip_version == IPv4 ? IPV4_REFERENCE_PATH : IPV6_REFERENCE_PATH));
+    full_path = GET_CHAR(parameters, (ip_version == IPv4 ? IPV4_REFERENCE_PATH : IPV6_REFERENCE_PATH));
+    if(prefixed) {
+        path = full_path;
+    } else {
+        path = strstr(full_path, "IP.");
+    }
 
 exit:
     return path;
