@@ -182,10 +182,18 @@ void test_wan_manager_sensing_query(UNUSED void** state) {
 }
 
 void test_wan_manager_sensing_toggle(UNUSED void** state) {
+    amxd_object_t* wanm_obj = get_wan_manager_obj();
     amxc_var_t* data = NULL;
     amxc_var_t* ret = NULL;
+    amxd_trans_t trans;
 
     amxc_var_new(&ret);
+    amxd_trans_init(&trans);
+
+    amxd_trans_select_object(&trans, wanm_obj);
+    amxd_trans_set_value(cstring_t, &trans, "OperationMode", "Automatic");
+    amxd_trans_set_value(cstring_t, &trans, "SensingPolicy", "Continuous");
+    assert_int_equal(amxd_trans_apply(&trans, test_get_dm()), 0);
 
     data = read_json_from_file("test_data/test_empty.json");
     assert_int_equal(amxm_execute_function("mod-autosensing", MOD_AUTOSENSING_CTRL, "is-autosensing-running", data, ret), 0);
@@ -205,8 +213,9 @@ void test_wan_manager_sensing_toggle(UNUSED void** state) {
     assert_int_equal(amxm_execute_function("mod-autosensing", MOD_AUTOSENSING_CTRL, "is-autosensing-running", data, ret), 0);
     assert_false(GET_BOOL(ret, "running"));
     assert_true(GET_BOOL(ret, "data_ok"));
-    amxc_var_delete(&data);
 
+    amxd_trans_clean(&trans);
+    amxc_var_delete(&data);
     amxc_var_delete(&ret);
 }
 

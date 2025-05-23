@@ -82,6 +82,7 @@
 #define ME "as-ctrl"
 
 bool sensing_at_boot_finished = false;
+bool sensing_active = false;
 
 static bool is_sensing_policy(const char* policy) {
     bool res = false;
@@ -89,6 +90,17 @@ static bool is_sensing_policy(const char* policy) {
 
     when_str_empty(sensing_policy, exit);
     res = strcmp(sensing_policy, policy) == 0;
+
+exit:
+    return res;
+}
+
+bool is_autosensing_enabled(void) {
+    bool res = false;
+    const char* operation_mode = object_const_string(get_wan_manager_obj(), "OperationMode");
+
+    when_str_empty(operation_mode, exit);
+    res = strcmp(operation_mode, "Automatic") == 0;
 
 exit:
     return res;
@@ -238,7 +250,9 @@ int mod_autosensing_start(void) {
 
     when_null_trace(wanm_obj, exit, ERROR, "Could not find wan manager object");
     when_null_trace(wan_obj, exit, ERROR, "Could not find wan mode object");
-    when_true_trace(is_sensing_policy("AtBoot") && sensing_at_boot_finished, exit, INFO, "Not starting autosensing module since AtBoot sensing is finished!");
+    when_false_trace(is_autosensing_enabled(), exit, ERROR, "Not starting autosensing module since sensing is not enabled");
+    when_true_trace(is_sensing_policy("AtBoot") && sensing_at_boot_finished, exit, WARNING, "Not starting autosensing module since AtBoot sensing is finished!");
+    when_true_trace(sensing_active, exit, WARNING, "Not starting Autosensing since it's already active");
 
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
@@ -271,6 +285,9 @@ int mod_autosensing_start(void) {
     }
 
     rv = mod_autosensing_execute_function("autosensing-start", &data);
+    when_failed_trace(rv, exit, ERROR, "Failed to start autosensing!");
+
+    sensing_active = true;
 
 exit:
     amxc_var_clean(&data);
@@ -292,6 +309,8 @@ int mod_autosensing_stop(void) {
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
     rv = mod_autosensing_execute_function("autosensing-stop", &data);
+    when_failed_trace(rv, exit, ERROR, "Failed to stop autosensing!");
+
 
     // All WANModes that need to be sensed will have their PhysicalReference sensed
     // in case a higher priority WANMode becomes available
@@ -303,6 +322,8 @@ int mod_autosensing_stop(void) {
             nm_query_create_phys_up_query(info);
         }
     }
+
+    sensing_active = false;
 
 exit:
     amxc_var_clean(&data);

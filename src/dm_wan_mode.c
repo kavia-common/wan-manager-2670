@@ -133,7 +133,6 @@ static const char* wan_mode_status_str[WAN_Mode_Nr_] = {
 };
 
 static amxd_object_t* wan_manager = NULL;
-static bool wan_autosensing_can_start = false;
 static bool mod_sys_loaded = false;
 
 static mode_ctrl_t get_wan_mode_type(amxd_object_t* interface,
@@ -149,14 +148,38 @@ bool system_module_loaded(void) {
     return mod_sys_loaded;
 }
 
+static bool autosensing_can_start(void) {
+    SAH_TRACEZ_IN(ME);
+    amxd_object_t* wan_obj = amxd_object_get(wan_manager, "WAN");
+    bool wan_autosensing_can_start = false;
+
+    when_null_trace(wan_manager, exit, ERROR, "Did not get the WANManager object yet");
+    when_null_trace(wan_obj, exit, ERROR, "Did not get the WANManager.WAN object yet");
+
+    // All WANModes that need to be sensed should have a lower layer
+    amxd_object_for_each(instance, it, wan_obj) {
+        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
+        when_null(instance, exit);
+        if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
+            nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
+            when_null(info, exit);
+            when_str_empty_trace(info->lower_layer, exit, INFO, "Waiting on WANMode %s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
+        }
+    }
+
+    wan_autosensing_can_start = true;
+
+exit:
+    SAH_TRACEZ_OUT(ME);
+    return wan_autosensing_can_start;
+}
+
 void update_sensing(void) {
     SAH_TRACEZ_IN(ME);
-    const char* current_operation_mode = object_const_string(wan_manager, "OperationMode");
     const char* sensing_policy = object_const_string(wan_manager, "SensingPolicy");
-    when_str_empty_trace(current_operation_mode, exit, ERROR, "Could not get current operation mode");
     when_str_empty_trace(sensing_policy, exit, ERROR, "Could not get current sensing policy");
 
-    if((strcmp(current_operation_mode, "Automatic") == 0) && wan_autosensing_can_start) {
+    if(is_autosensing_enabled() && autosensing_can_start()) {
         mod_autosensing_stop();
         if(strcmp(sensing_policy, "Continuous") == 0) {
             mod_autosensing_start();
@@ -284,7 +307,6 @@ exit:
 
 void wan_manager_found_ll(physical_type_t found_phys_type) {
     SAH_TRACEZ_IN(ME);
-    const char* operation_mode = object_const_string(wan_manager, "OperationMode");
     physical_type_t current_phys_type = physical_type_last;
     amxd_object_t* wanm_obj = amxd_dm_findf(wan_get_dm(), "WANManager.");
     bool apply = amxd_object_get_value(bool, wanm_obj, "ApplyAtNextBoot", NULL);
@@ -298,7 +320,7 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
 
     when_failed(check_sfp(), exit);
 
-    if(strcmp(operation_mode, "Automatic") == 0) {
+    if(is_autosensing_enabled()) {
         startup_wan_autosensing();
         goto exit;
     }
@@ -346,25 +368,11 @@ static void startup_wan_autosensing(void) {
     SAH_TRACEZ_IN(ME);
     const char* current_operation_mode = NULL;
     const char* sensing_policy = NULL;
-    amxd_object_t* wan_obj = amxd_object_get(wan_manager, "WAN");
 
-    when_true(wan_autosensing_can_start, exit);
     when_null_trace(wan_manager, exit, ERROR, "Did not get the wan-manager object yet");
     current_operation_mode = object_const_string(wan_manager, "OperationMode");
     sensing_policy = object_const_string(wan_manager, "SensingPolicy");
 
-    // All WANModes that need to be sensed should have a lower layer
-    amxd_object_for_each(instance, it, wan_obj) {
-        amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);
-        when_null(instance, exit);
-        if(amxd_object_get_value(bool, instance, "EnableSensing", NULL)) {
-            nm_query_ll_info_t* info = (nm_query_ll_info_t*) instance->priv;
-            when_null(info, exit);
-            when_str_empty_trace(info->lower_layer, exit, INFO, "Waiting on WANMode %s", amxd_object_get_name(instance, AMXD_OBJECT_NAMED));
-        }
-    }
-
-    wan_autosensing_can_start = true;
     update_operation_mode(current_operation_mode, sensing_policy, true);
 
 exit:
@@ -379,7 +387,7 @@ static void update_operation_mode(const char* new_operation_mode, const char* se
     SAH_TRACEZ_INFO(ME, "WANManager set sensing mode to %s", new_operation_mode);
     if(0 == strcmp(new_operation_mode, "Automatic")) {
         when_str_empty_trace(sensing_policy, exit, ERROR, "Bad sensing policy value");
-        when_false_trace(wan_autosensing_can_start, exit, WARNING, "Not able to start autosensing, physical interface not known yet");
+        when_false_trace(autosensing_can_start(), exit, WARNING, "Not able to start autosensing, one or more physical interfaces not known yet");
         when_true_trace(!override_boot && strcmp(sensing_policy, "AtBoot") == 0, exit, INFO, "Not starting autosensing since Policy is AtBoot");
         when_true_trace(!override_boot && strcmp(sensing_policy, "Sticky") == 0, exit, INFO, "Not starting autosensing explicitly since Policy is Sticky, waiting on NetModel events");
         mod_autosensing_start();

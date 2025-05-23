@@ -111,7 +111,7 @@ static void nm_query_response_phys_up_cb(UNUSED const char* sig_name,
     // Not needed if physical ref is used for current wanmode.
     // We have the ipv4 and ipv6 up queries for these cases.
     if(!physical_reference_used(physical_reference)) {
-        mod_autosensing_notify_intf_changed(physical_reference, up, true);
+        mod_autosensing_notify_intf_changed(physical_reference, up, is_autosensing_enabled());
     }
 
 exit:
@@ -297,7 +297,9 @@ static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_objec
                 /* restart happens with mod_autosensing start below*/
                 mod_autosensing_notify_intf_changed(info->upstream_intf_path, false, false);
             }
-            mod_autosensing_start();
+            if(is_autosensing_enabled()) {
+                mod_autosensing_start();
+            }
         }
     }
 
@@ -495,15 +497,15 @@ int nm_query_mode_active(void) {
             SAH_TRACEZ_INFO(ME, "Adding queries for '%s'", interface->name);
             nm_queries = (intf_isup_queries_t*) calloc(1, sizeof(intf_isup_queries_t));
             when_null_trace(nm_queries, exit_loop, ERROR, "Failed to allocate memory for queries");
+            interface->priv = nm_queries;
             init_intf_isup_query(interface, nm_queries, IPv4);
             init_intf_isup_query(interface, nm_queries, IPv6);
-            interface->priv = nm_queries;
 
             // The queries cannot be opened in "init_intf_isup_query" itself!
             // We need to know the values of nm_queries->ipv4_needed and nm_queries->ipv6_needed first since they are used in the callback functions of the queries!
-            open_intf_isup_query(interface, nm_query_mode_active_cb, IPv4);
-            if(open_intf_isup_query(interface, nm_query_mode6_active_cb, IPv6) != 0) {
+            if((open_intf_isup_query(interface, nm_query_mode_active_cb, IPv4) != 0) || (open_intf_isup_query(interface, nm_query_mode6_active_cb, IPv6) != 0)) {
                 intf_isup_queries_clean(&nm_queries);
+                interface->priv = NULL;
             }
 
 exit_loop:
