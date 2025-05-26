@@ -1,3 +1,6 @@
+// These WANModes are intended to be used for Cellular over WAN (comparable to demo_wanmode).
+// If Cellular WANModes are needed for a failover or second WANMode these WANModes need to be changed accordingly
+
 %populate {
     object 'WANManager.WAN' {
         instance add ("Cellular_IPv4"){
@@ -13,12 +16,11 @@
     }
 
     object 'WANManager.WAN.Cellular_IPv4.Intf'{
-        instance add(0,"wan-cellular"){
+        instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "3gpp-nas";
             parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter IPv6Mode = "none";
-            parameter Name = "wan-cellular";
             parameter VlanPriority = 0;
             parameter IPv4Reference = "${ip_intf_failover}";
             parameter IPv6Reference = "${ip_intf_failover}";
@@ -26,12 +28,11 @@
     }
 
     object 'WANManager.WAN.Cellular.Intf'{
-        instance add(0,"wan-cellular"){
+        instance add(0,"wan"){
             parameter Type = "untagged";
             parameter IPv4Mode = "3gpp-nas";
             parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1.";
             parameter IPv6Mode = "3gpp-nas";
-            parameter Name = "wan-cellular";
             parameter VlanPriority = 0;
             parameter IPv4Reference = "${ip_intf_failover}";
             parameter IPv6Reference = "${ip_intf_failover}";
