@@ -88,7 +88,7 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_ipv4_path = NULL;
-    const char* dhcpv6_path = NULL;
+    char* dhcpv6_path = NULL;
     const char* dslite_path = NULL;
     const char* pcp_path = NULL;
     const char* dslite_wan_if = NULL;
@@ -128,6 +128,7 @@ static amxd_status_t dslite_enable(UNUSED mode_ctrl_t mode,
     component_set_enable(dhcpv6_path, dhcpv6_get_context(), true);
 
 exit:
+    free(dhcpv6_path);
     amxc_var_clean(&wan_if);
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -137,7 +138,7 @@ static amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
                                     amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
+    char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
     const char* dslite_path = NULL;
     const char* pcp_path = NULL;
 
@@ -160,6 +161,7 @@ static amxd_status_t dslite_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to disable PCP");
 
 exit:
+    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

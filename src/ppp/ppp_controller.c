@@ -88,8 +88,9 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* lower_layer = GET_CHAR(parameters, "LowerLayer");
-    const char* prefixed_intf_path = NULL;
-    const char* ppp_path = NULL;
+    const char* prefixed_intf_path = get_ip_path(parameters, ip_version, true);
+    const char* ppp_path = get_ppp_path(parameters, ip_version, false);
+    const char* prefixed_ppp_path = get_ppp_path(parameters, ip_version, true);
     const char* username = GET_CHAR(parameters, "UserName");
     const char* password = GET_CHAR(parameters, "Password");
 
@@ -97,9 +98,8 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
     SAH_TRACEZ_INFO(ME, "Enabling PPP%d", ip_version);
 
     when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get/create IP interface path");
-
-    ppp_path = get_ppp_path(parameters, ip_version);
     when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get/create PPP instance path");
+    when_str_empty_trace(prefixed_ppp_path, exit, ERROR, "Failed to get/create prefixed PPP instance path");
 
     // Set LowerLayer in PPP-manager
     rc = component_set_str_param(ppp_path, ppp_get_context(), "LowerLayers", lower_layer);
@@ -116,7 +116,7 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
     }
 
     if(ip_version == IPv4) {
-        amxc_var_add_key(cstring_t, parameters, "LowerLayersV4Override", ppp_path);
+        amxc_var_add_key(cstring_t, parameters, "LowerLayersV4Override", prefixed_ppp_path);
 
         // Enable PPPv4
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", true);
@@ -127,7 +127,7 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
         when_failed(rc, exit);
 
     } else {
-        amxc_var_add_key(cstring_t, parameters, "LowerLayersV6Override", ppp_path);
+        amxc_var_add_key(cstring_t, parameters, "LowerLayersV6Override", prefixed_ppp_path);
 
         // Disable PPPv4
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", false);
@@ -153,7 +153,7 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_intf_path = NULL;
-    const char* dhcpv6_path = NULL;
+    char* dhcpv6_path = NULL;
     char* route_path = NULL;
     const char* neigh_disc_path = NULL;
 
@@ -185,6 +185,7 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     rc = amxd_status_ok;
 
 exit:
+    free(dhcpv6_path);
     free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -202,7 +203,7 @@ static amxd_status_t ppp_disable_lower(mode_ctrl_t mode,
     SAH_TRACEZ_INFO(ME, "Disabling PPP%d", ip_version);
 
     prefixed_intf_path = get_ip_path(parameters, ip_version, true);
-    ppp_path = get_ppp_path(parameters, ip_version);
+    ppp_path = get_ppp_path(parameters, ip_version, false);
     when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get IP interface path");
     when_str_empty_trace(ppp_path, exit, ERROR, "Failed to get PPP instance path");
 
@@ -234,7 +235,7 @@ static amxd_status_t ppp_disable_upper(mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
-    const char* dhcpv6_path = NULL;
+    char* dhcpv6_path = NULL;
     const char* intf_path = NULL;
     char* route_path = NULL;
     const char* neigh_disc_path = NULL;
@@ -264,6 +265,7 @@ static amxd_status_t ppp_disable_upper(mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
 
 exit:
+    free(dhcpv6_path);
     free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;

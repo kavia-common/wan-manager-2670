@@ -372,7 +372,8 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
     const ipversion_t ip_version = get_ipversion(mode & (MASK_IPv4 | MASK_IPv6));
     amxc_var_t* ipv4 = GET_ARG(parameters, "ipv4");
     const char* name = GET_CHAR(parameters, "Name");
-    const char* default_route_reference = GET_CHAR(parameters, "DefaultRouteReference");
+    const char* default_route_reference = get_default_router_path(parameters);
+
     const char* default_router = GET_CHAR(ipv4, "DefaultRouter");
     const char* prefixed_intf_path = get_ip_path(parameters, ip_version, true);
     char* logical_path = NULL;

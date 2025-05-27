@@ -693,7 +693,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
     // Get mode for IPv4 & IPv6
     mode = get_wan_mode_type(interface, true, ipv4_mode_ovr, ipv6_mode_ovr);
 
-    bridge_reference = GET_CHAR(&parameters, "BridgeReference");
+    bridge_reference = get_bridge_path(&parameters);
     bridge = !str_empty(bridge_reference);
     if(enable && bridge) {
         const char* full_bridging_path = NULL;

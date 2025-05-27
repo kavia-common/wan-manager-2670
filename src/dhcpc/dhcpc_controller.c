@@ -83,7 +83,7 @@ static amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
                                    const amxc_var_t* const parameters) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    const char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
+    char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
     const char* prefixed_intf_path = get_ip_path(parameters, IPv4, true);
 
     SAH_TRACEZ_INFO(ME, "Enabling DHCPv4");
@@ -97,6 +97,7 @@ static amxd_status_t dhcpc4_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Could not enable %s", dhcpv4_path);
 
 exit:
+    free(dhcpv4_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -106,7 +107,7 @@ static amxd_status_t dhcpc4_disable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_intf_path = get_ip_path(parameters, IPv4, true);
-    const char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
+    char* dhcpv4_path = get_dhcp_path(parameters, IPv4);
 
     SAH_TRACEZ_INFO(ME, "Disabling DHCPv4");
     when_str_empty(prefixed_intf_path, exit);
@@ -123,6 +124,7 @@ static amxd_status_t dhcpc4_disable(UNUSED mode_ctrl_t mode,
     }
 
 exit:
+    free(dhcpv4_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -146,7 +148,7 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* intf_alias = GET_CHAR(parameters, "Alias");
-    const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
+    char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
     const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
     char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = NULL;
@@ -178,6 +180,7 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
 
 exit:
     free(route_path);
+    free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -187,7 +190,7 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
-    const char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
+    char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
     char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = get_nd_path(parameters);
     const char* name = GET_CHAR(parameters, "Name");
@@ -216,6 +219,7 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");
 
 exit:
+    free(dhcpv6_path);
     free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;

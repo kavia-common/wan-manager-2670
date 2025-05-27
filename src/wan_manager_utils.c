@@ -158,22 +158,32 @@ const char* get_ip_path(const amxc_var_t* const parameters, const ipversion_t ip
 
     when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
     full_path = GET_CHAR(parameters, (ip_version == IPv4 ? IPV4_REFERENCE_PATH : IPV6_REFERENCE_PATH));
-    if(prefixed) {
-        path = full_path;
-    } else {
-        path = strstr(full_path, "IP.");
+    if(!str_empty(full_path)) {
+        if(prefixed) {
+            path = full_path;
+        } else {
+            path = strstr(full_path, "IP.");
+        }
     }
 
 exit:
     return path;
 }
 
-const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+const char* get_ppp_path(const amxc_var_t* const parameters, const ipversion_t ip_version, bool prefixed) {
+    const char* full_path = NULL;
     const char* path = NULL;
 
     when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
 
-    path = GET_CHAR(parameters, (ip_version == IPv4 ? PPPV4_REFERENCE_PATH : PPPV6_REFERENCE_PATH));
+    full_path = GET_CHAR(parameters, (ip_version == IPv4 ? PPPV4_REFERENCE_PATH : PPPV6_REFERENCE_PATH));
+    if(!str_empty(full_path)) {
+        if(prefixed) {
+            path = full_path;
+        } else {
+            path = strstr(full_path, "PPP.");
+        }
+    }
     #ifdef SUPPORT_OLD_PATH_IMPL
     // This code is considered deprecated and should not be changed.
     // Use the PPP Reference path instead
@@ -186,18 +196,41 @@ exit:
     return path;
 }
 
-const char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
-    const char* path = NULL;
+/**
+ * @brief Returns the non device prefixed DHCPv4/6 paths that can be used to interact with the components
+ * @note The allocated memory (returned pointer) needs to be freed by the caller
+ * @param parameters variant containing the mode parameters
+ * @param ip_version ipversion_t value indicating if the DHCPv4 or DHCPv6 path should be returned
+ * @return Pointer to a string containing the direct path to the DHCPv4/6 component or NULL if not able to fetch the path
+ */
+char* get_dhcp_path(const amxc_var_t* const parameters, const ipversion_t ip_version) {
+    amxc_string_t templ_str;
+    const char* full_path = NULL;
+    char* path = NULL;
 
-    when_false_trace(ipversion_valid(ip_version), exit, ERROR, "Ipversion %d not valid", ip_version);
-    path = GET_CHAR(parameters, (ip_version == IPv4 ? DHCPV4_REFERENCE_PATH : DHCPV6_REFERENCE_PATH));
+    amxc_string_init(&templ_str, 0);
+
+    when_false_trace(ipversion_valid(ip_version), exit, ERROR, "IPversion %d not valid", ip_version);
+    full_path = GET_CHAR(parameters, (ip_version == IPv4 ? DHCPV4_REFERENCE_PATH : DHCPV6_REFERENCE_PATH));
+    amxc_string_setf(&templ_str, "%s.", full_path);
+    if(!str_empty(full_path)) {
+        amxc_string_replace(&templ_str, "Device.DHCPv4", "DHCPv4Client", UINT32_MAX);
+        amxc_string_replace(&templ_str, "Device.DHCPv6", "DHCPv6Client", UINT32_MAX);
+        path = amxc_string_take_buffer(&templ_str);
+    }
 
 exit:
+    amxc_string_clean(&templ_str);
     return path;
 }
 
 const char* get_nd_path(const amxc_var_t* const parameters) {
-    const char* path = GET_CHAR(parameters, NEIGH_REFERENCE_PATH);
+    const char* full_path = GET_CHAR(parameters, NEIGH_REFERENCE_PATH);
+    const char* path = NULL;
+
+    if(!str_empty(full_path)) {
+        path = strstr(full_path, "NeighborDiscovery.");
+    }
 
     #ifdef SUPPORT_OLD_PATH_IMPL
     // This code is considered deprecated and should not be changed.
@@ -211,7 +244,12 @@ const char* get_nd_path(const amxc_var_t* const parameters) {
 }
 
 const char* get_dslite_path(const amxc_var_t* const parameters) {
-    const char* path = GET_CHAR(parameters, DSLITE_REFERENCE_PATH);
+    const char* full_path = GET_CHAR(parameters, DSLITE_REFERENCE_PATH);
+    const char* path = NULL;
+
+    if(!str_empty(full_path)) {
+        path = strstr(full_path, "DSLite.");
+    }
 
     #ifdef SUPPORT_OLD_PATH_IMPL
     // This code is considered deprecated and should not be changed.
@@ -225,7 +263,12 @@ const char* get_dslite_path(const amxc_var_t* const parameters) {
 }
 
 const char* get_pcp_path(const amxc_var_t* const parameters) {
-    const char* path = GET_CHAR(parameters, PCP_REFERENCE_PATH);
+    const char* full_path = GET_CHAR(parameters, PCP_REFERENCE_PATH);
+    const char* path = NULL;
+
+    if(!str_empty(full_path)) {
+        path = strstr(full_path, "PCP.");
+    }
 
     #ifdef SUPPORT_OLD_PATH_IMPL
     // This code is considered deprecated and should not be changed.
@@ -234,6 +277,28 @@ const char* get_pcp_path(const amxc_var_t* const parameters) {
         path = "Device.PCP.Client.1.";
     }
     #endif
+
+    return path;
+}
+
+const char* get_bridge_path(const amxc_var_t* const parameters) {
+    const char* full_path = GET_CHAR(parameters, "BridgeReference");
+    const char* path = NULL;
+
+    if(!str_empty(full_path)) {
+        path = strstr(full_path, "Bridging.");
+    }
+
+    return path;
+}
+
+const char* get_default_router_path(const amxc_var_t* const parameters) {
+    const char* full_path = GET_CHAR(parameters, "DefaultRouteReference");
+    const char* path = NULL;
+
+    if(!str_empty(full_path)) {
+        path = strstr(full_path, "Routing.");
+    }
 
     return path;
 }
