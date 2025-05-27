@@ -707,7 +707,7 @@ static amxd_status_t wan_mode_intf_enable(amxd_object_t* interface,
         amxc_string_setf(&search_path, "%sPort.[ManagementPort == true].", bridge_reference);
 
         // Can only return one instance by ManagementPort definition
-        rc = amxb_get(bus_ctx, amxc_string_get(&search_path, strlen(DEVICE_PATH)), 0, &ret, 5);
+        rc = amxb_get(bus_ctx, amxc_string_get(&search_path, 0), 0, &ret, 5);
         full_bridging_path = amxc_var_key(GETP_ARG(&ret, "0.0"));
         if(str_empty(full_bridging_path)) {
             SAH_TRACEZ_ERROR(ME, "Failed to find the management port path for '%s'", bridge_reference);

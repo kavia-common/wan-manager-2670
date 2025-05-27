@@ -153,7 +153,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
 char* routing_get_interfacesetting(const char* intf_path);
 void add_str_to_list(amxc_var_t* list, const char* str);
 void remove_str_from_list(amxc_var_t* list, const char* str);
-char* create_logical_path(const char* intf_name);
+char* create_logical_path(const char* intf_name, bool prefixed);
 
 const char* object_const_string(amxd_object_t* object, const char* name);
 char* trim_final_dot(const char* path);

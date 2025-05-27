@@ -110,7 +110,7 @@ static char* ethernet_add_vlan_instance(const char* lower_layer, uint32_t id, in
     if(vlan_prio > -1) {
         amxc_var_add_key(uint32_t, &parameters, "VLANPriority", vlan_prio);
     }
-    path = component_add_instance(DEVICE_PATH "Ethernet.VLANTermination.", &parameters, ethernet_get_context());
+    path = component_add_instance("Ethernet.VLANTermination.", &parameters, ethernet_get_context());
 
 exit:
     amxc_var_clean(&parameters);
@@ -123,17 +123,17 @@ exit:
 amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const char* lower_layer, uint32_t vlan_id, int32_t vlan_prio, bool enable, const char* wan_mode_alias) {
     SAH_TRACEZ_IN(ME);
     amxd_status_t rc = amxd_status_unknown_error;
-    amxc_string_t str_search;
+    amxc_string_t str_tmp;
     amxc_var_t set_params;
     char* vlan_path = NULL;
 
     amxc_var_init(&set_params);
-    amxc_string_init(&str_search, 0);
+    amxc_string_init(&str_tmp, 0);
     when_str_empty_trace(lower_layer, exit, ERROR, "Missing or empty LowerLayer");
 
-    amxc_string_setf(&str_search, DEVICE_PATH "Ethernet.VLANTermination." \
+    amxc_string_setf(&str_tmp, "Ethernet.VLANTermination." \
                      "[VLANID==%d && LowerLayers=='%s'].", vlan_id, lower_layer);
-    vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_search, 0));
+    vlan_path = component_get_path_instance(ethernet_get_context(), amxc_string_get(&str_tmp, 0));
 
     if((NULL == vlan_path) && enable) {
         SAH_TRACEZ_INFO(ME, "VLAN Configuration not present, creating new vlan '%d' on '%s'",
@@ -154,13 +154,14 @@ amxd_status_t ethernet_vlan_set_enable(const amxc_var_t* const parameters, const
     rc = component_set_params(vlan_path, ethernet_get_context(), &set_params);
 
     if(enable) {
-        amxc_var_add_key(cstring_t, (amxc_var_t*) parameters, "VLANTermination", vlan_path);
+        amxc_string_setf(&str_tmp, "Device.%s", vlan_path);
+        amxc_var_add_key(cstring_t, (amxc_var_t*) parameters, "VLANTermination", amxc_string_get(&str_tmp, 0));
     }
 
 exit:
     free(vlan_path);
     amxc_var_clean(&set_params);
-    amxc_string_clean(&str_search);
+    amxc_string_clean(&str_tmp);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

@@ -99,7 +99,7 @@ static amxd_status_t bridge_mode_none_enable(const amxc_var_t* const parameters)
     when_failed_trace(rc, exit, ERROR, "Failed to enable IP interface '%s'", intf_path);
 
     // Add the IPReference to the Logical Interface
-    logical_path = create_logical_path(name);
+    logical_path = create_logical_path(name, false);
     rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", prefixed_intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to add '%s' to '%s'", intf_path, logical_path);
 
@@ -122,7 +122,7 @@ static amxd_status_t bridge_mode_none_disable(const amxc_var_t* const parameters
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", intf_path);
 
     //Remove the IPReference from the Logical Interface
-    logical_path = create_logical_path(name);
+    logical_path = create_logical_path(name, false);
     rc = component_remove_string_from_csv(logical_path, logical_get_context(), "LowerLayers", prefixed_intf_path);
     when_failed_trace(rc, exit, ERROR, "Failed to remove '%s' from '%s.LowerLayers'", prefixed_intf_path, logical_path);
 

@@ -387,7 +387,7 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
     }
 
-    logical_path = create_logical_path(name);
+    logical_path = create_logical_path(name, false);
     if(enable) {
         rc = component_add_string_to_csv(logical_path, logical_get_context(), "LowerLayers", prefixed_intf_path);
     } else {

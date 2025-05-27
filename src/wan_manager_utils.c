@@ -688,11 +688,11 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
         amxc_var_add_key(cstring_t, &params, "Origin", routing_origin);
         amxc_var_add_key(cstring_t, &params, "Interface", ip_intf);
 
-        amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", id);
+        amxc_string_setf(&route_path, "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", id);
         path = component_get_path_instance(routing_get_context(), amxc_string_get(&route_path, 0));
         while(path != NULL) {
             my_index++;
-            amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s-%d'].", id, my_index);
+            amxc_string_setf(&route_path, "Routing.Router.1.IPv6Forwarding.[Alias=='%s-%d'].", id, my_index);
             free(path);
             path = component_get_path_instance(routing_get_context(), amxc_string_get(&route_path, 0));
         }
@@ -706,7 +706,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
         tmp = amxc_var_add_new_key(&params, "Alias");
         amxc_var_push(cstring_t, tmp, amxc_string_take_buffer(&alias));
         free(path);
-        path = component_add_instance(DEVICE_PATH "Routing.Router.1.IPv6Forwarding.", &params, routing_get_context());
+        path = component_add_instance("Routing.Router.1.IPv6Forwarding.", &params, routing_get_context());
 
         if(path == NULL) {
             rc = amxd_status_unknown_error;
@@ -719,7 +719,7 @@ amxd_status_t routing_default_ipv6_route_mod_inst(const char* routing_origin, co
             amxc_string_setf(&alias, "%s-%d", id, my_index);
         }
 
-        amxc_string_setf(&route_path, DEVICE_PATH "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", amxc_string_get(&alias, 0));
+        amxc_string_setf(&route_path, "Routing.Router.1.IPv6Forwarding.[Alias=='%s'].", amxc_string_get(&alias, 0));
         component_del_instance(amxc_string_get(&route_path, 0), routing_get_context());
 
         my_index = 0;
@@ -759,12 +759,12 @@ char* routing_get_interfacesetting(const char* intf_path) {
 
     when_null_trace(intf_path, exit, ERROR, "Null interface path provided for the Routing mananger");
 
-    amxc_string_setf(&test_path, DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
+    amxc_string_setf(&test_path, "Routing.RouteInformation.InterfaceSetting.[Interface == '%s']", intf_path);
 
     path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
     if(path == NULL) {
-        amxc_string_setf(&test_path, DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.[Interface == '']");
+        amxc_string_setf(&test_path, "Routing.RouteInformation.InterfaceSetting.[Interface == '']");
         path = component_get_path_instance(ctx, amxc_string_get(&test_path, 0));
 
         // Create the instance if none are found in the routing manager
@@ -779,7 +779,7 @@ char* routing_get_interfacesetting(const char* intf_path) {
             amxc_var_add_key(cstring_t, &parameter, "PreferredRouteFlag", "High");
 
             //Add the instance to the datamodel
-            path = component_add_instance(DEVICE_PATH "Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
+            path = component_add_instance("Routing.RouteInformation.InterfaceSetting.", &parameter, ctx);
             when_null_trace(path, exit, ERROR, "Could not add a blank InterfaceSetting to the Routing plugin");
         }
     }
@@ -829,13 +829,18 @@ exit:
     return;
 }
 
-char* create_logical_path(const char* intf_name) {
+char* create_logical_path(const char* intf_name, bool prefixed) {
     SAH_TRACEZ_IN(ME);
     char* path = NULL;
     amxc_string_t logical_intf;
 
     amxc_string_init(&logical_intf, 0);
-    amxc_string_setf(&logical_intf, DEVICE_PATH "Logical.Interface.%s.", intf_name);
+    if(prefixed) {
+        amxc_string_setf(&logical_intf, DEVICE_PATH "Logical.Interface.%s.", intf_name);
+    } else {
+        amxc_string_setf(&logical_intf, "Logical.Interface.%s.", intf_name);
+    }
+
     path = amxc_string_take_buffer(&logical_intf);
     amxc_string_clean(&logical_intf);
 

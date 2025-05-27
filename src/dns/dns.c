@@ -95,7 +95,7 @@ static char* get_logical_iface_path(amxd_object_t* interface) {
 
     name = object_const_string(interface, "Name");
     when_str_empty_trace(name, exit, ERROR, "Failed to get name of interface %s", amxd_object_get_name(interface, AMXD_OBJECT_INDEXED));
-    logical_intf_named = create_logical_path(name);
+    logical_intf_named = create_logical_path(name, false);
     logical_intf = component_get_path_instance(logical_get_context(), logical_intf_named);
     when_str_empty_trace(logical_intf, exit, ERROR, "Failed to get Logical interface belonging to %s", name);
 
@@ -256,7 +256,7 @@ static amxd_status_t set_dnsmode(amxd_object_t* wan_mode) {
     }
 
     // at 31 Jan 2024 the dns plugin only uses the first DNS.Relay.Config instance for [IPv6]DNSMode
-    config_path = component_get_path_instance(dns_get_context(), DEVICE_PATH DNS_PATH "Relay.Config.*."); // terminate with . to only return instances and not the template;
+    config_path = component_get_path_instance(dns_get_context(), DNS_PATH "Relay.Config.*."); // terminate with . to only return instances and not the template;
     when_str_empty_trace(config_path, exit, ERROR, "Failed to set [IPv6]DNSMode");
     SAH_TRACEZ_INFO(ME, "Set [IPv6]DNSMode of '%s'", config_path);
 
