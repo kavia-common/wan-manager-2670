@@ -256,6 +256,7 @@ include "../../odl/${name}_WAN_Intf_definition.odl";
                     parameter Name = "wan";
                     parameter Type = "untagged";
                     parameter IPv4Mode = "dhcp4";
+                    parameter DefaultRouteReference = "Device.Routing.Router.1.IPv4Forwarding.1";
                     parameter IPv6Mode= "dhcp6";
                     parameter IPv4Reference = "Device.IP.Interface.2.";
                     parameter IPv6Reference = "Device.IP.Interface.2.";

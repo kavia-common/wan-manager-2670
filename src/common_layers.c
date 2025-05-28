@@ -380,11 +380,15 @@ amxd_status_t logical_layer(mode_ctrl_t mode,
 
     when_false(ipversion_valid(ip_version), exit);
 
-    // Set the default route origin
-    if(enable && (ip_version == IPv4) && !str_empty(default_route_reference)) {
-        const char* routing_origin = get_routing_v4_origin(mode);
-        rc = routing_default_route_set_origin(default_route_reference, prefixed_intf_path, routing_origin, default_router);
-        when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
+    // Set the default route origin and enable parameters
+    if((ip_version == IPv4) && !str_empty(default_route_reference)) {
+        if(enable) {
+            const char* routing_origin = get_routing_v4_origin(mode);
+            rc = routing_default_route_set_origin(default_route_reference, prefixed_intf_path, routing_origin, default_router);
+            when_failed_trace(rc, exit, ERROR, "Failed to configure default IPv4 route");
+        }
+        rc = component_set_enable(default_route_reference, routing_get_context(), enable);
+        when_failed_trace(rc, exit, ERROR, "Failed to %s default IPv4 route", enable ? "enable" : "disable");
     }
 
     logical_path = create_logical_path(name, false);
