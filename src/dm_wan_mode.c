@@ -325,8 +325,16 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
         goto exit;
     }
 
+    /*
+       Apply at boot is not set, this means we do not need to set the WANMode again.
+       However we still need to set the netmodel queries for autosensing.
+     */
+    if(apply == false) {
+        nm_query_mode_active();
+        SAH_TRACEZ_INFO(ME, "Not applying WANMode since ApplyAtNextBoot is not set");
+        goto exit;
+    }
     when_str_empty_trace(current_wanmodes, exit, ERROR, "Current wan mode objects could not be found");
-    when_false(apply, exit);
 
     amxc_string_set(&current_wan_modes_str, current_wanmodes);
     amxc_string_split_to_llist(&current_wan_modes_str, &current_list, ',');
