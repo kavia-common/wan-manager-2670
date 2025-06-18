@@ -22,6 +22,7 @@
                 "PCPReference" : "Device.PCP.Client.1",
                 "DefaultRouteReference" : "Device.Routing.Router.1.IPv4Forwarding.1.",
                 "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
+                "IPv4AddressNumberOfEntries" : 1,
                 "IPv4Addresses" : {
                     "ipv4" : {
                         "Alias" : "ipv4",
@@ -34,6 +35,7 @@
                 "IPv4Mode" : "dslite",
                 "IPv4Reference" : "Device.IP.Interface.7.",
                 "IPv6AddressDelegate" : "",
+                "IPv6AddressNumberOfEntries" : 0,
                 "IPv6Addresses" : {
                 },
                 "IPv6Mode" : "dhcp6",
@@ -47,9 +49,11 @@
                 "VlanPriority" : 0
             }
         },
+        "IntfNumberOfEntries" : 1,
         "Origin" : "user",
         "PhysicalType" : "Ethernet",
         "PhysicalReference" : "",
         "Status" : "Enabled"
-    }
+    },
+    "WANNumberOfEntries" : 15
 }

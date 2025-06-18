@@ -7,6 +7,14 @@
         %persistent object WAN[] {
             on action destroy call wan_destroy;
 
+
+            /**
+            * The number of entries in the WAN table.
+            *
+            * @version 1.0
+            */
+            counted with WANNumberOfEntries;
+
             /**
             * A non-volatile unique key used to reference this instance (as defined in TR181)
             * @version 1.0

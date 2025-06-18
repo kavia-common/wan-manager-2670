@@ -22,11 +22,13 @@
                 "PCPReference" : "",
                 "DefaultRouteReference" : "Device.Routing.Router.1.IPv4Forwarding.1.",
                 "DeferredIPv6Instances" : "Device.IP.Interface.3.,Device.IP.Interface.4.,Device.IP.Interface.5.",
+                "IPv4AddressNumberOfEntries" : 0,
                 "IPv4Addresses" : {
                 },
                 "IPv4Mode" : "dhcp4",
                 "IPv4Reference" : "Device.IP.Interface.2.",
                 "IPv6AddressDelegate" : "",
+                "IPv6AddressNumberOfEntries" : 0,
                 "IPv6Addresses" : {
                 },
                 "IPv6Mode" : "dhcp6",
@@ -40,9 +42,11 @@
                 "VlanPriority" : 0
             }
         },
+        "IntfNumberOfEntries" : 1,
         "Origin" : "user",
         "PhysicalType" : "Ethernet",
         "PhysicalReference" : "Device.Ethernet.Interface.1",
         "Status" : "Enabled"
-    }
+    },
+    "WANNumberOfEntries" : 15
 }
