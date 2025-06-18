@@ -164,5 +164,7 @@
             "Status" : "Disabled",
             "SupportedSFPTypes" : ""
         }
-    ]
+    ],
+    "sense_current_mode" : true
+
 }

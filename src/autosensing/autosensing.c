@@ -237,7 +237,7 @@ exit:
  * @brief Call to autosensing module to start the sensing
  * @return Will return 0 if successful and returns an error code when it fails
  */
-int mod_autosensing_start(void) {
+int mod_autosensing_start(bool sense_current_mode) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
     amxc_var_t data;
@@ -257,6 +257,7 @@ int mod_autosensing_start(void) {
     amxc_var_set_type(&data, AMXC_VAR_ID_HTABLE);
 
     amxd_object_get_params(wanm_obj, &data, amxd_dm_access_protected);
+    amxc_var_add_key(bool, &data, "sense_current_mode", sense_current_mode);
     modes = amxc_var_add_key(amxc_llist_t, &data, "modes", NULL);
     amxd_object_for_each(instance, it, wan_obj) {
         amxd_object_t* instance = amxc_container_of(it, amxd_object_t, it);

@@ -202,7 +202,7 @@ void test_wan_manager_sensing_toggle(UNUSED void** state) {
     amxc_var_delete(&data);
 
     data = read_json_from_file("test_data/test_start_sensing.json");
-    mod_autosensing_start();
+    mod_autosensing_start(true);
     assert_int_equal(amxm_execute_function("mod-autosensing", MOD_AUTOSENSING_CTRL, "is-autosensing-running", data, ret), 0);
     assert_true(GET_BOOL(ret, "running"));
     assert_true(GET_BOOL(ret, "data_ok"));

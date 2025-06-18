@@ -78,7 +78,7 @@ extern "C" {
 bool is_autosensing_enabled(void);
 void autosensing_found_mode(void);
 int autosensing_init(void);
-int mod_autosensing_start(void);
+int mod_autosensing_start(bool sense_current_mode);
 int mod_autosensing_stop(void);
 int mod_autosensing_notify_intf_changed(const char* intf, bool up, bool restart);
 

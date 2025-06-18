@@ -238,7 +238,7 @@ static bool wan_mode_up(amxd_object_t* wan_mode_obj) {
     up = true;
 
 exit:
-    SAH_TRACEZ_INFO(ME, "WANMode is %s!", up ? "UP" : "(still) DOWN");
+    SAH_TRACEZ_INFO(ME, "WANMode '%s' is %s!", amxd_object_get_name(wan_mode_obj, AMXD_OBJECT_NAMED), up ? "UP" : "(still) DOWN");
     if(info != NULL) {
         info->wan_mode_up = up;
     }
@@ -293,12 +293,8 @@ static void nm_query_mode_active_handle_flags(const amxc_var_t* data, amxd_objec
         mod_autosensing_stop();
     } else {
         if(intf_was_up_before) {
-            if(!str_empty(info->upstream_intf_path)) {
-                /* restart happens with mod_autosensing start below*/
-                mod_autosensing_notify_intf_changed(info->upstream_intf_path, false, false);
-            }
             if(is_autosensing_enabled()) {
-                mod_autosensing_start();
+                mod_autosensing_start(false);
             }
         }
     }
@@ -373,7 +369,6 @@ int nm_query_ll_add(amxd_object_t* wan_mode) {
         ll_queries_clean(&old_nm_queries);
     }
     wan_mode->priv = info;
-    info->wan_mode_up = false;
     info->physical_type = physical_type;
 
     if(str_empty(physical_reference)) {
@@ -537,7 +532,12 @@ void nm_close_sensing_queries(void) {
     amxc_llist_for_each(mode_it, &current_list) {
         const char* wan_mode = amxc_string_get(amxc_string_from_llist_it(mode_it), 0);
         amxd_object_t* wan_mode_obj = get_wan_mode(wan_mode);
+        nm_query_ll_info_t* info = NULL;
         when_null_trace(wan_mode_obj, exit, ERROR, "Cannot get current WANMode object");
+
+        info = (nm_query_ll_info_t*) wan_mode_obj->priv;
+        info->wan_mode_up = false;
+
         amxd_object_for_each(instance, intf_it, amxd_object_findf(wan_mode_obj, ".Intf.")) {
             amxd_object_t* interface = amxc_container_of(intf_it, amxd_object_t, it);
             const char* intf_name = object_const_string(interface, "Name");

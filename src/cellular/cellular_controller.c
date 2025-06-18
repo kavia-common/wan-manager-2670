@@ -136,11 +136,15 @@ static amxd_status_t cellular_enable(UNUSED mode_ctrl_t mode,
     if(strcmp(current_iptype, new_iptype) != 0) {
         rc = component_set_str_param(accesspoint_path, cellular_get_context(), iptype_parameter, new_iptype);
         when_failed_trace(rc, exit, ERROR, "Failed to set '%s' to '%s'", iptype_parameter, new_iptype);
-
-        // Changes in Cellular.AccessPoint need to be followed by toggling Cellular.Interface to be applied
-        rc = component_set_enable(cellular_path, cellular_get_context(), false);
-        when_failed_trace(rc, exit, ERROR, "Failed to disable Cellular interface to apply %s", iptype_parameter);
     }
+
+    /* Since we don't disable Device.Cellular.Interface (see cellular_disable)
+       we need to toggle Cellular interface here to have the latest data available like updated ip addresses.
+     */
+
+    //Disable Cellular.Interface
+    rc = component_set_enable(cellular_path, cellular_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable Cellular interface to apply %s", iptype_parameter);
 
     // Enable Cellular Interface
     rc = component_set_enable(cellular_path, cellular_get_context(), true);
@@ -168,6 +172,7 @@ static amxd_status_t cellular_disable(UNUSED mode_ctrl_t mode,
 
     /* Device.Cellular.Interface is not disabled since it would not be usable for wan autosensing if it is disabled.
        This is something that we will look at in the future to see if this can be improved.
+       When this is changed the toggle of Device.Cellular.Interface in cellular_enable has to be changed as well.
      */
 
 exit:

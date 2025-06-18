@@ -182,7 +182,7 @@ void update_sensing(void) {
     if(is_autosensing_enabled() && autosensing_can_start()) {
         mod_autosensing_stop();
         if(strcmp(sensing_policy, "Continuous") == 0) {
-            mod_autosensing_start();
+            mod_autosensing_start(true);
         }
     }
 
@@ -398,7 +398,7 @@ static void update_operation_mode(const char* new_operation_mode, const char* se
         when_false_trace(autosensing_can_start(), exit, WARNING, "Not able to start autosensing, one or more physical interfaces not known yet");
         when_true_trace(!override_boot && strcmp(sensing_policy, "AtBoot") == 0, exit, INFO, "Not starting autosensing since Policy is AtBoot");
         when_true_trace(!override_boot && strcmp(sensing_policy, "Sticky") == 0, exit, INFO, "Not starting autosensing explicitly since Policy is Sticky, waiting on NetModel events");
-        mod_autosensing_start();
+        mod_autosensing_start(true);
     } else if(0 == strcmp(new_operation_mode, "Manual")) {
         mod_autosensing_stop();
     } else {
