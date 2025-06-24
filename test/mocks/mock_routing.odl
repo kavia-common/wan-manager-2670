@@ -1,16 +1,5 @@
 %define {
     object Routing {
-        object RouteInformation {
-
-            bool Enable;
-            object InterfaceSetting[] {
-
-                string Alias;
-                string Interface;
-                string PreferredRouteFlag;
-            }
-        }
-
         object Router[]{
 
             string Alias;
@@ -40,18 +29,6 @@
 
 
 %populate {
-    object Routing.RouteInformation {
-
-        parameter Enable = 1;
-        object InterfaceSetting{
-            instance add("wan"){
-
-                parameter Alias = "wan";
-                parameter Interface = "Device.IP.Interface.2.";
-            }
-        }
-    }
-
     object Routing.Router {
         instance add("main"){
 

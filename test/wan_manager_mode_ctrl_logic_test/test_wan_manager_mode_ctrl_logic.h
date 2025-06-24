@@ -86,8 +86,6 @@ void test_wan_manager_set_multiple_valid_used_modes(void** state);
 void test_wan_manager_switch_to_invalid(void** state);
 void test_wan_manager_switch_to_valid_different_intf(void** state);
 void test_wan_manager_switch_to_valid_same_intf(void** state);
-void test_wan_manager_routing_interface_switch(void** state);
-void test_wan_manager_routing_interface_create(void** state);
 void test_wan_manager_default_route(void** state);
 void test_wan_manager_logical_interface(void** state);
 void test_wan_manager_set_ppp_mode(void** state);

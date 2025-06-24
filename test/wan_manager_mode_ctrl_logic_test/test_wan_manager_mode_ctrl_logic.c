@@ -119,17 +119,6 @@ static void assert_dslite(void) {
 
 }
 
-static void assert_routing_routeinfo_interfacesetting(const char* ip_interface) {
-    amxd_object_t* routeinfo = amxd_dm_findf(test_get_dm(), "Routing.RouteInformation.");
-    amxd_object_t* routeinfo_inst = NULL;
-
-    assert_non_null(routeinfo);
-    assert_true(amxd_object_get_bool(routeinfo, "Enable", NULL));
-
-    routeinfo_inst = amxd_object_findf(routeinfo, "InterfaceSetting.[Interface==\"Device.IP.%s.\"]", ip_interface);
-    assert_non_null(routeinfo_inst);
-}
-
 static void assert_routing_ipv4forward(const char* ip_interface, const char* origin) {
     amxd_object_t* router = amxd_dm_findf(test_get_dm(), "Routing.Router.1.");
     amxd_object_t* router_ipv4_inst = NULL;
@@ -188,10 +177,6 @@ static void assert_ip_dm(const char* ip_interface, const char* ipv4_addr_alias, 
 
     if(ipv6) {
         assert_true(GET_BOOL(&ip_parameters, "IPv6Enable"));
-
-        if(strcmp(ipv6_addr_alias, "GUA_3GPP_NAS") != 0) { // Not applicable for Cellular IPv6
-            assert_routing_routeinfo_interfacesetting(ip_interface);
-        }
     }
 
     free(_ll);
@@ -309,8 +294,6 @@ static void assert_dhcp_mode(bool nd_enable, const char* ip_interface, bool ipv4
         } else {
             assert_false(GET_BOOL(&neighbordiscovery_parameters, "AutoConfEnable"));
         }
-
-        assert_routing_routeinfo_interfacesetting(ip_interface);
 
         amxc_string_clean(&neighbor_discovery_path);
         amxc_var_clean(&neighbordiscovery_parameters);
@@ -566,45 +549,6 @@ void test_wan_manager_switch_to_valid_same_intf(UNUSED void** state) {
     assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
 
     assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
-}
-
-/*
-    This test assumes that no instance is created by default in the datamodel of the Routing manager.
-    The code has to create an instance if none are found.
-    This test then verifies that it is actually the case.
- */
-void test_wan_manager_routing_interface_create(UNUSED void** state) {
-    amxd_object_t* routing_inst = amxd_dm_findf(test_get_dm(), "Routing.RouteInformation.InterfaceSetting.[Interface == 'Device.IP.Interface.7.']");
-    assert_non_null(routing_inst);
-}
-
-void test_wan_manager_routing_interface_switch(UNUSED void** state) {
-    amxc_var_t status;
-    amxd_object_t* routing_dm = amxd_dm_findf(test_get_dm(), "Routing.RouteInformation.");
-    amxd_object_t* routing_inst = NULL;
-    amxc_var_init(&status);
-
-    assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
-    assert_nr_active_objects("PPP.Interface.", 0);
-    assert_dhcp_mode(true, "Interface.2", true, true, "DHCP", "demo_wanmode", "");
-
-    routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
-    assert_non_null(routing_inst);
-
-    assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
-    assert_nr_instances("PPP.Interface.", 1);
-    assert_nr_active_objects("PPP.Interface.", 1);
-    assert_ppp_mode("softathome", "softathome", 4, false, "Interface.2", "demo_pppmode");
-
-    routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.2.']");
-    assert_null(routing_inst);
-
-    routing_inst = amxd_object_findf(routing_dm, "InterfaceSetting.[Interface == 'Device.IP.Interface.6.']");
-    assert_non_null(routing_inst);
-
-    assert_true(set_wan_mode("demo_vlanmode", amxd_status_ok));
-
-    amxc_var_clean(&status);
 }
 
 static void assert_obj_string(amxd_object_t* obj, const char* param_name, const char* value) {

@@ -154,7 +154,6 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_intf_path = NULL;
     char* dhcpv6_path = NULL;
-    char* route_path = NULL;
     const char* neigh_disc_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
@@ -162,10 +161,6 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
 
     prefixed_intf_path = get_ip_path(parameters, IPv6, true);
     when_str_empty_trace(prefixed_intf_path, exit, ERROR, "Failed to get IP interface path");
-
-    route_path = routing_get_interfacesetting(prefixed_intf_path);
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", prefixed_intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to set the routing interface to %s'", prefixed_intf_path);
 
     // Enable NeighborDiscovery for the wan
     neigh_disc_path = get_nd_path(parameters);
@@ -186,7 +181,6 @@ static amxd_status_t ppp_enable_upper(mode_ctrl_t mode,
 
 exit:
     free(dhcpv6_path);
-    free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
@@ -237,7 +231,6 @@ static amxd_status_t ppp_disable_upper(mode_ctrl_t mode,
     const ipversion_t ip_version = get_ipversion(mode & MASK_PPP_IPvX);
     char* dhcpv6_path = NULL;
     const char* intf_path = NULL;
-    char* route_path = NULL;
     const char* neigh_disc_path = NULL;
 
     when_false(ipversion_valid(ip_version), exit);
@@ -260,13 +253,8 @@ static amxd_status_t ppp_disable_upper(mode_ctrl_t mode,
     rc = component_set_str_param(dhcpv6_path, dhcpv6_get_context(), "Interface", "");
     when_failed_trace(rc, exit, ERROR, "Failed to clear " DHCPV6_REFERENCE_PATH " Interface");
 
-    route_path = routing_get_interfacesetting(intf_path);
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
-    when_failed_trace(rc, exit, ERROR, "Failed to remove the routing interface");
-
 exit:
     free(dhcpv6_path);
-    free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

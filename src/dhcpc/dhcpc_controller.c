@@ -150,7 +150,6 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     const char* intf_alias = GET_CHAR(parameters, "Alias");
     char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
     const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
-    char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = NULL;
     const char* name = GET_CHAR(parameters, "Name");
 
@@ -158,10 +157,6 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     when_str_empty(intf_alias, exit);
     when_str_empty(prefixed_intf_path, exit);
     when_str_empty_trace(name, exit, ERROR, "Name parameter of %s is empty", prefixed_intf_path);
-
-    // Fill the interface reference of the RouteInformation in
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", prefixed_intf_path);
-    when_failed_trace(rc, exit, ERROR, "Failed to update the Routing manager's interface with %s", prefixed_intf_path);
 
     // Enable the DHCPv6 Client
     if(dhcpv6_path != NULL) {
@@ -179,7 +174,6 @@ static amxd_status_t dhcpc6_enable(UNUSED mode_ctrl_t mode,
     when_failed_trace(rc, exit, ERROR, "Failed to enable NeighborDiscovery");
 
 exit:
-    free(route_path);
     free(dhcpv6_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
@@ -191,7 +185,6 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
     amxd_status_t rc = amxd_status_unknown_error;
     const char* prefixed_intf_path = get_ip_path(parameters, IPv6, true);
     char* dhcpv6_path = get_dhcp_path(parameters, IPv6);
-    char* route_path = routing_get_interfacesetting(prefixed_intf_path);
     const char* neigh_disc_path = get_nd_path(parameters);
     const char* name = GET_CHAR(parameters, "Name");
 
@@ -214,13 +207,8 @@ static amxd_status_t dhcpc6_disable(UNUSED mode_ctrl_t mode,
         SAH_TRACEZ_INFO(ME, "No DHCPv6 client found with Interface='%s'", prefixed_intf_path);
     }
 
-    // Empty the interface reference of the RouteInformation
-    rc = component_set_str_param(route_path, routing_get_context(), "Interface", "");
-    when_failed_trace(rc, exit, ERROR, "Failed to empty the Routing manager's interface");
-
 exit:
     free(dhcpv6_path);
-    free(route_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }
