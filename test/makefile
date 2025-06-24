@@ -8,7 +8,7 @@ COVERREPORT = report
 run: $(OBJDIR)/
 	@for dir in $(MODDIRS); do make -C $$dir || exit -1; done
 	@for dir in $(SUBDIRS); do make -C $$dir $@  || exit -1; done
-	@rm -rf $(OBJDIR)/test_*
+	@rm -rf $(OBJDIR)/test_* $(OBJDIR)/mock* $(OBJDIR)/dummy*
 	@for dir in $(MODDIRS); do make -C $$dir clean || exit -1; done
 
 executables: $(OBJDIR)/
