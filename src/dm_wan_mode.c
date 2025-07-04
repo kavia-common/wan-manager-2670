@@ -349,8 +349,9 @@ void wan_manager_found_ll(physical_type_t found_phys_type) {
             if(rc != amxd_status_ok) {
                 wan_mode_set_status(wan_mode_obj, WAN_Mode_Error);
                 SAH_TRACEZ_WARNING(ME, "Failed to enable current WANMode '%s', error '%d'", wan_mode_obj->name, rc);
+            } else {
+                wan_mode_enabled = true;
             }
-            wan_mode_enabled = true;
         }
     }
 
