@@ -995,7 +995,7 @@ void test_wan_manager_set_cellular_mode(UNUSED void** state) {
     /* Change wan_mode to demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     assert_active_wan_mode("demo_wanmode", "Enabled");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 0);
 
     /* Change wan_mode to demo_cellular_v6 */
     assert_true(set_wan_mode("demo_cellular_v6", amxd_status_ok));

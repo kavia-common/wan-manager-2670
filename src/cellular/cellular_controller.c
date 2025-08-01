@@ -138,17 +138,8 @@ static amxd_status_t cellular_enable(UNUSED mode_ctrl_t mode,
         when_failed_trace(rc, exit, ERROR, "Failed to set '%s' to '%s'", iptype_parameter, new_iptype);
     }
 
-    /* Since we don't disable Device.Cellular.Interface (see cellular_disable)
-       we need to toggle Cellular interface here to have the latest data available like updated ip addresses.
-     */
-
-    //Disable Cellular.Interface
-    rc = component_set_enable(cellular_path, cellular_get_context(), false);
-    when_failed_trace(rc, exit, ERROR, "Failed to disable Cellular interface to apply %s", iptype_parameter);
-
-    // Enable Cellular Interface
-    rc = component_set_enable(cellular_path, cellular_get_context(), true);
-    when_failed_trace(rc, exit, ERROR, "Failed to enable Cellular interface");
+    rc = component_set_enable(accesspoint_path, cellular_get_context(), true);
+    when_failed_trace(rc, exit, ERROR, "Failed to enable %s", accesspoint_path);
 
 exit:
     amxc_var_delete(&ip_type_param);
@@ -165,17 +156,26 @@ static amxd_status_t cellular_disable(UNUSED mode_ctrl_t mode,
     const char* cellular_path = NULL;
     const char* wan_mode_str = GET_CHAR(parameters, "wanmode_name");
     amxd_object_t* wan_mode = get_wan_mode(wan_mode_str);
+    const char* accesspoint_path = NULL;
+    bool is_slice = !str_empty(intf_type) && strcmp(intf_type, "slice") == 0;
 
     when_null_trace(wan_mode, exit, ERROR, "Failed to get WANMode");
     cellular_path = object_const_string(wan_mode, "PhysicalReference");
     when_str_empty_trace(cellular_path, exit, ERROR, "Failed to get Cellular interface path");
 
-    /* Device.Cellular.Interface is not disabled since it would not be usable for wan autosensing if it is disabled.
-       This is something that we will look at in the future to see if this can be improved.
-       When this is changed the toggle of Device.Cellular.Interface in cellular_enable has to be changed as well.
-     */
+    if(is_slice) {
+        // AccessPoint must be defined in DM for slices
+        accesspoint_path = strdup(get_cellular_accesspoint_path(parameters));
+    } else {
+        // For regular Cellular connections search the AccessPoint based on Physical Reference
+        accesspoint_path = find_cellular_accesspoint_path(cellular_path);
+    }
+
+    rc = component_set_enable(accesspoint_path, cellular_get_context(), false);
+    when_failed_trace(rc, exit, ERROR, "Failed to disable %s", accesspoint_path);
 
 exit:
+    free(accesspoint_path);
     SAH_TRACEZ_OUT(ME);
     return rc;
 }

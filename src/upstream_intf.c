@@ -89,6 +89,7 @@
 typedef int (* upstream_toggle_func_t)(nm_query_ll_info_t*, bool);
 static int toggle_ethernet(nm_query_ll_info_t* info, bool enable);
 static int toggle_xpon(nm_query_ll_info_t* info, bool enable);
+static int toggle_cellular(nm_query_ll_info_t* info, bool enable);
 
 /**
  * phys_types are the names used in the datamodel:
@@ -106,7 +107,7 @@ const char* phys_types_flags[physical_type_last] = {
 };
 
 static const upstream_toggle_func_t upstream_toggle[physical_type_last] = {
-    toggle_ethernet, NULL, NULL, NULL, NULL, toggle_xpon, NULL, NULL
+    toggle_ethernet, NULL, NULL, NULL, NULL, toggle_xpon, NULL, toggle_cellular
 };
 
 /**
@@ -166,6 +167,25 @@ static int toggle_xpon(nm_query_ll_info_t* info, bool enable) {
 
 exit:
     amxc_string_clean(&path);
+    SAH_TRACEZ_OUT(ME);
+    return rv;
+}
+
+/**
+ * This function is intended to toggle upstream interfaces of type "WWAN".
+ * The expected upstream_intf_path is something like "Device.Cellular.Interface.1".
+ * The enable parameter for this instance is toggled
+ */
+static int toggle_cellular(nm_query_ll_info_t* info, bool enable) {
+    SAH_TRACEZ_IN(ME);
+    int rv = -1;
+    when_null_trace(info, exit, ERROR, "No info structure provided");
+    SAH_TRACEZ_INFO(ME, "Toggling cellular to %d", enable);
+
+    rv = component_set_enable(info->upstream_intf_path, cellular_get_context(), enable);
+    when_failed_trace(rv, exit, ERROR, "Could not %s %s", enable ? "enable" : "disable", info->upstream_intf_path);
+
+exit:
     SAH_TRACEZ_OUT(ME);
     return rv;
 }

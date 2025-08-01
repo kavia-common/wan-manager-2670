@@ -798,6 +798,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
     } else {
         rc = dns_mode_unset();
         nm_close_sensing_queries();
+        toggle_upstream_intf(wan_mode, false);
     }
     when_failed_trace(rc, exit, ERROR, "failed with code %d, unable to %s the DNS mode", rc, enable ? "set" : "unset");
 
