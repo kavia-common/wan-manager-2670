@@ -71,6 +71,13 @@
             }
 
             /**
+            * When set to true the upstream interface like Ethernet,GPON,Cellular is not disabled when disabling the WANMode.
+            */
+            %protected %persistent bool '${global_vendor_prefix_}SkipDisableUpstreamIntf' {
+                default false;
+            }
+
+            /**
             * Status parameter to indicate the WAN Mode is active, in error state or disabled
             * @version 1.0
             */

@@ -156,20 +156,13 @@ static amxd_status_t cellular_disable(UNUSED mode_ctrl_t mode,
     const char* cellular_path = NULL;
     const char* wan_mode_str = GET_CHAR(parameters, "wanmode_name");
     amxd_object_t* wan_mode = get_wan_mode(wan_mode_str);
-    const char* accesspoint_path = NULL;
-    bool is_slice = !str_empty(intf_type) && strcmp(intf_type, "slice") == 0;
+    char* accesspoint_path = NULL;
 
     when_null_trace(wan_mode, exit, ERROR, "Failed to get WANMode");
     cellular_path = object_const_string(wan_mode, "PhysicalReference");
     when_str_empty_trace(cellular_path, exit, ERROR, "Failed to get Cellular interface path");
 
-    if(is_slice) {
-        // AccessPoint must be defined in DM for slices
-        accesspoint_path = strdup(get_cellular_accesspoint_path(parameters));
-    } else {
-        // For regular Cellular connections search the AccessPoint based on Physical Reference
-        accesspoint_path = find_cellular_accesspoint_path(cellular_path);
-    }
+    accesspoint_path = get_cellular_accesspoint_search_path(cellular_path);
 
     rc = component_set_enable(accesspoint_path, cellular_get_context(), false);
     when_failed_trace(rc, exit, ERROR, "Failed to disable %s", accesspoint_path);

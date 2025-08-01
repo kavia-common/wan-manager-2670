@@ -172,9 +172,15 @@ exit:
 }
 
 /**
- * This function is intended to toggle upstream interfaces of type "WWAN".
- * The expected upstream_intf_path is something like "Device.Cellular.Interface.1".
- * The enable parameter for this instance is toggled
+ * @brief Toggle a WWAN upstream interface.
+ *
+ * Enables or disables the cellular upstream interface referenced by
+ * @p info->upstream_intf_path (e.g., "Device.Cellular.Interface.1").
+ *
+ * @param[in] info    Pointer to query context; must not be NULL and must
+ *                    contain a valid @c upstream_intf_path.
+ * @param[in] enable  Set to true to enable the interface; false to disable.
+ * @return 0 on success; non-zero on failure.
  */
 static int toggle_cellular(nm_query_ll_info_t* info, bool enable) {
     SAH_TRACEZ_IN(ME);
@@ -276,14 +282,28 @@ exit:
 }
 
 /**
- * @brief Will call the upstream_toggle function for the requested physical_type
- * @param physical_type The physical type in string as it is stored in the "PhysicalType" parameter
- * @return 0 if successful, -1 if an error occurred
+ * @brief Toggle the upstream interface for the current physical type.
+ *
+ * @param[in] wan_mode  WAN-mode object; must not be NULL.
+ * @param[in] enable    Set to true to enable; false to disable.
+ *
+ * @return 0 on success; non-zero on failure.
  */
-int toggle_upstream_intf(nm_query_ll_info_t* info, bool enable) {
+int toggle_upstream_intf(amxd_object_t* wan_mode, bool enable) {
     SAH_TRACEZ_IN(ME);
     int rv = -1;
+    nm_query_ll_info_t* info = NULL;
 
+    char* param_name = NULL;
+    bool skip_disable = false;
+
+    when_null(wan_mode, exit);
+
+    param_name = get_prefixed_parameter_name("SkipDisableUpstreamIntf");
+    skip_disable = GET_BOOL(amxd_object_get_param_value(wan_mode, param_name), NULL);
+    when_true_status(!enable && skip_disable, exit, rv = amxd_status_ok);
+
+    info = (nm_query_ll_info_t*) wan_mode->priv;
     when_null_trace(info, exit, ERROR, "No info structure found");
     when_true_trace(info->physical_type >= physical_type_last, exit, ERROR, "Invalid physical type");
 
@@ -294,6 +314,7 @@ int toggle_upstream_intf(nm_query_ll_info_t* info, bool enable) {
     }
 
 exit:
+    free(param_name);
     SAH_TRACEZ_OUT(ME);
     return rv;
 }

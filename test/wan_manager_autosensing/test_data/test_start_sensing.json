@@ -19,6 +19,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -32,6 +33,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -45,6 +47,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Enabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -58,6 +61,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -71,6 +75,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -84,6 +89,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -97,6 +103,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -110,6 +117,7 @@
             "SFPType" : "",
             "SensingPriority": 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -123,6 +131,7 @@
             "SFPType" : "",
             "SensingPriority": 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -136,6 +145,7 @@
             "SFPType" : "",
             "SensingPriority": 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -149,6 +159,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         },
         {
@@ -162,6 +173,7 @@
             "SFPType" : "",
             "SensingPriority" : 0,
             "Status" : "Disabled",
+            "TEST_SkipDisableUpstreamIntf" : false,
             "SupportedSFPTypes" : ""
         }
     ],

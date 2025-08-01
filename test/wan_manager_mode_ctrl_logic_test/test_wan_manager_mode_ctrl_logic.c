@@ -969,6 +969,8 @@ void test_wan_manager_set_bridge_vlanmode(UNUSED void** state) {
 }
 
 void test_wan_manager_set_cellular_mode(UNUSED void** state) {
+    amxd_object_t* wan_mode_obj = NULL;
+
     /* Initial state: wan_mode = demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
     assert_active_wan_mode("demo_wanmode", "Enabled");
@@ -984,13 +986,13 @@ void test_wan_manager_set_cellular_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
     assert_active_wan_mode("demo_cellular_v4v6", "Enabled");
     assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 1);
 
     /* Change wan_mode to demo_cellular */
     assert_true(set_wan_mode("demo_cellular", amxd_status_ok));
     assert_active_wan_mode("demo_cellular", "Enabled");
     assert_cellular_mode("Interface.10", true, false, "CELLULAR0");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 1);
 
     /* Change wan_mode to demo_wanmode */
     assert_true(set_wan_mode("demo_wanmode", amxd_status_ok));
@@ -1001,16 +1003,20 @@ void test_wan_manager_set_cellular_mode(UNUSED void** state) {
     assert_true(set_wan_mode("demo_cellular_v6", amxd_status_ok));
     assert_active_wan_mode("demo_cellular_v6", "Enabled");
     assert_cellular_mode("Interface.10", false, true, "CELLULAR0");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 1);
+
+    wan_mode_obj = amxd_dm_findf(test_get_dm(), "WANManager.WAN.demo_cellular_v6");
+    assert_int_equal(amxd_object_set_value(bool, wan_mode_obj, "TEST_SkipDisableUpstreamIntf", true), 0);
 
     /* Change wan_mode to demo_pppmode */
     assert_true(set_wan_mode("demo_pppmode", amxd_status_ok));
     assert_active_wan_mode("demo_pppmode", "Enabled");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 1);
 
     /* Change wan_mode to demo_cellular_v4v6 */
     assert_true(set_wan_mode("demo_cellular_v4v6", amxd_status_ok));
     assert_active_wan_mode("demo_cellular_v4v6", "Enabled");
     assert_cellular_mode("Interface.10", true, true, "CELLULAR0");
-    assert_nr_active_objects("Cellular.Interface.", 1);
+    assert_nr_active_objects("Cellular.Interface", 1);
 }
+

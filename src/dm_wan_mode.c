@@ -781,7 +781,7 @@ amxd_status_t wan_mode_enable(amxd_object_t* wan_mode, bool enable) {
     if(!enable) {
         wan_mode_set_status(wan_mode, WAN_Mode_Disabled);
     } else {
-        toggle_upstream_intf(info, true);
+        toggle_upstream_intf(wan_mode, true);
     }
 
     amxd_object_for_each(instance, it, amxd_object_findf(wan_mode, ".Intf.")) {

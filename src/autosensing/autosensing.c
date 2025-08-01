@@ -121,7 +121,7 @@ static int autosensing_set_wan_mode(UNUSED const char* function_name,
     const char* next_wan_mode_str = GET_CHAR(args, "Alias");
     const char* current_wan_mode_str = get_current_wan_mode_str();
 
-    if(((next_wan_mode_str) == NULL) || (*(next_wan_mode_str) == 0)) {
+    if(str_empty(next_wan_mode_str)) {
         SAH_TRACEZ_ERROR(ME, "Invalid mode provided, stop sensing");
         mod_autosensing_stop();
         goto exit;
