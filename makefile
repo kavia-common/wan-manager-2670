@@ -42,6 +42,7 @@ install: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_mapping.odl $(DEST)/etc/amx/tr181-device/extensions/01_device-x_prpl-com_wanmanager_mapping.odl
 	$(INSTALL) -d -m 0755 $(DEST)//etc/amx/$(COMPONENT)/extensions
 	$(foreach odl,$(wildcard odl/extensions/*.odl), $(INSTALL) -D -p -m 0644 $(odl) $(DEST)/etc/amx/$(COMPONENT)/extensions/;)
+	$(INSTALL) -D -p -m 0644 odl/amx-processmonitor/test-$(COMPONENT).odl $(DEST)/etc/amx/amx-processmonitor/defaults.d/14-test-$(COMPONENT).odl
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(DEST)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0660 acl/cwmp/$(COMPONENT).json $(DEST)$(ACLDIR)/cwmp/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
@@ -61,6 +62,7 @@ package: all
 	$(INSTALL) -D -p -m 0644 odl/$(COMPONENT)_mapping.odl $(PKGDIR)/etc/amx/tr181-device/extensions/01_device-x_prpl-com_wanmanager_mapping.odl
 	$(INSTALL) -d -m 0755 $(PKGDIR)//etc/amx/$(COMPONENT)/extensions
 	$(INSTALL) -D -p -m 0644 odl/extensions/*.odl $(PKGDIR)/etc/amx/$(COMPONENT)/extensions/
+	$(INSTALL) -D -p -m 0644 odl/amx-processmonitor/test-$(COMPONENT).odl $(PKGDIR)/etc/amx/amx-processmonitor/defaults.d/14-test-$(COMPONENT).odl
 	$(INSTALL) -D -p -m 0660 acl/admin/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/admin/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0660 acl/cwmp/$(COMPONENT).json $(PKGDIR)$(ACLDIR)/cwmp/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so

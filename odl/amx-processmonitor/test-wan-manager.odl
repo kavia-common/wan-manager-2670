@@ -1,0 +1,15 @@
+%populate {
+    object ProcessMonitor.Test {
+        instance add ("wan-manager") {
+            parameter Name = "wan-manager";
+            parameter Type = "Plugin";
+            parameter Subject = "WANManager";
+            parameter MaxFailNum = 2;
+            parameter MaxFailDuration = -1;
+            parameter FailAction = "REBOOT";
+            parameter TestInterval = 60;
+            parameter TestIntervalMultiplier = 2;
+            parameter TestResetInterval = 300;
+        }
+    }
+}
