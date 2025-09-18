@@ -133,3 +133,20 @@ There are a few cases that will stop the sensing:
 
 ### NOTICES
 * When using autosensing, changes made to the WANMode parameter directly will be ignored. This will result in the configured WANMode not matching with the mode set in the data model. If the user want to change the mode, they need to use the setWANMode function or manually switch back to manual mode.
+
+## Multiple WAN Interfaces
+It is possible to configure multiple WAN Interfaces simultaneously, with the limitation of one physical type at a time.
+For example:
+* Ethernet + GPON
+* GPON + Cellular
+But not:
+* Ethernet + Ethernet
+* GPON + GPON
+
+This can be done by creating a WANMode for each WAN interface you want to use.
+
+### Enable/Disable additional WANModes
+RPC functions WANManager.WANModeEnable() and WANManager.WANModeDisable() can be used to enable/disable a particular WANMode without touching other active WANModes.
+
+### Use Cases
+* Policy Based routing: By using a DefaultRouteReference that is part of a secondary Routing table you can redirect traffic based on a Routing Policy to a different WAN interface.
