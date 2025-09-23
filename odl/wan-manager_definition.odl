@@ -34,9 +34,7 @@
         *
         * @version 1.0
         */
-        %persistent %protected bool ApplyAtNextBoot = true {
-            userflags %upc;
-        }
+        %persistent %protected bool ApplyAtNextBoot = true;
 
         /**
          * Enable WAN mode. Only succeeds when the WANMode has a different Physical Type as the already enabled WANModes.
@@ -106,7 +104,6 @@
             on action validate call check_maximum_length 64;
             on action validate call check_wan_mode;
             default "";
-            userflags %usersetting;
         }
 
         /**

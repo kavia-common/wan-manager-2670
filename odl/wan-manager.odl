@@ -51,6 +51,11 @@
 
     external-mod-dir = "/usr/lib/amx/modules";
 
+    define-behavior = {
+        existing-object = "update",
+        existing-parameter = "update"
+    };
+
     pcm_svc_config = {
         "Objects" = "WANManager"
     };
@@ -78,6 +83,7 @@ import "mod-dmext.so";
 include "${wan_manager_definition_file}";
 include "${wan_mode_definition_file}";
 include "${wan_mode_intf_definition_file}";
+include "${name}_upc.odl";
 
 requires "IP.";
 requires "DHCPv4Client.Client.";

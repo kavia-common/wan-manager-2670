@@ -33,7 +33,6 @@
             */
             %persistent string UserName{
                 on action validate call check_maximum_length 64;
-                userflags %usersetting;
             }
 
             /**
@@ -43,7 +42,6 @@
             */
             %persistent string Password {
                 on action validate call check_maximum_length 64;
-                userflags %usersetting;
             }
 
             /**
@@ -55,7 +53,6 @@
             %persistent string IPv4Mode{
                 on action validate call check_enum ["dhcp4", "ppp4", "none", "static", "dslite", "link", "3gpp-nas"];
                 default "dhcp4";
-                userflags %usersetting;
             }
 
             /**
@@ -67,7 +64,6 @@
             %persistent string IPv6Mode{
                 on action validate call check_enum ["dhcp6", "ppp6", "none", "static", "link", "3gpp-nas"];
                 default "none";
-                userflags %usersetting;
             }
 
             /**
@@ -108,7 +104,6 @@
             */
             %persistent uint32 VlanID{
                 default 100;
-                userflags %upc;
             }
 
             /**
@@ -219,7 +214,6 @@
                 */
                 %persistent string IPv4Address{
                     on action validate call check_maximum_length 15;
-                    userflags %usersetting;
                 }
 
                 /**
@@ -228,7 +222,6 @@
                 */
                 %persistent string SubnetMask{
                     on action validate call check_maximum_length 15;
-                    userflags %usersetting;
                 }
 
                 /**
@@ -237,7 +230,6 @@
                 */
                 %persistent string DefaultRouter{
                     on action validate call check_maximum_length 15;
-                    userflags %usersetting;
                 }
 
                 /**
@@ -247,7 +239,6 @@
                 */
                 %persistent csv_string DNSServers{
                     on action validate call check_maximum_length 64;
-                    userflags %usersetting;
                 }
             }
 
@@ -273,16 +264,13 @@
                 */
                 %persistent string IPv6Address{
                     on action validate call check_maximum_length 45;
-                    userflags %usersetting;
                 }
 
                 /**
                 * Static IPv6 PrefixLength, typically a number between 0 and 128
                 * @version 1.0
                 */
-                %persistent uint32 PrefixLength = 64 {
-                    userflags %usersetting;
-                }
+                %persistent uint32 PrefixLength = 64;
 
                 /**
                 * Static IPv6 default router address
@@ -290,7 +278,6 @@
                 */
                 %persistent string DefaultRouter{
                     on action validate call check_maximum_length 45;
-                    userflags %usersetting;
                 }
 
                 /**
@@ -300,7 +287,6 @@
                 */
                 %persistent csv_string DNSServers{
                     on action validate call check_maximum_length 180;
-                    userflags %usersetting;
                 }
             }
 

@@ -1,0 +1,192 @@
+%populate {
+    object 'WANManager' {
+        parameter WANMode {
+            userflags %usersetting;
+        }
+
+        parameter ApplyAtNextBoot {
+            userflags %upc;
+        }
+
+        parameter OperationMode {
+            userflags %upc;
+        }
+
+        parameter SensingPolicy {
+            userflags %upc;
+        }
+
+        parameter SensingTimeout {
+            userflags %upc;
+        }
+
+        object WAN {
+            parameter Alias {
+                userflags %upc;
+            }
+
+            parameter PhysicalType {
+                userflags %upc;
+            }
+
+            parameter PhysicalReference {
+                userflags %upc;
+            }
+
+            parameter Origin {
+                userflags %upc;
+            }
+
+            parameter EnableSensing {
+                userflags %upc;
+            }
+
+            parameter SensingPriority {
+                userflags %upc;
+            }
+
+            parameter DNSMode {
+                userflags %upc;
+            }
+
+            parameter IPv6DNSMode {
+                userflags %upc;
+            }
+
+            object Intf {
+                parameter Alias {
+                    userflags %upc;
+                }
+
+                parameter Name {
+                    userflags %upc;
+                }
+
+                parameter UserName {
+                    userflags %usersetting;
+                }
+
+                parameter Password {
+                    userflags %usersetting;
+                }
+
+                parameter IPv4Mode {
+                    userflags %usersetting;
+                }
+
+                parameter IPv6Mode {
+                    userflags %usersetting;
+                }
+
+                parameter IPv4Reference {
+                    userflags %upc;
+                }
+
+                parameter DefaultRouteReference {
+                    userflags %upc;
+                }
+
+                parameter IPv6Reference {
+                    userflags %upc;
+                }
+
+                parameter Type {
+                    userflags %upc;
+                }
+
+                parameter VlanID {
+                    userflags %upc;
+                }
+
+                parameter VlanPriority {
+                    userflags %upc;
+                }
+
+                parameter DeferredIPv6Instances {
+                    userflags %upc;
+                }
+
+                parameter BridgeReference {
+                    userflags %upc;
+                }
+
+                parameter DHCPv4Reference {
+                    userflags %upc;
+                }
+
+                parameter DHCPv6Reference {
+                    userflags %upc;
+                }
+
+                parameter PPPv4Reference {
+                    userflags %upc;
+                }
+
+                parameter PPPv6Reference {
+                    userflags %upc;
+                }
+
+                parameter DSLiteReference {
+                    userflags %upc;
+                }
+
+                parameter PCPReference {
+                    userflags %upc;
+                }
+
+                parameter NeighborDiscoveryReference {
+                    userflags %upc;
+                }
+
+                object IPv4Address {
+                    parameter Alias {
+                        userflags %upc;
+                    }
+
+                    parameter IPv4Address {
+                        userflags %usersetting;
+                    }
+
+
+                    parameter SubnetMask {
+                        userflags %usersetting;
+                    }
+
+                    parameter DefaultRouter {
+                        userflags %usersetting;
+                    }
+
+                    parameter DNSServers {
+                        userflags %usersetting;
+                    }
+                }
+
+                object IPv6Address {
+                    parameter Alias {
+                        userflags %upc;
+                    }
+
+                    parameter IPv6Address {
+                        userflags %usersetting;
+                    }
+
+                    parameter PrefixLength {
+                        userflags %usersetting;
+                    }
+
+                    parameter DefaultRouter {
+                        userflags %usersetting;
+                    }
+
+                    parameter DNSServers {
+                        userflags %usersetting;
+                    }
+                }
+
+                parameter IPv6AddressDelegate {
+                    userflags %upc;
+                }
+            }
+        }
+    }
+}
