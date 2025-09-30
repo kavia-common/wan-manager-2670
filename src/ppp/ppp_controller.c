@@ -121,17 +121,9 @@ static amxd_status_t ppp_enable_lower(mode_ctrl_t mode,
         // Enable PPPv4
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", true);
         when_failed(rc, exit);
-
-        // Disable PPPv6
-        rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", false);
-        when_failed(rc, exit);
-
-    } else {
+    }
+    if(ip_version == IPv6) {
         amxc_var_add_key(cstring_t, parameters, "LowerLayersV6Override", prefixed_ppp_path);
-
-        // Disable PPPv4
-        rc = component_set_bool(ppp_path, ppp_get_context(), "IPCPEnable", false);
-        when_failed(rc, exit);
 
         // Enable PPPv6
         rc = component_set_bool(ppp_path, ppp_get_context(), "IPv6CPEnable", true);

@@ -339,9 +339,8 @@ static void assert_ppp_mode(const char* username, const char* password, int ip_v
     assert_true(GET_BOOL(&ppp_parameters, "Enable"));
     if(ip_version == 4) {
         assert_true(GET_BOOL(&ppp_parameters, "IPCPEnable"));
-        assert_false(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
-    } else if(ip_version == 6) {
-        assert_false(GET_BOOL(&ppp_parameters, "IPCPEnable"));
+    }
+    if(ip_version == 6) {
         assert_true(GET_BOOL(&ppp_parameters, "IPv6CPEnable"));
     }
     assert_string_equal(username, GET_CHAR(&ppp_parameters, "Username"));
