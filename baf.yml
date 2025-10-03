@@ -39,9 +39,11 @@ configs:
 makefiles:
   compile:
     - directory: "src"
+    - directory: "scripts"
     - directory: "odl"
   clean:
     - directory: "src"
+    - directory: "scripts"
     - directory: "odl"
     - directory: "test"
   test:

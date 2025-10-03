@@ -21,10 +21,12 @@ endef
 # targets
 all:
 	$(MAKE) -C src all
+	$(MAKE) -C scripts all
 	$(MAKE) -C odl all
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C scripts clean
 	$(MAKE) -C odl clean
 	$(MAKE) -C test clean
 
