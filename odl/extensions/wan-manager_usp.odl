@@ -1,0 +1,9 @@
+%config {
+    %global usp.translate = {
+        "'WANManager.'" = "Device.X_PRPLWARE-COM_WANManager."
+    };
+
+    %global backend-dir = [ "/usr/bin/mods/usp", "/usr/bin/mods/amxb" ];
+
+    %global usp.connect-retry = true;
+}
