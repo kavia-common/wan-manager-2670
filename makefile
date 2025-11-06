@@ -46,7 +46,7 @@ install: all
 	$(INSTALL) -D -p -m 0660 acl/cwmp/$(COMPONENT).json $(DEST)$(ACLDIR)/cwmp/$(COMPONENT).json
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(DEST)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(DEST)$(BINDIR)
-	ln -sfr $(DEST)$(BINDIR)/amxrt $(DEST)$(BINDIR)/$(COMPONENT)
+	ln -nsfr $(DEST)$(BINDIR)/amxrt $(DEST)$(BINDIR)/$(COMPONENT)
 	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(DEST)$(INITDIR)/$(COMPONENT)
 
 package: all
@@ -66,7 +66,7 @@ package: all
 	$(INSTALL) -D -p -m 0755 output/$(MACHINE)/$(COMPONENT).so $(PKGDIR)/usr/lib/amx/$(COMPONENT)/$(COMPONENT).so
 	$(INSTALL) -d -m 0755 $(PKGDIR)$(BINDIR)
 	rm -f $(PKGDIR)$(BINDIR)/$(COMPONENT)
-	ln -sfr $(PKGDIR)$(BINDIR)/amxrt $(PKGDIR)$(BINDIR)/$(COMPONENT)
+	ln -nsfr $(PKGDIR)$(BINDIR)/amxrt $(PKGDIR)$(BINDIR)/$(COMPONENT)
 	$(INSTALL) -D -p -m 0755 scripts/$(COMPONENT).sh $(PKGDIR)$(INITDIR)/$(COMPONENT)
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
 	cp $(PKGDIR)../$(COMPONENT)-$(VERSION).tar.gz .
