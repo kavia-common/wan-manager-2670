@@ -824,59 +824,44 @@
 2025-12-31 02:40:57,079 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_data/test_getWANMode_dslite.json
 2025-12-31 02:40:57,248 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:40:57,426 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:40:57,605 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_start_sensing.json
-2025-12-31 02:40:57,815 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:40:58,024 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:40:58,183 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ppp/ppp.h
-2025-12-31 02:40:58,406 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:40:58,595 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:40:58,799 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/autosensing/autosensing.h
-2025-12-31 02:40:59,004 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:40:59,206 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:40:59,383 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/link/link.h
-2025-12-31 02:40:59,585 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:40:59,786 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:00,021 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/src/mod-dummy.c
-2025-12-31 02:41:00,233 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:00,396 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:00,597 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_main.c
-2025-12-31 02:41:00,769 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:00,935 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:01,119 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_main.c
-2025-12-31 02:41:01,339 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:01,502 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:01,709 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.h
-2025-12-31 02:41:01,902 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:02,066 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:02,234 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_data/test_getWANMode.json
-2025-12-31 02:41:02,398 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:02,607 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:02,794 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dslite/dslite_controller.c
-2025-12-31 02:41:02,974 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:03,172 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:03,385 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/component.h
-2025-12-31 02:41:03,606 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:03,803 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:03,959 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.h
-2025-12-31 02:41:04,147 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:04,295 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:04,506 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dhcpc/dhcpc.h
-2025-12-31 02:41:04,688 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:04,845 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:05,041 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_main.c
-2025-12-31 02:41:05,249 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:05,420 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:05,577 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.c
-2025-12-31 02:41:05,768 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:05,954 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:06,136 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dns/dns.h
-2025-12-31 02:41:06,312 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:06,547 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:06,712 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/cellular/cellular_controller.c
-2025-12-31 02:41:06,915 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:07,083 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:07,239 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_defines.mk
-2025-12-31 02:41:07,407 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:40:57,605 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_start_ork_selector.h
+2025-12-31 02:41:00,045 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 264ms
+2025-12-31 02:41:00,523 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/network-selector/network_selector.h, Duration: 299ms
+2025-12-31 02:41:00,725 - Knowledge - INFO - persist search terms embedding for include_priv/network-selector/network_selector.h
+2025-12-31 02:41:00,977 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/network-selector/network_selector.h
+2025-12-31 02:41:01,217 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:01,420 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      2025-12-31 02:41:01,922 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:02,120 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:02,306 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/sfp/sfp.h
+2025-12-31 02:41:02,910 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 400ms
+2025-12-31 02:41:03,563 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/sfp/sfp.h, Duration: 438ms
+2025-12-31 02:41:03,778 - Knowledge - INFO - persist search terms embedding for include_priv/sfp/sfp.h
+2025-12-31 02:41:03,960 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/sfp/sfp.h
+2025-12-31 02:41:04,183 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:04,371 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:04,695 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:04,866 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:05,062 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ppp/ppp_controller.c
+2025-12-31 02:41:05,548 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 274ms
+2025-12-31 02:41:06,053 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/ppp/ppp_controller.c, Duration: 321ms
+2025-12-31 02:41:06,229 - Knowledge - INFO - persist search terms embedding for src/ppp/ppp_controller.c
+2025-12-31 02:41:06,452 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ppp/ppp_controller.c
+2025-12-31 02:41:06,633 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:06,819 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                2025-12-31 02:41:07,238 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:07,480 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:07,667 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/bridge_mode.h
+2025-12-31 02:41:08,061 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 222ms
+2025-12-31 02:41:08,706 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/bridge_mode.h, Duration: 439ms
+2025-12-31 02:41:08,915 - Knowledge - INFO - persist search terms embedding for include_priv/bridge_mode.h
+2025-12-31 02:41:09,112 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/bridge_mode.h
+2025-12-31 02:41:09,384 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:09,595 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:10,223 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:10,404 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:10,631 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/upstream_intf.h
+ - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:41:07,568 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:41:07,816 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_data/test_mode.json
 2025-12-31 02:41:07,998 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
@@ -908,96 +893,77 @@
 2025-12-31 02:41:13,615 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:41:13,766 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:41:13,941 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_main.c
-2025-12-31 02:41:14,201 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 98ms
-2025-12-31 02:41:14,662 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_autosensing/test_main.c, Duration: 247ms
-2025-12-31 02:41:14,830 - Knowledge - INFO - persist search terms embedding for test/wan_manager_autosensing/test_main.c
-2025-12-31 02:41:15,031 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_main.c
-2025-12-31 02:41:15,226 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:15,413 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:15,690 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:15,848 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:16,040 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/network-selector/network_selector.h
-2025-12-31 02:41:16,342 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 93ms
-2025-12-31 02:41:16,801 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/network-selector/network_selector.h, Duration: 285ms
-2025-12-31 02:41:17,016 - Knowledge - INFO - persist search terms embedding for include_priv/network-selector/network_selector.h
-2025-12-31 02:41:17,200 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/network-selector/network_selector.h
-2025-12-31 02:41:17,417 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:17,579 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:17,817 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:17,977 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:18,169 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/sfp/sfp.h
-2025-12-31 02:41:18,440 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 95ms
-2025-12-31 02:41:18,883 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/sfp/sfp.h, Duration: 279ms
-2025-12-31 02:41:19,100 - Knowledge - INFO - persist search terms embedding for include_priv/sfp/sfp.h
-2025-12-31 02:41:19,259 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/sfp/sfp.h
-2025-12-31 02:41:19,443 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:19,654 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:19,906 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:20,095 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:20,253 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ppp/ppp_controller.c
-2025-12-31 02:41:20,534 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 111ms
-2025-12-31 02:41:20,940 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/ppp/ppp_controller.c, Duration: 249ms
-2025-12-31 02:41:21,139 - Knowledge - INFO - persist search terms embedding for src/ppp/ppp_controller.c
-2025-12-31 02:41:21,334 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ppp/ppp_controller.c
-2025-12-31 02:41:21,522 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:21,726 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:22,002 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:22,169 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:22,332 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/bridge_mode.h
-2025-12-31 02:41:22,651 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 105ms
-2025-12-31 02:41:23,035 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/bridge_mode.h, Duration: 180ms
-2025-12-31 02:41:23,197 - Knowledge - INFO - persist search terms embedding for include_priv/bridge_mode.h
-2025-12-31 02:41:23,387 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/bridge_mode.h
-2025-12-31 02:41:23,593 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:23,790 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:24,085 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:24,289 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:24,501 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/upstream_intf.h
-2025-12-31 02:41:24,749 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 97ms
-2025-12-31 02:41:25,254 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/upstream_intf.h, Duration: 302ms
-2025-12-31 02:41:25,453 - Knowledge - INFO - persist search terms embedding for include_priv/upstream_intf.h
-2025-12-31 02:41:25,617 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/upstream_intf.h
-2025-12-31 02:41:25,825 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:26,031 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:26,293 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:26,483 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:26,651 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.c
-2025-12-31 02:41:26,931 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 104ms
-2025-12-31 02:41:27,386 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_dns.c, Duration: 268ms
-2025-12-31 02:41:27,569 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_dns.c
-2025-12-31 02:41:27,797 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.c
-2025-12-31 02:41:27,984 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:28,157 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:28,401 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:28,594 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:28,772 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_demo.md
-2025-12-31 02:41:29,068 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 113ms
-2025-12-31 02:41:29,537 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: doc/wan-manager_demo.md, Duration: 242ms
-2025-12-31 02:41:29,725 - Knowledge - INFO - persist search terms embedding for doc/wan-manager_demo.md
-2025-12-31 02:41:29,884 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_demo.md
-2025-12-31 02:41:30,066 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:30,242 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:30,522 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:30,697 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:30,852 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.h
-2025-12-31 02:41:31,137 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 106ms
-2025-12-31 02:41:31,594 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_startup_test/test_wan_manager_startup.h, Duration: 280ms
-2025-12-31 02:41:31,789 - Knowledge - INFO - persist search terms embedding for test/wan_manager_startup_test/test_wan_manager_startup.h
-2025-12-31 02:41:31,951 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.h
-2025-12-31 02:41:32,159 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:32,327 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:32,571 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:32,780 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:33,090 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dm_wan-manager.c
-2025-12-31 02:41:33,390 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 104ms
-2025-12-31 02:41:33,780 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/dm_wan-manager.c, Duration: 234ms
-2025-12-31 02:41:33,938 - Knowledge - INFO - persist search terms embedding for src/dm_wan-manager.c
-2025-12-31 02:41:34,132 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dm_wan-manager.c
-2025-12-31 02:41:34,339 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:34,546 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:34,846 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:35,014 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:35,209 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.h
+2025-12-31 02:41:14,488 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_dns.c, Duration: 309ms
+2025-12-31 02:41:14,747 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_dns.c
+2025-12-31 02:41:14,986 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.c
+2025-12-31 02:41:15,258 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:15,472 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                             2025-12-31 02:41:15,799 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:16,019 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:16,223 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_demo.md
+                         2025-12-31 02:41:16,772 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 304ms
+2025-12-31 02:41:17,646 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: doc/wan-manager_demo.md, Duration: 643ms
+2025-12-31 02:41:17,813 - Knowledge - INFO - persist search terms embedding for doc/wan-manager_demo.md
+2025-12-31 02:41:18,090 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_demo.md
+2025-12-31 02:41:18,328 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:18,528 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          2025-12-31 02:41:19,184 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:19,368 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:19,538 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.h
+2025-12-31 02:41:19,988 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 277ms
+2025-12-31 02:41:20,549 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_startup_test/test_wan_manager_startup.h, Duration: 328ms
+2025-12-31 02:41:20,715 - Knowledge - INFO - persist search terms embedding for test/wan_manager_startup_test/test_wan_manager_startup.h
+2025-12-31 02:41:20,970 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.h
+2025-12-31 02:41:21,181 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:21,348 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:21,734 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:21,894 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:22,079 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dm_wan-manager.c
+                                                                                                                                                                                                                              2025-12-31 02:41:22,586 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 324ms
+2025-12-31 02:41:23,087 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/dm_wan-manager.c, Duration: 278ms
+2025-12-31 02:41:23,305 - Knowledge - INFO - persist search terms embedding for src/dm_wan-manager.c
+2025-12-31 02:41:23,497 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dm_wan-manager.c
+2025-12-31 02:41:23,691 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:23,875 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                      2025-12-31 02:41:24,225 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:24,419 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:24,567 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.h
+2025-12-31 02:41:25,205 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 400ms
+2025-12-31 02:41:25,988 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_component_test/test_wan_manager_component.h, Duration: 538ms
+2025-12-31 02:41:26,153 - Knowledge - INFO - persist search terms embedding for test/wan_manager_component_test/test_wan_manager_component.h
+2025-12-31 02:41:26,439 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.h
+2025-12-31 02:41:26,617 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:26,791 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                              2025-12-31 02:41:27,114 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:27,313 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:27,512 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.c
+2025-12-31 02:41:27,827 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 141ms
+2025-12-31 02:41:28,376 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_rpc/test_wan_manager_rpc.c, Duration: 389ms
+2025-12-31 02:41:28,535 - Knowledge - INFO - persist search terms embedding for test/wan_manager_rpc/test_wan_manager_rpc.c
+2025-12-31 02:41:28,793 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.c
+2025-12-31 02:41:28,965 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:29,181 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:29,487 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:29,647 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:29,818 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ctrl/mode_ctrl.h
+2025-12-31 02:41:30,139 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 156ms
+2025-12-31 02:41:30,674 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/ctrl/mode_ctrl.h, Duration: 279ms
+2025-12-31 02:41:30,876 - Knowledge - INFO - persist search terms embedding for include_priv/ctrl/mode_ctrl.h
+2025-12-31 02:41:31,092 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ctrl/mode_ctrl.h
+2025-12-31 02:41:31,340 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:31,527 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:32,280 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:32,493 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:32,643 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ethernet/ethernet.h
+                                                                                                                                                                                                                                                                                                                                                                            2025-12-31 02:41:33,341 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 505ms
+2025-12-31 02:41:33,761 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/ethernet/ethernet.h, Duration: 186ms
+2025-12-31 02:41:34,000 - Knowledge - INFO - persist search terms embedding for include_priv/ethernet/ethernet.h
+2025-12-31 02:41:34,218 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ethernet/ethernet.h
+2025-12-31 02:41:34,417 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:34,615 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                          2025-12-31 02:41:35,410 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:35,587 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:35,709 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.h
 2025-12-31 02:41:35,498 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 94ms
 2025-12-31 02:41:35,875 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_component_test/test_wan_manager_component.h, Duration: 217ms
 2025-12-31 02:41:36,052 - Knowledge - INFO - persist search terms embedding for test/wan_manager_component_test/test_wan_manager_component.h
@@ -1025,37 +991,31 @@
 2025-12-31 02:41:41,054 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:41:41,257 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:41:41,454 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ethernet/ethernet.h
-2025-12-31 02:41:41,769 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
-2025-12-31 02:41:42,260 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/ethernet/ethernet.h, Duration: 281ms
-2025-12-31 02:41:42,460 - Knowledge - INFO - persist search terms embedding for include_priv/ethernet/ethernet.h
-2025-12-31 02:41:42,684 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ethernet/ethernet.h
-2025-12-31 02:41:42,869 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:43,074 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:43,320 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:43,514 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:43,724 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/makefile.inc
-2025-12-31 02:41:43,999 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 91ms
-2025-12-31 02:41:44,411 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: makefile.inc, Duration: 221ms
-2025-12-31 02:41:44,595 - Knowledge - INFO - persist search terms embedding for makefile.inc
-2025-12-31 02:41:44,808 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/makefile.inc
-2025-12-31 02:41:44,964 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:45,141 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:45,364 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:45,558 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:45,717 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_targets.mk
-2025-12-31 02:41:45,970 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 105ms
-2025-12-31 02:41:46,436 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/test_targets.mk, Duration: 237ms
-2025-12-31 02:41:46,641 - Knowledge - INFO - persist search terms embedding for test/test_targets.mk
-2025-12-31 02:41:46,786 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_targets.mk
-2025-12-31 02:41:46,953 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:47,143 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:47,379 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:47,536 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:47,697 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dhcpc/dhcpc_controller.c
-2025-12-31 02:41:47,933 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 91ms
-2025-12-31 02:41:48,332 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/dhcpc/dhcpc_controller.c, Duration: 219ms
-2025-12-31 02:41:48,558 - Knowledge - INFO - persist search terms embedding for src/dhcpc/dhcpc_controller.c
-2025-12-31 02:41:48,754 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dhcpc/dhcpc_controller.c
+2025-12-31 02:41:41,769 - Knowledge - IN05x/wan-manager-2670/src/dhcpc/dhcpc_controller.c
+2025-12-31 02:41:42,526 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:42,727 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:43,161 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:43,335 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:43,527 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_data/test_mode_no_name.json
+2025-12-31 02:41:44,036 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 340ms
+2025-12-31 02:41:44,732 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_data/test_mode_no_name.json, Duration: 500ms
+2025-12-31 02:41:44,941 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_data/test_mode_no_name.json
+2025-12-31 02:41:45,168 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_data/test_mode_no_name.json
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           2025-12-31 02:41:45,392 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:45,552 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:45,905 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:46,077 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:46,259 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.c
+2025-12-31 02:41:46,592 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 165ms
+2025-12-31 02:41:47,131 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_wan_manager_utils.c, Duration: 373ms
+2025-12-31 02:41:47,333 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_wan_manager_utils.c
+2025-12-31 02:41:47,499 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.c
+2025-12-31 02:41:47,661 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:47,825 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                               2025-12-31 02:41:48,120 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:48,297 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:48,457 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/staticc/static_controller.h
+2025-12-31 02:41:48,864 - Knowledge - INFO - [MONGODB_OP] Com/dhcpc_controller.c
 2025-12-31 02:41:48,958 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:41:49,191 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:41:49,386 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_data/test_mode_no_name.json
@@ -1083,93 +1043,77 @@
 2025-12-31 02:41:54,291 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:41:54,491 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/src/mod-network-selector-dummy.c
 2025-12-31 02:41:54,747 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 92ms
-2025-12-31 02:41:55,139 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-network-selector-dummy/src/mod-network-selector-dummy.c, Duration: 238ms
-2025-12-31 02:41:55,351 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-network-selector-dummy/src/mod-network-selector-dummy.c
-2025-12-31 02:41:55,550 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/src/mod-network-selector-dummy.c
-2025-12-31 02:41:55,702 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:55,905 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:56,152 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:56,313 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:56,472 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.c
-2025-12-31 02:41:56,765 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 107ms
-2025-12-31 02:41:57,110 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_wan_manager_sfp.c, Duration: 187ms
-2025-12-31 02:41:57,299 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_wan_manager_sfp.c
-2025-12-31 02:41:57,477 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.c
-2025-12-31 02:41:57,662 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:57,824 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:58,138 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:41:58,313 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:41:58,517 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.c
-2025-12-31 02:41:58,856 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 99ms
-2025-12-31 02:41:59,320 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_component_test/test_wan_manager_component.c, Duration: 224ms
-2025-12-31 02:41:59,536 - Knowledge - INFO - persist search terms embedding for test/wan_manager_component_test/test_wan_manager_component.c
-2025-12-31 02:41:59,708 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.c
-2025-12-31 02:41:59,918 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:00,107 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:00,396 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:00,603 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:00,772 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.h
-2025-12-31 02:42:01,128 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 108ms
-2025-12-31 02:42:01,610 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_autosensing/test_wan_manager_autosensing.h, Duration: 285ms
-2025-12-31 02:42:01,817 - Knowledge - INFO - persist search terms embedding for test/wan_manager_autosensing/test_wan_manager_autosensing.h
-2025-12-31 02:42:02,013 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.h
-2025-12-31 02:42:02,208 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:02,385 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:02,630 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:02,790 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:02,971 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.c
-2025-12-31 02:42:03,244 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 90ms
-2025-12-31 02:42:03,672 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_startup_test/test_wan_manager_startup.c, Duration: 232ms
-2025-12-31 02:42:03,863 - Knowledge - INFO - persist search terms embedding for test/wan_manager_startup_test/test_wan_manager_startup.c
-2025-12-31 02:42:04,039 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.c
-2025-12-31 02:42:04,216 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:04,397 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:04,632 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:04,805 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:04,964 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set.json
-2025-12-31 02:42:05,283 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 114ms
-2025-12-31 02:42:05,630 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_data/test_vlan_set.json, Duration: 160ms
-2025-12-31 02:42:05,806 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_data/test_vlan_set.json
-2025-12-31 02:42:05,961 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set.json
-2025-12-31 02:42:06,139 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:06,345 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:06,600 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:06,770 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:06,952 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/common_layers.h
-2025-12-31 02:42:07,209 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 95ms
-2025-12-31 02:42:07,845 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/common_layers.h, Duration: 436ms
-2025-12-31 02:42:07,992 - Knowledge - INFO - persist search terms embedding for include_priv/common_layers.h
-2025-12-31 02:42:08,186 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/common_layers.h
-2025-12-31 02:42:08,373 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:08,586 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:08,858 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:09,013 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:09,198 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dns/dns.c
-2025-12-31 02:42:09,431 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 91ms
-2025-12-31 02:42:10,178 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/dns/dns.c, Duration: 571ms
-2025-12-31 02:42:10,355 - Knowledge - INFO - persist search terms embedding for src/dns/dns.c
-2025-12-31 02:42:10,523 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dns/dns.c
-2025-12-31 02:42:10,689 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:10,904 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:11,193 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:11,370 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:11,547 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/upstream_intf.c
-2025-12-31 02:42:11,806 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 111ms
-2025-12-31 02:42:12,381 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/upstream_intf.c, Duration: 376ms
-2025-12-31 02:42:12,587 - Knowledge - INFO - persist search terms embedding for src/upstream_intf.c
-2025-12-31 02:42:12,773 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/upstream_intf.c
-2025-12-31 02:42:12,973 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:13,155 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:13,391 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:13,611 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:13,796 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/bridge_mode.c
-2025-12-31 02:42:14,075 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
-2025-12-31 02:42:14,473 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/bridge_mode.c, Duration: 202ms
-2025-12-31 02:42:14,711 - Knowledge - INFO - persist search terms embedding for src/bridge_mode.c
-2025-12-31 02:42:14,883 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/bridge_mode.c
-2025-12-31 02:42:15,040 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:15,199 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:15,459 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:55,139 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-network-selector-dummy/src/mod-network-selector-dO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:56,067 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:56,227 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:56,398 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.c
+                                                                                          2025-12-31 02:41:56,787 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 230ms
+2025-12-31 02:41:57,452 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_component_test/test_wan_manager_component.c, Duration: 426ms
+2025-12-31 02:41:57,667 - Knowledge - INFO - persist search terms embedding for test/wan_manager_component_test/test_wan_manager_component.c
+2025-12-31 02:41:57,858 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.c
+2025-12-31 02:41:58,101 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:58,261 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                  2025-12-31 02:41:58,704 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:41:58,897 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:41:59,060 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.h
+ 2025-12-31 02:41:59,478 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 249ms
+2025-12-31 02:42:00,000 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_autosensing/test_wan_manager_autosensing.h, Duration: 302ms
+2025-12-31 02:42:00,182 - Knowledge - INFO - persist search terms embedding for test/wan_manager_autosensing/test_wan_manager_autosensing.h
+2025-12-31 02:42:00,350 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.h
+2025-12-31 02:42:00,551 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:00,767 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+  2025-12-31 02:42:01,383 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:01,565 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:01,758 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.c
+                                                                                                                                                                                                                                                                                              2025-12-31 02:42:02,154 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 223ms
+2025-12-31 02:42:02,854 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_startup_test/test_wan_manager_startup.c, Duration: 507ms
+2025-12-31 02:42:03,059 - Knowledge - INFO - persist search terms embedding for test/wan_manager_startup_test/test_wan_manager_startup.c
+2025-12-31 02:42:03,237 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.c
+2025-12-31 02:42:03,449 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:03,666 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                2025-12-31 02:42:04,220 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:04,393 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:04,627 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set.json
+                                                                                                                                                                                                                                                                                                                                                                                                                                     2025-12-31 02:42:05,014 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 228ms
+2025-12-31 02:42:05,714 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_data/test_vlan_set.json, Duration: 542ms
+2025-12-31 02:42:05,971 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_data/test_vlan_set.json
+2025-12-31 02:42:06,164 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set.json
+2025-12-31 02:42:06,337 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:06,546 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                             2025-12-31 02:42:06,846 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:07,000 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:07,160 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/common_layers.h
+2025-12-31 02:42:07,559 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 224ms
+2025-12-31 02:42:07,993 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/common_layers.h, Duration: 270ms
+2025-12-31 02:42:08,180 - Knowledge - INFO - persist search terms embedding for include_priv/common_layers.h
+2025-12-31 02:42:08,349 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/common_layers.h
+2025-12-31 02:42:08,556 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:08,722 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:09,093 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:09,308 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:09,501 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dns/dns.c
+2025-12-31 02:42:09,973 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 296ms
+2025-12-31 02:42:10,452 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/dns/dns.c, Duration: 302ms
+2025-12-31 02:42:10,659 - Knowledge - INFO - persist search terms embedding for src/dns/dns.c
+2025-12-31 02:42:10,814 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dns/dns.c
+2025-12-31 02:42:11,046 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:11,274 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:11,660 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:11,843 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:12,060 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/upstream_intf.c
+                                                                                                                   2025-12-31 02:42:12,396 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 137ms
+2025-12-31 02:42:12,967 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/upstream_intf.c, Duration: 376ms
+2025-12-31 02:42:13,200 - Knowledge - INFO - persist search terms embedding for src/upstream_intf.c
+2025-12-31 02:42:13,366 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/upstream_intf.c
+2025-12-31 02:42:13,565 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:13,740 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:14,182 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:14,377 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:14,553 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/bridge_mode.c
+2025-12-31 02:42:15,027 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 268ms
+2025-12-31 02:42:15,716 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/bridge_mode.c, Duration: 437ms
+2025-12-31 02:42:15,893 - Knowledge - INFO - persist search terms embedding for src/bridge_mode.c
+                                                                                                                                                                                                                                                                                                                     2025-12-31 02:42:16,098 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-n
 2025-12-31 02:42:15,630 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:42:15,831 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_mode.json
 2025-12-31 02:42:16,108 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 93ms
@@ -1199,175 +1143,169 @@
 2025-12-31 02:42:21,988 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:42:22,146 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
 2025-12-31 02:42:22,331 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/sfp/sfp.c
-2025-12-31 02:42:22,629 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 133ms
-2025-12-31 02:42:23,235 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/sfp/sfp.c, Duration: 431ms
-2025-12-31 02:42:23,395 - Knowledge - INFO - persist search terms embedding for src/sfp/sfp.c
-2025-12-31 02:42:23,600 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/sfp/sfp.c
-2025-12-31 02:42:23,757 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:23,966 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:24,227 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:24,420 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:24,586 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/network-selector/network_selector.c
-2025-12-31 02:42:24,897 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 107ms
-2025-12-31 02:42:25,341 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/network-selector/network_selector.c, Duration: 290ms
-2025-12-31 02:42:25,492 - Knowledge - INFO - persist search terms embedding for src/network-selector/network_selector.c
-2025-12-31 02:42:25,662 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/network-selector/network_selector.c
-2025-12-31 02:42:25,850 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:25,999 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:26,263 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:26,433 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:26,615 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/admin/wan-manager.json
-2025-12-31 02:42:26,893 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 107ms
-2025-12-31 02:42:27,348 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: acl/admin/wan-manager.json, Duration: 277ms
-2025-12-31 02:42:27,540 - Knowledge - INFO - persist search terms embedding for acl/admin/wan-manager.json
-2025-12-31 02:42:27,741 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/admin/wan-manager.json
-2025-12-31 02:42:27,960 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:28,148 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:28,442 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:28,604 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:28,826 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/include_priv/mod-dummy.h
-2025-12-31 02:42:29,141 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 116ms
-2025-12-31 02:42:29,525 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-dummy/include_priv/mod-dummy.h, Duration: 209ms
-2025-12-31 02:42:29,694 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-dummy/include_priv/mod-dummy.h
-2025-12-31 02:42:29,887 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/include_priv/mod-dummy.h
-2025-12-31 02:42:30,056 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:30,236 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:30,571 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:30,753 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:30,923 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ctrl/mode_ctrl.c
-2025-12-31 02:42:31,218 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 134ms
-2025-12-31 02:42:31,744 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/ctrl/mode_ctrl.c, Duration: 306ms
-2025-12-31 02:42:31,945 - Knowledge - INFO - persist search terms embedding for src/ctrl/mode_ctrl.c
-2025-12-31 02:42:32,114 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ctrl/mode_ctrl.c
-2025-12-31 02:42:32,323 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:32,496 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:32,733 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:32,886 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:33,062 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ethernet/ethernet.c
-2025-12-31 02:42:33,372 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 103ms
-2025-12-31 02:42:33,769 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/ethernet/ethernet.c, Duration: 201ms
-2025-12-31 02:42:33,953 - Knowledge - INFO - persist search terms embedding for src/ethernet/ethernet.c
-2025-12-31 02:42:34,136 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ethernet/ethernet.c
-2025-12-31 02:42:34,343 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:34,536 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:34,808 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:35,034 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:35,186 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_wan_manager_network_selector.h
-2025-12-31 02:42:35,472 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 89ms
-2025-12-31 02:42:35,834 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_network_selector/test_wan_manager_network_selector.h, Duration: 213ms
-2025-12-31 02:42:36,025 - Knowledge - INFO - persist search terms embedding for test/wan_manager_network_selector/test_wan_manager_network_selector.h
-2025-12-31 02:42:36,181 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_wan_manager_network_selector.h
-2025-12-31 02:42:36,367 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:36,527 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:36,783 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:36,947 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:37,139 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_mode_no_name.json
-2025-12-31 02:42:37,423 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 94ms
-2025-12-31 02:42:37,856 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_autosensing/test_data/test_mode_no_name.json, Duration: 202ms
-2025-12-31 02:42:38,020 - Knowledge - INFO - persist search terms embedding for test/wan_manager_autosensing/test_data/test_mode_no_name.json
-2025-12-31 02:42:38,214 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_mode_no_name.json
-2025-12-31 02:42:38,407 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:38,608 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:38,861 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:39,053 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:39,251 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/README.md
-2025-12-31 02:42:39,540 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 102ms
-2025-12-31 02:42:39,957 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: README.md, Duration: 250ms
-2025-12-31 02:42:40,121 - Knowledge - INFO - persist search terms embedding for README.md
-2025-12-31 02:42:40,316 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/README.md
-2025-12-31 02:42:40,496 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:40,683 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:40,960 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:41,115 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:41,314 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_netmodel.c
-2025-12-31 02:42:41,583 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 105ms
-2025-12-31 02:42:41,883 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_netmodel.c, Duration: 151ms
-2025-12-31 02:42:42,088 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_netmodel.c
-2025-12-31 02:42:42,279 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_netmodel.c
-2025-12-31 02:42:42,447 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:42,604 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:42,858 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:43,049 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:43,243 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/staticc/static_controller.c
-2025-12-31 02:42:43,523 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 106ms
-2025-12-31 02:42:43,997 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/staticc/static_controller.c, Duration: 319ms
-2025-12-31 02:42:44,171 - Knowledge - INFO - persist search terms embedding for src/staticc/static_controller.c
-2025-12-31 02:42:44,332 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/staticc/static_controller.c
-2025-12-31 02:42:44,524 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:44,714 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:44,937 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:45,125 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:45,307 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_main.c
-2025-12-31 02:42:45,550 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
-2025-12-31 02:42:45,968 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_nm/test_main.c, Duration: 252ms
-2025-12-31 02:42:46,132 - Knowledge - INFO - persist search terms embedding for test/wan_manager_nm/test_main.c
-2025-12-31 02:42:46,318 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_main.c
-2025-12-31 02:42:46,510 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:46,666 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:46,947 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:47,171 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:47,353 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.h
-2025-12-31 02:42:47,601 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 91ms
-2025-12-31 02:42:48,066 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_wan_manager_sfp.h, Duration: 285ms
-2025-12-31 02:42:48,235 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_wan_manager_sfp.h
-2025-12-31 02:42:48,409 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.h
-2025-12-31 02:42:48,649 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:48,796 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:49,030 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:49,241 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:49,414 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_data/test_mode.json
-2025-12-31 02:42:49,675 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 102ms
-2025-12-31 02:42:50,135 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_network_selector/test_data/test_mode.json, Duration: 293ms
-2025-12-31 02:42:50,297 - Knowledge - INFO - persist search terms embedding for test/wan_manager_network_selector/test_data/test_mode.json
-2025-12-31 02:42:50,462 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_data/test_mode.json
-2025-12-31 02:42:50,669 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:50,840 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:51,124 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:51,299 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:51,467 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/cwmp/wan-manager.json
-2025-12-31 02:42:51,810 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 86ms
-2025-12-31 02:42:52,200 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: acl/cwmp/wan-manager.json, Duration: 199ms
-2025-12-31 02:42:52,385 - Knowledge - INFO - persist search terms embedding for acl/cwmp/wan-manager.json
-2025-12-31 02:42:52,566 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/cwmp/wan-manager.json
-2025-12-31 02:42:52,739 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:52,887 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:53,143 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:53,301 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:53,498 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
-2025-12-31 02:42:53,743 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 87ms
-2025-12-31 02:42:54,164 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h, Duration: 255ms
-2025-12-31 02:42:54,354 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
-2025-12-31 02:42:54,552 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
-2025-12-31 02:42:54,733 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:54,905 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:55,167 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:55,319 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:55,488 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.h
-2025-12-31 02:42:55,805 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 97ms
-2025-12-31 02:42:56,300 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_wan_manager_utils.h, Duration: 294ms
-2025-12-31 02:42:56,485 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_wan_manager_utils.h
-2025-12-31 02:42:56,645 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.h
-2025-12-31 02:42:56,827 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:57,001 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:57,239 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:57,457 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:57,633 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan_mode.h
-2025-12-31 02:42:57,913 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 100ms
-2025-12-31 02:42:58,466 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/dm_wan_mode.h, Duration: 396ms
-2025-12-31 02:42:58,690 - Knowledge - INFO - persist search terms embedding for include_priv/dm_wan_mode.h
-2025-12-31 02:42:58,877 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan_mode.h
-2025-12-31 02:42:59,067 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:59,264 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:59,554 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:42:59,723 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:42:59,885 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_main.c
-2025-12-31 02:43:00,193 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 128ms
-2025-12-31 02:43:00,691 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_main.c, Duration: 339ms
-2025-12-31 02:43:00,856 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_main.c
-2025-12-31 02:43:01,047 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_main.c
-2025-12-31 02:43:01,250 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:01,415 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        _build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:22,629 - Knowledge - INFO - [MONGODB_OP] Comname: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:23,467 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:23,680 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/sfp/sfp.c
+2025-12-31 02:42:24,071 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 179ms
+2025-12-31 02:42:24,552 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/sfp/sfp.c, Duration: 262ms
+2025-12-31 02:42:24,783 - Knowledge - INFO - persist search terms embedding for src/sfp/sfp.c
+2025-12-31 02:42:24,984 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/sfp/sfp.c
+2025-12-31 02:42:25,196 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:25,373 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+                          2025-12-31 02:42:25,731 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:25,871 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:26,044 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/network-selector/network_selector.c
+                                                                                                                                                                                                                                                                                                                                                                                               2025-12-31 02:42:26,335 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 120ms
+2025-12-31 02:42:26,839 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/network-selector/network_selector.c, Duration: 306ms
+2025-12-31 02:42:27,007 - Knowledge - INFO - persist search terms embedding for src/network-selector/network_selector.c
+2025-12-31 02:42:27,189 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/network-selector/network_selector.c
+2025-12-31 02:42:27,362 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:27,529 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:27,716 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/admin/wan-manager.json
+2025-12-31 02:42:27,930 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:28,103 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:28,483 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:28,675 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f2c2e012910>
+2025-12-31 02:42:28,888 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/include_priv/mod-dummy.h
+2025-12-31 02:42:29,377 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 287ms
+2025-12-31 02:42:29,847 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-dummy/include_priv/mod-dummy.h, Duration: 303ms
+2025-12-31 02:42:30,069 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-dummy/include_priv/mod-dummy.h
+2025e=10, max_concurrent_llm_calls=50
+2025-12-31 02:42:31,046 - Knowledge - INFO - 🔍 _load_persisted_knowledge called - checking for Redis optimization
+2025-12-31 02:42:31,236 - Knowledge - WARNING - ❌ load_from_redis method not found - Redis support not attached
+2025-12-31 02:42:31,415 - Knowledge - INFO - load persisted knowledge: begin
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           2025-12-31 02:42:31,902 - Knowledge - INFO - Persisted knowledge files in /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/.knowledge have been renamed to use .json
+2025-12-31 02:42:32,128 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:32,317 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:32,479 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/common_layers.c
+2025-12-31 02:42:32,653 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:32,802 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:32,996 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_wan_manager_network_selector.c
+2025-12-31 02:42:33,153 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:33,349 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:33,549 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/netmodel/nm_query.h
+2025-12-31 02:42:33,747 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:33,906 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:34,121 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/cellular/cellular.h
+2025-12-31 02:42:34,311 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:34,519 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:34,728 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_amx.h
+2025-12-31 02:42:34,892 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:35,047 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:35,213 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/wan_manager_utils.c
+2025-12-31 02:42:35,411 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:35,566 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:35,727 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_data/test_getWANMode_dslite.json
+2025-12-31 02:42:35,914 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:36,108 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:36,256 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_start_sensing.json
+2025-12-31 02:42:36,442 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:36,628 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:36,786 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/ppp/ppp.h
+2025-12-31 02:42:37,022 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:37,186 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:37,363 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/autosensing/autosensing.h
+2025-12-31 02:42:37,563 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:37,773 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:37,940 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/link/link.h
+2025-12-31 02:42:38,119 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:38,311 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:38,535 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/src/mod-dummy.c
+2025-12-31 02:42:38,704 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:38,922 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:39,099 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_main.c
+2025-12-31 02:42:39,283 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:39,444 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:39,661 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_main.c
+2025-12-31 02:42:39,825 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:40,063 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:40,209 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.h
+2025-12-31 02:42:40,382 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:40,536 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:40,721 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_data/test_getWANMode.json
+2025-12-31 02:42:40,918 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:41,074 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:41,216 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dslite/dslite_controller.c
+2025-12-31 02:42:41,402 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:41,566 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:41,710 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/component.h
+2025-12-31 02:42:41,881 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:42,045 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:42,238 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.h
+2025-12-31 02:42:42,423 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:42,602 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:42,817 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dhcpc/dhcpc.h
+2025-12-31 02:42:42,973 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:43,158 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:43,322 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_main.c
+2025-12-31 02:42:43,487 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:43,686 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:43,859 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.c
+2025-12-31 02:42:44,096 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:44,303 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:44,494 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dns/dns.h
+2025-12-31 02:42:44,659 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:44,816 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:44,979 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/cellular/cellular_controller.c
+2025-12-31 02:42:45,140 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:45,347 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:45,517 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_defines.mk
+2025-12-31 02:42:45,704 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:45,861 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:46,026 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_data/test_mode.json
+2025-12-31 02:42:46,241 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:46,491 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:46,674 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_wan_manager_nm.c
+2025-12-31 02:42:46,851 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:47,018 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:47,161 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-wanmgr-sfp-dummy/src/mod-wanmgr-sfp-dummy.c
+2025-12-31 02:42:47,360 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:47,516 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:47,681 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set_2.json
+2025-12-31 02:42:47,835 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:48,020 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:48,176 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dslite/dslite.h
+2025-12-31 02:42:48,344 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:48,513 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:48,685 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/dummy_backend.c
+2025-12-31 02:42:48,889 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:49,055 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:49,232 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_netmodel.h
+2025-12-31 02:42:49,476 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:49,712 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:49,919 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_main.c
+2025-12-31 02:42:50,095 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:50,271 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:50,493 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/network-selector/network_selector.h
+2025-12-31 02:42:50,722 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:50,893 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:51,140 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/sfp/sfp.h
+2025-12-31 02:42:51,353 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:51,536 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:51,722 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ppp/ppp_controller.c
+2025-12-31 02:42:51,914 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:52,092 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:52,271 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/bridge_mode.h
+2025-12-31 02:42:52,455 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:52,665 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:52,847 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/upstream_intf.h
+2025-12-31 02:42:53,084 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:53,249 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:53,420 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.c
+2025-12-31 02:42:53,572 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:53,733 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:53,917 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_demo.md
+2025-12-31 02:42:54,084 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:54,288 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:54,486 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.h
+2025-12-31 02:42:54,667 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:54,820 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:55,002 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dm_wan-manager.c
+2025-12-31 02:42:55,195 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:55,407 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:42:55,590 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.h
+2025-12-31 02:42:55,750 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:42:55,923 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
 2025-12-31 02:42:56,087 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.c
 2025-12-31 02:42:56,270 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:42:56,495 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
@@ -1395,50 +1333,62 @@
 2025-12-31 02:43:00,660 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/staticc/static_controller.h
 2025-12-31 02:43:00,885 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:43:01,060 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
-2025-12-31 02:43:01,239 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_amx.c
-2025-12-31 02:43:02,240 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 90ms
-2025-12-31 02:43:02,634 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_amx.c, Duration: 235ms
-2025-12-31 02:43:02,786 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_amx.c
-2025-12-31 02:43:03,017 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_amx.c
-2025-12-31 02:43:03,219 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:03,392 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-                                        2025-12-31 02:43:03,701 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:03,864 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:04,019 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_main.c
-2025-12-31 02:43:04,298 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
-2025-12-31 02:43:04,827 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_main.c, Duration: 318ms
-2025-12-31 02:43:04,995 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_main.c
-2025-12-31 02:43:05,182 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_main.c
-2025-12-31 02:43:05,375 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:05,535 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:05,826 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:06,007 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:06,193 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.h
-2025-12-31 02:43:06,455 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 85ms
-2025-12-31 02:43:06,905 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_rpc/test_wan_manager_rpc.h, Duration: 268ms
-2025-12-31 02:43:07,082 - Knowledge - INFO - persist search terms embedding for test/wan_manager_rpc/test_wan_manager_rpc.h
-2025-12-31 02:43:07,245 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.h
-2025-12-31 02:43:07,438 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:07,599 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:07,813 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:08,011 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:08,236 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/component.c
-2025-12-31 02:43:08,475 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 90ms
-2025-12-31 02:43:08,868 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/component.c, Duration: 218ms
-2025-12-31 02:43:09,027 - Knowledge - INFO - persist search terms embedding for src/component.c
-2025-12-31 02:43:09,258 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/component.c
-2025-12-31 02:43:09,442 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:09,584 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:09,870 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:10,063 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:10,241 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/CHANGELOG.md
-2025-12-31 02:43:10,536 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 103ms
-2025-12-31 02:43:10,938 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: CHANGELOG.md, Duration: 248ms
-2025-12-31 02:43:11,144 - Knowledge - INFO - persist search terms embedding for CHANGELOG.md
-2025-12-31 02:43:11,310 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/CHANGELOG.md
-2025-12-31 02:43:11,552 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:11,747 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           s.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:01,239 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/src/mod-network-selector-dummy.c
+2025-12-31 02:43:01,407 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:01,590 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:01,737 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.c
+2025-12-31 02:43:01,961 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:02,164 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:02,320 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_component_test/test_wan_manager_component.c
+2025-12-31 02:43:02,520 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:02,675 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:02,870 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_wan_manager_autosensing.h
+2025-12-31 02:43:03,080 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:03,262 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:03,416 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_startup_test/test_wan_manager_startup.c
+2025-12-31 02:43:03,584 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:03,772 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:03,994 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_data/test_vlan_set.json
+2025-12-31 02:43:04,139 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:04,339 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:04,534 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/common_layers.h
+2025-12-31 02:43:04,697 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:04,842 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:05,034 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/dns/dns.c
+2025-12-31 02:43:05,231 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:05,381 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:05,574 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/upstream_intf.c
+2025-12-31 02:43:05,794 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:05,981 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:06,127 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/bridge_mode.c
+2025-12-31 02:43:06,347 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:06,521 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:06,681 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_autosensing/test_data/test_mode.json
+2025-12-31 02:43:06,858 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:07,017 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:07,179 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/baf.yml
+2025-12-31 02:43:07,342 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:07,529 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:07,684 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/wan_manager_utils.h
+2025-12-31 02:43:07,851 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:08,008 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:08,204 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/sfp/sfp.c
+2025-12-31 02:43:08,377 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:08,577 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:08,770 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/network-selector/network_selector.c
+2025-12-31 02:43:08,965 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:09,141 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:09,305 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/admin/wan-manager.json
+2025-12-31 02:43:09,479 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:09,655 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:09,805 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-dummy/include_priv/mod-dummy.h
+2025-12-31 02:43:09,990 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:10,190 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:10,399 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ctrl/mode_ctrl.c
+2025-12-31 02:43:10,574 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:10,779 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:11,053 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:11,236 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
 2025-12-31 02:43:11,408 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/ethernet/ethernet.c
 2025-12-31 02:43:11,666 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 85ms
 2025-12-31 02:43:12,328 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/ethernet/ethernet.c, Duration: 497ms
@@ -1467,103 +1417,123 @@
 2025-12-31 02:43:17,177 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/README.md
 2025-12-31 02:43:17,360 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:43:17,501 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
-2025-12-31 02:43:17,737 - Knowledge - INFO - Found NFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:18,075 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:18,239 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:18,413 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_main.c
-2025-12-31 02:43:18,733 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 107ms
-2025-12-31 02:43:19,204 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_rpc/test_main.c, Duration: 260ms
-2025-12-31 02:43:19,417 - Knowledge - INFO - persist search terms embedding for test/wan_manager_rpc/test_main.c
-2025-12-31 02:43:19,617 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_main.c
-2025-12-31 02:43:19,819 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:20,068 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:20,346 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:20,573 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:20,757 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan-manager.h
-2025-12-31 02:43:21,080 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 148ms
-2025-12-31 02:43:21,463 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/dm_wan-manager.h, Duration: 189ms
-2025-12-31 02:43:21,626 - Knowledge - INFO - persist search terms embedding for include_priv/dm_wan-manager.h
-2025-12-31 02:43:21,782 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan-manager.h
-2025-12-31 02:43:21,946 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:22,092 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:22,363 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:22,548 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:22,742 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_main.c
-2025-12-31 02:43:23,019 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 114ms
-2025-12-31 02:43:23,470 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_mode_ctrl_logic_test/test_main.c, Duration: 214ms
-2025-12-31 02:43:23,692 - Knowledge - INFO - persist search terms embedding for test/wan_manager_mode_ctrl_logic_test/test_main.c
-2025-12-31 02:43:23,855 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_main.c
-2025-12-31 02:43:24,054 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:24,265 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:24,579 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:24,720 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:24,890 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/dummy_backend.h
-2025-12-31 02:43:25,176 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 99ms
-2025-12-31 02:43:25,672 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/test_utils/dummy_backend.h, Duration: 324ms
-2025-12-31 02:43:25,853 - Knowledge - INFO - persist search terms embedding for test/test_utils/dummy_backend.h
-2025-12-31 02:43:26,029 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/dummy_backend.h
-2025-12-31 02:43:26,234 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:26,388 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:26,687 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:26,838 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:27,001 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_main_documentation.md
-2025-12-31 02:43:27,244 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
-2025-12-31 02:43:27,647 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: doc/wan-manager_main_documentation.md, Duration: 236ms
-2025-12-31 02:43:27,850 - Knowledge - INFO - persist search terms embedding for doc/wan-manager_main_documentation.md
-2025-12-31 02:43:28,016 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_main_documentation.md
-2025-12-31 02:43:28,216 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:28,395 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:28,647 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:28,817 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:29,021 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.h
-2025-12-31 02:43:29,287 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 108ms
-2025-12-31 02:43:29,743 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_dns.h, Duration: 305ms
-2025-12-31 02:43:29,902 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_dns.h
-2025-12-31 02:43:30,066 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.h
-2025-12-31 02:43:30,254 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:30,438 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-                                                                                 2025-12-31 02:43:30,728 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:30,881 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:31,066 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.c
-2025-12-31 02:43:31,342 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 103ms
-2025-12-31 02:43:31,768 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/test_utils/test_utils.c, Duration: 232ms
-2025-12-31 02:43:31,918 - Knowledge - INFO - persist search terms embedding for test/test_utils/test_utils.c
-2025-12-31 02:43:32,141 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.c
-2025-12-31 02:43:32,346 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:32,542 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-                                                                                                                                                                                                    2025-12-31 02:43:32,766 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:32,932 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:33,127 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/netmodel/nm_query.c
-2025-12-31 02:43:33,439 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 92ms
-2025-12-31 02:43:33,947 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/netmodel/nm_query.c, Duration: 322ms
-2025-12-31 02:43:34,115 - Knowledge - INFO - persist search terms embedding for src/netmodel/nm_query.c
-2025-12-31 02:43:34,311 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/netmodel/nm_query.c
-2025-12-31 02:43:34,505 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:34,647 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:34,901 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
-2025-12-31 02:43:35,100 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7f8550df68d0>
-2025-12-31 02:43:35,288 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
-                                                                                                                                                                                                             2025-12-31 02:43:35,580 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 124ms
-2025-12-31 02:43:35,986 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h, Duration: 232ms
-2025-12-31 02:43:36,195 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
-2025-12-31 02:43:36,397 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
-2025-12-31 02:43:36,617 - Knowledge - INFO - Loaded 101 files from persisted knowledge
-2025-12-31 02:43:36,782 - Knowledge - INFO - load persisted knowledge: end
-2025-12-31 02:43:36,974 - Knowledge - INFO - Redis support added with prefix knowledge:b36205x:
-2025-12-31 02:43:37,455 - Knowledge - INFO - Starting knowledge initialization for ID: rHRAyo-b36205x
-2025-12-31 02:43:37,658 - Knowledge - INFO - 🔍 Checking Redis for build_id: b36205x
-2025-12-31 02:43:37,822 - Knowledge - INFO - 🔍 Full session ID: rHRAyo-b36205x
-2025-12-31 02:43:38,015 - Knowledge - INFO - 🔍 Redis prefix will be: knowledge:b36205x:
-2025-12-31 02:43:38,200 - Knowledge - INFO - 🔍 Using attached load_from_redis() method
-2025-12-31 02:43:38,409 - Knowledge - INFO - 🔍 Attempting to load knowledge from Redis...
-2025-12-31 02:43:38,581 - Knowledge - INFO - 🔍 Using derived instance_id for Redis lookup: b36205x
-2025-12-31 02:43:38,850 - Knowledge - INFO - ✅ Redis cache found! Loading knowledge...
-2025-12-31 02:43:39,006 - Knowledge - INFO - ✅ Successfully loaded from Redis: 101 files
-2025-12-31 02:43:39,242 - Knowledge - INFO - ✅ Redis load complete: 101 files in 1.04s
-2025-12-31 02:43:39,412 - Knowledge - INFO - ⚡ Total Redis path: 1.04s (vs ~300s from disk)
-2025-12-31 02:43:39,626 - Knowledge - INFO - Saving knowledge to Redis...
-2025-12-31 02:43:39,873 - Knowledge - INFO - Knowledge saved to Redis successfully
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         2670/b36205x/wan-manager-2670/CHANGELOG.md
+2025-12-31 02:43:17,737 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:17,873 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:18,065 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_netmodel.c
+2025-12-31 02:43:18,374 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 102ms
+2025-12-31 02:43:18,847 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_netmodel.c, Duration: 319ms
+2025-12-31 02:43:19,043 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_netmodel.c
+2025-12-31 02:43:19,225 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_netmodel.c
+2025-12-31 02:43:19,438 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:19,646 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:19,914 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:20,073 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:20,265 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/staticc/static_controller.c
+2025-12-31 02:43:20,575 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 87ms
+2025-12-31 02:43:20,955 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/staticc/static_controller.c, Duration: 225ms
+2025-12-31 02:43:21,120 - Knowledge - INFO - persist search terms embedding for src/staticc/static_controller.c
+2025-12-31 02:43:21,316 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/staticc/static_controller.c
+2025-12-31 02:43:21,516 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:21,698 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:21,914 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:22,074 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:22,270 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_main.c
+2025-12-31 02:43:22,544 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 82ms
+2025-12-31 02:43:23,046 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_nm/test_main.c, Duration: 336ms
+2025-12-31 02:43:23,221 - Knowledge - INFO - persist search terms embedding for test/wan_manager_nm/test_main.c
+2025-12-31 02:43:23,435 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_main.c
+2025-12-31 02:43:23,673 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:23,867 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:24,116 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:24,323 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:24,495 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.h
+2025-12-31 02:43:24,754 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 88ms
+2025-12-31 02:43:25,109 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_wan_manager_sfp.h, Duration: 186ms
+2025-12-31 02:43:25,328 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_wan_manager_sfp.h
+2025-12-31 02:43:25,496 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_wan_manager_sfp.h
+2025-12-31 02:43:25,707 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:25,867 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:26,023 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_network_selector/test_data/test_mode.json
+2025-12-31 02:43:26,201 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:26,419 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:26,667 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/acl/cwmp/wan-manager.json
+2025-12-31 02:43:26,879 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:27,059 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:27,303 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:27,483 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:27,667 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
+2025-12-31 02:43:27,941 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 82ms
+2025-12-31 02:43:28,287 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h, Duration: 161ms
+2025-12-31 02:43:28,488 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
+2025-12-31 02:43:28,676 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-wanmgr-sfp-dummy/include_priv/mod-wanmgr-sfp-dummy.h
+2025-12-31 02:43:28,876 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:29,083 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:29,321 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:29,489 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:29,704 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.h
+2025-12-31 02:43:30,048 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 92ms
+2025-12-31 02:43:30,518 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_wan_manager_utils.h, Duration: 275ms
+2025-12-31 02:43:30,701 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_wan_manager_utils.h
+2025-12-31 02:43:30,889 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_wan_manager_utils.h
+2025-12-31 02:43:31,073 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:31,287 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:31,535 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:31,750 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:31,920 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan_mode.h
+2025-12-31 02:43:32,198 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 78ms
+2025-12-31 02:43:32,616 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/dm_wan_mode.h, Duration: 265ms
+2025-12-31 02:43:32,760 - Knowledge - INFO - persist search terms embedding for include_priv/dm_wan_mode.h
+2025-12-31 02:43:32,907 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan_mode.h
+2025-12-31 02:43:33,068 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:33,226 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:33,490 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:33,651 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:33,820 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_main.c
+2025-12-31 02:43:34,072 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
+2025-12-31 02:43:34,513 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_utils/test_main.c, Duration: 239ms
+2025-12-31 02:43:34,664 - Knowledge - INFO - persist search terms embedding for test/wan_manager_utils/test_main.c
+2025-12-31 02:43:34,831 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_utils/test_main.c
+2025-12-31 02:43:35,008 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:35,199 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:35,454 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:35,655 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:35,853 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_amx.c
+2025-12-31 02:43:36,133 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 87ms
+2025-12-31 02:43:36,581 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_amx.c, Duration: 260ms
+2025-12-31 02:43:36,781 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_amx.c
+2025-12-31 02:43:36,962 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_amx.c
+2025-12-31 02:43:37,137 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:37,320 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:37,580 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:37,817 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:38,035 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_main.c
+2025-12-31 02:43:38,313 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 84ms
+2025-12-31 02:43:38,722 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_sfp/test_main.c, Duration: 218ms
+2025-12-31 02:43:38,894 - Knowledge - INFO - persist search terms embedding for test/wan_manager_sfp/test_main.c
+2025-12-31 02:43:39,097 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_sfp/test_main.c
+2025-12-31 02:43:39,297 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:39,460 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:39,733 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:39,932 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:40,083 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.h
+2025-12-31 02:43:40,359 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 98ms
+2025-12-31 02:43:40,833 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_rpc/test_wan_manager_rpc.h, Duration: 286ms
+2025-12-31 02:43:41,009 - Knowledge - INFO - persist search terms embedding for test/wan_manager_rpc/test_wan_manager_rpc.h
+2025-12-31 02:43:41,193 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_wan_manager_rpc.h
+2025-12-31 02:43:41,341 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:41,555 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:41,788 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:42,007 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:42,181 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/component.c
+2025-12-31 02:43:42,471 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 94ms
+2025-12-31 02:43:42,861 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/component.c, Duration: 231ms
+2025-12-31 02:43:43,030 - Knowledge - INFO - persist search terms embedding for src/component.c
+2025-12-31 02:43:43,216 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/component.c
+2025-12-31 02:43:43,418 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:43,608 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:43,834 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:44,009 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:44,245 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/CHANGELOG.md
 2025-12-31 02:43:44,501 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 84ms
 2025-12-31 02:43:44,920 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: CHANGELOG.md, Duration: 217ms
 2025-12-31 02:43:45,147 - Knowledge - INFO - persist search terms embedding for CHANGELOG.md
@@ -1582,3 +1552,113 @@
 2025-12-31 02:43:47,905 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
 2025-12-31 02:43:48,112 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
 2025-12-31 02:43:48,325 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.c
+2025-12-31 02:43:48,617 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 81ms
+2025-12-31 02:43:49,033 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.c, Duration: 245ms
+2025-12-31 02:43:49,221 - Knowledge - INFO - persist search terms embedding for test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.c
+2025-12-31 02:43:49,418 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_wan_manager_mode_ctrl_logic.c
+2025-12-31 02:43:49,610 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:49,785 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:50,050 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:50,204 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:50,358 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_wan_manager_nm.h
+2025-12-31 02:43:50,590 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 82ms
+2025-12-31 02:43:50,996 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_nm/test_wan_manager_nm.h, Duration: 243ms
+2025-12-31 02:43:51,155 - Knowledge - INFO - persist search terms embedding for test/wan_manager_nm/test_wan_manager_nm.h
+2025-12-31 02:43:51,326 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_nm/test_wan_manager_nm.h
+2025-12-31 02:43:51,503 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:51,659 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:51,904 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:52,103 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:52,312 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_main.c
+2025-12-31 02:43:52,563 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 93ms
+2025-12-31 02:43:52,934 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_rpc/test_main.c, Duration: 211ms
+2025-12-31 02:43:53,129 - Knowledge - INFO - persist search terms embedding for test/wan_manager_rpc/test_main.c
+2025-12-31 02:43:53,322 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_rpc/test_main.c
+2025-12-31 02:43:53,483 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:53,661 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:53,967 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:54,140 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:54,331 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan-manager.h
+2025-12-31 02:43:54,600 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 102ms
+2025-12-31 02:43:54,998 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: include_priv/dm_wan-manager.h, Duration: 211ms
+2025-12-31 02:43:55,206 - Knowledge - INFO - persist search terms embedding for include_priv/dm_wan-manager.h
+2025-12-31 02:43:55,370 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/include_priv/dm_wan-manager.h
+2025-12-31 02:43:55,558 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:55,735 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:55,981 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:56,136 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:56,366 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_main.c
+2025-12-31 02:43:56,623 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 90ms
+2025-12-31 02:43:57,028 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/wan_manager_mode_ctrl_logic_test/test_main.c, Duration: 244ms
+2025-12-31 02:43:57,199 - Knowledge - INFO - persist search terms embedding for test/wan_manager_mode_ctrl_logic_test/test_main.c
+2025-12-31 02:43:57,383 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/wan_manager_mode_ctrl_logic_test/test_main.c
+2025-12-31 02:43:57,602 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:57,839 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:58,060 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:58,202 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:43:58,430 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/dummy_backend.h
+2025-12-31 02:43:58,708 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 93ms
+2025-12-31 02:43:59,076 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/test_utils/dummy_backend.h, Duration: 218ms
+2025-12-31 02:43:59,229 - Knowledge - INFO - persist search terms embedding for test/test_utils/dummy_backend.h
+2025-12-31 02:43:59,419 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/dummy_backend.h
+2025-12-31 02:43:59,622 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:43:59,770 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:00,058 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:00,214 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:00,429 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_main_documentation.md
+2025-12-31 02:44:00,667 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 86ms
+2025-12-31 02:44:01,151 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: doc/wan-manager_main_documentation.md, Duration: 273ms
+2025-12-31 02:44:01,348 - Knowledge - INFO - persist search terms embedding for doc/wan-manager_main_documentation.md
+2025-12-31 02:44:01,542 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/doc/wan-manager_main_documentation.md
+2025-12-31 02:44:01,695 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:01,866 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:02,130 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:02,303 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:02,487 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.h
+2025-12-31 02:44:02,749 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 91ms
+2025-12-31 02:44:03,221 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mock_dns.h, Duration: 297ms
+2025-12-31 02:44:03,404 - Knowledge - INFO - persist search terms embedding for test/mocks/mock_dns.h
+2025-12-31 02:44:03,633 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mock_dns.h
+2025-12-31 02:44:03,797 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:03,955 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:04,226 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:04,419 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:04,604 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.c
+2025-12-31 02:44:04,879 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 98ms
+2025-12-31 02:44:05,328 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/test_utils/test_utils.c, Duration: 252ms
+2025-12-31 02:44:05,565 - Knowledge - INFO - persist search terms embedding for test/test_utils/test_utils.c
+2025-12-31 02:44:05,739 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/test_utils/test_utils.c
+2025-12-31 02:44:05,953 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:06,114 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:06,387 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:06,593 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:06,764 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/netmodel/nm_query.c
+2025-12-31 02:44:07,016 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 96ms
+2025-12-31 02:44:07,531 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: src/netmodel/nm_query.c, Duration: 309ms
+2025-12-31 02:44:07,726 - Knowledge - INFO - persist search terms embedding for src/netmodel/nm_query.c
+2025-12-31 02:44:07,899 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/src/netmodel/nm_query.c
+2025-12-31 02:44:08,067 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:08,275 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:08,531 - Knowledge - INFO - Found code-base-name: https://github.com/kavia-common/wan-manager-2670.git:kavia-main
+2025-12-31 02:44:08,721 - Knowledge - INFO - Found code_base: <app.utils.kg_build.knowledge.KnowledgeCodeBase object at 0x7fcd76c73090>
+2025-12-31 02:44:08,875 - Knowledge - INFO - persist ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
+2025-12-31 02:44:09,157 - Knowledge - INFO - [MONGODB_OP] Completed: persist, Collection: file_info, Duration: 90ms
+2025-12-31 02:44:09,602 - Knowledge - INFO - [REDIS_OP] Completed: store_embedding, Key: test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h, Duration: 218ms
+2025-12-31 02:44:09,782 - Knowledge - INFO - persist search terms embedding for test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
+2025-12-31 02:44:09,934 - Knowledge - INFO - process ingested knowledge for /app/data/gemtektechnologycoltd2546/2670/b36205x/wan-manager-2670/test/mocks/mod-network-selector-dummy/include_priv/mod-network-selector-dummy.h
+2025-12-31 02:44:10,138 - Knowledge - INFO - Loaded 101 files from persisted knowledge
+2025-12-31 02:44:10,326 - Knowledge - INFO - load persisted knowledge: end
+2025-12-31 02:44:10,521 - Knowledge - INFO - Redis support added with prefix knowledge:b36205x:
+2025-12-31 02:44:10,908 - Knowledge - INFO - Starting knowledge initialization for ID: W7Sszo-b36205x
+2025-12-31 02:44:11,139 - Knowledge - INFO - 🔍 Checking Redis for build_id: b36205x
+2025-12-31 02:44:11,331 - Knowledge - INFO - 🔍 Full session ID: W7Sszo-b36205x
+2025-12-31 02:44:11,517 - Knowledge - INFO - 🔍 Redis prefix will be: knowledge:b36205x:
+2025-12-31 02:44:11,664 - Knowledge - INFO - 🔍 Using attached load_from_redis() method
+2025-12-31 02:44:11,845 - Knowledge - INFO - 🔍 Attempting to load knowledge from Redis...
+2025-12-31 02:44:12,030 - Knowledge - INFO - 🔍 Using derived instance_id for Redis lookup: b36205x
+2025-12-31 02:44:12,208 - Knowledge - INFO - ✅ Redis cache found! Loading knowledge...
+2025-12-31 02:44:12,400 - Knowledge - INFO - ✅ Successfully loaded from Redis: 101 files
+2025-12-31 02:44:12,565 - Knowledge - INFO - ✅ Redis load complete: 101 files in 0.90s
+2025-12-31 02:44:12,767 - Knowledge - INFO - ⚡ Total Redis path: 0.90s (vs ~300s from disk)
+2025-12-31 02:44:12,929 - Knowledge - INFO - Saving knowledge to Redis...
+2025-12-31 02:44:13,176 - Knowledge - INFO - Knowledge saved to Redis successfully
